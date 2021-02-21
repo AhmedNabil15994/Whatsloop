@@ -6,7 +6,7 @@ return [
         'controller' => 'DashboardControllers',
         'title' => 'الرئيسية',
         'permissions' => [
-            'list-dashboard' => ['Dashboard'],
+            'list-dashboard' => ['Dashboard','changeLang','changeTheme','changeThemeToDefault'],
         ],
     ],
     'users' => [

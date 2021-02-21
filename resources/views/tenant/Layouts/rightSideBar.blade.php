@@ -83,7 +83,7 @@
                     <!-- User info -->
                     <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.sidebarInfo') }}</h6>
                     <div class="custom-control custom-switch mb-1">
-                        <input type="checkbox" class="custom-control-input" {{ $themeObj != null && $themeObj->user_info == "true" ? 'checked' : '' }} name="user_info" value="{{ $themeObj->user_info == 'true' ? 'false' : 'true' }}" id="sidebaruser-check" />
+                        <input type="checkbox" class="custom-control-input" {{ $themeObj != null && $themeObj->user_info == "true" ? 'checked' : '' }} name="user_info" value="{{ $themeObj != null && $themeObj->user_info == 'true' ? 'false' : 'true' }}" id="sidebaruser-check" />
                         <label class="custom-control-label" for="sidebaruser-check">{{ trans('main.enable') }}</label>
                     </div>
                     <!-- Topbar -->
