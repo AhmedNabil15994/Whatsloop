@@ -1,0 +1,260 @@
+html,body,
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
+  font-family: "Tajawal" !important;
+}
+#toast-container,.toast{
+	width: 100% !important;
+	top: 0 !important;
+  right: 0 !important;
+}
+#toast-container >div {
+  width: 100% !important;
+ 	opacity: 1;
+ 	box-shadow: none;
+ 	padding-right: 15px;
+ 	min-width: 100% !important;
+}
+#toast-container .toast-close-button {
+  top: -10px;
+}
+#toast-container >div:hover{
+  box-shadow: none !important;
+}
+.authPages .form-control{
+  padding: 1.5rem 1rem;
+}
+.hidden{
+  display: none;
+}
+.dataTables_wrapper .dataTable tfoot th, .dataTables_wrapper .dataTable thead th {
+  font-weight: 500;
+  color: #212121;
+  font-size: 16px;
+  font-weight: bold;
+}
+.dataTables_wrapper .dataTable th, .dataTables_wrapper .dataTable td {
+  font-weight: 400;
+  font-size: 1rem;
+  vertical-align: middle;
+  color: #464E5F;
+  font-size: 15px;
+}
+.dt-buttons .btn.btn-secondary:not(.buttons-colvis){
+  display: none !important;
+}
+.page-link{
+  padding: 5px 9px 2px;
+}
+.m-seperator{
+  height: 2px;
+  margin-bottom: 15px;
+  background: #ced4da;
+}
+.custom-accordion .card-header{
+  background-color: #4a81d4;
+}
+.custom-accordion .card-header h5 a.custom-accordion-title{
+  color: #FFF !important;
+}
+.custom-accordion .accordion-arrow{
+  font-size: 1rem;
+}
+.m-btn--icon{
+  border-radius: 50%;
+}
+hr{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.m-btn--icon i{
+  padding-top: 3px;
+}
+.header-title{
+  padding-top: 7px;
+}
+body[data-sidebar-color="dark"] td a{
+  color: #FFF;
+}
+html[lang="ar"] .custom-accordion .accordion-arrow{
+  right: unset;
+  left: 0;
+  transform: rotateY(180deg);
+}
+html[lang="ar"] .dropdown-item,
+html[lang="ar"] .dropdown-toggle.btn-info,
+html[lang="ar"] .timeline-box p{
+  direction: rtl;
+}
+.timeline-item.timeline-item-left .timeline-desk .arrow{
+  left: unset;
+  right: -12px;
+  transform: rotateY(180deg);
+}
+.tasklist li{
+  padding-bottom: 0;
+}
+.timeline-box p{
+  min-width: 150px;
+}
+.timeline .timeline-box{
+  margin-top: 0;
+  margin-bottom: 0;
+}
+table td a:hover{
+  cursor: pointer;
+}
+table td a.btn{
+  color: #FFF;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 14px;
+}
+table td a.btn:hover{
+  color: #FFF;
+}
+.swal2-icon-text{
+  font-size: 1em;
+}
+#upcoming li{
+  cursor: move;
+}
+#upcoming li h5{
+  padding-bottom: 5px;
+}
+#upcoming li h5 a{
+  color: #FFF;
+  padding-bottom: 5px;
+}
+#kt_daterangepicker_6{
+  display: inline-block;
+  border-radius: 2rem;
+  padding: 5px;
+  cursor: pointer;
+  background: #fff;
+  padding-bottom: 0;
+  overflow: hidden;
+  cursor: pointer;
+  width: auto;
+  margin-top: 15px;
+}
+#kt_daterangepicker_6:hover .input-group-text.main{
+  background-color: #564FC0;
+} 
+#kt_daterangepicker_6 input{
+  display: inline-block;
+  width: 50px;
+  padding-left: 2px;
+  padding-right: 2px;
+  color: #716aca !important;
+  font-weight: bold;
+  box-shadow: unset;
+}
+.input-group-append{
+  display: inline-block;
+}
+.input-group>.input-group-append>.input-group-text.main{
+  display: block;
+  padding: 10px 5px;
+  color: #fff;
+  background-color: #716aca;
+  border-color: #716aca;
+  width: 32px;
+  height: 32px;
+  transition: all ease-in-out .25s;
+  border-radius: 50%;
+}
+.input-group>.form-control:not(:last-child){
+  border: 0;
+}
+.input-group i{
+  color: #fff;
+}
+span.my-title{
+  color: #aaaeb8;
+}
+.daterangepicker .ranges {
+  padding: 10px;
+  margin: 5px 10px 5px 5px;
+}
+.daterangepicker .ranges li.active {
+  background: #716aca;
+  color: #fff;
+  border: 1px solid #716aca;
+}
+.daterangepicker .ranges li{
+  text-align: right;
+}
+.dt-buttons.btn-group,
+.dz-success-mark,
+.dz-error-mark,
+.dz-remove{
+  display: none !important; 
+}
+.LastUpdate{
+  font-size: 12px;
+}
+.dropzone.dropzone-default .dropzone-msg-title i{
+  color: #000;
+}
+.dropzone.dropzone-default .dropzone-msg-desc{
+  color: #575962;
+}
+.dataTable .my-gallery img {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+}
+.dropzone .dz-preview .dz-image img{
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: auto;
+}
+.PhotoBTNS a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 5px;
+    color: #FFF !important;
+    background-color: #000;
+    border-radius: 4px;
+    cursor: pointer !important;
+    font-size: 20px;
+    cursor: pointer !important;
+    z-index: 9999;
+    max-width: 40px;
+    margin: auto;
+}
+.dropzone .dz-preview.dz-image-preview .dz-details {
+    -webkit-transition: opacity 0.2s linear;
+    transition: opacity 0.2s linear;
+}
+.dropzone .dz-preview .dz-details {
+    padding: 1em 1em;
+}
+.dropzone .dz-preview .dz-details {
+    z-index: 20;
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+    font-size: 13px;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 2em 1em;
+    text-align: center;
+    color: rgba(0,0,0,0.9);
+    line-height: 150%;
+}
+.PhotoBTNS .my-gallery,
+.PhotoBTNS .my-gallerys {
+    display: inline-block;
+}
+.dropzone.dz-clickable *{
+  cursor: pointer;
+}
+#my-preview{
+  position: relative;
+}
+#my-preview .dz-details:hover {
+  opacity: 1;
+}
