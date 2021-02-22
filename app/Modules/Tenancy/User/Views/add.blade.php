@@ -88,6 +88,7 @@
                                 <select class="selectpicker" data-style="btn-outline-primary" name="{{ $propKey }}">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($propValue['options'] as $group)
+                                    @php $group = (object) $group; @endphp
                                     <option value="{{ $group->id }}" {{ old($propKey) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
                                     @endforeach
                                 </select>

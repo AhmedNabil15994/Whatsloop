@@ -36,6 +36,7 @@ $(function(){
 		var first = "First";
 		var last = "Last";
 		var editText = 'Edit';
+		var copyText = 'Copy';
 		var deleteText = 'Delete';
 	}else{
 		var showCols = "<i class='fa fas fa-angle-down'></i> عرض الأعمدة";
@@ -53,6 +54,7 @@ $(function(){
 		var first = "الاول";
 		var last = "الاخير";
 		var editText = 'تعديل';
+		var copyText = 'تكرار';
 		var deleteText = 'حذف';
 	}
 
@@ -75,7 +77,11 @@ $(function(){
 					'title' : item['label'],
 					'className': item['className'],
 					render: function(data, type, full, meta) {
-						return '<a class="'+item['anchor-class']+'" data-col="'+item['data-col']+'" data-id="'+full.id+'">'+data+'</a>';
+						var labelClass = '';
+						if(getIndex(index,item) == 1){
+							labelClass = full.labelClass;
+						}
+						return '<a class="'+item['anchor-class']+' '+labelClass+'" data-col="'+item['data-col']+'" data-id="'+full.id+'">'+data+'</a>';
 					},
 				});
 			}
@@ -86,15 +92,20 @@ $(function(){
 				orderable: false,
 				render: function(data, type, full, meta) {
 					var editButton = '';
+					var copyButton = '';
 					var deleteButton = '';
 					if($('input[name="data-area"]').val() == 1){
-						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-xs btn-warning"> <i class="mdi mdi-square-edit-outline"></i>'+editText+'</a>';
+						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-xs btn-success"> <i class="mdi mdi-square-edit-outline"></i>'+editText+'</a>';
+					}
+
+					if($('input[name="data-tabs"]').length && $('input[name="data-tabs"]').val() == 1){
+						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-square-edit-outline"></i>'+copyText+'</a>';
 					}
 
 					if($('input[name="data-cols"]').val() == 1){
 						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-xs btn-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
 					}
-					return editButton + deleteButton;
+					return editButton + copyButton + deleteButton;
 				},
 			});
 		}

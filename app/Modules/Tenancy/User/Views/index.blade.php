@@ -50,6 +50,10 @@
     <input type="hidden" name="data-cols" value="{{ \Helper::checkRules('delete-'.$data->designElems['mainData']['nameOne']) }}">
     <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
 
+    @if($data->designElems['mainData']['url'] == 'bots')
+    <input type="hidden" name="data-tabs" value="{{ \Helper::checkRules('copy-'.$data->designElems['mainData']['nameOne']) }}">
+    @endif
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -116,6 +120,7 @@
                                             <select class="selectpicker" data-style="btn-outline-primary" name="{{ $searchKey }}">
                                                 <option value=" ">{{ trans('main.choose') }}</option>
                                                 @foreach($searchItem['options'] as $group)
+                                                @php $group = (object) $group; @endphp
                                                 <option value="{{ $group->id }}">{{ $group->title }}</option>
                                                 @endforeach
                                             </select>

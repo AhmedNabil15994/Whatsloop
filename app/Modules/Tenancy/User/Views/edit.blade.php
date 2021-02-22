@@ -90,6 +90,7 @@
                                 <select class="selectpicker" data-style="btn-outline-primary" name="{{ $propKey }}">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($propValue['options'] as $group)
+                                    @php $group = (object) $group; @endphp
                                     <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
                                     @endforeach
                                 </select>
@@ -174,7 +175,7 @@
 
                         <div class="form-group mb-0 justify-content-end row">
                             <div class="col-9">
-                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
                                 <button name="Submit" type="submit" class="btn btn-primary AddBTN" id="SaveBTN">{{ trans('main.draft') }}</button>
                                 <button type="reset" class="btn btn-danger Reset">{{ trans('main.clearAll') }}</button>
                             </div>

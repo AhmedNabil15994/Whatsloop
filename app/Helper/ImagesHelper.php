@@ -20,6 +20,35 @@ class ImagesHelper {
         return number_format($mb,2) . " MB ";
     }
 
+    static function checkFileExtension($filename){
+        $filename = explode('.', $filename);
+        $extension = array_reverse($filename)[0];
+        return self::checkExtensionType(strtolower($extension));
+    }
+
+    static function checkExtensionType($extension){
+        $images = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
+        $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf',];
+        $videos = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv'];
+        $sounds = ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd'];
+
+        if(in_array($extension, $images)){
+            return 'image';
+        }
+
+        if(in_array($extension, $files)){
+            return 'file';
+        }
+
+        if(in_array($extension, $videos)){
+            return 'video';
+        }
+
+        if(in_array($extension, $sounds)){
+            return 'sound';
+        }
+    }
+
     static function GetImagePath($strAction, $id, $filename,$withDefault=true) {
 
         if($withDefault){
@@ -41,16 +70,12 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/users/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
-            case "variables":
-                $fullPath = $path.'/uploads' . '/variables/' . $id . '/' . $filename;
-                $checkFile = $checkFile . '/variables/' . $id . '/' . $filename;
+            case "bots":
+                $fullPath = $path.'/uploads' . '/bots/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/bots/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
-            case "photos":
-                $fullPath = $path.'/uploads' . '/photos/' . $filename;
-                $checkFile = $checkFile . '/photos/' . $filename;
-                return is_file($checkFile) ? URL::to($fullPath) : $default;
-                break;
+            
         }
 
         return $default;
@@ -101,16 +126,8 @@ class ImagesHelper {
             $directory = $path . 'users/' . $id;
         }
 
-        if ($strAction == 'pages') {
-            $directory = $path . 'pages/' . $id;
-        }
-
-        if ($strAction == 'companies') {
-            $directory = $path . 'companies/' . $id;
-        }
-
-        if ($strAction == 'variables') {
-            $directory = $path . 'variables/' . $id;
+        if ($strAction == 'bots') {
+            $directory = $path . 'bots/' . $id;
         }
 
         $fileName_full = $fileName . '.' . $extension;

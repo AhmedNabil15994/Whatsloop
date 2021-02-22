@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_PREF }}" dir="ltr">
+<html lang="{{ LANGUAGE_PREF }}" dir="{{ DIRECTION }}">
 	<head>
 		<meta charset="utf-8" />
 		<title>واتس لووب | Whats Loop | @yield('title')</title>

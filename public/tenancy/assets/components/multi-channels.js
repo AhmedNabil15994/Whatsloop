@@ -61,5 +61,14 @@ $(function(){
 		});
 	});
 
-
+	$('.SelectAllCheckBox').on('click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('input[type="checkbox"]').attr('checked','checked');
+	});
+	$('.UnSelectAllCheckBox').on('click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('input[type="checkbox"]').attr('checked',false);
+	});
 });

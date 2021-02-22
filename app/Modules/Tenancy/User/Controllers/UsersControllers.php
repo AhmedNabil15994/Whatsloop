@@ -2,7 +2,6 @@
 
 use App\Models\User;
 use App\Models\Group;
-use App\Models\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
@@ -260,20 +259,20 @@ class UsersControllers extends Controller {
 
         $validate = $this->validateUpdateObject($input);
         if($validate->fails()){
-            \Session::flash('error', $validate->messages()->first());
+            Session::flash('error', $validate->messages()->first());
             return redirect()->back();
         }
 
         $userObj = User::checkUserBy('email',$input['email'],$id);
         if($userObj){
-            \Session::flash('error', trans('main.emailError'));
+            Session::flash('error', trans('main.emailError'));
             return redirect()->back()->withInput();
         }
 
         if(isset($input['phone']) && !empty($input['phone'])){
             $userObj = User::checkUserBy('phone','+'.$input['phone'],$id);
             if($userObj){
-                \Session::flash('error', trans('main.phoneError'));
+                Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
             }
         }
@@ -290,7 +289,7 @@ class UsersControllers extends Controller {
 
             $validate = \Validator::make($input, $rules, $message);
             if($validate->fails()){
-                \Session::flash('error', $validate->messages()->first());
+                Session::flash('error', $validate->messages()->first());
                 return redirect()->back();
             }
 
@@ -320,13 +319,13 @@ class UsersControllers extends Controller {
         $dataObj->created_by = USER_ID;
         $dataObj->save();
 
-        $photos_name = \Session::get('photos');
+        $photos_name = Session::get('photos');
         if($photos_name){
-            $photos = \Storage::files($photos_name);
+            $photos = Storage::files($photos_name);
             if(count($photos) > 0){
                 $images = self::addImage($photos[0],$dataObj->id);
                 if ($images == false) {
-                    \Session::flash('error', trans('main.uploadProb'));
+                    Session::flash('error', trans('main.uploadProb'));
                     return redirect()->back()->withInput();
                 }
                 $dataObj->image = $images;
@@ -334,9 +333,9 @@ class UsersControllers extends Controller {
             }
         }
 
-        \Session::forget('photos');
+        Session::forget('photos');
         WebActions::newType(2,$this->getData()['mainData']['modelName']);
-        \Session::flash('success', trans('main.editSuccess'));
+        Session::flash('success', trans('main.editSuccess'));
         return \Redirect::back()->withInput();
     }
 
@@ -354,20 +353,20 @@ class UsersControllers extends Controller {
         
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
-            \Session::flash('error', $validate->messages()->first());
+            Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
         
         $userObj = User::checkUserBy('email',$input['email']);
         if($userObj){
-            \Session::flash('error', trans('main.emailError'));
+            Session::flash('error', trans('main.emailError'));
             return redirect()->back()->withInput();
         }
 
         if(isset($input['phone']) && !empty($input['phone'])){
             $userObj = User::checkUserBy('phone','+'.$input['phone']);
             if($userObj){
-                \Session::flash('error', trans('main.phoneError'));
+                Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
             }
         }
@@ -399,13 +398,13 @@ class UsersControllers extends Controller {
         $dataObj->created_by = USER_ID;
         $dataObj->save();
 
-        $photos_name = \Session::get('photos');
+        $photos_name = Session::get('photos');
         if($photos_name){
-            $photos = \Storage::files($photos_name);
+            $photos = Storage::files($photos_name);
             if(count($photos) > 0){
                 $images = self::addImage($photos[0],$dataObj->id);
                 if ($images == false) {
-                    \Session::flash('error', trans('main.uploadProb'));
+                    Session::flash('error', trans('main.uploadProb'));
                     return redirect()->back()->withInput();
                 }
                 $dataObj->image = $images;
@@ -413,15 +412,16 @@ class UsersControllers extends Controller {
             }
         }
 
-        \Session::forget('photos');
+        Session::forget('photos');
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
-        \Session::flash('success', trans('main.addSuccess'));
+        Session::flash('success', trans('main.addSuccess'));
         return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 
     public function delete($id) {
         $id = (int) $id;
         $dataObj = User::getOne($id);
+        \ImagesHelper::deleteDirectory(public_path('/').'/uploads/'.$this->getData()['mainData']['name'].'/'.$id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
     }
@@ -568,6 +568,7 @@ class UsersControllers extends Controller {
             return \TraitsFunc::ErrorMessage(trans('main.userNotFound'));
         }
 
+        \ImagesHelper::deleteDirectory(public_path('/').'/uploads/'.$this->getData()['mainData']['name'].'/'.$id.'/'.$menuObj->image);
         $menuObj->image = '';
         $menuObj->save();
         return \TraitsFunc::SuccessResponse(trans('main.imgDeleted'));

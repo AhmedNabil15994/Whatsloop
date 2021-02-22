@@ -20,6 +20,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'group_id',
+        'channels',
+        'extra_rules',
+        'image',
+        'sort',
+        'status',
+        'created_at',
+        'created_by',
+        'updated_by',
+        'updated_at',
+        'deleted_by',
+        'deleted_at',
     ];
 
     /**
@@ -43,10 +56,6 @@ class User extends Authenticatable
 
     public function Group(){
         return $this->belongsTo('App\Models\Group','group_id');
-    }
-
-    public function photos(){
-        return $this->morphMany('App\Models\Photo', 'imageable');
     }
     
     static function getPhotoPath($id, $photo) {

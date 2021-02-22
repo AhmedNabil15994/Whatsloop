@@ -45,67 +45,71 @@
                     </a>
                 </li>
                 @endif
-
+                @if(\Helper::checkRules('list-bots'))
+                <li class="{{ Active(URL::to('/bots*'),'menuitem-active') }}">
+                    <a href="#sidebarBots" data-toggle="collapse">
+                        <i class="fas fa-robot"></i>
+                        <span> {{ trans('main.chatBot') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    @if(\Helper::checkRules('list-bots'))
+                    <div class="collapse {{ Active(URL::to('/bots*'),'show') }}" id="sidebarBots">
+                        <ul class="nav-second-level">
+                            <li class="{{ Active(URL::to('/bots*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/bots') }}">{{ trans('main.bot') }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    @endif
+                </li>
+                @endif
+                @if(\Helper::checkRules('list-templates'))
+                <li class="{{ Active(URL::to('/templates*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/templates') }}">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <span> {{ trans('main.templates') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if(\Helper::checkRules('list-replies'))
+                <li class="{{ Active(URL::to('/replies*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/replies') }}">
+                        <i class="far fa-comment-alt"></i>
+                        <span> {{ trans('main.replies') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if(\Helper::checkRules('list-categories'))
+                <li class="{{ Active(URL::to('/categories*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/categories') }}">
+                        <i class="fas fa-tags"></i>
+                        <span> {{ trans('main.categories') }} </span>
+                    </a>
+                </li>
+                @endif
                 @if(\Helper::checkRules('list-users,list-groups'))
-                <li>
-                    <a href="#sidebarEcommerce" data-toggle="collapse">
+                <li class="{{ Active(URL::to('/users*'),'menuitem-active') }} {{ Active(URL::to('/groups*'),'menuitem-active') }}">
+                    <a href="#sidebarUsers" data-toggle="collapse">
                         <i class="fa fa-user-tie"></i>
                         <span> {{ trans('main.users') }} </span>
                         <span class="menu-arrow"></span>
                     </a>
-                    <div class="collapse" id="sidebarEcommerce">
+                    <div class="collapse {{ Active(URL::to('/users*'),'show') }} {{ Active(URL::to('/groups*'),'show') }}" id="sidebarUsers">
                         <ul class="nav-second-level">
-                            <li>
+                            @if(\Helper::checkRules('list-users'))
+                            <li class="{{ Active(URL::to('/users*'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/users') }}">{{ trans('main.users') }}</a>
                             </li>
-                            <li>
+                            @endif
+                            @if(\Helper::checkRules('list-groups'))
+                            <li class="{{ Active(URL::to('/groups*'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/groups') }}">{{ trans('main.groups') }}</a>
                             </li>
+                            @endif
                         </ul>
                     </div>
                 </li>
                 @endif
-                <li>
-                    <a href="#sidebarEcommerce" data-toggle="collapse">
-                        <i class="mdi mdi-cart-outline"></i>
-                        <span> Ecommerce </span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <div class="collapse" id="sidebarEcommerce">
-                        <ul class="nav-second-level">
-                            <li>
-                                <a href="ecommerce-dashboard.html">Dashboard</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-products.html">Products</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-product-detail.html">Product Detail</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-product-edit.html">Add Product</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-customers.html">Customers</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-orders.html">Orders</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-order-detail.html">Order Detail</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-sellers.html">Sellers</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-cart.html">Shopping Cart</a>
-                            </li>
-                            <li>
-                                <a href="ecommerce-checkout.html">Checkout</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
             </ul>
 
         </div>
