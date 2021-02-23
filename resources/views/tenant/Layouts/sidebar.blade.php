@@ -87,6 +87,50 @@
                     </a>
                 </li>
                 @endif
+                @if(\Helper::checkRules('list-group-numbers,add-number-to-group,list-contacts'))
+                <li class="{{ Active(URL::to('/groupNumbers*'),'menuitem-active') }} {{ Active(URL::to('/contacts*'),'menuitem-active') }} {{ Active(URL::to('/addGroupNumbers*'),'menuitem-active') }}">
+                    <a href="#sidebarGroupNumbers" data-toggle="collapse">
+                        <i class="fas fa-users"></i>
+                        <span> {{ trans('main.contacts') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse {{ Active(URL::to('/groupNumbers*'),'show') }} {{ Active(URL::to('/contacts*'),'show') }} {{ Active(URL::to('/addGroupNumbers*'),'show') }}" id="sidebarGroupNumbers">
+                        <ul class="nav-second-level">
+                            @if(\Helper::checkRules('list-contacts'))
+                            <li class="{{ Active(URL::to('/contacts*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/contacts') }}">{{ trans('main.contacts') }}</a>
+                            </li>
+                            @endif
+                            @if(\Helper::checkRules('list-group-numbers'))
+                            <li class="{{ Active(URL::to('/groupNumbers*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/groupNumbers') }}">{{ trans('main.groupNumbers') }}</a>
+                            </li>
+                            @endif
+                            @if(\Helper::checkRules('add-number-to-group'))
+                            <li class="{{ Active(URL::to('/addGroupNumbers*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/addGroupNumbers') }}">{{ trans('main.addGroupNumbers') }}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li>
+                @endif
+                @if(\Helper::checkRules('list-statuses'))
+                <li class="{{ Active(URL::to('/statuses*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/statuses') }}">
+                        <i class="mdi mdi-format-list-bulleted-type"></i>
+                        <span> {{ trans('main.statuses') }} </span>
+                    </a>
+                </li>
+                @endif
+                @if(\Helper::checkRules('list-groupNumberRepors'))
+                <li class="{{ Active(URL::to('/groupNumberRepors*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/groupNumberRepors') }}">
+                        <i class="mdi mdi-file-account-outline"></i>
+                        <span> {{ trans('main.groupNumberRepors') }} </span>
+                    </a>
+                </li>
+                @endif
                 @if(\Helper::checkRules('list-users,list-groups'))
                 <li class="{{ Active(URL::to('/users*'),'menuitem-active') }} {{ Active(URL::to('/groups*'),'menuitem-active') }}">
                     <a href="#sidebarUsers" data-toggle="collapse">

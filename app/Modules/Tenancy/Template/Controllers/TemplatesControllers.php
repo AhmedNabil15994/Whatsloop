@@ -201,8 +201,8 @@ class TemplatesControllers extends Controller {
         $dataObj->name_en = $input['name_en'];
         $dataObj->description_ar = $input['description_ar'];
         $dataObj->description_en = $input['description_en'];
-        $dataObj->created_at = DATE_TIME;
-        $dataObj->created_by = USER_ID;
+        $dataObj->updated_at = DATE_TIME;
+        $dataObj->updated_by = USER_ID;
         $dataObj->save();
 
         WebActions::newType(2,$this->getData()['mainData']['modelName']);

@@ -363,6 +363,9 @@ span.my-title{
     border-radius: 5px 0px 5px 5px;
     float: right;
 }
+html[dir="ltr"] .message.sent{
+  direction: rtl;
+}
 .message.sent img{
   width: 100%;
   height: 250px;
@@ -378,4 +381,23 @@ td.edits a.badge{
 }
 textarea{
   min-height: 200px;
+}
+.tasklist ul.dropdown-menu.inner li{
+  padding: unset;
+  border: unset;
+  margin-bottom: unset;
+  box-shadow: unset;
+  border-bottom: 1px solid #dee2e6;
+}
+p.example{
+  font-size: 14px;
+}
+p.example a{
+  font-size: 13px;
+}
+.nav-pills .nav-link.active{
+  background-color: #457cce;
+}
+.btn-outline-myPR{
+  border-color: #457cce;
 }

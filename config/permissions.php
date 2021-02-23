@@ -9,6 +9,32 @@ return [
             'list-dashboard' => ['Dashboard','changeLang','changeTheme','changeThemeToDefault'],
         ],
     ],
+    'contacts' => [
+        'controller' => 'ContactsControllers',
+        'title' => 'جهات الارسال',
+        'permissions' => [
+            'list-contacts' => ['index',],
+            'edit-contact' => ['edit','update','fastEdit'],
+            'add-contact' => ['add','create'],
+            'delete-contact' => ['delete'],
+            'sort-contact' => ['sort','arrange'],
+            'charts-contact' => ['charts'],
+            'export-contacts' => 'downloadContacts',
+        ],
+    ],
+    'groupNumbers' => [
+        'controller' => 'GroupNumbersControllers',
+        'title' => 'مجموعات الارقام',
+        'permissions' => [
+            'list-group-numbers' => ['index'],
+            'edit-group-number' => ['edit','update','fastEdit'],
+            'add-group-number' => ['add','create'],
+            'delete-group-number' => ['delete'],
+            'sort-group-number' => ['sort','arrange'],
+            'charts-group-number' => ['charts'],
+            'add-number-to-group' => ['addGroupNumbers','postAddGroupNumbers'],
+        ],
+    ],
     'categories' => [
         'controller' => 'CategoryControllers',
         'title' => 'التصنيفات',

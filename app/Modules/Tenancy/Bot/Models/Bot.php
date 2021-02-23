@@ -43,7 +43,9 @@ class Bot extends Model{
         if($status != null){
             $source->where('status',$status);
         }
-        if(Session::has('channel')){
+        if(isset($input['channel']) && !empty($input['channel'])){
+            $source->where('channel',$input['channel']);
+        }else if(Session::has('channel')){
             $source->where('channel',Session::get('channel'));
         }
         $source->orderBy('sort', 'ASC');

@@ -238,8 +238,8 @@ class BotControllers extends Controller {
         $dataObj->message = $input['message'];
         $dataObj->reply_type = $input['reply_type'];
         $dataObj->status = $input['status'];
-        $dataObj->created_at = DATE_TIME;
-        $dataObj->created_by = USER_ID;
+        $dataObj->updated_by_at = DATE_TIME;
+        $dataObj->updated_by_by = USER_ID;
         $dataObj->save();
 
         if($input['reply_type'] == 1){

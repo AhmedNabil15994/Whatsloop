@@ -61,6 +61,9 @@ return [
 
 	'users' => 'Users',
 	'email' => 'E-mail Address',
+	'country' => 'Country',
+	'city' => 'City',
+	'whats' => 'Whatsapp Number',
 	'phone' => 'Phone',
 	'password' => 'Password',
 	'group' => 'Group',
@@ -173,5 +176,35 @@ return [
 	'red' => 'Red',
 	'purple' => 'Purple',
 	'black' => 'Black',
+	'online' => 'Online',
 
+	'groupNumbers' => 'Numbers Groups',
+	'addGroupNumbers' => 'Add To Numbers Groups',
+	'attachExcel' => 'Attach Excel File',
+	'fileContent' => 'Uploaded File Content',
+	'noDataFound' => 'No Data Found',
+	'invalidColumn' => 'Invalid Column',
+	'contacts' => 'Contacts',
+	'excelExample' => 'Excel File Example',
+	'download' => 'Download',
+
+	'whatsappNos2' => 'You can paste your numbers like that: 
+966512345678
+966512345678',
+	'mainSettings' => 'Main Settings',
+	'manual' => 'Manual',
+	'excelFile' => 'Excel File',
+	'lang' => 'Language',
+	'extraInfo' => 'Extra Info',
+	'whatsappNosValidate' => 'Whatsapp Numbers Field is required',
+
+	'statuses' => 'Statuses History',
+	'status' => 'Status',
+	'groupNumberRepors' => 'Group Numbers Report',
+	'addType' => 'Added status',
+	'contactsNos' => 'Contacts Number',
+	'hasWhats' => 'Has Whatsapp',
+	'hasNotWhats' => "Hasn't Whatsapp",
+	'addNos' => 'Added Contacts Number',
+	'sentDate' => 'Sending Date',
 ];

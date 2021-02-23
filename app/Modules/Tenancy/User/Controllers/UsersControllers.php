@@ -16,7 +16,7 @@ class UsersControllers extends Controller {
     use \TraitsFunc;
 
     public function getData(){
-        $groups = Group::dataList()['data'];
+        $groups = Group::dataList(1)['data'];
         $userObj = User::getData(User::getOne(USER_ID));
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
@@ -315,8 +315,8 @@ class UsersControllers extends Controller {
         $dataObj->email = $input['email'];
         $dataObj->phone = '+'.$input['phone'];
         $dataObj->extra_rules = serialize($permissionsArr);
-        $dataObj->created_at = DATE_TIME;
-        $dataObj->created_by = USER_ID;
+        $dataObj->updated_at = DATE_TIME;
+        $dataObj->updated_by = USER_ID;
         $dataObj->save();
 
         $photos_name = Session::get('photos');

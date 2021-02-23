@@ -1,6 +1,7 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Session;
 
 class Reply extends Model{
 
@@ -32,7 +33,13 @@ class Reply extends Model{
                     if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
+        
                 });
+        if(isset($input['channel']) && !empty($input['channel'])){
+            $source->where('channel',$input['channel']);
+        }else if(Session::has('channel')){
+            $source->where('channel',Session::get('channel'));
+        }
         $source->orderBy('sort','ASC');
         return self::generateObj($source);
     }

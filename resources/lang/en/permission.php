@@ -2,7 +2,26 @@
 
 return [
 	'list-dashboard' => 'Dashboard',
-	
+		
+	'list-statuses' => 'List Statuses History',
+	'list-groupNumberRepors' => 'List Group Numbers Report',
+
+	'list-contacts' => 'List Contacts',
+	'edit-contact' => 'Edit Contacts',
+	'add-contact' => 'Add Contacts',
+	'delete-contact' => 'Delete Contacts',
+	'sort-contact' => 'Sort Contacts',
+	'charts-contact' => 'Contacts Statistics',
+	'export-contacts' => 'Export Contacts',
+
+	'list-group-numbers' => 'List Numbers Groups',
+	'edit-group-number' => 'Edit Numbers Groups',
+	'add-group-number' => 'Add Numbers Groups',
+	'delete-group-number' => 'Delete Numbers Groups',
+	'sort-group-number' => 'Sort Numbers Groups',
+	'charts-group-number' => 'Numbers Groups Statistics',
+	'add-number-to-group' => 'Add To Numbers Groups',
+
 	'list-replies' => 'List Ready Replies',
 	'edit-reply' => 'Edit Ready Reply',
 	'add-reply' => 'Add Ready Reply',
@@ -54,4 +73,6 @@ return [
 	'edit-variable' => 'Edit General Setting',
 	'list-variables2' => 'Panel Settings',
 	'edit-variable2' => 'Edit Panel Setting',
+	'add-number-to-group' => 'Add To Numbers Groups',
+	
 ];

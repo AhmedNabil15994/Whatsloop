@@ -3,11 +3,11 @@
 use Illuminate\Database\Eloquent\Model;
 use Session;
 
-class Template extends Model{
+class GroupNumber extends Model{
 
     use \TraitsFunc;
 
-    protected $table = 'templates';
+    protected $table = 'group_numbers';
     protected $primaryKey = 'id';
     public $timestamps = false;
 
@@ -17,13 +17,10 @@ class Template extends Model{
             ->first();
     }
 
-    static function dataList($status=null) {
+    static function dataList($status=null,$id=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
-                    if (isset($input['channel']) && !empty($input['channel'])) {
-                        $query->where('channel',$input['channel']);
-                    } 
                     if (isset($input['name_ar']) && !empty($input['name_ar'])) {
                         $query->where('name_ar', 'LIKE', '%' . $input['name_ar'] . '%');
                     } 
@@ -34,13 +31,16 @@ class Template extends Model{
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
                 });
-        if($status != null){
-            $source->where('status',$status);
-        }
+                if($status != null){
+                    $source->where('status',$status);
+                }
         if(isset($input['channel']) && !empty($input['channel'])){
-            $source->where('channel',$input['channel']);
+            $source->where('channel',$input['channel'])->orWhere('channel','');
         }else if(Session::has('channel')){
-            $source->where('channel',Session::get('channel'));
+            $source->where('channel',Session::get('channel'))->orWhere('channel','');
+        }
+        if($id != null){
+            $source->whereNotIn('id',$id);
         }
         $source->orderBy('sort','ASC');
         return self::generateObj($source);
@@ -63,10 +63,10 @@ class Template extends Model{
     static function getData($source) {
         $data = new  \stdClass();
         $data->id = $source->id;
+        $data->channel = $source->channel;
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
         $data->title = $source->{'name_'.LANGUAGE_PREF};
-        $data->channel = $source->channel;
         $data->description_ar = $source->description_ar;
         $data->description_en = $source->description_en;
         $data->status = $source->status;

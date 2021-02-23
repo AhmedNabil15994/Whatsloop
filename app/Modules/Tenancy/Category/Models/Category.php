@@ -1,6 +1,7 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Session;
 
 class Category extends Model{
 
@@ -33,6 +34,11 @@ class Category extends Model{
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
                 });
+        if(isset($input['channel']) && !empty($input['channel'])){
+            $source->where('channel',$input['channel']);
+        }else if(Session::has('channel')){
+            $source->where('channel',Session::get('channel'));
+        }
         $source->orderBy('sort','ASC');
         return self::generateObj($source);
     }
@@ -55,6 +61,7 @@ class Category extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $extraData = self::getColor($source->color_id);
+        $data->channel = $source->channel;
         $data->color_id = $source->color_id;
         $data->color = $extraData[0];
         $data->labelClass = 'badge badge-'.$extraData[1];

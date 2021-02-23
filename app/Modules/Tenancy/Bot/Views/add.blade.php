@@ -54,7 +54,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-primary" name="channel">
+                                <select class="selectpicker" data-style="btn-outline-myPR" name="channel">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($data->channels as $group)
                                     <option value="{{ $group->id }}" {{ Session::get('channel') == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
@@ -65,7 +65,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.messageType') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-primary" name="message_type">
+                                <select class="selectpicker" data-style="btn-outline-myPR" name="message_type">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ old('message_type') == 1 ? 'selected' : '' }}>{{ trans('main.equal') }}</option>
                                     <option value="2" {{ old('message_type') == 2 ? 'selected' : '' }}>{{ trans('main.part') }}</option>
@@ -81,7 +81,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.replyType') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-primary" name="reply_type">
+                                <select class="selectpicker" data-style="btn-outline-myPR" name="reply_type">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ old('reply_type') == 1 ? 'selected' : '' }}>{{ trans('main.text') }}</option>
                                     <option value="2" {{ old('reply_type') == 2 ? 'selected' : '' }}>{{ trans('main.photoOrFile') }}</option>
@@ -292,7 +292,7 @@
                         <div class="col-11">
                             <div class="name">
                                 <span>WhatsLoop</span>
-                                <span class="status">online 24/7</span>
+                                <span class="status">{{ trans('main.online') }} 24/7</span>
                             </div>
                         </div>
                     </div>

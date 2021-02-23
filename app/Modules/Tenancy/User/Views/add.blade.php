@@ -85,11 +85,11 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ $propValue['label'] }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-primary" name="{{ $propKey }}">
+                                <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $propKey }}">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($propValue['options'] as $group)
                                     @php $group = (object) $group; @endphp
-                                    <option value="{{ $group->id }}" {{ old($propKey) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                    <option value="{{ $group->id }}" {{ old($propKey) == $group->id ? 'selected' : '' }} {{ Session::has($propKey) && Session::get($propKey) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
                                     @endforeach
                                 </select>
                             </div>

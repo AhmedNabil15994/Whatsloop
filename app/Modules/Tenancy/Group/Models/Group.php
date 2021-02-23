@@ -16,7 +16,7 @@ class Group extends Model{
             ->first();
     }
 
-    static function dataList() {
+    static function dataList($status=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -30,6 +30,9 @@ class Group extends Model{
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
                 });
+        if($status != null){
+            $source->where('status',$status);
+        }
         $source->orderBy('sort','ASC');
         return self::generateObj($source);
     }

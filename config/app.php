@@ -164,7 +164,8 @@ return [
         Watson\Active\ActiveServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         Stevebauman\Location\LocationServiceProvider::class,
-
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        
         /*
          * Package Service Providers...
          */
@@ -232,6 +233,7 @@ return [
         'Active' => Watson\Active\Facades\Active::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Location' => 'Stevebauman\Location\Facades\Location',
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

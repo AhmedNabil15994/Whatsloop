@@ -14,7 +14,7 @@
 <div class="container-fluid">
     <!-- start page title -->
     <div class="row">
-        <div class="col-11">
+        <div class="col-{{ !isset($data->dis) || $data->dis != true ? '11' : '12' }}">
             <div class="page-title-box">
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
@@ -25,7 +25,7 @@
                 <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
             </div>
         </div>
-
+        @if(!isset($data->dis) || $data->dis != true)
         <div class="col-1 text-right">
             <div class="btn-group dropleft mb-3 mt-2">
                 <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -44,14 +44,21 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>     
     <!-- end page title --> 
+    @if(!isset($data->dis) || $data->dis != true)
     <input type="hidden" name="data-area" value="{{ \Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) }}">
     <input type="hidden" name="data-cols" value="{{ \Helper::checkRules('delete-'.$data->designElems['mainData']['nameOne']) }}">
+    @endif
     <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
 
     @if($data->designElems['mainData']['url'] == 'bots')
     <input type="hidden" name="data-tabs" value="{{ \Helper::checkRules('copy-'.$data->designElems['mainData']['nameOne']) }}">
+    @endif
+
+    @if($data->designElems['mainData']['url'] == 'groupNumbers')
+    <input type="hidden" name="data-tests" value="{{ \Helper::checkRules('export-contacts') }}">
     @endif
 
     <div class="row">
@@ -62,6 +69,7 @@
                         <div class="col-6">
                             <h4 class="header-title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
                         </div>
+                        @if(!isset($data->dis) || $data->dis != true)
                         <div class="col-6 text-right">
                             @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']))
                             <a href="#" class="btn btn-outline-success quickEdit m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.fastEdit') }}">
@@ -83,8 +91,10 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                     <hr>
+                    @if(!empty($data->designElems['searchData']))
                     <div class="accordion custom-accordion" id="custom-accordion-one">
                         <div class="card mb-3">
                             <div class="card-header" id="headingFive">
@@ -117,7 +127,7 @@
                                         @if($searchItem['type'] == 'select')
                                         <div class="col-lg-3 col-md-4 col-sm-6">
                                             <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                            <select class="selectpicker" data-style="btn-outline-primary" name="{{ $searchKey }}">
+                                            <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $searchKey }}">
                                                 <option value=" ">{{ trans('main.choose') }}</option>
                                                 @foreach($searchItem['options'] as $group)
                                                 @php $group = (object) $group; @endphp
@@ -151,6 +161,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                     <!--begin: Datatable-->
                     <table class="table table-striped dt-responsive nowrap w-100 table-hover table-bordered table-head-custom table-foot-custom" id="kt_datatable">
                         <thead>

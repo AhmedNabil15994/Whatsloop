@@ -3,7 +3,26 @@
 return [
 
 	'list-dashboard' => 'الرئيسية',
-		
+	
+	'list-statuses' => 'عرض سجل الحالات',
+	'list-groupNumberRepors' => 'عرض تقرير اضافة الارقام الجماعية',
+
+	'list-contacts' => 'عرض جهات الارسال',
+	'edit-contact' => 'تعديل جهات الارسال',
+	'add-contact' => 'اضافة جهات الارسال',
+	'delete-contact' => 'حذف جهات الارسال',
+	'sort-contact' => 'ترتيب جهات الارسال',
+	'charts-contact' => 'احصائيات جهات الارسال',
+	'export-contacts' => 'استيراد جهات الارسال',
+
+	'list-group-numbers' => 'عرض مجموعات الارقام',
+	'edit-group-number' => 'تعديل مجموعات الارقام',
+	'add-group-number' => 'اضافة مجموعات الارقام',
+	'delete-group-number' => 'حذف مجموعات الارقام',
+	'sort-group-number' => 'ترتيب مجموعات الارقام',
+	'charts-group-number' => 'احصائيات مجموعات الارقام',
+	'add-number-to-group' => 'اضافة الي مجموعات الارقام',
+
 	'list-replies' => 'عرض الردود الجاهزة',
 	'edit-reply' => 'تعديل الردود الجاهزة',
 	'add-reply' => 'اضافة الردود الجاهزة',
@@ -55,5 +74,5 @@ return [
 	'edit-variable' => 'تعديل الاعدادات العامة',
 	'list-variables2' => 'اعدادات لوحة التحكم',
 	'edit-variable2' => 'تعديل الاعدادات لوحة التحكم',
-
+	'add-number-to-group' => 'اضافة الي مجموعات الارقام',
 ];

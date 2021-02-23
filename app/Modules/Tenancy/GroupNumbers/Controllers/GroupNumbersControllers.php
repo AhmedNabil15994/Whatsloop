@@ -1,26 +1,36 @@
 <?php namespace App\Http\Controllers;
 
-use App\Models\Group;
-use App\Models\Photo;
+use App\Models\GroupNumber;
+use App\Models\User;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
 use DataTables;
+use Storage;
 
-
-class GroupsControllers extends Controller {
+class GroupNumbersControllers extends Controller {
 
     use \TraitsFunc;
 
     public function getData(){
+        $userObj = User::getData(User::getOne(USER_ID));
+        $channels = [];
+        foreach ($userObj->channels as $key => $value) {
+            $channelObj = new \stdClass();
+            $channelObj->id = $value;
+            $channelObj->title = $value;
+            $channels[] = $channelObj;
+        }
         $data['mainData'] = [
-            'title' => trans('main.groups'),
-            'url' => 'groups',
-            'name' => 'groups',
-            'nameOne' => 'group',
-            'modelName' => 'Group',
-            'icon' => 'fas fa-layer-group',
+            'title' => trans('main.groupNumbers'),
+            'url' => 'groupNumbers',
+            'name' => 'groupNumbers',
+            'nameOne' => 'group-number',
+            'modelName' => 'GroupNumber',
+            'icon' => 'fas fa-users',
             'sortName' => 'name_'.LANGUAGE_PREF,
         ];
 
@@ -30,21 +40,25 @@ class GroupsControllers extends Controller {
                 'class' => 'form-control m-input',
                 'index' => '0',
                 'label' => trans('main.id'),
-                'specialAttr' => '',
             ],
             'name_ar' => [
                 'type' => 'text',
                 'class' => 'form-control m-input',
                 'index' => '1',
-                'label' => trans('main.name_ar'),
-                'specialAttr' => '',
+                'label' => trans('main.titleAr'),
             ],
             'name_en' => [
                 'type' => 'text',
                 'class' => 'form-control m-input',
                 'index' => '2',
-                'label' => trans('main.name_en'),
-                'specialAttr' => '',
+                'label' => trans('main.titleEn'),
+            ],
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $channels,
+                'label' => trans('main.channel'),
             ],
         ];
 
@@ -56,15 +70,22 @@ class GroupsControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
+            'channel' => [
+                'label' => trans('main.channel'),
+                'type' => '',
+                'className' => 'edits selects',
+                'data-col' => 'channel',
+                'anchor-class' => 'editable',
+            ],
             'name_ar' => [
-                'label' => trans('main.name_ar'),
+                'label' => trans('main.titleAr'),
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'name_ar',
                 'anchor-class' => 'editable',
             ],
             'name_en' => [
-                'label' => trans('main.name_en'),
+                'label' => trans('main.titleEn'),
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'name_en',
@@ -80,16 +101,35 @@ class GroupsControllers extends Controller {
         ];
 
         $data['modelData'] = [
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'options' => $channels,
+                'label' => trans('main.channel'),
+                'specialAttr' => '',
+            ],
             'name_ar' => [
                 'type' => 'text',
                 'class' => 'form-control',
-                'label' => trans('main.name_ar'),
+                'label' => trans('main.titleAr'),
                 'specialAttr' => '',
             ],
             'name_en' => [
                 'type' => 'text',
                 'class' => 'form-control',
-                'label' => trans('main.name_en'),
+                'label' => trans('main.titleEn'),
+                'specialAttr' => '',
+            ],
+            'description_ar' => [
+                'type' => 'textarea',
+                'class' => 'form-control',
+                'label' => trans('main.descriptionAr'),
+                'specialAttr' => '',
+            ],
+            'description_en' => [
+                'type' => 'textarea',
+                'class' => 'form-control',
+                'label' => trans('main.descriptionEn'),
                 'specialAttr' => '',
             ],
             
@@ -99,13 +139,15 @@ class GroupsControllers extends Controller {
 
     protected function validateInsertObject($input){
         $rules = [
+            'channel' => 'required',
             'name_ar' => 'required',
             'name_en' => 'required',
         ];
 
         $message = [
-            'name_ar.required' => trans('main.nameArValidate'),
-            'name_en.required' => trans('main.nameEnValidate'),
+            'channel.required' => trans('main.channelValidate'),
+            'name_ar.required' => trans('main.titleArValidate'),
+            'name_en.required' => trans('main.titleEnValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -115,7 +157,7 @@ class GroupsControllers extends Controller {
 
     public function index(Request $request) {
         if($request->ajax()){
-            $data = Group::dataList();
+            $data = GroupNumber::dataList();
             return Datatables::of($data['data'])->make(true);
         }
         $data['designElems'] = $this->getData();
@@ -125,26 +167,26 @@ class GroupsControllers extends Controller {
     public function edit($id) {
         $id = (int) $id;
 
-        $userObj = Group::NotDeleted()->find($id);
+        $userObj = GroupNumber::NotDeleted()->find($id);
         if($userObj == null) {
             return Redirect('404');
         }
 
-        $data['data'] = Group::getData($userObj);
+        $data['data'] = GroupNumber::getData($userObj);
         $data['designElems'] = $this->getData();
-        $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.groups') ;
+        $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.groupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        $data['permissions'] = \Helper::getPermissions(true);
         $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.Group.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.User.Views.edit')->with('data', (object) $data);      
     }
 
     public function update($id) {
         $id = (int) $id;
 
         $input = \Request::all();
-        $dataObj = Group::NotDeleted()->find($id);
-        if($dataObj == null) {
+        // dd($input);
+        $dataObj = GroupNumber::NotDeleted()->find($id);
+        if($dataObj == null || $id == 1) {
             return Redirect('404');
         }
 
@@ -154,20 +196,11 @@ class GroupsControllers extends Controller {
             return redirect()->back();
         }
 
-        $permissionsArr = [];
-        foreach ($input as $key => $oneItem) {
-            if(strpos($key, 'permission') !== false){
-                $morePermission = str_replace('permission','', $key);
-                if($oneItem == 'on'){
-                    $permissionsArr[] = $morePermission;
-                }
-            }
-        }
-
+        $dataObj->channel = $input['channel'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
-        $dataObj->rules = serialize($permissionsArr);
-        $dataObj->status = $input['status'];
+        $dataObj->description_ar = $input['description_ar'];
+        $dataObj->description_en = $input['description_en'];
         $dataObj->updated_at = DATE_TIME;
         $dataObj->updated_by = USER_ID;
         $dataObj->save();
@@ -179,49 +212,54 @@ class GroupsControllers extends Controller {
 
     public function add() {
         $data['designElems'] = $this->getData();
-        $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groups') ;
+        $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $data['permissions'] = \Helper::getPermissions(true);
         $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.Group.Views.add')->with('data', (object) $data);
+        return view('Tenancy.User.Views.add')->with('data', (object) $data);
     }
 
-    public function create() {
+    public function create(Request $request) {
         $input = \Request::all();
+        
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
+            if($request->ajax()){
+                return \TraitsFunc::ErrorMessage($validate->messages()->first());
+            }
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
         
-        $permissionsArr = [];
-        foreach ($input as $key => $oneItem) {
-            if(strpos($key, 'permission') !== false){
-                $morePermission = str_replace('permission','', $key);
-                if($oneItem == 'on'){
-                    $permissionsArr[] = $morePermission;
-                }
-            }
-        }
 
-        $dataObj = new Group;
+        $dataObj = new GroupNumber;
+        $dataObj->channel = $input['channel'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
-        $dataObj->rules = serialize($permissionsArr);
-        $dataObj->sort = Group::newSortIndex();
+        if($request->ajax()){
+            $input['status'] = 1;
+            $input['description_ar'] = '';
+            $input['description_en'] = '';
+        }
+        
+        $dataObj->description_ar = $input['description_ar'];
+        $dataObj->description_en = $input['description_en'];
+        $dataObj->sort = GroupNumber::newSortIndex();
         $dataObj->status = $input['status'];
         $dataObj->created_at = DATE_TIME;
         $dataObj->created_by = USER_ID;
         $dataObj->save();
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
+        if($request->ajax()){
+            return \Response::json((object) GroupNumber::getData($dataObj));
+        }
         Session::flash('success', trans('main.addSuccess'));
         return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 
     public function delete($id) {
         $id = (int) $id;
-        $dataObj = Group::getOne($id);
+        $dataObj = GroupNumber::getOne($id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
     }
@@ -230,7 +268,7 @@ class GroupsControllers extends Controller {
         $input = \Request::all();
         foreach ($input['data'] as $item) {
             $col = $item[1];
-            $dataObj = Group::find($item[0]);
+            $dataObj = GroupNumber::find($item[0]);
             $dataObj->$col = $item[2];
             $dataObj->updated_at = DATE_TIME;
             $dataObj->updated_by = USER_ID;
@@ -242,7 +280,7 @@ class GroupsControllers extends Controller {
     }
 
     public function arrange() {
-        $data = Group::dataList();
+        $data = GroupNumber::dataList();
         $data['designElems'] = $this->getData()['mainData'];
         return view('Tenancy.User.Views.arrange')->with('data', (Object) $data);;
     }
@@ -254,9 +292,76 @@ class GroupsControllers extends Controller {
         $sorts = json_decode($input['sorts']);
 
         for ($i = 0; $i < count($ids) ; $i++) {
-            Group::where('id',$ids[$i])->update(['sort'=>$sorts[$i]]);
+            GroupNumber::where('id',$ids[$i])->update(['sort'=>$sorts[$i]]);
         }
         return \TraitsFunc::SuccessResponse(trans('main.sortSuccess'));
+    }
+
+    public function addGroupNumbers(){
+        $data['designElems'] = [$this->getData()['mainData']];
+        $data['designElems']['mainData']['title'] = trans('main.addGroupNumbers') ;
+        $data['designElems']['mainData']['icon'] = 'fa fa-plus';
+        $data['groups'] = GroupNumber::dataList(1,[1])['data'];
+        $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
+        return view('Tenancy.GroupNumbers.Views.add')->with('data', (object) $data);
+    }
+
+    public function postAddGroupNumbers(){
+        $input = \Request::all();
+        if(!isset($input['group_id']) && empty($input['group_id'])){
+            Session::flash('error', trans('main.groupValidate'));
+            return redirect()->back();
+        }
+
+        $groupObj = GroupNumber::getOne($input['group_id']);
+        if($groupObj == null) {
+            return Redirect('404');
+        }
+        $modelProps = ['name','email','country','city','phone'];
+        $userInputs = $input;
+        unset($userInputs['status']);
+        unset($userInputs['group_id']);
+        unset($userInputs['_token']);
+
+        $storeData = [];
+        foreach ($userInputs as $key=> $userInput) {
+            if(!in_array($key, $modelProps)){
+                Session::flash('error', trans('main.invalidColumn').' '.$key);
+                return redirect()->back(); 
+            }
+            for ($i = 0; $i < count($userInputs['phone']); $i++) {
+                if(!isset($storeData[$i])){
+                    $storeData[$i] = [];
+                }
+                if(!isset($storeData[$i][$key])){
+                    $storeData[$i][$key] = '';
+                }
+                $storeData[$i][$key] = $userInput[$i];
+                $storeData[$i]['status'] = $input['status'];
+                $storeData[$i]['group_id'] = $input['group_id'];
+                $storeData[$i]['created_at'] = DATE_TIME;
+                $storeData[$i]['created_by'] = USER_ID;
+                $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
+            }
+        }       
+
+        foreach ($storeData as $value) {
+            $phone = "+".$value['phone'];
+            $phone = str_replace('\r', '', $phone);
+            $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',$phone)->first();
+            if(!$contactObj){
+                if(!isset($value['name']) || empty($value['name'])){
+                    $value['name'] = $phone;
+                }
+                $value['phone'] = str_replace('\r', '', $phone);
+                $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
+                Contact::insert($value);          
+            }
+        }
+
+        WebActions::newType(1,'Contact');
+        Session::flash('success', trans('main.addSuccess'));
+        return redirect()->to($this->getData()['mainData']['url'].'/');        
     }
 
     public function charts() {

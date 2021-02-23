@@ -7,6 +7,19 @@ $(function(){
 	var columnsVar = [];
 	var columnDefsVar = [];
 
+	var urlParams;
+	(window.onpopstate = function () {
+	    var match,
+	        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+	        search = /([^&=]+)=?([^&]*)/g,
+	        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+	        query  = window.location.search.substring(1);
+
+	    urlParams = {};
+	    while (match = search.exec(query))
+	       urlParams[decode(match[1])] = decode(match[2]);
+	})();
+
 	function getIndex(key,val) {
 		var i = 0;
 		var x ;
@@ -38,6 +51,8 @@ $(function(){
 		var editText = 'Edit';
 		var copyText = 'Copy';
 		var deleteText = 'Delete';
+		var showText = 'View Contacts';
+		var exportText = 'Export Contacts';
 	}else{
 		var showCols = "<i class='fa fas fa-angle-down'></i> عرض الأعمدة";
 		var direction = 'rtl';
@@ -56,6 +71,8 @@ $(function(){
 		var editText = 'تعديل';
 		var copyText = 'تكرار';
 		var deleteText = 'حذف';
+		var showText = 'عرض الارقام';
+		var exportText = 'استيراد جهات الارسال';
 	}
 
 	$.each(tableData,function(index,item){
@@ -78,7 +95,7 @@ $(function(){
 					'className': item['className'],
 					render: function(data, type, full, meta) {
 						var labelClass = '';
-						if(getIndex(index,item) == 1){
+						if(getIndex(index,item) == 2){
 							labelClass = full.labelClass;
 						}
 						return '<a class="'+item['anchor-class']+' '+labelClass+'" data-col="'+item['data-col']+'" data-id="'+full.id+'">'+data+'</a>';
@@ -93,19 +110,28 @@ $(function(){
 				render: function(data, type, full, meta) {
 					var editButton = '';
 					var copyButton = '';
+					var showButton = '';
+					var exportButton = '';
 					var deleteButton = '';
 					if($('input[name="data-area"]').val() == 1){
-						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-xs btn-success"> <i class="mdi mdi-square-edit-outline"></i>'+editText+'</a>';
+						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-xs btn-success"> <i class="mdi mdi-square-edit-outline"></i> '+editText+'</a>';
 					}
 
 					if($('input[name="data-tabs"]').length && $('input[name="data-tabs"]').val() == 1){
-						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-square-edit-outline"></i>'+copyText+'</a>';
+						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-square-edit-outline"></i> '+copyText+'</a>';
+					}
+
+					if(designElems.mainData.url == 'groupNumbers'){
+						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-eye"></i> '+showText+'</a>';
+						if($('input[name="data-tests"]').length && $('input[name="data-tests"]').val() == 1){
+							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon btn btn-xs btn-secondary"> <i class="mdi mdi-microsoft-excel"></i> '+exportText+'</a>';
+						}
 					}
 
 					if($('input[name="data-cols"]').val() == 1){
 						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-xs btn-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
 					}
-					return editButton + copyButton + deleteButton;
+					return editButton + copyButton + showButton + exportButton + deleteButton;
 				},
 			});
 		}
@@ -200,6 +226,11 @@ $(function(){
 				$.each($('.m-form--fit input.datetimepicker-input'),function(index,item){
 			       	dtParms[$(item).attr('name')] = $(item).val();
 				});
+				if(designElems.mainData.url == 'contacts'){
+					$.each(urlParams,function(index,item){
+						dtParms[index] = item;
+					});
+				}
 		        dtParms.columnsDef = columnsDef;
 		        return dtParms
 		    }

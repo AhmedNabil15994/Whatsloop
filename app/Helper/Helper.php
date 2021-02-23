@@ -94,6 +94,15 @@ class Helper
         return $data;
     }
 
+    static function getCountryNameByPhone($phone){
+        $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+        $clinetNumberProto = $phoneUtil->parse($phone);
+        $geocoder = \libphonenumber\geocoding\PhoneNumberOfflineGeocoder::getInstance();
+        $langPref = LANGUAGE_PREF == 'en' ? 'en_US' : 'ar_EG';
+        $country = $geocoder->getDescriptionForNumber($clinetNumberProto, $langPref);
+        return $country;
+    }
+
     static function getCountryCode() {
         $ip = \Request::ip();
         if($ip == "127.0.0.1" || $ip == "::1"){

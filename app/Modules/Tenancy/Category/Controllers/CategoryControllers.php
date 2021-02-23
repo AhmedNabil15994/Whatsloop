@@ -17,6 +17,13 @@ class CategoryControllers extends Controller {
 
     public function getData(){
         $userObj = User::getData(User::getOne(USER_ID));
+        $channels = [];
+        foreach ($userObj->channels as $key => $value) {
+            $channelObj = new \stdClass();
+            $channelObj->id = $value;
+            $channelObj->title = $value;
+            $channels[] = $channelObj;
+        }
         
         $data['mainData'] = [
             'title' => trans('main.categories'),
@@ -41,6 +48,13 @@ class CategoryControllers extends Controller {
                 'class' => 'form-control m-input',
                 'index' => '0',
                 'label' => trans('main.id'),
+            ],
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $channels,
+                'label' => trans('main.channel'),
             ],
             'name_ar' => [
                 'type' => 'text',
@@ -70,6 +84,13 @@ class CategoryControllers extends Controller {
                 'className' => '',
                 'data-col' => '',
                 'anchor-class' => '',
+            ],
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $channels,
+                'label' => trans('main.channel'),
             ],
             'color' => [
                 'label' => trans('main.color'),
@@ -102,6 +123,13 @@ class CategoryControllers extends Controller {
         ];
 
         $data['modelData'] = [
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'options' => $channels,
+                'label' => trans('main.channel'),
+                'specialAttr' => '',
+            ],
             'color_id' => [
                 'type' => 'select',
                 'class' => 'form-control',
@@ -127,12 +155,14 @@ class CategoryControllers extends Controller {
 
     protected function validateInsertObject($input){
         $rules = [
+            'channel' => 'required',
             'color_id' => 'required',
             'name_ar' => 'required',
             'name_en' => 'required',
         ];
 
         $message = [
+            'channel.required' => trans('main.channelValidate'),
             'color_id.required' => trans('main.colorValidate'),
             'name_ar.required' => trans('main.titleArValidate'),
             'name_en.required' => trans('main.titleEnValidate'),
@@ -184,6 +214,7 @@ class CategoryControllers extends Controller {
             return redirect()->back();
         }
 
+        $dataObj->channel = $input['channel'];
         $dataObj->color_id = $input['color_id'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
@@ -215,6 +246,7 @@ class CategoryControllers extends Controller {
         
 
         $dataObj = new Category;
+        $dataObj->channel = $input['channel'];
         $dataObj->color_id = $input['color_id'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];

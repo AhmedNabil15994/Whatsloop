@@ -85,7 +85,7 @@ class AuthControllers extends Controller {
         session(['is_admin' => $isAdmin]);
         session(['group_name' => $userObj->Group->name_ar]);
         $channels = User::getData($userObj)->channels;
-        if(count($channels) == 1){
+        if(count($channels) >= 1){
             session(['channel' => $channels[0]]);
         }
 
