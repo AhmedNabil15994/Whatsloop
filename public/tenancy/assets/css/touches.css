@@ -73,7 +73,11 @@ hr{
 .header-title{
   padding-top: 7px;
 }
-body[data-sidebar-color="dark"] td a{
+td a.badge{
+  padding: 7px 10px;
+  font-size: 13px;
+}
+body[data-sidebar-color="dark"] td a:not(.badge){
   color: #FFF;
 }
 html[lang="ar"] .custom-accordion .accordion-arrow{
@@ -374,7 +378,7 @@ html[dir="rtl"] .filter-option *{
   direction: rtl;
   text-align: right;
 }
-td a.badge{
+body[data-sidebar-color="light"] td a.badge{
   color: #FFF;
   font-size: 12px;
   padding: 5px;

@@ -50,7 +50,7 @@ return [
             'delete-contact' => ['delete'],
             'sort-contact' => ['sort','arrange'],
             'charts-contact' => ['charts'],
-            'export-contacts' => 'downloadContacts',
+            'export-contacts' => ['downloadContacts'],
         ],
     ],
     'groupNumbers' => [
