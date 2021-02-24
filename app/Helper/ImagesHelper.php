@@ -75,6 +75,11 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/bots/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
+            case "groupMessages":
+                $fullPath = $path.'/uploads' . '/groupMessages/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/groupMessages/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
             
         }
 
@@ -128,6 +133,10 @@ class ImagesHelper {
 
         if ($strAction == 'bots') {
             $directory = $path . 'bots/' . $id;
+        }
+
+        if ($strAction == 'groupMessages') {
+            $directory = $path . 'groupMessages/' . $id;
         }
 
         $fileName_full = $fileName . '.' . $extension;

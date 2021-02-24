@@ -22,6 +22,6 @@ Route::group(['prefix' => '/bots'] , function () {
     ----------------------------------------------------------*/
 
     Route::post('/add/uploadImage/{type}', [$controller,'uploadImage']);
-    Route::post('/edit/{id}/editImage/{type}', [$controller,'uploadImage']);
+    Route::post('/edit/editImage/{type}', [$controller,'uploadImage']);
     Route::post('/edit/{id}/deleteImage', [$controller,'deleteImage']);
 });

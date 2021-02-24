@@ -374,7 +374,7 @@ html[dir="rtl"] .filter-option *{
   direction: rtl;
   text-align: right;
 }
-td.edits a.badge{
+td a.badge{
   color: #FFF;
   font-size: 12px;
   padding: 5px;
@@ -400,4 +400,8 @@ p.example a{
 }
 .btn-outline-myPR{
   border-color: #457cce;
+}
+html[dir="rtl"] .datepicker{
+  text-align: right;
+  direction: rtl;
 }

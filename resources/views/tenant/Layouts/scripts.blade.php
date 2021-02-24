@@ -28,7 +28,8 @@
 
 <!-- Buttons init js-->
 <script src="{{ asset('js/pages/loading-btn.init.js') }}"></script>
-<script src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" charset="UTF-8"></script>
 
 
 <script src="{{ asset('components/globals.js') }}"></script>

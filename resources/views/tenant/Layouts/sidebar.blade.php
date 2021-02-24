@@ -115,6 +115,32 @@
                     </div>
                 </li>
                 @endif
+
+                @if(\Helper::checkRules('list-group-messages'))
+                <li class="{{ Active(URL::to('/groupMsgs*'),'menuitem-active') }}">
+                    <a href="#sidebarGPMSGS" data-toggle="collapse">
+                        <i class="mdi mdi-send"></i>
+                        <span> {{ trans('main.groupMsgs') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse {{ Active(URL::to('/groupMsgs*'),'show') }}" id="sidebarGPMSGS">
+                        <ul class="nav-second-level">
+                            @if(\Helper::checkRules('list-group-messages'))
+                            <li class="{{ Active(URL::to('/groupMsgs*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/groupMsgs') }}">{{ trans('main.groupMsgsArc') }}</a>
+                            </li>
+                            @endif
+
+                            @if(\Helper::checkRules('list-messages-archive'))
+                            <li class="{{ Active(URL::to('/groupMsgs/add*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/groupMsgs/add') }}">{{ trans('main.sendNewMessage') }}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li>
+                @endif
+
                 @if(\Helper::checkRules('list-statuses'))
                 <li class="{{ Active(URL::to('/statuses*'),'menuitem-active') }}">
                     <a href="{{ URL::to('/statuses') }}">
@@ -123,11 +149,21 @@
                     </a>
                 </li>
                 @endif
+
                 @if(\Helper::checkRules('list-groupNumberRepors'))
                 <li class="{{ Active(URL::to('/groupNumberRepors*'),'menuitem-active') }}">
                     <a href="{{ URL::to('/groupNumberRepors') }}">
                         <i class="mdi mdi-file-account-outline"></i>
                         <span> {{ trans('main.groupNumberRepors') }} </span>
+                    </a>
+                </li>
+                @endif
+
+                @if(\Helper::checkRules('list-messages-archive'))
+                <li class="{{ Active(URL::to('/msgsArchive*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/msgsArchive') }}">
+                        <i class="mdi mdi-archive-outline"></i>
+                        <span> {{ trans('main.msgsArchive') }} </span>
                     </a>
                 </li>
                 @endif

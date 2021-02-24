@@ -43,9 +43,10 @@ $(function(){
 	});
 
 	$.each($('.reply .editDropZone'),function(index,item){
+		url = myURL.substr(0,myURL.lastIndexOf('/'))
 		var dateID = $(this).parents('.reply').data('id');
 		$(item).dropzone({
-		    url: myURL + "/editImage/"+dateID,
+		    url: url + "/editImage/"+dateID,
 		    paramName: "file", // The name that will be used to transfer the file
 		    maxFiles: 1,
 		    maxFilesize: 10, // MB

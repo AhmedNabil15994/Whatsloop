@@ -33,9 +33,15 @@
                 </button>
                 <div class="dropdown-menu">
                     @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
+                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
+                        @if($data->designElems['mainData']['url'] == 'groupMsgs')
+                        <i class="mdi mdi-send"></i> {{ trans('main.send') }}
+                        @else
+                        <i class="fa fa-plus"></i> {{ trans('main.add') }}
+                        @endif
+                    </a>
                     @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
+                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
                     <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
                     @endif
                     @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
@@ -71,7 +77,7 @@
                         </div>
                         @if(!isset($data->dis) || $data->dis != true)
                         <div class="col-6 text-right">
-                            @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']))
+                            @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
                             <a href="#" class="btn btn-outline-success quickEdit m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.fastEdit') }}">
                                 <i class="fa fa-pencil-alt"></i>
                             </a>
@@ -114,7 +120,7 @@
                                         @if($searchKey == 'from' || $searchKey == 'to')
                                         <div class="col">
                                             <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" name="{{ $searchKey }}" data-col-index="{{ $searchItem['index'] }}" id="{{ $searchItem['id'] }}" placeholder="{{ $searchItem['label'] }}" data-provide="datepicker">
+                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" name="{{ $searchKey }}" data-col-index="{{ $searchItem['index'] }}" id="{{ $searchItem['id'] }}" placeholder="{{ $searchItem['label'] }}">
                                         </div>
                                         @else
                                         <div class="col-lg-3 col-md-4 col-sm-6">
@@ -209,6 +215,5 @@
 <script src="{{ asset('libs/pdfmake/build/pdfmake.min.js') }}"></script>
 <script src="{{ asset('libs/pdfmake/build/vfs_fonts.js') }}"></script>
 <script src="{{ asset('js/pages/crud/datatables/advanced/colvis.min.js') }}"></script>
-<script src="{{ asset('js/datetimepicker.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('components/datatables.js')}}"></script>           
 @endsection

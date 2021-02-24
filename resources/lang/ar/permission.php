@@ -3,9 +3,15 @@
 return [
 
 	'list-dashboard' => 'الرئيسية',
-	
+		
+	'list-group-messages' => 'عرض الرسائل الجماعية',
+	'add-group-message' => 'ارسال الرسائل الجماعية',
+	'charts-group-message' => 'احصائيات الرسائل الجماعية',
+	'uploadImage-group-message' => 'رفع ملف الرسائل الجماعية',
+
 	'list-statuses' => 'عرض سجل الحالات',
 	'list-groupNumberRepors' => 'عرض تقرير اضافة الارقام الجماعية',
+	'list-messages-archive' => 'عرض ارشيف الرسائل',
 
 	'list-contacts' => 'عرض جهات الارسال',
 	'edit-contact' => 'تعديل جهات الارسال',
@@ -51,8 +57,8 @@ return [
 	'delete-bot' => 'حذف البوت',
 	'sort-bot' => 'ترتيب البوت',
 	'charts-bot' => 'احصائيات البوت',
-	'uploadImage-bot' => 'رفع صورة البوت',
-	'deleteImage-bot' => 'حذف صورة البوت',
+	'uploadImage-bot' => 'رفع ملف البوت',
+	'deleteImage-bot' => 'حذف ملف البوت',
 
 	'list-users' => 'عرض المستخدمين',
 	'edit-user' => 'تعديل المستخدم',

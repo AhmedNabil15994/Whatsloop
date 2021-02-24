@@ -176,6 +176,7 @@ class TenancyServiceProvider extends ServiceProvider
             require app_path('Modules/Tenancy/GroupNumbers/routes.php');
             require app_path('Modules/Tenancy/Contact/routes.php');
             require app_path('Modules/Tenancy/APIMods/routes.php');
+            require app_path('Modules/Tenancy/GroupMsgs/routes.php');
         });
     }
 

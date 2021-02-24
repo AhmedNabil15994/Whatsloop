@@ -9,6 +9,37 @@ return [
             'list-dashboard' => ['Dashboard','changeLang','changeTheme','changeThemeToDefault'],
         ],
     ],
+    'msgsArchive' => [
+        'controller' => 'ApiModsControllers',
+        'title' => 'سجل الحالات',
+        'permissions' => [
+            'list-messages-archive' => ['msgsArchive',],
+        ],
+    ],
+    'groupNumberRepors' => [
+        'controller' => 'ApiModsControllers',
+        'title' => 'سجل الحالات',
+        'permissions' => [
+            'list-groupNumberRepors' => ['report',],
+        ],
+    ],
+    'statuses' => [
+        'controller' => 'ApiModsControllers',
+        'title' => 'سجل الحالات',
+        'permissions' => [
+            'list-statuses' => ['index',],
+        ],
+    ],
+    'groupMsgs' => [
+        'controller' => 'GroupMsgsControllers',
+        'title' => 'الرسائل الجماعية',
+        'permissions' => [
+            'list-group-messages' => ['index',],
+            'add-group-message' => ['add','create'],
+            'charts-group-message' => ['charts'],
+            'uploadImage-group-message' => ['uploadImage'],
+        ],
+    ],
     'contacts' => [
         'controller' => 'ContactsControllers',
         'title' => 'جهات الارسال',

@@ -3,8 +3,14 @@
 return [
 	'list-dashboard' => 'Dashboard',
 		
+	'list-group-messages' => 'List Group Messages',
+	'add-group-message' => 'Send Group Messages',
+	'charts-group-message' => 'Group Messages Statistics',
+	'uploadImage-group-message' => 'Group Messages Upload Image',
+
 	'list-statuses' => 'List Statuses History',
 	'list-groupNumberRepors' => 'List Group Numbers Report',
+	'list-messages-archive' => 'List Messages Archive',
 
 	'list-contacts' => 'List Contacts',
 	'edit-contact' => 'Edit Contacts',
@@ -50,8 +56,8 @@ return [
 	'delete-bot' => 'Delete Bot',
 	'sort-bot' => 'Sort Bots',
 	'charts-bot' => 'Bots Statistics',
-	'uploadImage-bot' => 'Bot Upload Image',
-	'deleteImage-bot' => 'Bot Delete Image',
+	'uploadImage-bot' => 'Bot Upload File',
+	'deleteImage-bot' => 'Bot Delete File',
 
 	'list-users' => 'List Users',
 	'edit-user' => 'Edit User',

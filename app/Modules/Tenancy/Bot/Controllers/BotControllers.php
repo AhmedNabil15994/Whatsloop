@@ -238,8 +238,8 @@ class BotControllers extends Controller {
         $dataObj->message = $input['message'];
         $dataObj->reply_type = $input['reply_type'];
         $dataObj->status = $input['status'];
-        $dataObj->updated_by_at = DATE_TIME;
-        $dataObj->updated_by_by = USER_ID;
+        $dataObj->updated_at = DATE_TIME;
+        $dataObj->updated_by = USER_ID;
         $dataObj->save();
 
         if($input['reply_type'] == 1){
@@ -311,7 +311,6 @@ class BotControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.bot') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $userObj = User::getData(User::getOne(USER_ID));
         $data['channels'] = $channels;
         $data['bots'] = Bot::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
@@ -368,7 +367,7 @@ class BotControllers extends Controller {
                 }
             }
         }else if($input['reply_type'] == 6){
-            $dataObj->whatsapp_no = $input['whatsapp_no'];
+            $dataObj->whatsapp_no = '+'.$input['whatsapp_no'];
             $dataObj->save();
         }else if($input['reply_type'] == 7){
             $dataObj->lat = $input['lat'];
@@ -514,7 +513,7 @@ class BotControllers extends Controller {
         return $chartData;
     }
 
-    public function uploadImage($id=null,$type,Request $request){
+    public function uploadImage($type,Request $request){
         $rand = rand() . date("YmdhisA");
         $typeID = (int) $type;
         if(!in_array($typeID, [2,3,4,5])){

@@ -1,0 +1,392 @@
+<?php namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\GroupMsg;
+use App\Models\GroupNumber;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use App\Models\WebActions;
+use DataTables;
+use Storage;
+use Redirect;
+
+class GroupMsgsControllers extends Controller {
+
+    use \TraitsFunc;
+
+    public function getData(){
+        $userObj = User::getData(User::getOne(USER_ID));
+        $groups = GroupNumber::dataList(1)['data'];
+        $channels = [];
+        foreach ($userObj->channels as $key => $value) {
+            $channelObj = new \stdClass();
+            $channelObj->id = $value;
+            $channelObj->title = $value;
+            $channels[] = $channelObj;
+        }
+
+        $messageTypes = [
+            ['id'=>1,'title'=>trans('main.text')],
+            ['id'=>2,'title'=>trans('main.photoOrFile')],
+            ['id'=>4,'title'=>trans('main.sound')],
+            ['id'=>5,'title'=>trans('main.link')],
+            ['id'=>6,'title'=>trans('main.whatsappNos')],
+        ];
+
+        $data['mainData'] = [
+            'title' => trans('main.groupMsgsArc'),
+            'url' => 'groupMsgs',
+            'name' => 'groupMessages',
+            'nameOne' => 'group-message',
+            'modelName' => 'GroupMsg',
+            'icon' => 'mdi mdi-send',
+            'sortName' => 'message',
+        ];
+
+        $data['searchData'] = [
+            'id' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'index' => '0',
+                'label' => trans('main.id'),
+                'specialAttr' => '',
+            ],
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $channels,
+                'label' => trans('main.channel'),
+            ],
+            'group_id' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $groups,
+                'label' => trans('main.group'),
+            ],
+            'message_type' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $messageTypes,
+                'label' => trans('main.message_type'),
+            ],
+            'message' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'index' => '3',
+                'label' => trans('main.message_content'),
+            ],
+            'from' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'index' => '7',
+                'id' => 'datepicker1',
+                'label' => trans('main.dateFrom'),
+            ],
+            'to' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'index' => '8',
+                'id' => 'datepicker2',
+                'label' => trans('main.dateTo'),
+            ],
+        ];
+
+        $data['tableData'] = [
+            'id' => [
+                'label' => trans('main.id'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ],
+            'channel' => [
+                'label' => trans('main.channel'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'channel',
+                'anchor-class' => 'editable badge badge-secondary',
+            ],
+            'group' => [
+                'label' => trans('main.group'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'group_id',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'message_type_text' => [
+                'label' => trans('main.message_type'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'message_type',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'message' => [
+                'label' => trans('main.message_content'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'message',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'sent_type' => [
+                'label' => trans('main.sent_type'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'sent_type',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'sent_msgs' => [
+                'label' => trans('main.sent_msgs'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'sent_msgs',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'unsent_msgs' => [
+                'label' => trans('main.unsent_msgs'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'unsent_msgs',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'msgs_no' => [
+                'label' => trans('main.msgs_no'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'msgs_no',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'created_at' => [
+                'label' => trans('main.sentDate'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'created_at',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+        ];
+
+        return $data;
+    }
+
+    protected function validateInsertObject($input){
+        $rules = [
+            'group_id' => 'required',
+            'message_type' => 'required',
+        ];
+
+        $message = [
+            'group_id.required' => trans('main.groupValidate'),
+            'message_type.required' => trans('main.messageTypeValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+        return $validate;
+    }
+
+    public function index(Request $request) {
+        if($request->ajax()){
+            $data = GroupMsg::dataList();
+            return Datatables::of($data['data'])->make(true);
+        }
+        $data['designElems'] = $this->getData();
+        return view('Tenancy.User.Views.index')->with('data', (object) $data);
+    }
+
+    public function add() {
+        $data['designElems'] = $this->getData();
+        $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groupMsgs') ;
+        $data['designElems']['mainData']['icon'] = 'fa fa-plus';
+        $data['groups'] = GroupNumber::dataList(1,[1])['data'];
+        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
+        return view('Tenancy.GroupMsgs.Views.add')->with('data', (object) $data);
+    }
+
+    public function create() {
+        $input = \Request::all();
+        $validate = $this->validateInsertObject($input);
+        if($validate->fails()){
+            Session::flash('error', $validate->messages()->first());
+            return redirect()->back()->withInput();
+        }
+
+        $groupObj = GroupNumber::getOne($input['group_id']);
+        if($groupObj == null){
+            return redirect('404');
+        }
+
+        if($input['message_type'] == 1){
+            if(!isset($input['messageText']) || empty($input['messageText'])){
+                Session::flash('error', trans('main.messageValidate'));
+                return redirect()->back()->withInput();
+            }
+        }
+
+        $dataObj = new GroupMsg;
+        $dataObj->channel = $groupObj->channel;
+        $dataObj->group_id = $input['group_id'];
+        $dataObj->message_type = $input['message_type'];
+        $dataObj->message = '';
+        $dataObj->sort = GroupMsg::newSortIndex();
+        $dataObj->status = $input['status'];
+        $dataObj->created_at = DATE_TIME;
+        $dataObj->created_by = USER_ID;
+        $dataObj->save();
+
+        if($input['message_type'] == 1){
+            $dataObj->message = $input['messageText'];
+            $dataObj->save();
+        }else if($input['message_type'] == 2){
+            $dataObj->message = $input['message']; 
+            $dataObj->save();
+        }else if($input['message_type'] == 5){
+            $dataObj->https_url = $input['https_url'];
+            $dataObj->url_title = $input['url_title'];
+            $dataObj->url_desc = $input['url_desc'];
+            $file = Session::get('msgFile');
+            if($file){
+                $storageFile = Storage::files($file);
+                if(count($storageFile) > 0){
+                    $images = self::addImage($storageFile[0],$dataObj->id);
+                    if ($images == false) {
+                        Session::flash('error', trans('main.uploadProb'));
+                        return redirect()->back()->withInput();
+                    }
+                    $dataObj->url_image = $images;
+                    $dataObj->save();
+                }
+            }
+        }else if($input['message_type'] == 6){
+            $dataObj->whatsapp_no = $input['whatsapp_no'];
+            $dataObj->save();
+        }
+
+        if(in_array($input['message_type'], [2,4])){
+            $file = Session::get('msgFile');
+            if($file){
+                $storageFile = Storage::files($file);
+                if(count($storageFile) > 0){
+                    $images = self::addImage($storageFile[0],$dataObj->id);
+                    if ($images == false) {
+                        Session::flash('error', trans('main.uploadProb'));
+                        return redirect()->back()->withInput();
+                    }
+                    $dataObj->file_name = $images;
+                    $dataObj->save();
+                }
+            }
+        }
+
+        Session::forget('msgFile');
+        WebActions::newType(1,$this->getData()['mainData']['modelName']);
+        Session::flash('success', trans('main.addSuccess'));
+        return redirect()->to($this->getData()['mainData']['url'].'/');
+    }
+
+    public function charts() {
+        $input = \Request::all();
+        $now = date('Y-m-d');
+        $start = $now;
+        $end = $now;
+        $date = null;
+        if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+            $start = $input['from'].' 00:00:00';
+            $end = $input['to'].' 23:59:59';
+            $date = 1;
+        }
+
+        $addCount = WebActions::getByDate($date,$start,$end,1,$this->getData()['mainData']['modelName'])['count'];
+        $editCount = WebActions::getByDate($date,$start,$end,2,$this->getData()['mainData']['modelName'])['count'];
+        $deleteCount = WebActions::getByDate($date,$start,$end,3,$this->getData()['mainData']['modelName'])['count'];
+        $fastEditCount = WebActions::getByDate($date,$start,$end,4,$this->getData()['mainData']['modelName'])['count'];
+
+        $data['chartData1'] = $this->getChartData($start,$end,1,$this->getData()['mainData']['modelName']);
+        $data['chartData2'] = $this->getChartData($start,$end,2,$this->getData()['mainData']['modelName']);
+        $data['chartData3'] = $this->getChartData($start,$end,4,$this->getData()['mainData']['modelName']);
+        $data['chartData4'] = $this->getChartData($start,$end,3,$this->getData()['mainData']['modelName']);
+        $data['counts'] = [$addCount , $editCount , $deleteCount , $fastEditCount];
+        $data['designElems'] = $this->getData()['mainData'];
+
+        return view('Tenancy.User.Views.charts')->with('data',(object) $data);
+    }
+
+    public function getChartData($start=null,$end=null,$type,$moduleName){
+        $input = \Request::all();
+        
+        if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
+            $start = $input['from'];
+            $end = $input['to'];
+        }
+
+        $datediff = strtotime($end) - strtotime($start);
+        $daysCount = round($datediff / (60 * 60 * 24));
+        $datesArray = [];
+        $datesArray[0] = $start;
+
+        if($daysCount > 2){
+            for($i=0;$i<$daysCount;$i++){
+                $datesArray[$i] = date('Y-m-d',strtotime($start.'+'.$i."day") );
+            }
+            $datesArray[$daysCount] = $end;  
+        }else{
+            for($i=1;$i<24;$i++){
+                $datesArray[$i] = date('Y-m-d H:i:s',strtotime($start.'+'.$i." hour") );
+            }
+        }
+
+        $chartData = [];
+        $dataCount = count($datesArray);
+
+        for($i=0;$i<$dataCount;$i++){
+            if($dataCount == 1){
+                $count = WebActions::where('type',$type)->where('module_name',$moduleName)->where('created_at','>=',$datesArray[0].' 00:00:00')->where('created_at','<=',$datesArray[0].' 23:59:59')->count();
+            }else{
+                if($i < count($datesArray)){
+                    $count = WebActions::where('type',$type)->where('module_name',$moduleName)->where('created_at','>=',$datesArray[$i].' 00:00:00')->where('created_at','<=',$datesArray[$i].' 23:59:59')->count();
+                }
+            }
+            $chartData[0][$i] = $datesArray[$i];
+            $chartData[1][$i] = $count;
+        }
+        return $chartData;
+    }
+
+    public function uploadImage($type,Request $request){
+        $rand = rand() . date("YmdhisA");
+        $typeID = (int) $type;
+        if(!in_array($typeID, [2,3,4,5])){
+            return Redirect('404');
+        }
+        if ($request->hasFile('file')) {
+            $files = $request->file('file');
+            $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
+            
+            if( $typeID == 2 && !in_array($type, ['file','image']) ){
+                return \TraitsFunc::ErrorMessage(trans('main.selectFile'));
+            }
+
+            if( $typeID == 3 && $type != 'sound' ){
+                return \TraitsFunc::ErrorMessage(trans('main.selectSound'));
+            }
+
+            if( $typeID == 4 && $type != 'image' ){
+                return \TraitsFunc::ErrorMessage(trans('main.urlImage'));
+            }
+
+            Storage::put($rand,$files);
+            Session::put('msgFile',$rand);
+            return \TraitsFunc::SuccessResponse('');
+        }
+    }
+
+    public function addImage($images,$nextID=false){
+        $fileName = \ImagesHelper::UploadFile($this->getData()['mainData']['name'], $images, $nextID);
+        if($fileName == false){
+            return false;
+        }
+        return $fileName;        
+    }
+
+}

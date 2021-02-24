@@ -137,7 +137,9 @@ $(function(){
 		}
 	});
 
-	columnsVar.push({'data': 'id', 'responsivePriority': -1});
+	if(Object.keys(tableData)[Object.keys(tableData).length-1] == 'actions'){
+		columnsVar.push({'data': 'id', 'responsivePriority': -1});
+	}
 	
 	// begin first table
 	var DataTable = table.DataTable({

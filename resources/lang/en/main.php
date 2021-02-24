@@ -207,4 +207,22 @@ return [
 	'hasNotWhats' => "Hasn't Whatsapp",
 	'addNos' => 'Added Contacts Number',
 	'sentDate' => 'Sending Date',
+
+	'groupMsgs' => 'Group Messages',
+	'groupMsgsArc' => 'Group Messages Archive',
+	'message_type' => 'Message Type',
+	'message_content' => 'Message Content',
+	'sent_type' => 'Sending Status',
+	'sent_msgs' => 'Sent Messages',
+	'unsent_msgs' => 'Un-Sent Messages',
+	'msgs_no' => 'Messages Number',
+	'send' => 'Send',
+	'msgsArchive' => 'Messages Archive',
+	'sender' => 'Sender',
+	'receiver' => 'Receiver',
+	'sent' => 'Sent',
+	'received' => 'Received',
+	'seen' => 'Seen',
+	'sendNewMessage' => 'Send New Message',
+
 ];

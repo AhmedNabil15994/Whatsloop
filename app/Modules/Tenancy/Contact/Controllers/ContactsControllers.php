@@ -77,16 +77,16 @@ class ContactsControllers extends Controller {
             ],
             'from' => [
                 'type' => 'text',
-                'class' => 'form-control m-input datetimepicker',
+                'class' => 'form-control m-input datepicker',
                 'index' => '7',
-                'id' => 'datetimepicker1',
+                'id' => 'datepicker1',
                 'label' => trans('main.dateFrom'),
             ],
             'to' => [
                 'type' => 'text',
-                'class' => 'form-control m-input datetimepicker',
+                'class' => 'form-control m-input datepicker',
                 'index' => '8',
-                'id' => 'datetimepicker2',
+                'id' => 'datepicker2',
                 'label' => trans('main.dateTo'),
             ],
         ];
@@ -134,7 +134,7 @@ class ContactsControllers extends Controller {
                 'data-col' => 'city',
                 'anchor-class' => 'editable',
             ],
-            'phone' => [
+            'phone2' => [
                 'label' => trans('main.whats'),
                 'type' => '',
                 'className' => 'edits',
@@ -142,9 +142,9 @@ class ContactsControllers extends Controller {
                 'anchor-class' => 'editable',
             ],
             'created_at' => [
-                'label' => trans('main.created_at'),
+                'label' => trans('main.date'),
                 'type' => 'date',
-                'className' => 'edits',
+                'className' => 'edits dates',
                 'data-col' => 'created_at',
                 'anchor-class' => 'editable',
             ],
@@ -382,6 +382,9 @@ class ContactsControllers extends Controller {
         foreach ($input['data'] as $item) {
             $col = $item[1];
             $dataObj = Contact::find($item[0]);
+            if($col == 'phone'){
+                $item[2] = '+'.$item[2];
+            }
             $dataObj->$col = $item[2];
             $dataObj->updated_at = DATE_TIME;
             $dataObj->updated_by = USER_ID;

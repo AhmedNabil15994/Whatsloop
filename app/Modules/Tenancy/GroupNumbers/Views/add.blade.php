@@ -40,7 +40,7 @@
                                     <select class="selectpicker" data-style="btn-outline-myPR" name="group_id">
                                         <option value="">{{ trans('main.choose') }}</option>
                                         @foreach($data->groups as $group)
-                                        <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                        <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>{{ $group->channel .' - '.$group->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>

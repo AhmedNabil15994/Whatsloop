@@ -16,6 +16,7 @@
 <!-- RTL css -->
 <link href="{{ asset('css/app-material-dark-rtl.min.css') }}" rel="stylesheet" type="text/css" id="app-dark-stylesheet" />
 @endif
+<link href="{{ asset('libs/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="{{ asset('libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('css/jquery.datetimepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('libs/bootstrap-select/css/bootstrap-select.min.css') }}">

@@ -1,3 +1,4 @@
+$(document).off('.datepicker');
 var myURL = window.location.href;
 if(myURL.indexOf("#") != -1){
     myURL = myURL.replace('#','');
@@ -12,6 +13,8 @@ if(lang == 'en'){
     var success2 = "The operation was successful";
     var cancel1 = "Cancelled";
     var cancel2 = "Canceled successfully";
+    var langPref = 'en';
+    var rtlMode = false;
 }else{
     var title = "هل متأكد من هذا الحذف ؟";
     var confirmButton = "تأكيد";
@@ -21,8 +24,14 @@ if(lang == 'en'){
     var success2 = "تمت العملية بنجاح";
     var cancel1 = "تم الالغاء";
     var cancel2 = "تم الالغاء بنجاح";
+    var langPref = 'ar_AR';
+    var rtlMode = true;
 }
-
+$('.datepicker').datepicker({
+    format: 'yyyy-mm-dd',
+    language: langPref,
+    rtl: rtlMode
+});
 function deleteItem($id) {
     Swal.fire({
         title: title,
@@ -136,9 +145,9 @@ $('.quickEdit').on('click',function(e){
         }
     });
 
-    $('td.dates span span input.datetimepicker-input').datetimepicker({
-        format: 'yyyy-mm-dd H:i:s',
-        autoclose: true,
+    $('td.dates span span input.datetimepicker-input').flatpickr({
+        enableTime:!0,
+        dateFormat:"Y-m-d H:i:s",
     });
     
     if(myDataObjs[0] != null){
