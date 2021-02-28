@@ -6,6 +6,7 @@ return [
 		
 	'list-group-messages' => 'عرض الرسائل الجماعية',
 	'add-group-message' => 'ارسال الرسائل الجماعية',
+	'view-group-message' => 'تفاصيل الرسائل الجماعية',
 	'charts-group-message' => 'احصائيات الرسائل الجماعية',
 	'uploadImage-group-message' => 'رفع ملف الرسائل الجماعية',
 

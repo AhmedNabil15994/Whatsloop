@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Manager;
+use App\Models\Central\Manager;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
-        Manager::factory(1)->create();
+        //Manager::factory(1)->create();
+        $this->call(LaratrustSeeder::class);
     }
 }

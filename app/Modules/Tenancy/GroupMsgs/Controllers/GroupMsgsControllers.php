@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\GroupMsg;
 use App\Models\GroupNumber;
+use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -32,6 +33,12 @@ class GroupMsgsControllers extends Controller {
             ['id'=>4,'title'=>trans('main.sound')],
             ['id'=>5,'title'=>trans('main.link')],
             ['id'=>6,'title'=>trans('main.whatsappNos')],
+        ];
+
+        $sent_types = [
+            ['id'=>1,'title'=>trans('main.sent')],
+            ['id'=>2,'title'=>trans('main.received')],
+            ['id'=>3,'title'=>trans('main.seen')],
         ];
 
         $data['mainData'] = [
@@ -72,6 +79,13 @@ class GroupMsgsControllers extends Controller {
                 'index' => '',
                 'options' => $messageTypes,
                 'label' => trans('main.message_type'),
+            ],
+            'sent_type' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '',
+                'options' => $sent_types,
+                'label' => trans('main.sent_type'),
             ],
             'message' => [
                 'type' => 'text',
@@ -138,6 +152,20 @@ class GroupMsgsControllers extends Controller {
                 'data-col' => 'sent_type',
                 'anchor-class' => 'badge badge-secondary',
             ],
+            'messages_count' => [
+                'label' => trans('main.msgs_no'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'messages_count',
+                'anchor-class' => 'badge badge-secondary',
+            ],
+            'contacts_count' => [
+                'label' => trans('main.contacts_count'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'contacts_count',
+                'anchor-class' => 'badge badge-secondary',
+            ],
             'sent_msgs' => [
                 'label' => trans('main.sent_msgs'),
                 'type' => '',
@@ -152,19 +180,19 @@ class GroupMsgsControllers extends Controller {
                 'data-col' => 'unsent_msgs',
                 'anchor-class' => 'badge badge-secondary',
             ],
-            'msgs_no' => [
-                'label' => trans('main.msgs_no'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'msgs_no',
-                'anchor-class' => 'badge badge-secondary',
-            ],
             'created_at' => [
                 'label' => trans('main.sentDate'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'created_at',
+                'data-col' => 'publish_at',
                 'anchor-class' => 'badge badge-secondary',
+            ],
+            'actions' => [
+                'label' => trans('main.actions'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
             ],
         ];
 
@@ -200,7 +228,7 @@ class GroupMsgsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
+        $data['contacts'] = Contact::dataList(1)['data'];
         return view('Tenancy.GroupMsgs.Views.add')->with('data', (object) $data);
     }
 
@@ -212,11 +240,53 @@ class GroupMsgsControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
-        $groupObj = GroupNumber::getOne($input['group_id']);
-        if($groupObj == null){
-            return redirect('404');
-        }
+        if($input['group_id'] == '@'){
+            $groupObj = new GroupNumber;
+            $groupObj->channel = Session::get('channel');
+            $groupObj->name_ar = $input['name_ar'];
+            $groupObj->name_en = $input['name_en'];
+            $groupObj->description_ar = '';
+            $groupObj->description_en = '';
+            $groupObj->sort = GroupNumber::newSortIndex();
+            $groupObj->status = 1;
+            $groupObj->created_at = DATE_TIME;
+            $groupObj->created_by = USER_ID;
+            $groupObj->save();
 
+            if(!isset($input['whatsappNos']) || empty($input['whatsappNos'])){
+                Session::flash('error', trans('main.whatsappNosValidate'));
+                return redirect()->back()->withInput();
+            }   
+            $input['whatsappNos'] = trim($input['whatsappNos']);
+            $numbersArr = explode(PHP_EOL, $input['whatsappNos']);
+            if(count($numbersArr) > 100){
+                Session::flash('error', trans('main.numberlimit',['number'=>100]));
+                return redirect()->back()->withInput();
+            } 
+            for ($i = 0; $i < count($numbersArr) ; $i++) {
+                $phone = '+'.str_replace('\r', '', $numbersArr[$i]);
+                $contactObj = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('phone',$phone)->first();
+                if(!$contactObj){
+                    $dataObj = new Contact;
+                    $dataObj->phone = $phone;
+                    $dataObj->group_id = $groupObj->id;
+                    $dataObj->name = $phone;
+                    $dataObj->status = $input['status'];
+                    $dataObj->sort = Contact::newSortIndex();
+                    $dataObj->created_by = USER_ID;
+                    $dataObj->created_at = DATE_TIME;
+                    $dataObj->save();
+                }else{
+                    $foundData[] = $phone;
+                }
+            }
+        }else{
+            $groupObj = GroupNumber::getOne($input['group_id']);
+            if($groupObj == null){
+                return redirect('404');
+            }
+        }
+        
         if($input['message_type'] == 1){
             if(!isset($input['messageText']) || empty($input['messageText'])){
                 Session::flash('error', trans('main.messageValidate'));
@@ -224,24 +294,45 @@ class GroupMsgsControllers extends Controller {
             }
         }
 
+        $date = now();
+        if(isset($input['date']) && !empty($input['date'])){
+            $date = $input['date'];
+        }
+
+        $message = '';
+        $checkMessage = '';
+        if($input['message_type'] == 1){
+            $message = $input['messageText'];
+            $checkMessage = $input['messageText'];
+        }else if($input['message_type'] == 2){
+            $message = $input['message']; 
+            $checkMessage = $input['messageText'];
+        }else if($input['message_type'] == 5){
+            $checkMessage = $input['https_url'];
+        }else if($input['message_type'] == 6){
+            $checkMessage = $input['whatsapp_no'];
+        }
+
+        $messagesArr = str_split(strip_tags($checkMessage), 140);
+
         $dataObj = new GroupMsg;
         $dataObj->channel = $groupObj->channel;
-        $dataObj->group_id = $input['group_id'];
+        $dataObj->group_id = $groupObj->id;
         $dataObj->message_type = $input['message_type'];
-        $dataObj->message = '';
+        $dataObj->message = $message;
+        $dataObj->publish_at = $date;
+        $dataObj->contacts_count = Contact::NotDeleted()->where('group_id',$groupObj->id)->count();
+        $dataObj->messages_count = count($messagesArr);
         $dataObj->sort = GroupMsg::newSortIndex();
         $dataObj->status = $input['status'];
+        if($input['message_type'] == 6){
+            $dataObj->whatsapp_no = $input['whatsapp_no'];
+        }
         $dataObj->created_at = DATE_TIME;
         $dataObj->created_by = USER_ID;
         $dataObj->save();
 
-        if($input['message_type'] == 1){
-            $dataObj->message = $input['messageText'];
-            $dataObj->save();
-        }else if($input['message_type'] == 2){
-            $dataObj->message = $input['message']; 
-            $dataObj->save();
-        }else if($input['message_type'] == 5){
+        if($input['message_type'] == 5){
             $dataObj->https_url = $input['https_url'];
             $dataObj->url_title = $input['url_title'];
             $dataObj->url_desc = $input['url_desc'];
@@ -258,9 +349,6 @@ class GroupMsgsControllers extends Controller {
                     $dataObj->save();
                 }
             }
-        }else if($input['message_type'] == 6){
-            $dataObj->whatsapp_no = $input['whatsapp_no'];
-            $dataObj->save();
         }
 
         if(in_array($input['message_type'], [2,4])){
@@ -283,6 +371,20 @@ class GroupMsgsControllers extends Controller {
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
         return redirect()->to($this->getData()['mainData']['url'].'/');
+    }
+
+    public function view($id) {
+        $id = (int) $id;
+        $groupMsgObj = GroupMsg::NotDeleted()->find($id);
+        if($groupMsgObj == null) {
+            return Redirect('404');
+        }
+        $data['data'] = GroupMsg::getData($groupMsgObj);
+        $data['contacts'] = Contact::dataList(1,null,$groupMsgObj->group_id)['data'];
+        $data['designElems']['mainData'] = $this->getData()['mainData'];
+        $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;
+        $data['designElems']['mainData']['icon'] = 'fa fa-eye';
+        return view('Tenancy.GroupMsgs.Views.view')->with('data', (object) $data);
     }
 
     public function charts() {

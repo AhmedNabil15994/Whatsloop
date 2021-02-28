@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://whatsloop.localhost/'),
+    'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL', null),
 
@@ -165,7 +165,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         Stevebauman\Location\LocationServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        
+
         /*
          * Package Service Providers...
          */

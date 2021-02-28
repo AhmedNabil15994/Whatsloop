@@ -14,14 +14,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-
-
-    
+    return view('central.welcome');    
 });
 
-Route::post('tenant',[App\Http\Controllers\TenantsController::class, 'store'])->name('tenants.save');
+Route::post('register',[App\Http\Controllers\CentralController::class, 'register'])->name('central.register');
 
+Route::post('login',[App\Http\Controllers\CentralController::class, 'login'])->name('central.login');
+
+Route::get('login',[App\Http\Controllers\CentralController::class, 'showLogin'])->name('central.show.login');
+Route::post('redirection',[App\Http\Controllers\CentralController::class, 'redirectLogin'])->name('central.redirection');
 Route::group(['prefix' => 'manager/auth' , 'namespace' => '\App\Http\Controllers\Manager\Auth','as' => 'manager.'],function(){
 
     //login

@@ -53,6 +53,8 @@ $(function(){
 		var deleteText = 'Delete';
 		var showText = 'View Contacts';
 		var exportText = 'Export Contacts';
+		var actionsVar = 'Actions';
+		var detailsText = 'Details';
 	}else{
 		var showCols = "<i class='fa fas fa-angle-down'></i> عرض الأعمدة";
 		var direction = 'rtl';
@@ -73,6 +75,8 @@ $(function(){
 		var deleteText = 'حذف';
 		var showText = 'عرض الارقام';
 		var exportText = 'استيراد جهات الارسال';
+		var actionsVar = 'الاجراءات';
+		var detailsText = 'التفاصيل';
 	}
 
 	$.each(tableData,function(index,item){
@@ -98,6 +102,33 @@ $(function(){
 						if(getIndex(index,item) == 2){
 							labelClass = full.labelClass;
 						}
+						if(index == 'statusIDText'){
+							if(full.status == 1){
+								labelClass = 'badge text-muted';
+							}else{
+								labelClass = 'badge badge-danger';
+							}
+						}
+						if(index == 'statusText'){
+							if(full.statusText == 'مسترجع' || full.statusText == 'ملغي' || full.statusText == 'تم الالغاء'){
+								labelClass = 'badge badge-danger';
+							}
+							if(full.statusText == 'تم الشحن' || full.statusText == 'تم التنفيذ' || full.statusText == 'جديد'){
+								labelClass = 'badge badge-success';
+							}
+							if(full.statusText == 'تم التوصيل' || full.statusText == 'قيد التنفيذ'){
+								labelClass = 'badge badge-warning';
+							}
+							if(full.statusText == 'جاري التوصيل' || full.statusText == 'بإنتظار المراجعة' || full.statusText == 'جاهز'){
+								labelClass = 'badge badge-primary';
+							}
+							if(full.statusText == 'بإنتظار الدفع' || full.statusText == 'جاري التجهيز'){
+								labelClass = 'badge badge-info';
+							}
+							if(full.statusText == 'ترحيب بالعميل' || full.statusText == 'جارى التوصيل' ){
+								labelClass = 'badge badge-secondary';
+							}
+						}
 						return '<a class="'+item['anchor-class']+' '+labelClass+'" data-col="'+item['data-col']+'" data-id="'+full.id+'">'+data+'</a>';
 					},
 				});
@@ -105,7 +136,7 @@ $(function(){
 		}else{
 			columnDefsVar.push({
 				targets: -1,
-				title: 'الاجراءات',
+				title: actionsVar,
 				orderable: false,
 				render: function(data, type, full, meta) {
 					var editButton = '';
@@ -131,6 +162,13 @@ $(function(){
 					if($('input[name="data-cols"]').val() == 1){
 						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-xs btn-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
 					}
+
+					if(designElems.mainData.url == 'groupMsgs' && $('input[name="data-tab"]').val() == 1){
+						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-eye"></i> '+detailsText+'</a>';
+						editButton = '';
+						deleteButton = '';
+					}
+
 					return editButton + copyButton + showButton + exportButton + deleteButton;
 				},
 			});

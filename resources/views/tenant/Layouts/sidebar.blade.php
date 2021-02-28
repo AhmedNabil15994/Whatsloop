@@ -45,6 +45,65 @@
                     </a>
                 </li>
                 @endif
+
+                @if(\Helper::checkRules('salla'))
+                <li class="{{ Active(URL::to('/services/salla*'),'menuitem-active') }}">
+                    <a href="#sidebarSalla" data-toggle="collapse">
+                        <i class=" fas fa-layer-group"></i>
+                        <span> Salla </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse {{ Active(URL::to('/services/salla*'),'show') }}" id="sidebarSalla">
+                        <ul class="nav-second-level">
+                            <li class="{{ Active(URL::to('/services/salla/customers'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/salla/customers') }}">{{ trans('main.customers') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/salla/products'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/salla/products') }}">{{ trans('main.products') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/salla/orders'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/salla/orders') }}">{{ trans('main.orders') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/salla/reports'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/salla/reports') }}">{{ trans('main.notReports') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/salla/templates*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/salla/templates') }}">{{ trans('main.templates') }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @endif
+
+                @if(\Helper::checkRules('zid'))
+                <li class="{{ Active(URL::to('/services/zid*'),'menuitem-active') }}">
+                    <a href="#sidebarZid" data-toggle="collapse">
+                        <i class=" fas fa-layer-group"></i>
+                        <span> Zid </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse {{ Active(URL::to('/services/zid*'),'show') }}" id="sidebarZid">
+                        <ul class="nav-second-level">
+                            <li class="{{ Active(URL::to('/services/zid/customers'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/zid/customers') }}">{{ trans('main.customers') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/zid/products'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/zid/products') }}">{{ trans('main.products') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/zid/orders'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/zid/orders') }}">{{ trans('main.orders') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/zid/reports'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/zid/reports') }}">{{ trans('main.notReports') }}</a>
+                            </li>
+                            <li class="{{ Active(URL::to('/services/zid/templates*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/services/zid/templates') }}">{{ trans('main.templates') }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @endif
+
                 @if(\Helper::checkRules('list-bots'))
                 <li class="{{ Active(URL::to('/bots*'),'menuitem-active') }}">
                     <a href="#sidebarBots" data-toggle="collapse">

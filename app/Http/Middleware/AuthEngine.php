@@ -18,8 +18,8 @@ class AuthEngine
             return Redirect('/login');
         }
 
-        if (in_array($request->segment(1), ['login','changeLang','getResetPassword','changePassword','completeReset'])) {
-            if (in_array($request->segment(1), ['login','changeLang','getResetPassword','changePassword','completeReset'])) {
+        if (in_array($request->segment(1), ['login','changeLang','impersonate','getResetPassword','changePassword','completeReset'])) {
+            if (in_array($request->segment(1), ['login','changeLang','impersonate','getResetPassword','changePassword','completeReset'])) {
                 return $next($request);
             } else {
 

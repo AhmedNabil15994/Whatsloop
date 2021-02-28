@@ -290,7 +290,8 @@ class ContactsControllers extends Controller {
                 $dataObj->created_at = DATE_TIME;
                 $dataObj->save();
             }
-
+            Session::flash('error', trans('main.phoneError'));
+            return redirect()->back()->withInput();
         }elseif($type == 3){
             if(!isset($input['whatsappNos']) || empty($input['whatsappNos'])){
                 Session::flash('error', trans('main.whatsappNosValidate'));
@@ -298,20 +299,26 @@ class ContactsControllers extends Controller {
             }   
             $input['whatsappNos'] = trim($input['whatsappNos']);
             $numbersArr = explode(PHP_EOL, $input['whatsappNos']);
+            if(count($numbersArr) > 100){
+                Session::flash('error', trans('main.numberlimit',['number'=>100]));
+                return redirect()->back()->withInput();
+            }
             for ($i = 0; $i < count($numbersArr) ; $i++) {
                 $phone = '+'.str_replace('\r', '', $numbersArr[$i]);
                 $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$phone)->first();
-                    if(!$contactObj){
-                        $dataObj = new Contact;
-                        $dataObj->phone = $phone;
-                        $dataObj->group_id = $input['group_id'];
-                        $dataObj->name = $phone;
-                        $dataObj->status = $input['status'];
-                        $dataObj->sort = Contact::newSortIndex();
-                        $dataObj->created_by = USER_ID;
-                        $dataObj->created_at = DATE_TIME;
-                        $dataObj->save();
-                    }
+                if(!$contactObj){
+                    $dataObj = new Contact;
+                    $dataObj->phone = $phone;
+                    $dataObj->group_id = $input['group_id'];
+                    $dataObj->name = $phone;
+                    $dataObj->status = $input['status'];
+                    $dataObj->sort = Contact::newSortIndex();
+                    $dataObj->created_by = USER_ID;
+                    $dataObj->created_at = DATE_TIME;
+                    $dataObj->save();
+                }else{
+                    $foundData[] = $phone;
+                }
             }
         }elseif($input['vType'] == 4){
             unset($userInputs['status']);
@@ -333,6 +340,7 @@ class ContactsControllers extends Controller {
                     Session::flash('error', trans('main.invalidColumn').' '.$key);
                     return redirect()->back(); 
                 }
+
                 for ($i = 0; $i < count($userInputs['phone']); $i++) {
                     if(!isset($storeData[$i])){
                         $storeData[$i] = [];
@@ -348,12 +356,18 @@ class ContactsControllers extends Controller {
                     $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
 
                 }
-            }       
+            }      
+
+            if(count($storeData) > 100){
+                Session::flash('error', trans('main.numberlimit',['number'=>100]));
+                return redirect()->back()->withInput();
+            } 
 
             foreach ($storeData as $value) {
                 $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',"+".$value['phone'])->first();
                 $phone = "+".$value['phone'];
                 $phone = str_replace('\r', '', $phone);
+                $foundData[] = $phone;
                 if(!$contactObj){
                     if(!isset($value['name']) || empty($value['name'])){
                         $value['name'] = $phone;
@@ -361,12 +375,14 @@ class ContactsControllers extends Controller {
                     $value['phone'] = $phone;
                     $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
                     Contact::insert($value);
+                }else{
+                    $foundData[] = $phone;
                 }
             }
         }
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
-        Session::flash('success', trans('main.addSuccess'));
+        Session::flash('success', nl2br(trans('main.addSuccess') . '.! \n'.trans('main.whatsappNos').implode(',', $foundData).trans('main.ingroup')));
         return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 

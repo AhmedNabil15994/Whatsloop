@@ -5,6 +5,7 @@ return [
 		
 	'list-group-messages' => 'List Group Messages',
 	'add-group-message' => 'Send Group Messages',
+	'view-group-message' => 'Group Messages Details',
 	'charts-group-message' => 'Group Messages Statistics',
 	'uploadImage-group-message' => 'Group Messages Upload Image',
 

@@ -93,8 +93,7 @@
                         <div class="form-group mb-0 justify-content-end row">
                             <div class="col-9">
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
-                                <button name="Submit" type="submit" class="btn btn-primary AddBTN" id="SaveBTN">{{ trans('main.draft') }}</button>
-                                <button type="reset" class="btn btn-danger Reset">{{ trans('main.clearAll') }}</button>
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['nameOne']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
                     </form>

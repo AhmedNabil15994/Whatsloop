@@ -1,7 +1,9 @@
 {{-- Extends layout --}}
 @extends('tenant.Layouts.master')
 @section('title',$data->designElems['mainData']['title'])
-
+@section('styles')
+<link rel="stylesheet" type="text/css" href="{{ asset('css/phone.css') }}">
+@endsection
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
@@ -354,8 +356,7 @@
                         <div class="form-group justify-content-end row">
                             <div class="col-9">
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
-                                <button name="Submit" type="submit" class="btn btn-primary AddBTN" id="SaveBTN">{{ trans('main.draft') }}</button>
-                                <button type="reset" class="btn btn-danger Reset">{{ trans('main.clearAll') }}</button>
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['nameOne']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
                     </form>
@@ -364,76 +365,124 @@
             </div> <!-- end card -->
         </div><!-- end col-->
         <div class="col-4">
-            <div class="card">
-                <div class="user-bar">
-                    <div class="row">
-                        <div class="col-1">
-                            <div class="avatar">
-                                <img src="{{ asset('images/favicon.ico') }}" alt="Avatar">
-                            </div>
-                        </div>
-                        <div class="col-11">
-                            <div class="name">
-                                <span>WhatsLoop</span>
-                                <span class="status">{{ trans('main.online') }} 24/7</span>
-                            </div>
-                        </div>
+            <section class="iphoneMock">
+              <div class="container">
+                <div class="iphone initAnimation">
+                  <div class="bordeColor">
+                    <div class="botones">
+                      <div class="switch"></div>
+                      <div class="vol up"></div>
+                      <div class="vol down"></div>
+                      <div class="touchID"></div>
                     </div>
-                </div>
-                <div class="conversation">
-                    <div class="conversation-container clearfix">    
-                        @foreach($data->bots as $bot)                                    
-                        <div class="message received">
-                            {{ $bot->message }}
-                            <span class="metadata">
-                                <span class="time">{{ trans('main.now') }}</span>
-                            </span>
-                            @if(\Helper::checkRules('edit-bot'))
-                            <a href="{{ URL::to('/bots/edit/'.$bot->id) }}" class="btn btn-xs btn-primary btn-inline">{{ trans('main.edit') }}</a>
-                            @endif
-                            @if(\Helper::checkRules('copy-bot'))
-                            <a href="{{ URL::to('/bots/copy/'.$bot->id) }}" class="btn btn-xs btn-warning btn-inline">{{ trans('main.repeat') }}</a>
-                            @endif
+                    <div class="backSide">
+                      <div class="camaras">
+                        <div class="cam">
+                          <div class="lente"></div>
                         </div>
-                        <div class="message sent" style="white-space: pre-line;text-align:right;">
-                            @if($bot->reply_type == 1)
-                            {!! rtrim($bot->reply2) !!}
-                            @elseif($bot->reply_type == 2)
-                                @if($bot->file_type == 'image')
-                                <img class="mb-2" src="{{ $bot->file }}" alt="">
-                                {{ $bot->reply }}
-                                @else
+                        <div class="cam">
+                          <div class="lente"></div>
+                        </div>
+                        <div class="cam">
+                          <div class="lente"></div>
+                        </div>
+                        <div class="flash"></div>
+                        <div class="sensor"></div>
+                      </div>
+                      <div class="logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                          <path d="M48.334 33.875c-.093-7.593 6.169-11.249 6.45-11.436a13.669 13.669 0 0 0-10.936-5.906c-4.674-.469-9.067 2.718-11.5 2.718-2.337 0-5.982-2.718-9.908-2.625a14.765 14.765 0 0 0-12.339 7.5C4.868 33.313 8.794 47 13.935 54.4c2.524 3.656 5.515 7.78 9.441 7.593 3.832-.187 5.235-2.437 9.815-2.437S39.08 62 43.1 61.9c4.113-.094 6.637-3.75 9.16-7.405a29.782 29.782 0 0 0 4.113-8.53 13.082 13.082 0 0 1-8.039-12.09z"></path>
+                          <path d="M40.762 11.565A13.423 13.423 0 0 0 43.847 2a13.194 13.194 0 0 0-8.787 4.5c-1.963 2.25-3.645 5.812-3.178 9.28 3.365.284 6.824-1.68 8.88-4.215z"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="bordeNegro">
+                      <div class="notch">
+                        <div class="bocina"></div>
+                        <div class="camara"></div>
+                      </div>
+                      <div class="logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                          <path d="M48.334 33.875c-.093-7.593 6.169-11.249 6.45-11.436a13.669 13.669 0 0 0-10.936-5.906c-4.674-.469-9.067 2.718-11.5 2.718-2.337 0-5.982-2.718-9.908-2.625a14.765 14.765 0 0 0-12.339 7.5C4.868 33.313 8.794 47 13.935 54.4c2.524 3.656 5.515 7.78 9.441 7.593 3.832-.187 5.235-2.437 9.815-2.437S39.08 62 43.1 61.9c4.113-.094 6.637-3.75 9.16-7.405a29.782 29.782 0 0 0 4.113-8.53 13.082 13.082 0 0 1-8.039-12.09z"></path>
+                          <path d="M40.762 11.565A13.423 13.423 0 0 0 43.847 2a13.194 13.194 0 0 0-8.787 4.5c-1.963 2.25-3.645 5.812-3.178 9.28 3.365.284 6.824-1.68 8.88-4.215z"></path>
+                        </svg>
+                      </div>
+                      <div class="mainScreen bloqueado">
+                        <div class="statusBar">
+                          <div class="leftSide">
+                            <div class="operador">Telcel</div>
+                            <div class="hora hidden"></div>
+                            <div class="widgetPlus"></div>
+                          </div>
+                          <div class="rightSide">
+                            <div class="signal mid"><i class="bar"></i></div>
+                            <div class="datos">5G</div>
+                            <div class="bateria mid"></div>
+                            <div class="exitShake">Listo</div>
+                          </div>
+                        </div>
+                        <div class="conversation">
+                            <div class="conversation-container clearfix">    
+                                @foreach($data->bots as $bot)                                    
+                                <div class="message received">
+                                    {{ $bot->message }}
+                                    <span class="metadata">
+                                        <span class="time">{{ trans('main.now') }}</span>
+                                    </span>
+                                    @if(\Helper::checkRules('edit-bot'))
+                                    <a href="{{ URL::to('/bots/edit/'.$bot->id) }}" class="btn btn-xs btn-primary btn-inline">{{ trans('main.edit') }}</a>
+                                    @endif
+                                    @if(\Helper::checkRules('copy-bot'))
+                                    <a href="{{ URL::to('/bots/copy/'.$bot->id) }}" class="btn btn-xs btn-warning btn-inline">{{ trans('main.repeat') }}</a>
+                                    @endif
+                                </div>
+                                <div class="message sent" style="white-space: pre-line;text-align:right;">
+                                    @if($bot->reply_type == 1)
+                                    {!! rtrim($bot->reply2) !!}
+                                    @elseif($bot->reply_type == 2)
+                                        @if($bot->file_type == 'image')
+                                        <img class="mb-2" src="{{ $bot->file }}" alt="">
+                                        {{ $bot->reply }}
+                                        @else
 
-                                @endif
-                            @elseif($bot->reply_type == 3)
-                            <video style="width:250px;" controls="">
-                                <source src="{{ $bot->file }}" type="video/mp4">
-                            </video>
-                            @elseif($bot->reply_type == 4)
-                            <audio controls="">
-                                <source src="{{ $bot->file }}" type="audio/ogg">
-                            </audio>
-                            @elseif($bot->reply_type == 5)
-                                @if($bot->photo != "")
-                                    <img class="mb-2" src="{{ $bot->photo }}" alt="">
-                                @endif
-                                {{ $bot->https_url }}
-                            @elseif($bot->reply_type == 6)
-                                {{ $bot->whatsapp_no }}
-                            @elseif($bot->reply_type == 7)
-                                <iframe class="mb-2" src = "https://maps.google.com/maps?q={{ $bot->lat }},{{ $bot->lng }}&hl=es;z=14&amp;output=embed" width="300" height="250"></iframe>
-                                {{ $bot->address }}
-                            @elseif($bot->reply_type == 8)
-                                {{ $bot->webhook_url }}
-                            @endif
-                            <span class="metadata mb-2">
-                                <span class="time">{{ trans('main.now') }} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
-                            </span>
+                                        @endif
+                                    @elseif($bot->reply_type == 3)
+                                    <video style="width:250px;" controls="">
+                                        <source src="{{ $bot->file }}" type="video/mp4">
+                                    </video>
+                                    @elseif($bot->reply_type == 4)
+                                    <audio controls="">
+                                        <source src="{{ $bot->file }}" type="audio/ogg">
+                                    </audio>
+                                    @elseif($bot->reply_type == 5)
+                                        @if($bot->photo != "")
+                                            <img class="mb-2" src="{{ $bot->photo }}" alt="">
+                                        @endif
+                                        {{ $bot->https_url }}
+                                    @elseif($bot->reply_type == 6)
+                                        {{ $bot->whatsapp_no }}
+                                    @elseif($bot->reply_type == 7)
+                                        <iframe class="mb-2" src = "https://maps.google.com/maps?q={{ $bot->lat }},{{ $bot->lng }}&hl=es;z=14&amp;output=embed" width="300" height="250"></iframe>
+                                        {{ $bot->address }}
+                                    @elseif($bot->reply_type == 8)
+                                        {{ $bot->webhook_url }}
+                                    @endif
+                                    <span class="metadata mb-2">
+                                        <span class="time">{{ trans('main.now') }} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
+                                    </span>
+                                </div>
+                                @endforeach
+                            </div>
                         </div>
-                        @endforeach
+                        <div class="phone-footer">
+                            <img src="{{ asset('images/bg-tg-bot-campaign-bottom.png') }}" alt="">
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div> <!-- end card -->
+              </div>
+            </section>
         </div><!-- end col-->
     </div>
     <!-- end row-->
@@ -469,5 +518,6 @@
 <script src="{{ asset('/js/photoswipe.min.js') }}"></script>
 <script src="{{ asset('/js/photoswipe-ui-default.min.js') }}"></script>
 <script src="{{ asset('/components/myPhotoSwipe.js') }}"></script>      
+<script src="{{ asset('components/phone.js') }}"></script>
 <script src="{{ asset('components/addBot.js') }}"></script>
 @endsection

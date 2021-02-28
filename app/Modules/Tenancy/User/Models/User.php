@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Central\CentralUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Stancl\Tenancy\Contracts\Syncable;
+use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Syncable
 {
-    use HasFactory, Notifiable,\TraitsFunc;
+    use HasFactory, Notifiable,\TraitsFunc,ResourceSyncing;
     
     /**
      * The attributes that are mass assignable.
@@ -26,6 +29,9 @@ class User extends Authenticatable
         'extra_rules',
         'image',
         'sort',
+        'is_active',
+        'is_approved',
+        'global_id',
         'status',
         'created_at',
         'created_by',
@@ -53,6 +59,33 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $guarded = [];
+    public $timestamps = false;
+
+    public function getGlobalIdentifierKey()
+    {
+        return $this->getAttribute($this->getGlobalIdentifierKeyName());
+    }
+
+    public function getGlobalIdentifierKeyName(): string
+    {
+        return 'global_id';
+    }
+
+    public function getCentralModelName(): string
+    {
+        return CentralUser::class;
+    }
+
+    public function getSyncedAttributeNames(): array
+    {
+        return [
+            'name',
+            'password',
+            'phone',
+        ];
+    }
 
     public function Group(){
         return $this->belongsTo('App\Models\Group','group_id');

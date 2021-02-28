@@ -1,0 +1,817 @@
+<?php namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use App\Models\ModTemplate;
+use App\Models\User;
+use DB;
+use DataTables;
+
+class ExternalServicesControllers extends Controller {
+
+    use \TraitsFunc;
+
+    public function getServiceData($service,$model,$refresh=null){    
+        if(!in_array($service, ['salla','zid']) || !in_array($model, ['customers','products','orders']) || !in_array($refresh, ['refresh',null])){
+            return redirect('404');
+        }
+
+        if($service == 'salla'){
+            $baseUrl = 'https://api.salla.dev/admin/v2';
+            $storeToken = 'a1d4fb35ff0cb9936866832c1af7a947644c8e8578b6627539fc21e4878b3fe6'; 
+            $dataURL = $baseUrl.'/'.$model;
+            $tableName = $service.'_'.$model;
+            $myHeaders =[];
+        }else if($service == 'zid'){
+            $baseUrl = 'https://api.zid.sa/v1';
+            $storeID = '69488';
+            $storeToken = 'eyJpdiI6ImRUeUMvZ2lNbUVmb25HZkgvM2g4S2c9PSIsInZhbHVlIjoiK1Q2N1BXZzZMM0NPWTIyZTJObTVQK0Y3aDluekhUMUZ2TWVvUllGZUlrYjNVbnVZbkUwbGE3MC9DcmJrSU1sUWRKd1ZkdlpyWVhzdmhjdy9OSEhtTHJzVUpiZEZraFpweDVPa0ljSjJMdEUwNnBDaEltb0doV0x1VCtqbTZnZVI2UHdUalhlTkEvbG03cVhobHRBOUZ5NzdYM1FWNCtMVWRQSXZnSkpLT0ZLUVFKUk0vRHFMcVRhMmE0azFmWGhVQXpyWGc1dUlqcVdHK2FBN3BaOTRKUT09IiwibWFjIjoiMTdjOWMxMGFmODk0Y2Y4OTA3NWM0NjdlYWJiOWJkOTM1NGY3MDVmZDczYTdkMzY3MTdjMWI4Y2ZjZGNlNWZmMiJ9';
+            $managerToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI2MCIsImp0aSI6IjYwNTA4MmQyNmI1MTc1NDJhNmNjYjRmYzRmZGExNTBhOTllNzZkYmNlMjM5M2M5OTU3MTA0MmUzNTA4ODY1N2QxY2EwNWM5ZTU2ZmNiZjc2IiwiaWF0IjoxNTk4NDU1MTI4LCJuYmYiOjE1OTg0NTUxMjgsImV4cCI6MTYyOTk5MTEyOCwic3ViIjoiMjgiLCJzY29wZXMiOlsidGhpcmQtcGFydGllcy1hcGlzIl19.YXl7U5ZpxANjnOHh24pEPbiBjkGpMelZraJcLUOpSbW_sHSgvsE3CGNCD3T1YZT2EfzgW-TtSpL4Lzurj9mvtzMSFF9z3YnkKJp6Bv8jo-HMbCC8-mWCu7FrKk5X3PjnpMvkAiDGpOKT-kd1Y7cN-DBIXu-n21X_RpvXRT49A26kIRIMbofNJzxeP4WJL8ia2hkJjLk5V0JIwjAYBED9zgX3R5s1axVRw8utNMIdhcGfJIpZEF3vF03uT4qqx2oHUsczn-4cag7parC4rnUovt_sFvEY24F6rp5fS63BGtfxHC6OVGg3lhpHfrsx1Bpn94CduBpk03RcfIh4e32dTyrbaKebw6qOrID7TGBGv1_ZfcRkZoVjqClDLO3oMWt2IEu72_5CLzl9BcEiMCTumH-Gy9oy0j5YhhRoYyCXfcmamSBf88MJj2dQHh8dTfaCK6PDFRNusOLCA9l3-VH4BZkayliWm7qUKiuXHPTJJ8aH6lZVnpmiQmk4G7yLka7vyAt-YqqzTEyii4wwhN_JLxuTbLmQG-bMP2fMhFkkwekFuOI95fxsfiCmLOxCqY3IWJ23zqwKnpKPrs5-drmTXTMdKn11NDWMcbFEIrldMjgLzfsF6FmrsiWkQqn6AelFXTNH0IG-ifJg5KXF3mcFtSX1UJL7RAs4_qo6r80wp-o';
+            
+            if($model == 'products'){
+                $dataURL = $baseUrl.'/'.$model.'/';
+            }elseif($model == 'orders' || $model == 'customers'){
+                $dataURL = $baseUrl.'/managers/store/'.$model.'/';   
+            }
+            $tableName = $service.'_'.$model;
+
+            $myHeaders = [
+                "X-MANAGER-TOKEN" => $managerToken,
+                "STORE-ID" => $storeID,
+                "ROLE" => 'Manager',
+                'User-Agent' => 'whatsloop/1.00.00 (web)',
+            ];
+        }
+
+        $dataArr = [
+            'baseUrl' => $baseUrl,
+            'storeToken' => $storeToken,
+            'dataURL' => $dataURL,
+            'tableName' => $tableName,
+            'myHeaders' => $myHeaders,
+            'service' => $service,
+        ];
+
+        if($service == 'salla' && $model == 'orders'){
+            $dataArr['dataURL'] = $dataArr['dataURL'].'/statuses';
+            $dataArr['tableName'] = $service.'_order_status';  
+            $externalHelperObj = new \ExternalServices($dataArr);
+            if (!Schema::hasTable($dataArr['tableName']) || $refresh == 'refresh') {
+                $externalHelperObj->startFuncs();
+            }
+        }
+
+        $externalHelperObj = new \ExternalServices($dataArr);
+        if (!Schema::hasTable($tableName) || $refresh == 'refresh') {
+            $externalHelperObj->startFuncs();
+        }
+
+        if($refresh == 'refresh'){
+            return redirect()->to('/services/'.$service.'/'.$model);
+        }
+
+        return $this->runModuleService($service,$model,$tableName);
+    }
+
+    public function runModuleService($service,$model,$tableName){
+        $input = \Request::all();
+        $paginationNo = 12;
+
+        if (Schema::hasTable($tableName)) {
+            $source = DB::table($tableName);
+        }else{
+            $source = [];
+        }
+        
+        if($service == 'salla'){
+            if($model == 'customers'){
+                // Begin Search
+                if(isset($input['name']) && !empty($input['name'])){
+                    $source->where('first_name','LIKE','%'.$input['name'].'%')->orWhere('last_name','LIKE','%'.$input['name'].'%');
+                }
+
+                if(isset($input['email']) && !empty($input['email'])){
+                    $source->where('email',$input['email']);
+                }
+
+                if(isset($input['phone']) && !empty($input['phone'])){
+                    $source->where('mobile',$input['phone']);
+                }
+
+                if(isset($input['address']) && !empty($input['address'])){
+                    $source->where('country','LIKE','%'.$input['address'].'%')->orWhere('city','LIKE','%'.$input['address'].'%');
+                }
+
+                $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+                $formattedData = $this->formatData($modelData,$model,$service);
+                
+                $data['mainData'] = [
+                    'title' => trans('main.customers'),
+                    'url' => 'customers',
+                    'service' => $service,
+                    'icon' => ' fas fa-user-tie',
+                ];
+
+                $data['searchData'] = [
+                    'name' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.name_ar'),
+                    ],
+                    'phone' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.phone') .trans('main.noCountryCode'),
+                    ],
+                    'email' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.email'),
+                    ],
+                    'address' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.address'),
+                    ],
+                   
+                ];
+            }elseif ($model == 'orders') {
+                // Begin Search
+                if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+                    $source->where('date','>=', $input['from'].' 00:00:00')->where('date','<=',$input['to']. ' 23:59:59');
+                }
+                if(isset($input['id']) && !empty($input['id'])){
+                    $source->where('id',$input['id']);
+                }
+
+                if(isset($input['status']) && !empty($input['status'])){
+                    $source->where('status','LIKE','%'.$input['status'].'%');
+                }
+
+                $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+                $formattedData = $this->formatData($modelData,$model,$service);
+                
+                $data['mainData'] = [
+                    'title' => trans('main.orders'),
+                    'url' => 'orders',
+                    'service' => $service,
+                    'icon' => 'mdi mdi-truck-delivery-outline',
+                ];
+
+                if (Schema::hasTable($service.'_order_status')) {
+                    $options = DB::table($service.'_order_status')->get();
+                }else{
+                    $options = [];
+                }
+
+                $data['searchData'] = [
+                    'id' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.id'),
+                    ],
+                    'status' => [
+                        'type' => 'select',
+                        'class' => 'form-control',
+                        'index' => '',
+                        'options' => $options,
+                        'label' => trans('main.status'),
+                    ],
+                    'from' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input datepicker',
+                        'id' => 'datepicker1',
+                        'label' => trans('main.dateFrom'),
+                    ],
+                    'to' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input datepicker',
+                        'id' => 'datepicker2',
+                        'label' => trans('main.dateTo'),
+                    ],
+                   
+                ];
+            }elseif ($model == 'products') {
+                // Begin Search
+                if(isset($input['id']) && !empty($input['id'])){
+                    $source->where('id',$input['id']);
+                }
+
+                if(isset($input['name']) && !empty($input['name'])){
+                    $source->where('name','LIKE','%'.$input['name'].'%');
+                }
+
+                if(isset($input['price']) && !empty($input['price'])){
+                    $source->where('price','LIKE','%'.$input['price'].'%');
+                }
+
+                if(isset($input['status'])){
+                    $source->where('is_available',$input['status']);
+                }
+
+                $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+                $formattedData = $this->formatData($modelData,$model,$service);
+                
+                $data['mainData'] = [
+                    'title' => trans('main.products'),
+                    'url' => 'products',
+                    'service' => $service,
+                    'icon' => ' fab fa-product-hunt',
+                ];
+
+                $options = [
+                    ['id'=>0,'name'=>trans('main.unAvail')],
+                    ['id'=>1,'name'=>trans('main.avail')]
+                ];
+
+                $data['searchData'] = [
+                    'id' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.id'),
+                    ],
+                    'name' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.name'),
+                    ],
+                    'price' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.price'),
+                    ],
+                    'status' => [
+                        'type' => 'select',
+                        'class' => 'form-control',
+                        'index' => '',
+                        'options' => $options,
+                        'label' => trans('main.status'),
+                    ],
+                ];
+            }
+        }elseif($service == 'zid'){
+            if($model == 'customers'){
+                // // Begin Search
+                // if(isset($input['name']) && !empty($input['name'])){
+                //     $source->where('first_name','LIKE','%'.$input['name'].'%')->orWhere('last_name','LIKE','%'.$input['name'].'%');
+                // }
+
+                // if(isset($input['email']) && !empty($input['email'])){
+                //     $source->where('email',$input['email']);
+                // }
+
+                // if(isset($input['phone']) && !empty($input['phone'])){
+                //     $source->where('mobile',$input['phone']);
+                // }
+
+                // if(isset($input['address']) && !empty($input['address'])){
+                //     $source->where('country','LIKE','%'.$input['address'].'%')->orWhere('city','LIKE','%'.$input['address'].'%');
+                // }
+
+
+                $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+                $formattedData = $this->formatData($modelData,$model,$service);
+                
+                $data['mainData'] = [
+                    'title' => trans('main.customers'),
+                    'url' => 'customers',
+                    'service' => $service,
+                    'icon' => ' fas fa-user-tie',
+                ];
+
+                $data['searchData'] = [
+                    'name' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.name_ar'),
+                    ],
+                    'phone' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.phone') .trans('main.noCountryCode'),
+                    ],
+                    'email' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.email'),
+                    ],
+                    'address' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.address'),
+                    ], 
+                ];
+            }elseif ($model == 'orders') {
+                // Begin Search
+                // if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+                //     $source->where('date','>=', $input['from'].' 00:00:00')->where('date','<=',$input['to']. ' 23:59:59');
+                // }
+                // if(isset($input['id']) && !empty($input['id'])){
+                //     $source->where('id',$input['id']);
+                // }
+
+                // if(isset($input['status']) && !empty($input['status'])){
+                //     $source->where('status','LIKE','%'.$input['status'].'%');
+                // }
+
+                $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+                $formattedData = $this->formatData($modelData,$model,$service);
+                
+                $data['mainData'] = [
+                    'title' => trans('main.orders'),
+                    'url' => 'orders',
+                    'service' => $service,
+                    'icon' => 'mdi mdi-truck-delivery-outline',
+                ];
+                
+                if (Schema::hasTable($service.'_order_status')) {
+                    $options = DB::table($service.'_order_status')->get();
+                }else{
+                    $options = [];
+                }
+
+                $data['searchData'] = [
+                    'id' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.id'),
+                    ],
+                    'status' => [
+                        'type' => 'select',
+                        'class' => 'form-control',
+                        'index' => '',
+                        'options' => $options,
+                        'label' => trans('main.status'),
+                    ],
+                    'from' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input datepicker',
+                        'id' => 'datepicker1',
+                        'label' => trans('main.dateFrom'),
+                    ],
+                    'to' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input datepicker',
+                        'id' => 'datepicker2',
+                        'label' => trans('main.dateTo'),
+                    ], 
+                ];
+            }elseif($model=='products'){
+
+                if(isset($input['id']) && !empty($input['id'])){
+                    $source->where('id',$input['id']);
+                }
+
+                if(isset($input['name']) && !empty($input['name'])){
+                    $source->where('name','LIKE','%'.$input['name'].'%');
+                }
+
+                if(isset($input['price']) && !empty($input['price'])){
+                    if (strpos($input['price'], '||') !== false) {
+                        $arr = explode('||', $input['price']);
+                        $min = (int) $arr[0];
+                        $max = (int) $arr[1];
+                        $source->where('price','>=',$min)->where('price','<=',$max);
+                    }else{
+                        $source->where('price',$input['price']);
+                    }
+                }
+
+                if(isset($input['status']) && !empty($input['status'])){
+                    $source->where('status',$input['status']);
+                }
+
+                $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+                $formattedData = $this->formatData($modelData,$model,$service);
+                
+                $data['mainData'] = [
+                    'title' => trans('main.products'),
+                    'url' => 'products',
+                    'service' => $service,
+                    'icon' => ' fab fa-product-hunt',
+                ];
+
+                $options = [
+                    ['id'=>0,'name'=>trans('main.unAvail')],
+                    ['id'=>1,'name'=>trans('main.avail')]
+                ];
+
+                $data['searchData'] = [
+                    'id' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.id'),
+                    ],
+                    'name' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.name'),
+                    ],
+                    'price' => [
+                        'type' => 'text',
+                        'class' => 'form-control m-input',
+                        'label' => trans('main.price'),
+                    ],
+                    'status' => [
+                        'type' => 'select',
+                        'class' => 'form-control',
+                        'index' => '',
+                        'options' => $options,
+                        'label' => trans('main.status'),
+                    ],
+                ];
+            }
+        }
+
+        $mainData['designElems'] = $data;
+        $mainData['data'] = $formattedData;
+        if(!empty($formattedData)){
+            $mainData['pagination'] = \Helper::GeneratePagination($modelData);
+        }
+        return view('Tenancy.ExternalServices.Views.'.$model)->with('data', (object) $mainData);
+    }
+
+    public function formatData($data,$table,$service){
+        $objs = [];
+        foreach ($data as $key => $value) {
+            $dataObj = new \stdClass();
+            $dataObj->id = $value->id;
+            if($table == 'products'){
+                if($service == 'salla'){
+                    $name_ar = $value->name;
+                    $name_en = $value->name;
+
+                    $dbPrice = unserialize($value->price);
+                    $price = $dbPrice['amount'] .' '.$dbPrice['currency'];
+                    $images = @unserialize($value->images)[0]['url'];
+                    $url = $value->url;
+                    $status = $value->is_available;
+                    $withTax = $value->with_tax;
+                    $created_at = $value->pinned_date;
+                    $require_shipping = $value->require_shipping;
+                }elseif($service == 'zid'){
+                    $name_ar = @unserialize($value->name)['ar'];
+                    $name_en = @unserialize($value->name)['en'];
+                    
+                    $price = $value->formatted_price;
+                    $images = @unserialize($value->images)[0]['image']['full_size'];
+                    $url = $value->html_url;
+                    $status = $value->is_published;
+                    $withTax = $value->is_taxable;
+                    $created_at = $value->created_at;
+                    $require_shipping = $value->requires_shipping;
+                }
+
+                $categories = unserialize($value->categories);
+                $categories_ar = [];
+                $categories_en = [];
+                foreach ($categories as $category) {
+                    $categories_ar[]= isset($category['name']['ar']) && !empty($category['name']['ar']) ? $category['name']['ar'] : $category['name']['en'] ;
+                    $categories_en[]= isset($category['name']['en']) && !empty($category['name']['en']) ? $category['name']['en'] : $category['name']['ar'] ;
+                }
+                $dataObj->sku = $value->sku;
+                $dataObj->quantity = $value->quantity;
+                $dataObj->name_ar = $name_ar == null ? $name_en : $name_ar;
+                $dataObj->name_en = $name_en == null ? $name_ar : $name_en;
+                $dataObj->categories_ar = $categories_ar == [] ? $categories_en : $categories_ar;
+                $dataObj->categories_en = $categories_en == [] ? $categories_ar : $categories_en;
+                $dataObj->price = $price;
+                $dataObj->images = $images;
+                $dataObj->url = $url;
+                $dataObj->status = $status;
+                $dataObj->withTax = $withTax;
+                $dataObj->require_shipping = $require_shipping;
+                $dataObj->created_at = date('Y-m-d H:i:s',strtotime($created_at));
+                $dataObj->updated_at = date('Y-m-d H:i:s',strtotime($value->updated_at));
+            }elseif($table == 'customers'){
+                if($service == 'salla'){
+                    $dataObj->name = $value->first_name .' '.$value->last_name;
+                    $dataObj->phone = $value->mobile_code . '' . $value->mobile;
+                    $dataObj->email = $value->email;
+                    $dataObj->gender = $value->gender;
+                    $dataObj->image = $value->avatar;
+                    $dataObj->city = $value->city;
+                    $dataObj->country = $value->country;
+                    $dataObj->currency = $value->currency;
+                    $dataObj->location = $value->location;
+                    $dataObj->updated_at = date('Y-m-d H:i:s' , strtotime($value->updated_at));
+                }// elseif($service == 'zid'){
+
+                // }
+            }elseif($table == 'orders'){
+                if($service == 'salla'){
+                    $price = unserialize($value->total);
+                    $status = unserialize($value->status);
+                    $dataObj->reference_id = $value->reference_id;
+                    $dataObj->created_at = date('Y-m-d H:i:s', strtotime($value->date));
+                    $dataObj->total = $price['amount'] . ' '.$price['currency'];
+                    $dataObj->can_cancel = $value->can_cancel;
+                    $dataObj->status = $status['name'];
+                    $dataObj->statusID = $status['id'];
+                    $dataObj->items = unserialize($value->items);
+                }// elseif($service == 'zid'){
+
+                // }
+            }
+            $objs[] = $dataObj;
+        }
+        return $objs;
+    }
+
+    public function reports($service,Request $request){
+        if(!in_array($service, ['salla','zid'])){
+            return redirect('404');
+        }
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.notReports'),
+            'url' => 'services/'.$service.'/reports',
+            'name' => 'reports',
+            'service' => $service,
+            'icon' => 'mdi mdi-file-account-outline',
+        ];
+
+        if (Schema::hasTable($service.'_order_status')) {
+            $options = DB::table($service.'_order_status')->get();
+        }else{
+            $options = [];
+        }
+
+        $sendOptions =[
+            ['id'=> 0 , 'name' => trans('main.notSent')],
+            ['id'=> 1 , 'name' => trans('main.sentDone')],
+        ];
+
+        $extraTableData = [];
+        $extraSearchData = [];
+        foreach ($options as $key => $option) {
+            $extraTableData[$option->name] = [
+                'label' => $option->name,
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ];
+            $extraTableData['date_'.$key] = [
+                'label' => trans('main.date'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ];
+
+            $extraSearchData[$option->name] = [
+                'type' => 'select',
+                'class' => 'form-control',
+                'id' => '',
+                'index' => '',
+                'options' => $sendOptions,
+                'label' => $option->name,
+            ];
+            $extraSearchData['from_'.$key] = [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'id' => '',
+                'index' => '',
+                'label' => $option->name.' '.trans('main.dateFrom'),
+            ];
+            $extraSearchData['to_'.$key] = [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'id' => '',
+                'index' => '',
+                'label' => $option->name.' '.trans('main.dateTo'),
+            ];
+        }
+
+        $oldSearchData = [
+            'id' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'label' => trans('main.id'),
+                'index' => '0',
+            ],
+            'order_id' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'index' => '1',
+                'label' => trans('main.order'),
+            ],
+        ];
+
+        $oldTableData=  [
+            'id' => [
+                'label' => trans('main.id'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ],
+            'order_id' => [
+                'label' => trans('main.order'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'order_id',
+                'anchor-class' => '',
+            ],   
+        ];
+
+        if($request->ajax()){
+            // $data = User::dataList();
+            return Datatables::of([])->make(true);
+        }
+
+        $data['designElems']['searchData'] = array_merge($oldSearchData,$extraSearchData); 
+        $data['designElems']['tableData'] = array_merge($oldTableData,$extraTableData);
+        return view('Tenancy.ExternalServices.Views.reports')->with('data', (object) $data);
+    }
+
+    public function templates($service,Request $request){
+        if(!in_array($service, ['salla','zid'])){
+            return redirect('404');
+        }
+
+        $userObj = User::getData(User::getOne(USER_ID));
+        $channels = [];
+        foreach ($userObj->channels as $key => $value) {
+            $channelObj = new \stdClass();
+            $channelObj->id = $value;
+            $channelObj->name = $value;
+            $channels[] = $channelObj;
+        }
+
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.templates'),
+            'url' => 'services/'.$service.'/templates',
+            'name' => 'templates',
+            'nameOne' => 'templates',
+            'service' => $service,
+            'icon' => 'fas fa-envelope-open-text',
+        ];
+
+        $actives = [
+            ['id'=>0,'name'=>trans('main.notActive')],
+            ['id'=>1,'name'=>trans('main.active')],
+        ];
+
+        $options = [['id'=>'ترحيب بالعميل','name'=>'ترحيب بالعميل']];
+        if($service == 'salla'){
+            if (Schema::hasTable($service.'_order_status')) {
+                $statuses = DB::table($service.'_order_status')->get();
+                foreach ($statuses as $value) {
+                    $options[] = ['id'=>$value->name,'name'=>$value->name];
+                }
+            }
+        }elseif($service == 'zid'){
+            $zidOptions = [
+                ['id'=>'جديد','name'=>'جديد'],
+                ['id'=>'جاري التجهيز','name'=>'جاري التجهيز'],
+                ['id'=>'جاهز','name'=>'جاهز'],
+                ['id'=>'جارى التوصيل','name'=>'جارى التوصيل'],
+                ['id'=>'تم التوصيل','name'=>'تم التوصيل'],
+                ['id'=>'تم الالغاء','name'=>'تم الالغاء'],
+            ];
+            $options = array_merge($options,$zidOptions);
+        }
+
+        $searchData = [
+            'id' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'label' => trans('main.id'),
+                'index' => '0',
+            ],
+            'channel' => [
+                'type' => 'select',
+                'class' => 'form-control ',
+                'label' => trans('main.channel'),
+                'index' => '',
+                'options' => $channels,
+            ],
+            'statusText' => [
+                'type' => 'select',
+                'class' => 'form-control ',
+                'label' => trans('main.status'),
+                'index' => '',
+                'options' => $options,
+            ],
+            'status' => [
+                'type' => 'select',
+                'class' => 'form-control ',
+                'label' => trans('main.type'),
+                'index' => '',
+                'options' => $actives,
+            ],
+            
+        ];
+
+        $tableData=  [
+            'id' => [
+                'label' => trans('main.id'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ],
+            'channel' => [
+                'label' => trans('main.channel'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'channel',
+                'anchor-class' => 'badge badge-dark',
+            ],  
+            'content_'.LANGUAGE_PREF => [
+                'label' => trans('main.content_'.LANGUAGE_PREF),
+                'type' => '',
+                'className' => 'text-center pre-space',
+                'data-col' => 'content_'.LANGUAGE_PREF,
+                'anchor-class' => '',
+            ],   
+            'statusText' => [
+                'label' => trans('main.status'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'statusText',
+                'anchor-class' => '',
+            ],  
+            'statusIDText' => [
+                'label' => trans('main.type'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'statusIDText',
+                'anchor-class' => '',
+            ],  
+            'actions' => [
+                'label' => trans('main.actions'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ],   
+        ];
+
+        if($request->ajax()){
+            $mod_id = $service == 'salla' ? 1 : 2;
+            $data = ModTemplate::dataList(null,$mod_id);
+            return Datatables::of($data['data'])->make(true);
+        }
+
+        $data['designElems']['searchData'] = $searchData; 
+        $data['designElems']['tableData'] = $tableData;
+        return view('Tenancy.ExternalServices.Views.templates')->with('data', (object) $data);
+    }
+
+    public function templatesEdit($service,$id) {
+        $id = (int) $id;
+        if(!in_array($service, ['salla','zid'])){
+            return redirect('404');
+        }
+
+        $dataObj = ModTemplate::NotDeleted()->find($id);
+        if($dataObj == null) {
+            return Redirect('404');
+        }
+
+        $userObj = User::getData(User::getOne(USER_ID));
+
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.edit') . ' '.trans('main.templates'),
+            'url' => 'services/'.$service.'/templates',
+            'name' => 'templates',
+            'nameOne' => 'templates',
+            'service' => $service,
+            'icon' => 'fa fa-pencil-alt',
+        ];
+
+        $data['data'] = ModTemplate::getData($dataObj);
+        return view('Tenancy.ExternalServices.Views.edit')->with('data', (object) $data);      
+    }
+
+    public function templatesUpdate($service,$id) {
+        $id = (int) $id;
+        if(!in_array($service, ['salla','zid'])){
+            return redirect('404');
+        }
+
+        $mod_id = $service == 'salla' ? 1 : 2;
+        $input = \Request::all();
+        $dataObj = ModTemplate::NotDeleted()->find($id);
+        if($dataObj == null) {
+            return Redirect('404');
+        }
+
+        $dataObj->content_ar = $input['content_ar'];
+        $dataObj->content_en = $input['content_en'];
+        $dataObj->status = $input['status'];
+        $dataObj->updated_at = DATE_TIME;
+        $dataObj->updated_by = USER_ID;
+        $dataObj->save();
+
+        Session::flash('success', trans('main.editSuccess'));
+        return \Redirect::back()->withInput();
+    }
+
+}

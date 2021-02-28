@@ -34,10 +34,7 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            if($e->getCode() == 0){
-                $url = config('app.url');
-                return \Redirect::away($url);
-            }
+            //
         });
     }
 }

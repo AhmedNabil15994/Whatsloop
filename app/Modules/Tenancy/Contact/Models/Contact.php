@@ -34,7 +34,7 @@ class Contact extends Model{
             ->first();
     }
 
-    static function dataList($status=null,$id=null) {
+    static function dataList($status=null,$id=null,$group_id=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -70,6 +70,9 @@ class Contact extends Model{
         }
         if($id != null){
             $source->whereNotIn('id',$id);
+        }
+        if($group_id != null){
+            $source->where('group_id',$group_id);
         }
         $source->orderBy('sort','ASC');
         return self::generateObj($source);

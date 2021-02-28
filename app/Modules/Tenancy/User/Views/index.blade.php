@@ -63,6 +63,10 @@
     <input type="hidden" name="data-tabs" value="{{ \Helper::checkRules('copy-'.$data->designElems['mainData']['nameOne']) }}">
     @endif
 
+     @if($data->designElems['mainData']['url'] == 'groupMsgs')
+    <input type="hidden" name="data-tab" value="{{ \Helper::checkRules('view-'.$data->designElems['mainData']['nameOne']) }}">
+    @endif
+
     @if($data->designElems['mainData']['url'] == 'groupNumbers')
     <input type="hidden" name="data-tests" value="{{ \Helper::checkRules('export-contacts') }}">
     @endif

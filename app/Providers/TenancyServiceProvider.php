@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\Tenant\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +16,7 @@ use Stancl\Tenancy\Middleware;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use Stancl\Tenancy\Middleware\ScopeSessions;
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -152,6 +153,7 @@ class TenancyServiceProvider extends ServiceProvider
             'tenancyGeneral',
             InitializeTenancyBySubdomain::class,
             PreventAccessFromCentralDomains::class,
+            ScopeSessions::class,
         ])->namespace(static::$controllerNamespace)
             ->group(function () {
             require app_path('Modules/Tenancy/Auth/routes.php');
@@ -165,6 +167,7 @@ class TenancyServiceProvider extends ServiceProvider
             'tenancyWithAuth',
             InitializeTenancyBySubdomain::class,
             PreventAccessFromCentralDomains::class,
+            ScopeSessions::class,
         ])->namespace(static::$controllerNamespace)->group(function (){
             require app_path('Modules/Tenancy/Dashboard/routes.php');
             require app_path('Modules/Tenancy/User/routes.php');
@@ -177,6 +180,7 @@ class TenancyServiceProvider extends ServiceProvider
             require app_path('Modules/Tenancy/Contact/routes.php');
             require app_path('Modules/Tenancy/APIMods/routes.php');
             require app_path('Modules/Tenancy/GroupMsgs/routes.php');
+            require app_path('Modules/Tenancy/ExternalServices/routes.php');
         });
     }
 

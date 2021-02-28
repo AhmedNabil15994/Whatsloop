@@ -19,6 +19,10 @@ class GroupMsg extends Model{
         return $this->belongsTo('App\Models\GroupNumber','group_id');
     }
 
+    public function Creator(){
+        return $this->belongsTo('App\Models\User','created_by');
+    }
+
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)
@@ -83,23 +87,26 @@ class GroupMsg extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $data->sent_type = 0;
+        $data->sent_type = trans('main.inPrgo');
         $data->sent_msgs = 0;
-        $data->unsent_msgs = 0;
-        $data->msgs_no = 0;
 
         $data->id = $source->id;
         $data->channel = $source->channel;
+        $data->publish_at = $source->publish_at;
+        $data->publish_at2 = \Helper::formatDate($source->publish_at,'M d,Y H:i');
         $data->group_id = $source->group_id;
         $data->group = $source->Group != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
         $data->message_type = $source->message_type;
         $data->message_type_text = self::getMessageType($source->message_type);
-        $data->message = $source->message;
+        $data->message = self::getMessage($source);
         $data->file_name = $source->file_name;
         $data->https_url = $source->https_url;
         $data->url_title = $source->url_title;
         $data->url_desc = $source->url_desc;
         $data->url_image = $source->url_image;
+        $data->contacts_count = $source->contacts_count;
+        $data->messages_count = $source->messages_count;
+        $data->unsent_msgs = $source->messages_count * $source->contacts_count;
         $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name) : "";
         $data->file_name = $source->file_name;
         $data->file_size = $data->file != '' ? \ImagesHelper::getPhotoSize($data->file) : '';
@@ -107,9 +114,22 @@ class GroupMsg extends Model{
         $data->whatsapp_no = $source->whatsapp_no;
         $data->status = $source->status;
         $data->sort = $source->sort;
+        $data->creator = $source->Creator->name;
         $data->created_at = \Helper::formatDate($source->created_at);
         return $data;
     }  
+
+    static function getMessage($source){
+        $text = '';
+        if($source->message_type == 1 || $source->message_type == 2){
+            $text = $source->message;
+        }elseif($source->message_type == 5){
+            $text = $source->https_url;
+        }elseif($source->message_type == 6){
+            $text = $source->whatsapp_no;
+        }
+        return $text;
+    }
 
     static function getMessageType($type){
         $text = '';

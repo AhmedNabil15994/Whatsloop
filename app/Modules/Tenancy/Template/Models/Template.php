@@ -21,9 +21,6 @@ class Template extends Model{
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
-                    if (isset($input['channel']) && !empty($input['channel'])) {
-                        $query->where('channel',$input['channel']);
-                    } 
                     if (isset($input['name_ar']) && !empty($input['name_ar'])) {
                         $query->where('name_ar', 'LIKE', '%' . $input['name_ar'] . '%');
                     } 

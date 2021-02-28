@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Tenant;
+use App\Models\Tenant\Tenant;
 use Stancl\Tenancy\Database\Models\Domain;
 //use Stancl\Tenancy\Database\Models\Tenant;
 
@@ -18,7 +18,7 @@ return [
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
     'central_domains' => [
-        'whatsloop.localhost',
+        'newsystem.localhost',
         //'127.0.0.1',
         //'localhost',
     ],
@@ -185,6 +185,6 @@ return [
      */
     'seeder_parameters' => [
         '--class' => 'DatabaseSeeder', // root seeder class
-        // '--force' => true,
+        '--force' => true,
     ],
 ];

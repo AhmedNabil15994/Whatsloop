@@ -36,6 +36,7 @@ return [
         'permissions' => [
             'list-group-messages' => ['index',],
             'add-group-message' => ['add','create'],
+            'view-group-message' => ['add','view'],
             'charts-group-message' => ['charts'],
             'uploadImage-group-message' => ['uploadImage'],
         ],
