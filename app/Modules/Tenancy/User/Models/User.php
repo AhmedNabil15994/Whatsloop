@@ -23,6 +23,7 @@ class User extends Authenticatable implements Syncable
         'name',
         'email',
         'password',
+        'code',
         'phone',
         'group_id',
         'channels',
@@ -90,6 +91,10 @@ class User extends Authenticatable implements Syncable
     public function Group(){
         return $this->belongsTo('App\Models\Group','group_id');
     }
+
+    public function PaymentInfo(){
+        return $this->hasOne('App\Models\PaymentInfo','user_id');
+    }
     
     static function getPhotoPath($id, $photo) {
         return \ImagesHelper::GetImagePath('users', $id, $photo);
@@ -138,6 +143,10 @@ class User extends Authenticatable implements Syncable
     static function newSortIndex(){
         return self::count() + 1;
     }
+
+    static function authenticatedUser(){
+        return self::getData(self::getOne(USER_ID));
+    }
     
     static function selectImage($source){
         if($source->image != null){
@@ -156,10 +165,14 @@ class User extends Authenticatable implements Syncable
         $data->group = $source->Group != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
         $data->group_id = $source->group_id;
         $data->email = $source->email;
+        $data->company = $source->company;
         $data->name = $source->name != null ? $source->name : '';
         $data->phone = $source->phone != null ? str_replace('+', '', $source->phone) : '';
         $data->status = $source->status;
+        $data->notifications = $source->notifications;
+        $data->offers = $source->offers;
         $data->sort = $source->sort;
+        $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
         $data->channels = $source->channels != null ? unserialize($source->channels) : [];
         $data->channelCodes = implode(',', $data->channels);

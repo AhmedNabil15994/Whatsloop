@@ -16,9 +16,7 @@ class Variables extends Migration
         Schema::create('variables', function (Blueprint $table) {
             $table->id();
             $table->string('var_key');
-            $table->string('var_value')->nullable();
-            $table->integer('type');
-            $table->integer('var_type');
+            $table->text('var_value')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();
@@ -26,6 +24,25 @@ class Variables extends Migration
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
         });
+
+        \DB::table('variables')->insert([
+            [
+                'var_key' => 'WHATSLOOP_INSTANCEID',
+                'var_value' => '1002',
+            ],
+            [
+                'var_key' => 'WHATSLOOP_TOKEN',
+                'var_value' => 'a8924830787bd9c55fb58c1ace37f83d',
+            ],
+            [
+                'var_key' => 'SallaURL',
+                'var_value' => 'https://api.salla.dev/admin/v2',
+            ],
+            [
+                'var_key' => 'ZidURL',
+                'var_value' => 'https://api.zid.sa/v1',
+            ],
+        ]);
     }
 
     /**

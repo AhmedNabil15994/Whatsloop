@@ -48,8 +48,17 @@ class ExternalServices {
     }
 
     function formatResponse($result,$service='salla'){
+        if($service == 'salla'){
+            $modelData = $this->formatSallaResponse($result);
+        }elseif($service == 'zid'){
+            $modelData = $this->formatZidResponse($result);
+        }
+        return $this->reformatModelData($modelData);
+    }
+
+    function formatSallaResponse($result){
         $modelData = [];
-        if($service == 'salla' && $result->status == 200){
+        if($result->status == 200){
             if(isset($result->pagination)){
                 $pagesCount = $result->pagination['totalPages'];
                 if($pagesCount > 1){
@@ -64,10 +73,22 @@ class ExternalServices {
             }else{
                 $modelData = $result->data;
             }
-        }elseif($service == 'zid' && isset($result->results) && !empty($result->results)){
+        }
+        return $modelData;
+    }
+
+    function formatZidResponse($result){
+        $modelData = [];
+        if( isset($result->results) && !empty($result->results) ){
             $modelData = $result->results;
         }
-        return $this->reformatModelData($modelData);
+        if( isset($result->customers) && !empty($result->customers) ){
+            $modelData = $result->customers;
+        }
+        if( isset($result->orders) && !empty($result->orders) ){
+            $modelData = $result->orders;
+        }
+        return $modelData;
     }
 
     function reformatModelData($data){

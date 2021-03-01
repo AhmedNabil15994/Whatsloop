@@ -99,6 +99,7 @@
                                             <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $searchKey }}">
                                                 <option value="">{{ trans('main.choose') }}</option>
                                                 @foreach($searchItem['options'] as $group)
+                                                @php $group = (object) $group; @endphp
                                                 <option value="{{ $group->name }}" {{ Request::get($searchKey) != null && Request::get($searchKey) == $group->name ? 'selected' : '' }}>{{ $group->name }}</option>
                                                 @endforeach
                                             </select>

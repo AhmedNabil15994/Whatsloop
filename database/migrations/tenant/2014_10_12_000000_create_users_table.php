@@ -25,7 +25,10 @@ class CreateUsersTable extends Migration
             $table->boolean('is_approved')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
+            $table->integer('notifications')->default(0);
+            $table->integer('offers')->default(0);
             $table->integer('group_id');
+            $table->string('company')->nullable();
             $table->text('image')->nullable();
             $table->text('extra_rules')->nullable();
             $table->text('channels')->nullable();

@@ -82,5 +82,5 @@
 {{-- Scripts Section --}}
 @section('scripts')
 <script src="{{ asset('libs/sortablejs/Sortable.min.js') }}"></script>
-<script src="{{ asset('/components/sorting.js') }}"></script>
+<script src="{{ asset('components/sorting.js') }}"></script>
 @endsection

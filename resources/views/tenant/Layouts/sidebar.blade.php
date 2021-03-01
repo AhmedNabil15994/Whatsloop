@@ -37,20 +37,17 @@
         <!--- Sidemenu -->
         <div id="sidebar-menu">
             <ul id="side-menu">    
-                @if(\Helper::checkRules('list-dashboard'))
                 <li>
                     <a href="{{ URL::to('/dashboard') }}">
                         <i class="mdi mdi-view-dashboard-outline"></i>
                         <span> {{ trans('main.dashboard') }} </span>
                     </a>
                 </li>
-                @endif
-
                 @if(\Helper::checkRules('salla'))
                 <li class="{{ Active(URL::to('/services/salla*'),'menuitem-active') }}">
                     <a href="#sidebarSalla" data-toggle="collapse">
                         <i class=" fas fa-layer-group"></i>
-                        <span> Salla </span>
+                        <span> {{ trans('main.salla') }} </span>
                         <span class="menu-arrow"></span>
                     </a>
                     <div class="collapse {{ Active(URL::to('/services/salla*'),'show') }}" id="sidebarSalla">
@@ -79,7 +76,7 @@
                 <li class="{{ Active(URL::to('/services/zid*'),'menuitem-active') }}">
                     <a href="#sidebarZid" data-toggle="collapse">
                         <i class=" fas fa-layer-group"></i>
-                        <span> Zid </span>
+                        <span> {{ trans('main.zid') }} </span>
                         <span class="menu-arrow"></span>
                     </a>
                     <div class="collapse {{ Active(URL::to('/services/zid*'),'show') }}" id="sidebarZid">

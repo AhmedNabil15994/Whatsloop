@@ -168,9 +168,6 @@ table td a.btn:hover{
   transition: all ease-in-out .25s;
   border-radius: 50%;
 }
-.input-group>.form-control:not(:last-child){
-  border: 0;
-}
 .input-group i{
   color: #fff;
 }
@@ -541,4 +538,39 @@ table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before{
 }
 .break-space{
   white-space: break-spaces
+}
+.card.myCard{
+  cursor: pointer;
+}
+.card.myCard:hover{
+  -webkit-box-shadow: 0 3px 16px rgb(188 150 209 / 15%);
+  -moz-box-shadow: 0 3px 16px rgb(188 150 209 / 15%);
+  -o-box-shadow: 0 3px 16px rgb(188 150 209 / 15%);
+  box-shadow: 0 3px 16px rgb(188 150 209 / 15%);
+  transition: all ease-in-out .25s;
+}
+body[data-sidebar-color="dark"] .card.myCard,
+body[data-sidebar-color="dark"] .card-box{
+  border: 1px solid #424e5a;
+}
+.card.myCard .card-body{
+  padding: 2rem;
+}
+.card.myCard a{
+  color: inherit;
+}
+.card.myCard p{
+  margin-bottom: 0;
+}
+.myicons{
+  font-size: 30px;
+  margin-top: 10px;
+  border: 0;
+}
+.myCard .card-img-top.img-fluid{
+  height: 220px;
+}
+.service.first,
+.service.second{
+  display: none;
 }

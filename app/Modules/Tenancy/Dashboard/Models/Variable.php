@@ -16,7 +16,7 @@ class  Variable extends Model{
             ->find($id);
     }
 
-    static function variableList($type) {
+    static function variableList() {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where('type',$type)->where(function ($query) use ($input) {
@@ -27,10 +27,6 @@ class  Variable extends Model{
 
         if (isset($input['value']) && !empty($input['value'])) {
             $source->where('var_value', 'LIKE', '%' . $input['value'] . '%');
-        }
-
-        if (isset($input['type']) && !empty($input['type'])) {
-            $source->where('type', $input['type']);
         }
 
         return self::getObj($source);
@@ -54,8 +50,6 @@ class  Variable extends Model{
         $variableObj->id = $source->id;
         $variableObj->key = $source->var_key;
         $variableObj->value = $source->var_value;
-        $variableObj->var_type = $source->var_type;
-        $variableObj->type = $source->type;
         $variableObj->created_at = $source->created_at;
         return $variableObj;
     }

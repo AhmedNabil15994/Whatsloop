@@ -138,22 +138,18 @@ class Helper
     }
 
     static function getPermissions($withTitles = null){
-        $controllers = [];
+        $data = [];
         $perms = config('permissions');
-        foreach ($perms as $perm) {
-            $controller = $perm['controller'].'@';
-            foreach ($perm['permissions'] as $key => $value) {
-                foreach ($value as $permFunc) {
-                    if($withTitles == null){
-                        $controllers[$controller.$permFunc] = $key;  
-                    }
-                }
-            }
-            if($withTitles == true){
-                $controllers[] = $perm['permissions'];  
+        foreach ($perms as $key => $perm) {
+            if($perm != 'general'){
+                $controller = explode('@', $key)[0];
+                $data[$controller][$perm] = [
+                    'perm_name' => $perm,
+                    'perm_title' => trans('permission.'.$perm),
+                ];
             }
         }
-        return $controllers;
+        return $data;
     }
     
     static function convert_number_to_words($number) {

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\ModTemplate;
 use App\Models\User;
+use App\Models\Variable;
 use DB;
 use DataTables;
 
@@ -21,21 +22,24 @@ class ExternalServicesControllers extends Controller {
         }
 
         if($service == 'salla'){
-            $baseUrl = 'https://api.salla.dev/admin/v2';
-            $storeToken = 'a1d4fb35ff0cb9936866832c1af7a947644c8e8578b6627539fc21e4878b3fe6'; 
+            $baseUrl = Variable::getVar('SallaURL');
+            $storeToken = Variable::getVar('SallaStoreToken'); 
             $dataURL = $baseUrl.'/'.$model;
             $tableName = $service.'_'.$model;
             $myHeaders =[];
         }else if($service == 'zid'){
-            $baseUrl = 'https://api.zid.sa/v1';
-            $storeID = '69488';
-            $storeToken = 'eyJpdiI6ImRUeUMvZ2lNbUVmb25HZkgvM2g4S2c9PSIsInZhbHVlIjoiK1Q2N1BXZzZMM0NPWTIyZTJObTVQK0Y3aDluekhUMUZ2TWVvUllGZUlrYjNVbnVZbkUwbGE3MC9DcmJrSU1sUWRKd1ZkdlpyWVhzdmhjdy9OSEhtTHJzVUpiZEZraFpweDVPa0ljSjJMdEUwNnBDaEltb0doV0x1VCtqbTZnZVI2UHdUalhlTkEvbG03cVhobHRBOUZ5NzdYM1FWNCtMVWRQSXZnSkpLT0ZLUVFKUk0vRHFMcVRhMmE0azFmWGhVQXpyWGc1dUlqcVdHK2FBN3BaOTRKUT09IiwibWFjIjoiMTdjOWMxMGFmODk0Y2Y4OTA3NWM0NjdlYWJiOWJkOTM1NGY3MDVmZDczYTdkMzY3MTdjMWI4Y2ZjZGNlNWZmMiJ9';
-            $managerToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI2MCIsImp0aSI6IjYwNTA4MmQyNmI1MTc1NDJhNmNjYjRmYzRmZGExNTBhOTllNzZkYmNlMjM5M2M5OTU3MTA0MmUzNTA4ODY1N2QxY2EwNWM5ZTU2ZmNiZjc2IiwiaWF0IjoxNTk4NDU1MTI4LCJuYmYiOjE1OTg0NTUxMjgsImV4cCI6MTYyOTk5MTEyOCwic3ViIjoiMjgiLCJzY29wZXMiOlsidGhpcmQtcGFydGllcy1hcGlzIl19.YXl7U5ZpxANjnOHh24pEPbiBjkGpMelZraJcLUOpSbW_sHSgvsE3CGNCD3T1YZT2EfzgW-TtSpL4Lzurj9mvtzMSFF9z3YnkKJp6Bv8jo-HMbCC8-mWCu7FrKk5X3PjnpMvkAiDGpOKT-kd1Y7cN-DBIXu-n21X_RpvXRT49A26kIRIMbofNJzxeP4WJL8ia2hkJjLk5V0JIwjAYBED9zgX3R5s1axVRw8utNMIdhcGfJIpZEF3vF03uT4qqx2oHUsczn-4cag7parC4rnUovt_sFvEY24F6rp5fS63BGtfxHC6OVGg3lhpHfrsx1Bpn94CduBpk03RcfIh4e32dTyrbaKebw6qOrID7TGBGv1_ZfcRkZoVjqClDLO3oMWt2IEu72_5CLzl9BcEiMCTumH-Gy9oy0j5YhhRoYyCXfcmamSBf88MJj2dQHh8dTfaCK6PDFRNusOLCA9l3-VH4BZkayliWm7qUKiuXHPTJJ8aH6lZVnpmiQmk4G7yLka7vyAt-YqqzTEyii4wwhN_JLxuTbLmQG-bMP2fMhFkkwekFuOI95fxsfiCmLOxCqY3IWJ23zqwKnpKPrs5-drmTXTMdKn11NDWMcbFEIrldMjgLzfsF6FmrsiWkQqn6AelFXTNH0IG-ifJg5KXF3mcFtSX1UJL7RAs4_qo6r80wp-o';
+            $baseUrl = Variable::getVar('ZidURL');
+            $storeID = Variable::getVar('ZidStoreID');
+            $storeToken = Variable::getVar('ZidStoreToken');
+            $managerToken = Variable::getVar('ZidMerchantToken');
             
             if($model == 'products'){
                 $dataURL = $baseUrl.'/'.$model.'/';
             }elseif($model == 'orders' || $model == 'customers'){
                 $dataURL = $baseUrl.'/managers/store/'.$model.'/';   
+                $oldStoreToken = $storeToken;
+                $storeToken = $managerToken;
+                $managerToken = $oldStoreToken;
             }
             $tableName = $service.'_'.$model;
 
@@ -57,14 +61,14 @@ class ExternalServicesControllers extends Controller {
         ];
 
         if($service == 'salla' && $model == 'orders'){
-            $dataArr['dataURL'] = $dataArr['dataURL'].'/statuses';
-            $dataArr['tableName'] = $service.'_order_status';  
-            $externalHelperObj = new \ExternalServices($dataArr);
-            if (!Schema::hasTable($dataArr['tableName']) || $refresh == 'refresh') {
+            $newDataArr = $dataArr;
+            $newDataArr['dataURL'] = $dataArr['dataURL'].'/statuses';
+            $newDataArr['tableName'] = $service.'_order_status';  
+            $externalHelperObj = new \ExternalServices($newDataArr);
+            if (!Schema::hasTable($newDataArr['tableName']) || $refresh == 'refresh') {
                 $externalHelperObj->startFuncs();
             }
         }
-
         $externalHelperObj = new \ExternalServices($dataArr);
         if (!Schema::hasTable($tableName) || $refresh == 'refresh') {
             $externalHelperObj->startFuncs();
@@ -255,22 +259,22 @@ class ExternalServicesControllers extends Controller {
             }
         }elseif($service == 'zid'){
             if($model == 'customers'){
-                // // Begin Search
-                // if(isset($input['name']) && !empty($input['name'])){
-                //     $source->where('first_name','LIKE','%'.$input['name'].'%')->orWhere('last_name','LIKE','%'.$input['name'].'%');
-                // }
+                // Begin Search
+                if(isset($input['name']) && !empty($input['name'])){
+                    $source->where('first_name','LIKE','%'.$input['name'].'%')->orWhere('last_name','LIKE','%'.$input['name'].'%');
+                }
 
-                // if(isset($input['email']) && !empty($input['email'])){
-                //     $source->where('email',$input['email']);
-                // }
+                if(isset($input['email']) && !empty($input['email'])){
+                    $source->where('email',$input['email']);
+                }
 
-                // if(isset($input['phone']) && !empty($input['phone'])){
-                //     $source->where('mobile',$input['phone']);
-                // }
+                if(isset($input['phone']) && !empty($input['phone'])){
+                    $source->where('mobile',$input['phone']);
+                }
 
-                // if(isset($input['address']) && !empty($input['address'])){
-                //     $source->where('country','LIKE','%'.$input['address'].'%')->orWhere('city','LIKE','%'.$input['address'].'%');
-                // }
+                if(isset($input['address']) && !empty($input['address'])){
+                    $source->where('city','LIKE','%'.$input['address'].'%');
+                }
 
 
                 $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
@@ -307,16 +311,16 @@ class ExternalServicesControllers extends Controller {
                 ];
             }elseif ($model == 'orders') {
                 // Begin Search
-                // if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
-                //     $source->where('date','>=', $input['from'].' 00:00:00')->where('date','<=',$input['to']. ' 23:59:59');
-                // }
-                // if(isset($input['id']) && !empty($input['id'])){
-                //     $source->where('id',$input['id']);
-                // }
+                if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+                    $source->where('created_at','>=', $input['from'].' 00:00:00')->where('date','<=',$input['to']. ' 23:59:59');
+                }
+                if(isset($input['id']) && !empty($input['id'])){
+                    $source->where('id',$input['code']);
+                }
 
-                // if(isset($input['status']) && !empty($input['status'])){
-                //     $source->where('status','LIKE','%'.$input['status'].'%');
-                // }
+                if(isset($input['status']) && !empty($input['status'])){
+                    $source->where('order_status','LIKE','%'.$input['status'].'%');
+                }
 
                 $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
                 $formattedData = $this->formatData($modelData,$model,$service);
@@ -331,7 +335,14 @@ class ExternalServicesControllers extends Controller {
                 if (Schema::hasTable($service.'_order_status')) {
                     $options = DB::table($service.'_order_status')->get();
                 }else{
-                    $options = [];
+                    $options = [
+                        ['id'=>'جديد','name'=>'جديد'],
+                        ['id'=>'جاري التجهيز','name'=>'جاري التجهيز'],
+                        ['id'=>'جاهز','name'=>'جاهز'],
+                        ['id'=>'جارى التوصيل','name'=>'جارى التوصيل'],
+                        ['id'=>'تم التوصيل','name'=>'تم التوصيل'],
+                        ['id'=>'تم الالغاء','name'=>'تم الالغاء'],
+                    ];
                 }
 
                 $data['searchData'] = [
@@ -499,9 +510,14 @@ class ExternalServicesControllers extends Controller {
                     $dataObj->currency = $value->currency;
                     $dataObj->location = $value->location;
                     $dataObj->updated_at = date('Y-m-d H:i:s' , strtotime($value->updated_at));
-                }// elseif($service == 'zid'){
-
-                // }
+                }elseif($service == 'zid'){
+                    $dataObj->name = $value->name;
+                    $dataObj->phone = $value->mobile;
+                    $dataObj->email = $value->email;
+                    $dataObj->image = asset('images/not-available.jpg');
+                    $dataObj->city = unserialize($value->city)['name'];
+                    $dataObj->country = unserialize($value->city)['country_name'];
+                }
             }elseif($table == 'orders'){
                 if($service == 'salla'){
                     $price = unserialize($value->total);
@@ -513,9 +529,15 @@ class ExternalServicesControllers extends Controller {
                     $dataObj->status = $status['name'];
                     $dataObj->statusID = $status['id'];
                     $dataObj->items = unserialize($value->items);
-                }// elseif($service == 'zid'){
-
-                // }
+                }elseif($service == 'zid'){
+                    $status = unserialize($value->order_status);
+                    $dataObj->created_at = date('Y-m-d H:i:s', strtotime($value->created_at));
+                    $dataObj->id = $value->code;
+                    $dataObj->total = $value->order_total_string;
+                    $dataObj->status = $status['name'];
+                    $dataObj->statusID = $status['code'];
+                    $dataObj->items = [['name'=>$value->store_name,'quantity'=>1]];
+                }
             }
             $objs[] = $dataObj;
         }

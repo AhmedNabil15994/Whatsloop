@@ -49,7 +49,7 @@
                         </div>
                     </div>
                     <hr>
-                    <form class="form-horizontal" method="POST" action="{{ URL::to('/groups/create') }}">
+                    <form class="form-horizontal" method="POST" action="{{ URL::to('/groups/update/'.$data->data->id) }}">
                         @csrf
                         <div class="form-group row mb-3">
                             <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.name_ar') }} :</label>
@@ -69,22 +69,27 @@
                             <div class="col-9">
                                 <div class="sortable-list tasklist list-unstyled">
                                     <div class="row">
+                                        @php $i =0; @endphp
                                         @foreach($data->permissions as $key => $permission)
+                                            @if($i % 3 == 0)
+                                            </div><div class="row">
+                                            @endif
                                         <div class="col-xs-12 col-md-4 border-0 mb-3">
                                             <li>
                                                 @foreach($permission as $one => $onePerm)
                                                 <div class="checkbox checkbox-success checkbox-single float-left">
-                                                    <input type="checkbox" {{ in_array($one, $data->data->rulesArr) ? 'checked' : '' }} name="permission{{ $one }}">
+                                                    <input type="checkbox" {{ in_array($one, $data->data->rulesArr) ? 'checked' : '' }} name="permission{{ $onePerm['perm_name'] }}">
                                                     <label></label>
                                                 </div>
-                                                <p>{{ trans('permission.'.$one) }}</p>
+                                                <p>{{ $onePerm['perm_title'] }}</p>
                                                 <div class="clearfix"></div>
-                                                @if(count($permission) > 1 && ($onePerm[0] == 'index' || $onePerm[0] == 'panel') )
+                                                @if(count($permission) > 1)
                                                 <hr>
                                                 @endif
                                                 @endforeach
                                             </li>
                                         </div>
+                                        @php $i++; @endphp
                                         @endforeach
                                     </div>
                                 </div>
@@ -92,7 +97,7 @@
                         </div>
                         <div class="form-group mb-0 justify-content-end row">
                             <div class="col-9">
-                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
                                 <a href="{{ URL::to('/'.$data->designElems['mainData']['nameOne']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>

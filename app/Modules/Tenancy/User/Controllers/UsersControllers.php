@@ -387,6 +387,7 @@ class UsersControllers extends Controller {
         }
 
         $dataObj->name = $input['name'];
+        $dataObj->global_id = User::getOne(USER_ID)->global_id;
         $dataObj->group_id = $input['group_id'];
         $dataObj->email = $input['email'];
         $dataObj->phone = '+'.$input['phone'];

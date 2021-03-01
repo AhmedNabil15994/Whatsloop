@@ -69,22 +69,27 @@
                             <div class="col-9">
                                 <div class="sortable-list tasklist list-unstyled">
                                     <div class="row">
+                                        @php $i =0; @endphp
                                         @foreach($data->permissions as $key => $permission)
+                                            @if($i % 3 == 0)
+                                            </div><div class="row">
+                                            @endif
                                         <div class="col-xs-12 col-md-4 border-0 mb-3">
                                             <li>
                                                 @foreach($permission as $one => $onePerm)
                                                 <div class="checkbox checkbox-blue checkbox-single float-left">
-                                                    <input type="checkbox" name="permission{{ $one }}">
+                                                    <input type="checkbox" name="permission{{ $onePerm['perm_name'] }}">
                                                     <label></label>
                                                 </div>
-                                                <p>{{ trans('permission.'.$one) }}</p>
+                                                <p>{{ $onePerm['perm_title'] }}</p>
                                                 <div class="clearfix"></div>
-                                                @if(count($permission) > 1 && ($onePerm[0] == 'index' || $onePerm[0] == 'panel') )
+                                                @if(count($permission) > 1 )
                                                 <hr>
                                                 @endif
                                                 @endforeach
                                             </li>
                                         </div>
+                                        @php $i++; @endphp
                                         @endforeach
                                     </div>
                                 </div>
