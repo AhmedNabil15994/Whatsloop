@@ -660,8 +660,8 @@ class ExternalServicesControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value;
-            $channelObj->name = $value;
+            $channelObj->id = $value->id;
+            $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
 

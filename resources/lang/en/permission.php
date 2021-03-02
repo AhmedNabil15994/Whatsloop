@@ -3,6 +3,33 @@
 return [
 	'list-dashboard' => 'Dashboard',
 		
+	'paymentInfo' => 'Payment Settings',
+	'taxInfo' => 'Tax Settings',	
+	'notifications' => 'WhatsLoop Notifications',
+	'offers' => 'WhatsLoop Offers',
+	'updateSalla' => 'Update Salla Info',
+	'updateZid' => 'Update Zid Info',
+	'subscription' => 'subscription',	
+	'apiSetting' => 'WhatsLoop API Setting',
+	'apiGuide' => 'WhatsLoop API Guide',
+	'webhookSetting' => 'WebHook Setting',
+
+	'salla' => 'Salla',
+	'salla-customers' => 'Salla Customers',
+	'salla-products' => 'Salla Products',
+	'salla-orders' => 'Salla Orders',
+	'salla-reports' => 'Salla Notifications Reports',
+	'salla-templates' => 'Salla Templates',
+	'edit-salla-template' => 'Edit Salla Templates',
+
+	'zid' => 'Zid',
+	'zid-customers' => 'Zid Customers',
+	'zid-products' => 'Zid Products',
+	'zid-orders' => 'Zid Orders',
+	'zid-reports' => 'Zid Notifications Reports',
+	'zid-templates' => 'Zid Templates',
+	'edit-zid-template' => 'Edit Zid Templates',
+
 	'list-group-messages' => 'List Group Messages',
 	'add-group-message' => 'Send Group Messages',
 	'view-group-message' => 'Group Messages Details',

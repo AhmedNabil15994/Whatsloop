@@ -86,12 +86,12 @@ class DashboardControllers extends Controller {
         if($request->ajax()){
             $userObj = User::getData(User::getOne(USER_ID));
             if(!Session::has('channel')){
-                if(in_array($request->channel, $userObj->channels)){
+                if(in_array($request->channel, $userObj->channelIDS)){
                     Session::put('channel', $request->channel);
                 }
             }else{
                 Session::forget('channel');
-                if(in_array($request->channel, $userObj->channels)){
+                if(in_array($request->channel, $userObj->channelIDS)){
                     Session::put('channel', $request->channel);
                 }
             } 

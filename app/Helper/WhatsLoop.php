@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Variable;
+use App\Models\UserChannels;
 /**
  * This Class For Whatsloop Api To Send ( Message - File - Photo - Location - Voice - Contact )
  *
@@ -14,8 +15,9 @@ class WhatsLoop {
      * @param string $Token
      */
     public function __construct() {
-        $this->InstanceId = Variable::getVar('WHATSLOOP_INSTANCEID');
-        $this->Token = Variable::getVar('WHATSLOOP_TOKEN');
+        $channelObj =  UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->first();
+        $this->InstanceId = $channelObj->id;
+        $this->Token = $channelObj->token;
     }
 
     /**

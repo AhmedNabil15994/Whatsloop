@@ -36,4 +36,11 @@ Route::group(['prefix' => '/profile'] , function () {
 
     Route::get('/subscription', [$controller,'subscription']);
 
+    Route::get('/apiSetting', [$controller,'apiSetting']);
+    
+    Route::get('/apiGuide', [$controller,'apiGuide']);
+
+    Route::get('/webhookSetting', [$controller,'webhookSetting']);
+    Route::post('/postWebhookSetting', [$controller,'postWebhookSetting']);
+
 });

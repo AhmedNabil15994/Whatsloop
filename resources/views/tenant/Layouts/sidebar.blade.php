@@ -43,7 +43,7 @@
                         <span> {{ trans('main.dashboard') }} </span>
                     </a>
                 </li>
-                @if(\Helper::checkRules('salla'))
+                @if(\Helper::checkRules('salla-customers,salla-products,salla-orders,salla-reports,salla-templates'))
                 <li class="{{ Active(URL::to('/services/salla*'),'menuitem-active') }}">
                     <a href="#sidebarSalla" data-toggle="collapse">
                         <i class=" fas fa-layer-group"></i>
@@ -52,27 +52,37 @@
                     </a>
                     <div class="collapse {{ Active(URL::to('/services/salla*'),'show') }}" id="sidebarSalla">
                         <ul class="nav-second-level">
+                            @if(\Helper::checkRules('salla-customers'))
                             <li class="{{ Active(URL::to('/services/salla/customers'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/salla/customers') }}">{{ trans('main.customers') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('salla-products'))
                             <li class="{{ Active(URL::to('/services/salla/products'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/salla/products') }}">{{ trans('main.products') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('salla-orders'))
                             <li class="{{ Active(URL::to('/services/salla/orders'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/salla/orders') }}">{{ trans('main.orders') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('salla-reports'))
                             <li class="{{ Active(URL::to('/services/salla/reports'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/salla/reports') }}">{{ trans('main.notReports') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('salla-templates'))
                             <li class="{{ Active(URL::to('/services/salla/templates*'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/salla/templates') }}">{{ trans('main.templates') }}</a>
                             </li>
+                            @endif
                         </ul>
                     </div>
                 </li>
                 @endif
 
-                @if(\Helper::checkRules('zid'))
+                @if(\Helper::checkRules('zid-customers,zid-products,zid-orders,zid-reports,zid-templates'))
                 <li class="{{ Active(URL::to('/services/zid*'),'menuitem-active') }}">
                     <a href="#sidebarZid" data-toggle="collapse">
                         <i class=" fas fa-layer-group"></i>
@@ -81,21 +91,31 @@
                     </a>
                     <div class="collapse {{ Active(URL::to('/services/zid*'),'show') }}" id="sidebarZid">
                         <ul class="nav-second-level">
+                            @if(\Helper::checkRules('zid-customers'))
                             <li class="{{ Active(URL::to('/services/zid/customers'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/zid/customers') }}">{{ trans('main.customers') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('zid-products'))
                             <li class="{{ Active(URL::to('/services/zid/products'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/zid/products') }}">{{ trans('main.products') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('zid-orders'))
                             <li class="{{ Active(URL::to('/services/zid/orders'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/zid/orders') }}">{{ trans('main.orders') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('zid-reports'))
                             <li class="{{ Active(URL::to('/services/zid/reports'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/zid/reports') }}">{{ trans('main.notReports') }}</a>
                             </li>
+                            @endif
+                            @if(\Helper::checkRules('zid-templates'))
                             <li class="{{ Active(URL::to('/services/zid/templates*'),'menuitem-active') }}">
                                 <a href="{{ URL::to('/services/zid/templates') }}">{{ trans('main.templates') }}</a>
                             </li>
+                            @endif
                         </ul>
                     </div>
                 </li>

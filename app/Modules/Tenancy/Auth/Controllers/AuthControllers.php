@@ -85,9 +85,8 @@ class AuthControllers extends Controller {
         session(['is_admin' => $isAdmin]);
         session(['group_name' => $userObj->Group->name_ar]);
         $channels = User::getData($userObj)->channels;
-        if(count($channels) >= 1){
-            session(['channel' => $channels[0]]);
-        }
+        session(['channel' => $channels[0]->id]);
+        
 
         Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
         return \TraitsFunc::SuccessResponse(trans('auth.welcome') . $userObj->name_ar);
@@ -207,6 +206,8 @@ class AuthControllers extends Controller {
         session(['name' => $userObj->name]);
         session(['is_admin' => $isAdmin]);
         session(['group_name' => $userObj->Group->name_ar]);
+        $channels = User::getData($userObj)->channels;
+        session(['channel' => $channels[0]->id]);
 
         Session::flash('success', trans('auth.passwordChanged'));
         return redirect('/dashboard');

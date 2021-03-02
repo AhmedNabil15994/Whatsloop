@@ -174,8 +174,9 @@ class User extends Authenticatable implements Syncable
         $data->sort = $source->sort;
         $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
-        $data->channels = $source->channels != null ? unserialize($source->channels) : [];
-        $data->channelCodes = implode(',', $data->channels);
+        $data->channels = $source->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($source->channels))->get() : [];
+        $data->channelCodes = implode(',', unserialize($source->channels));
+        $data->channelIDS = unserialize($source->channels);
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);
         return $data;
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Variables extends Migration
+class CreateChannelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class Variables extends Migration
      */
     public function up()
     {
-        Schema::create('variables', function (Blueprint $table) {
+        Schema::create('channels', function (Blueprint $table) {
             $table->id();
-            $table->string('var_key');
-            $table->text('var_value')->nullable();
+            $table->string('name');
+            $table->string('token');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();
@@ -24,17 +26,6 @@ class Variables extends Migration
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
         });
-
-        \DB::table('variables')->insert([
-            [
-                'var_key' => 'SallaURL',
-                'var_value' => 'https://api.salla.dev/admin/v2',
-            ],
-            [
-                'var_key' => 'ZidURL',
-                'var_value' => 'https://api.zid.sa/v1',
-            ],
-        ]);
     }
 
     /**
@@ -44,6 +35,6 @@ class Variables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('variables');
+        Schema::dropIfExists('channels');
     }
 }

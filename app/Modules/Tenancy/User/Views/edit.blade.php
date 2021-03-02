@@ -84,21 +84,36 @@
                         @endif
 
                         @if($propValue['type'] == 'select')
-                        <div class="form-group row mb-2">
-                            <label class="col-3 col-form-label">{{ $propValue['label'] }} :</label>
-                            <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $propKey }}">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($propValue['options'] as $group)
-                                    @php $group = (object) $group; @endphp
-                                    <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
-                                    @endforeach
-                                </select>
-                                <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
-                            </div>
-                        </div> 
+                            @if($data->designElems['mainData']['url'] == 'users' && $propKey != 'channels')
+                            <div class="form-group row mb-2">
+                                <label class="col-3 col-form-label">{{ $propValue['label'] }} :</label>
+                                <div class="col-9">
+                                    <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $propKey }}">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        @foreach($propValue['options'] as $group)
+                                        @php $group = (object) $group; @endphp
+                                        <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                </div>
+                            </div> 
+                            @elseif($data->designElems['mainData']['url'] == 'users' && $propKey == 'channels')
+                            <div class="form-group row mb-2">
+                                <label class="col-3 col-form-label">{{ $propValue['label'] }} :</label>
+                                <div class="col-9">
+                                    <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $propKey }}">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        @foreach($propValue['options'] as $group)
+                                        @php $group = (object) $group; @endphp
+                                        <option value="{{ $group->id }}" {{ in_array($group->id,$data->data->channelIDS) ? 'selected' : '' }}>{{ $group->title }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                </div>
+                            </div> 
+                            @endif
                         @endif
-
                         @endforeach
 
                         @if($data->designElems['mainData']['url'] == 'users')

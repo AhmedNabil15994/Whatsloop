@@ -36,9 +36,8 @@ class ImpersonatesController extends Controller
         session(['is_admin' => $isAdmin]);
         session(['group_name' => '']);
         $channels = User::getData($userObj)->channels;
-        if(count($channels) >= 1){
-            session(['channel' => $channels[0]]);
-        }
+        session(['channel' => $channels[0]->id]);
+
         // Auth::guard($token->auth_guard)->loginUsingId($token->user_id);
 
         $token->delete();

@@ -102,13 +102,13 @@
             </li>   
             <li class="dropdown d-lg-inline-block topbar-dropdown">
                 <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                    <span class="align-middle">{{ Session::has('channel') ? trans('main.channel').' '.Session::get('channel') : trans('main.chooseChannel') }}</span>
+                    <span class="align-middle">{{ Session::has('channel') ? trans('main.channel').': '.\App\Models\UserChannels::getOne(Session::get('channel'))->name : trans('main.chooseChannel') }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <!-- item-->
                     @foreach($userObj->channels as $channel)
                     <a href="javascript:void(0);" class="dropdown-item channel-item">
-                        <span class="align-middle">{{ $channel }}</span>
+                        <span class="align-middle" data-area="{{ $channel->id }}">{{ $channel->name }}</span>
                     </a>
                     @endforeach
                 </div>

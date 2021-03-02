@@ -20,8 +20,8 @@ class GroupNumbersControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value;
-            $channelObj->title = $value;
+            $channelObj->id = $value->id;
+            $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
         $data['mainData'] = [
@@ -298,7 +298,7 @@ class GroupNumbersControllers extends Controller {
     }
 
     public function addGroupNumbers(){
-        $data['designElems'] = [$this->getData()['mainData']];
+        $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.addGroupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];

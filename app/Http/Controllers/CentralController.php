@@ -6,6 +6,7 @@ use App\Models\Central\CentralUser;
 use App\Models\Tenant\Tenant;
 use App\Models\Tenant\TenantPivot;
 use App\Models\User;
+use App\Models\UserChannels;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,14 @@ class CentralController extends Controller
         ]);
         
         $user = $tenant->run(function() use(&$centralUser){
+            UserChannels::create([
+                'id' => 1002,
+                'name' => 'Whats Loop Demo',
+                'token' => 'a8924830787bd9c55fb58c1ace37f83d',
+                'start_date' => date('Y-m-d'),
+                'end_date' => date('Y-m-d',strtotime('+1 year')),
+            ]);
+            
             return User::create([
                 'global_id' => $centralUser->global_id,
                 'name' => request('name'),

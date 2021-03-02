@@ -3,7 +3,34 @@
 return [
 
 	'list-dashboard' => 'الرئيسية',
-		
+
+	'paymentInfo' => 'الاعدادات الدفع',
+	'taxInfo' => 'إعدادات الضريبة',	
+	'notifications' => 'اشعارات واتس لوب',
+	'offers' => 'عروض واتس لوب',
+	'updateSalla' => 'تحديث بيانات سلة',
+	'updateZid' => 'تحديث بيانات زد',
+	'subscription' => 'إدارة الإشتراك',	
+	'apiSetting' => 'اعدادات API',
+	'apiGuide' => 'دليل API',
+	'webhookSetting' => 'اعدادات WebHook',
+	
+	'salla' => 'سلة',
+	'salla-customers' => 'عملاء سلة',
+	'salla-products' => 'منتجات سلة',
+	'salla-orders' => 'طلبات سلة',
+	'salla-reports' => 'تقارير تنبيهات سلة',
+	'salla-templates' => 'قوالب سلة',
+	'edit-salla-template' => 'تعديل قوالب سلة',
+
+	'zid' => 'زد',
+	'zid-customers' => 'عملاء زد',
+	'zid-products' => 'منتجات زد',
+	'zid-orders' => 'طلبات زد',
+	'zid-reports' => 'تقارير تنبيهات زد',
+	'zid-templates' => 'قوالب زد',
+	'edit-zid-template' => 'تعديل قوالب زد',
+
 	'list-group-messages' => 'عرض الرسائل الجماعية',
 	'add-group-message' => 'ارسال الرسائل الجماعية',
 	'view-group-message' => 'تفاصيل الرسائل الجماعية',

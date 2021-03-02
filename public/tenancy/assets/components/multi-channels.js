@@ -2,7 +2,7 @@ $(function(){
 	$('.dropdown-item.channel-item').on('click',function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		var channel = $(this).children('span').text();
+		var channel = $(this).children('span').data('area');
 		var _token = $('meta[name="csrf-token"]').attr('content');
 
 		$.ajax({

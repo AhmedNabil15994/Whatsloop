@@ -293,4 +293,73 @@ return [
 	'storeIDValidation' => 'Store ID is required',
 	'merchantTokenValidation' => 'Merchant Token is required',
 
+	'api_setting' => 'WhatsLoop API Setting',
+	'api_setting_p' => 'View Your Channels & Tokens',
+	'api_guide' => 'WhatsLoop API Guide',
+	'api_guide_p' => 'A PHP Class is prepared to be used directly and you can download it as well',
+	'webhook_setting' => 'WebHook Setting',
+	'webhook_setting_p' => 'View and update your webhook settings',
+
+	'start_date' => 'Subscription Start Date',
+	'end_date' => 'Subscription End Date',
+	'token' => 'Token',
+	'channel_name' => 'Channel Name',
+	'to' => '(To)',
+	'from' => '(From)',
+	'messages' => 'Messages',
+	'sentMessages' => 'Sent Messages',
+	'incomeMessages' => 'Incoming Messages',
+	'conversations' => 'Conversations',
+
+	'connection_date' => 'Connection Date',
+	'phone_status' => 'Phone Status',
+	'msgSync' => 'Messages Synced',
+	'contSync' => 'Contacts Synced',
+	'phone_battery' => 'Phone Battery',
+	'phone_type' => 'Phone Type',
+	'phone_model' => 'Phone Model',
+	'os_ver' => 'OS Version',
+	'leftDays' => 'Left Days',
+	'day' => 'Day',
+	'synced' => 'Synced',
+	'phone_connected' => 'Phone Connected',
+	'channel_no' => 'Channel Number',
+	'intro' => 'Introduction',
+
+	'instructions' => 'Instructions',
+	'instructions_p1' => 'Class is prepared PHP ready that you can use directly and you can download it when you click on Download Library',
+	'instructions_p2' => 'If you want any advice or assistance, we will be happy to serve you by clicking on contacting us',
+	'instructions_p3' => 'Variables in POST requests must always pass the authentication code and channel number along with the variables sent (InstanceId = xxxx, Token = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx).',
+	'instructions_p4' => 'WhatsApp API is based on the WhatsApp WEB protocol though, your account can be blocked by the anti-spam WhatsApp system after clicking several times on the "Block" button.',
+
+	'downloadLibrary' => 'Download Library',
+
+	'send_text' => 'Send Text',
+	'send_text_p1' => 'Even if the phone is disconnected from the Internet, the message will be added to the queue for sending and delivery.',
+	'send_text_p2' => 'The recipient phone number must be entered (966xxxxxxxxx)',
+
+	'send_file' => 'Send File',
+	'send_file_p1' => 'You can send an image with adding text with the sent image and the allowed extensions are jpg, png',
+	'send_file_p2' => 'You can send pdf files, xlsx',
+	'send_file_p3' => 'In the case of sending a file, you can leave the text box blank',
+
+	'send_sound' => 'Send Sound',
+	'send_sound_p1' => 'You can send audio files to be played on WhatsApp directly, and their extension is: ogg',
+	'send_sound_p2' => 'You can convert to the required extension through the following link:',
+	'send_sound_p3' => 'These are the required settings: -',
+
+	'send_location' => 'Send Location',
+	'send_location_p1' => 'You can send your company website to any of your customers by specifying the latitude and longitude coordinates with your address and sending it in the message',
+	'example' => 'Example',
+	'send_location_p2' => 'The coordinates are placed: 21.5982195,39.1586724',
+	'send_location_p3' => 'The address is written: 6081 Quraysh, Al Bawadi, Jeddah 23531, Saudi Arabia',
+
+	'send_contact' => 'Send Contact',
+	'send_contact_p1' => 'You can send a contact you must type the sender phone number (966xxxxxxxxx)',
+		
+	'edit_contact' => 'Edit Contact',
+	'edit_contact_p1' => 'You can send a contact',
+	'copy_code' => 'Copy Code',
+	'show_code' => 'Show Code',
+
 ];

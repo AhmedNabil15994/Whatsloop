@@ -101,6 +101,86 @@
     </div>
 
     <!-- end row-->
+    @if(\Helper::checkRules('apiSetting,apiGuide,webhookSetting'))
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <h4 class="header-title"><i class="badge-outline-success  fas fa-handshake"></i> {{ trans('main.api_setting') }}</h4>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @if(\Helper::checkRules('apiSetting'))
+                        <div class="col-4">
+                            <div class="card myCard">
+                                <a href="{{ URL::to('/profile/apiSetting') }}">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <i class="myicons fas fa-handshake badge-outline-success"></i> 
+                                            </div>
+                                            <div class="col-11 pr-3 pl-3">
+                                                <h4 class="header-title">{{ trans('main.api_setting') }}</h4>
+                                                <p>{{ trans('main.api_setting_p') }}</p>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end card body-->
+                                </a>
+                            </div> <!-- end card -->
+                        </div>
+                        @endif
+                        @if(\Helper::checkRules('apiGuide'))
+                        <div class="col-4">
+                            <div class="card myCard">
+                                <a href="{{ URL::to('/profile/apiGuide') }}">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <i class="myicons fas fa-code badge-outline-success"></i> 
+                                            </div>
+                                            <div class="col-11 pr-3 pl-3">
+                                                <h4 class="header-title"> {{ trans('main.api_guide') }}</h4>
+                                                <p> {{ trans('main.api_guide_p') }}</p>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end card body-->
+                                </a>
+                            </div> <!-- end card -->
+                        </div>
+                        @endif
+                        @if(\Helper::checkRules('webhookSetting'))
+                        <div class="col-4">
+                            <div class="card myCard">
+                                <a href="{{ URL::to('/profile/webhookSetting') }}">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <i class="myicons mdi mdi-webhook badge-outline-success"></i> 
+                                            </div>
+                                            <div class="col-11 pr-3 pl-3">
+                                                <h4 class="header-title"> {{ trans('main.webhook_setting') }}</h4>
+                                                <p> {{ trans('main.webhook_setting_p') }}</p>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end card body-->
+                                </a>
+                            </div> <!-- end card -->
+                        </div>
+                        @endif
+                    </div>    
+                                    
+                </div> <!-- end card body-->
+            </div> <!-- end card -->
+        </div><!-- end col-->
+    </div>
+    @endif
+
+    <!-- end row-->
+    @if(\Helper::checkRules('paymentInfo,taxInfo'))
     <div class="row">
         <div class="col-1"></div>
         <div class="col-10">
@@ -157,6 +237,7 @@
             </div> <!-- end card -->
         </div><!-- end col-->
     </div>
+    @endif
 
     <div class="row">
         <div class="col-1"></div>

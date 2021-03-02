@@ -266,6 +266,9 @@ $(function(){
 				$.each($('.m-form--fit input.datetimepicker-input'),function(index,item){
 			       	dtParms[$(item).attr('name')] = $(item).val();
 				});
+				$.each($('.m-form--fit input.datepicker'),function(index,item){
+			       	dtParms[$(item).attr('name')] = $(item).val();
+				});
 				if(designElems.mainData.url == 'contacts'){
 					$.each(urlParams,function(index,item){
 						dtParms[index] = item;

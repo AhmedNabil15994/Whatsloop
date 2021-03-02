@@ -574,3 +574,41 @@ body[data-sidebar-color="dark"] .card-box{
 .service.second{
   display: none;
 }
+.example .example-toggle, .example .example-copy {
+    padding: 6px;
+    margin-right: 0.25rem;
+    -webkit-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    font-size: 14px;
+    color: #B5B5C3;
+}
+.example.example-compact .example-toggle.example-toggled {
+    background-color: #F3F6F9;
+}
+.example .example-toggle.example-toggled {
+    background-color: #F3F6F9;
+    -webkit-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+    color: #3699FF;
+    border-top-right-radius: 0.42rem;
+    border-top-left-radius: 0.42rem;
+}
+.col.code{
+  margin-top: -35px;
+  background-color: #F3F6F9;
+  border-radius: 5px;
+}
+.nav-tabs .nav-link.active{
+  background-color: #F3F6F9;
+}
+#cardCollpase8 .col.text-right.mt-5{
+  z-index: 2;
+}
+.col.code .tab-content .tab-pane{
+  padding: 10px;
+  white-space: break-spaces;
+  margin-left: -100px;
+  direction: ltr;
+  text-align: left;
+}

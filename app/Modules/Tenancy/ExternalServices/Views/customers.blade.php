@@ -45,7 +45,7 @@
                             <a href="#" class="btn ml-1 btn-outline-danger search-mode m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.advancedSearchTip') }}">
                                 <i class="fa fa-question"></i>
                             </a>
-                            <a href="{{ URL::current().'/refresh' }}" class="btn mr-2 ml-2 btn-md btn-rounded btn-outline-dark" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.refresh') }}">
+                            <a href="{{ URL::current().'?refresh=refresh' }}" class="btn mr-2 ml-2 btn-md btn-rounded btn-outline-dark" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.refresh') }}">
                                 <i class=" fas fa-database"></i>
                                 {{ trans('main.refresh') }}
                             </a>

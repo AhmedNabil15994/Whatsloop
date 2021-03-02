@@ -30,8 +30,30 @@ return [
 
     'ProfileControllers@updateSalla' => 'updateSalla',
     'ProfileControllers@updateZid' => 'updateZid',
-    
+
     'ProfileControllers@subscription' => 'subscription',
+
+    'ProfileControllers@apiSetting' => 'apiSetting',
+    'ProfileControllers@apiGuide' => 'apiGuide',
+    'ProfileControllers@webhookSetting' => 'webhookSetting',
+    'ProfileControllers@postWebhookSetting' => 'webhookSetting',
+
+    'SallaControllers@customers' => 'salla-customers',
+    'SallaControllers@products' => 'salla-products',
+    'SallaControllers@orders' => 'salla-orders',
+    'SallaControllers@reports' => 'salla-reports',
+    'SallaControllers@templates' => 'salla-templates',
+    'SallaControllers@templatesEdit' => 'edit-salla-template',
+    'SallaControllers@templatesUpdate' => 'edit-salla-template',
+
+    'ZidControllers@customers' => 'zid-customers',
+    'ZidControllers@products' => 'zid-products',
+    'ZidControllers@orders' => 'zid-orders',
+    'ZidControllers@reports' => 'zid-reports',
+    'ZidControllers@templates' => 'zid-templates',
+    'ZidControllers@templatesEdit' => 'edit-zid-template',
+    'ZidControllers@templatesUpdate' => 'edit-zid-template',
+    
 
     'ApiModsControllers@msgsArchive'  => 'list-messages-archive',
     'ApiModsControllers@report'  =>  'list-groupNumberRepors',

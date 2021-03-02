@@ -21,8 +21,8 @@ class BotControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value;
-            $channelObj->title = $value;
+            $channelObj->id = $value->id;
+            $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
 
@@ -183,8 +183,8 @@ class BotControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value;
-            $channelObj->title = $value;
+            $channelObj->id = $value->id;
+            $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
 
@@ -303,8 +303,8 @@ class BotControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value;
-            $channelObj->title = $value;
+            $channelObj->id = $value->id;
+            $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
 
