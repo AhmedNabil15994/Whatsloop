@@ -27,6 +27,14 @@ class Variables extends Migration
 
         \DB::table('variables')->insert([
             [
+                'var_key' => 'WHATSLOOP_INSTANCEID',
+                'var_value' => '1002',
+            ],
+            [
+                'var_key' => 'WHATSLOOP_TOKEN',
+                'var_value' => 'a8924830787bd9c55fb58c1ace37f83d',
+            ],
+            [
                 'var_key' => 'SallaURL',
                 'var_value' => 'https://api.salla.dev/admin/v2',
             ],
