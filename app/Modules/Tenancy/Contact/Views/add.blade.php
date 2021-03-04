@@ -123,7 +123,7 @@
                                             <div class="form-group row mb-3">
                                                 <label class="col-md-3 col-form-label" for="whatsappNo"> {{ trans('main.whatsappNo') }}</label>
                                                 <div class="col-md-9">
-                                                    <input type="tel" name="whatsappNo" class="form-control" placeholder="{{ trans('main.whatsappNo') }}">
+                                                    <input type="tel" name="whatsappNo" class="form-control teles" placeholder="{{ trans('main.whatsappNo') }}">
                                                 </div>
                                             </div>
                                         </div> <!-- end col -->
@@ -153,7 +153,7 @@
                                         </div> <!-- end col -->
                                         <div class="col-12">
                                             <div class="form-group row mb-3">
-                                                <label class="col-md-2 col-form-label" for="notes"> {{ trans('main.country') }}</label>
+                                                <label class="col-md-2 col-form-label" for="notes"> {{ trans('main.extraInfo') }}</label>
                                                 <div class="col-md-10">
                                                     <textarea class="form-control" name="notes" placeholder="{{ trans('main.extraInfo') }}"></textarea>
                                                 </div>

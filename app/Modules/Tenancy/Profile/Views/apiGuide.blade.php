@@ -171,7 +171,7 @@
                     </div>
                     <h5 class="card-title mb-0 text-white">{{ trans('main.send_file') }}</h5>
                 </div>
-                <div id="cardCollpase2" class="collapse example show" style="">
+                <div id="cardCollpase2" class="collapse example" style="">
                     <div class="card-body">
                         <p>{{ trans('main.send_file_p1') }}</p>
                         <p>{{ trans('main.send_file_p2') }}</p>
@@ -277,7 +277,7 @@
                     </div>
                     <h5 class="card-title mb-0 text-white">{{ trans('main.send_sound') }}</h5>
                 </div>
-                <div id="cardCollpase3" class="collapse example show" style="">
+                <div id="cardCollpase3" class="collapse example" style="">
                     <div class="card-body">
                         <p>{{ trans('main.send_sound_p1') }}</p>
                         <p>{{ trans('main.send_sound_p2') }} :</p>
@@ -378,11 +378,11 @@
             <div class="card">
                 <div class="card-header bg-dark py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase3" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase4" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
                     </div>
                     <h5 class="card-title mb-0 text-white">{{ trans('main.send_location') }}</h5>
                 </div>
-                <div id="cardCollpase3" class="collapse example show" style="">
+                <div id="cardCollpase4" class="collapse example" style="">
                     <div class="card-body">
                         <p>{{ trans('main.send_location_p1') }}</p>
                         {{ trans('main.example') }} : <a href="https://www.google.com.eg/maps/place/Digital+Servers+Center/@21.5982195,39.1586724,17z/data=!3m1!4b1!4m5!3m4!1s0x15c3d09b97e2fb0d:0x3bafaf5c1752cb0c!8m2!3d21.5982195!4d39.1608611" target="_blank">https://www.google.com.eg/maps/place/Digital+Servers+Center/@21.5982195,39.1586724,17z/data=!3m1!4b1!4m5!3m4!1s0x15c3d09b97e2fb0d:0x3bafaf5c1752cb0c!8m2!3d21.5982195!4d39.1608611</a>
@@ -485,11 +485,11 @@
             <div class="card">
                 <div class="card-header bg-dark py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase3" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase5" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
                     </div>
                     <h5 class="card-title mb-0 text-white">{{ trans('main.send_contact') }}</h5>
                 </div>
-                <div id="cardCollpase3" class="collapse example show" style="">
+                <div id="cardCollpase5" class="collapse example" style="">
                     <div class="card-body">
                         <p>{{ trans('main.send_contact_p1') }}</p>
                         <p>{{ trans('main.send_text_p2') }}</p>
@@ -586,11 +586,11 @@
             <div class="card">
                 <div class="card-header bg-dark py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase3" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase6" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
                     </div>
                     <h5 class="card-title mb-0 text-white">{{ trans('main.edit_contact') }}</h5>
                 </div>
-                <div id="cardCollpase3" class="collapse example show" style="">
+                <div id="cardCollpase6" class="collapse example" style="">
                     <div class="card-body">
                         <p>{{ trans('main.edit_contact_p1') }}</p>
                         <p>{{ trans('main.send_text_p2') }}</p>
@@ -678,5 +678,5 @@
 {{-- Scripts Section --}}
 
 @section('scripts')
-<script src="{{ asset('components/profile_services.js') }}" type="text/javascript"></script>
+<script src="{{ asset('components/apiGuide.js') }}" type="text/javascript"></script>
 @endsection

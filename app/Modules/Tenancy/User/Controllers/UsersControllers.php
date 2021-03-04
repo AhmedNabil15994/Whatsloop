@@ -143,8 +143,8 @@ class UsersControllers extends Controller {
                 'specialAttr' => '',
             ],
             'phone' => [
-                'type' => 'number',
-                'class' => 'form-control',
+                'type' => 'tel',
+                'class' => 'form-control teles',
                 'label' => trans('main.phone'),
                 'specialAttr' => '',
             ],
@@ -270,7 +270,7 @@ class UsersControllers extends Controller {
         }
 
         if(isset($input['phone']) && !empty($input['phone'])){
-            $userObj = User::checkUserBy('phone','+'.$input['phone'],$id);
+            $userObj = User::checkUserBy('phone',$input['phone'],$id);
             if($userObj){
                 Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
@@ -313,7 +313,7 @@ class UsersControllers extends Controller {
         $dataObj->name = $input['name'];
         $dataObj->group_id = $input['group_id'];
         $dataObj->email = $input['email'];
-        $dataObj->phone = '+'.$input['phone'];
+        $dataObj->phone = $input['phone'];
         $dataObj->extra_rules = serialize($permissionsArr);
         $dataObj->updated_at = DATE_TIME;
         $dataObj->updated_by = USER_ID;
@@ -350,7 +350,7 @@ class UsersControllers extends Controller {
 
     public function create() {
         $input = \Request::all();
-        
+
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
@@ -364,7 +364,7 @@ class UsersControllers extends Controller {
         }
 
         if(isset($input['phone']) && !empty($input['phone'])){
-            $userObj = User::checkUserBy('phone','+'.$input['phone']);
+            $userObj = User::checkUserBy('phone',$input['phone']);
             if($userObj){
                 Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
@@ -390,7 +390,7 @@ class UsersControllers extends Controller {
         $dataObj->global_id = User::getOne(USER_ID)->global_id;
         $dataObj->group_id = $input['group_id'];
         $dataObj->email = $input['email'];
-        $dataObj->phone = '+'.$input['phone'];
+        $dataObj->phone = $input['phone'];
         $dataObj->password = \Hash::make($input['password']);
         $dataObj->extra_rules = serialize($permissionsArr);
         $dataObj->sort = User::newSortIndex();

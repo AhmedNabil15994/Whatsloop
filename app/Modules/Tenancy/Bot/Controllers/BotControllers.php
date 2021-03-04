@@ -367,7 +367,7 @@ class BotControllers extends Controller {
                 }
             }
         }else if($input['reply_type'] == 6){
-            $dataObj->whatsapp_no = '+'.$input['whatsapp_no'];
+            $dataObj->whatsapp_no = $input['whatsapp_no'];
             $dataObj->save();
         }else if($input['reply_type'] == 7){
             $dataObj->lat = $input['lat'];

@@ -26,6 +26,7 @@
 <link href="{{ asset('css/default-skin.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ asset('css/photoswipe.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ asset('libs/ladda/ladda-themeless.min.css') }}" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
 <link href="{{ asset('css/touches.css') }}" rel="stylesheet" type="text/css">
 <!-- third party css -->
 @yield('styles')

@@ -7,7 +7,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         @include('tenant.Layouts.head')
-        <link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">
         <div class="account-pages mt-5 mb-5">
@@ -67,7 +66,6 @@
         <!-- end page -->
         @include('tenant.Layouts.scripts')
         @include('tenant.Partials.notf_messages')
-        <script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('components/forgetPassword.js') }}" type="text/javascript"></script>
     </body>
 </html>

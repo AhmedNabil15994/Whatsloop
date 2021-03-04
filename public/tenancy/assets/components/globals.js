@@ -67,6 +67,11 @@ function deleteItem($id) {
     });
 }
 
+$(".teles").intlTelInput({
+    initialCountry: $('input[name="countriesCode"]').val(),
+    preferredCountries: ["sa","ae","bh","kw","om","eg"],
+});
+
 $('.quickEdit').on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
@@ -300,13 +305,35 @@ $('.pdf-but').on('click',function(e){
     $('.buttons-pdf')[0].click();
 });
 
-$('#SubmitBTN').on('click',function(){
+$('#SubmitBTN').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
     $('input[name="status"]').val(1);
-    $('form').submit();
+    var phone =  $(".teles").intlTelInput("getNumber");
+    if (!$(".teles").intlTelInput("isValidNumber")) {
+        if(lang == 'en'){
+            errorNotification("This Phone Number Isn't Valid!");
+        }else{
+            errorNotification("هذا رقم الجوال غير موجود");
+        }
+    }else{
+        $('input.teles').val(phone);
+        $('form').submit();
+    }
 });
 $('#SaveBTN').on('click',function(){
     $('input[name="status"]').val(0);
-    $('form').submit();
+    var phone =  $(".teles").intlTelInput("getNumber");
+    if (!$(".teles").intlTelInput("isValidNumber")) {
+        if(lang == 'en'){
+            errorNotification("This Phone Number Isn't Valid!");
+        }else{
+            errorNotification("هذا رقم الجوال غير موجود");
+        }
+    }else{
+        $('input.teles').val(phone);
+        $('form').submit();
+    }
 });
 $('.Reset').on('click',function(){
     $('input').attr('value','');

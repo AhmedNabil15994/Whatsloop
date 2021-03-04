@@ -214,7 +214,7 @@ class ContactsControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
-        $phone = '+'.$input['phone'];
+        $phone = $input['phone'];
         $contactObj = Contact::NotDeleted()->where('id','!=',$id)->where('group_id',$input['group_id'])->where('phone',$phone)->first();
         if($contactObj != null){
             Session::flash('error', trans('main.phoneError'));
@@ -253,6 +253,7 @@ class ContactsControllers extends Controller {
 
     public function create() {
         $input = \Request::all();
+        dd($input);
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
@@ -268,12 +269,8 @@ class ContactsControllers extends Controller {
                 Session::flash('error', trans('main.phoneValidate'));
                 return redirect()->back()->withInput();
             }
-            $input['phone'] = '+'.$input['phone'];
-            if(!isset($input['name']) || empty($input['name'])){
-                $input['name'] = '+'.$input['phone'];
-            }
 
-            $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$phone)->first();
+            $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$input['phone'])->first();
             if(!$contactObj){
                 $dataObj = new Contact;
                 $dataObj->name = $input['name'];

@@ -4,7 +4,7 @@ $(function(){
     
     $("#telephone").intlTelInput({
         initialCountry: $('input[name="country_code"]').val(),
-        utilsScript: 'tenancy/assets/js/utils.js',
+        preferredCountries: ["sa","ae","bh","kw","om","eg"],
     });
 
     $(document).on('click','button.loginBut',function(e){

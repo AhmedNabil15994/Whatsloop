@@ -223,7 +223,7 @@
                             <div class="form-group row mb-3 hidden">
                                 <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.whatsappNo') }} :</label>
                                 <div class="col-9">
-                                    <input type="text" class="form-control" value="{{ old('whatsapp_no') }}" name="whatsapp_no" placeholder="{{ trans('main.whatsappNo') }}">
+                                    <input type="tel" class="form-control teles" value="{{ old('whatsapp_no') }}" name="whatsapp_no" placeholder="{{ trans('main.whatsappNo') }}">
                                 </div>
                             </div>
                         </div>

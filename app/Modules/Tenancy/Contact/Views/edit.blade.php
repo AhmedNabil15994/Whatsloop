@@ -61,7 +61,7 @@
                                     <div class="form-group row mb-3">
                                         <label class="col-md-3 col-form-label" for="whatsappNo"> {{ trans('main.whatsappNo') }}</label>
                                         <div class="col-md-9">
-                                            <input type="tel" name="phone" class="form-control" value="{{ $data->data->phone2 }}" placeholder="{{ trans('main.whatsappNo') }}">
+                                            <input type="tel" name="phone" class="form-control teles" value="{{ $data->data->phone2 }}" placeholder="{{ trans('main.whatsappNo') }}">
                                         </div>
                                     </div>
                                 </div> <!-- end col -->

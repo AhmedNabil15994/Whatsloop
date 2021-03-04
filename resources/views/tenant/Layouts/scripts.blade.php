@@ -31,6 +31,8 @@
 <script src="{{ asset('libs/flatpickr/flatpickr.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}" charset="UTF-8"></script>
 
+<script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/utils.js') }}" type="text/javascript"></script>
 
 <script src="{{ asset('components/globals.js') }}"></script>
 <!-- third party js -->

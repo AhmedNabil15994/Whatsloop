@@ -63,7 +63,7 @@
                         @csrf
                         <input type="hidden" name="status">
                         @foreach($data->designElems['modelData'] as $propKey => $propValue)
-                        @if(in_array($propValue['type'], ['email','text','number','password']))
+                        @if(in_array($propValue['type'], ['email','text','number','password','tel']))
                         <div class="form-group row mb-3">
                             <label for="" class="col-3 col-form-label">{{ $propValue['label'] }} :</label>
                             <div class="col-9">

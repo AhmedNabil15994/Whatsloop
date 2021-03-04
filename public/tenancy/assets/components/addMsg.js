@@ -1,7 +1,7 @@
 $(function(){
 	Dropzone.options.myAwesomeDropzone = false;
 	Dropzone.autoDiscover = false;
-	
+
 	$.each($('.reply .kt_dropzone_1'),function(index,item){
 		var dateID = $(this).parents('.reply').data('id');
 		$(item).dropzone({
@@ -92,6 +92,15 @@ $(function(){
 	$(".AddBTN").click(function(e){
 		e.preventDefault();
 		e.stopPropagation();
+		
+		if (!$(".teles").intlTelInput("isValidNumber")) {
+		    if(lang == 'en'){
+		        return errorNotification("This Phone Number Isn't Valid!");
+		    }else{
+		        return errorNotification("هذا رقم الجوال غير موجود");
+		    }
+		}
+
 		$('input[name="status"]').val(1);
 		var inputName = 'name_'+lang;
 
@@ -159,6 +168,8 @@ $(function(){
 			cancelButtonText:'<i class="mdi mdi-backburger"></i>'+backVar,
 		}).then(function(result){
 			if (result.value) {
+				var phone =  $(".teles").intlTelInput("getNumber");
+				$('.teles').val(phone);
 				$('form.grpmsg').submit();
 			}
 		});
