@@ -19,6 +19,7 @@ $(function(){
             }else{
                 errorNotification("هذا رقم الجوال غير موجود");
             }
+            Ladda.stopAll();
         }
 
         if(phone){
@@ -31,6 +32,7 @@ $(function(){
                     'phone': phone,
                 },
                 success:function(data){
+                    Ladda.stopAll();
                     if(data.status.status == 1){
                         successNotification(data.status.message);
                         $('.codes').removeClass('hidden');
@@ -59,6 +61,7 @@ $(function(){
                     'code': code,
                 },
                 success:function(data){
+                    Ladda.stopAll();
                     if(data.status.status == 1){
                         window.location.href = "/changePassword";
                     }else{
