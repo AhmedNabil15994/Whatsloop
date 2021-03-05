@@ -37,7 +37,7 @@ return [
 	'passwordValidation2' => "كلمة المرور غير متطابقة",
 	'passwordValidation3' => "يرجي اعادة كتابة كلمة المرور",
 	'passwordChanged' => "تم تغيير كلمة المرور بنجاح",
-
+	'mustLogin' => 'يرجي تسجيل الدخول اولا!',
 
 
 ];

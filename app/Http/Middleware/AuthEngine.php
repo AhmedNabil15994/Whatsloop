@@ -14,7 +14,7 @@ class AuthEngine
             \Auth::logout();
             session()->flush();
 
-            \Session::flash('error', "يرجي تسجيل الدخول اولا!");
+            \Session::flash('error', trans('auth.mustLogin'));
             return Redirect('/login');
         }
 
@@ -30,7 +30,7 @@ class AuthEngine
             \Auth::logout();
             session()->flush();
 
-            \Session::flash('error', "يرجي تسجيل الدخول اولا!");
+            \Session::flash('error', trans('auth.mustLogin'));
             return Redirect('/login');
         }
 

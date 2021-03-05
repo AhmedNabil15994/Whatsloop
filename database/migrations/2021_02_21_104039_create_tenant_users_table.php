@@ -18,7 +18,7 @@ class CreateTenantUsersTable extends Migration
             $table->string('tenant_id');
             $table->string('global_user_id');
 
-            $table->unique(['tenant_id', 'global_user_id']);
+            //$table->unique(['tenant_id', 'global_user_id']);
 
             $table->foreign('tenant_id')
                 ->references('id')

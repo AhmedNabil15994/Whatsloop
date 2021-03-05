@@ -37,6 +37,7 @@ return [
 	'passwordValidation2' => "Your passwords don't match",
 	'passwordValidation3' => "Retype your password again",
 	'passwordChanged' => "Your password had been changed",
+	'mustLogin' => 'You Must Login First!',
 
 
 
