@@ -26,6 +26,41 @@ Route::group(['prefix' => '/whatsloop'] , function (){
 		Route::get('/removeLabel',[$controller,'removeLabel']);
 	});
 
+	Route::group(['prefix' => '/messages'] ,function() use ($controller){
+		Route::get('/sendMessage',[$controller,'sendMessage']);
+		Route::get('/sendFile',[$controller,'sendFile']);
+		Route::get('/sendPTT',[$controller,'sendPTT']);
+		Route::get('/sendLink',[$controller,'sendLink']);
+		Route::get('/sendContact',[$controller,'sendContact']);
+		Route::get('/sendLocation',[$controller,'sendLocation']);
+		Route::get('/sendVCard',[$controller,'sendVCard']);
+		Route::get('/forwardMessage',[$controller,'forwardMessage']);
+		Route::get('/messages',[$controller,'messages']);
+		Route::get('/messagesHistory',[$controller,'messagesHistory']);
+		Route::get('/deleteMessage',[$controller,'deleteMessage']);
+	});
+
+	Route::group(['prefix' => '/dialogs'] ,function() use ($controller){
+		Route::get('/',[$controller,'dialogs']);
+		Route::get('/dialog',[$controller,'dialog']);
+		Route::get('/group',[$controller,'group']);
+		Route::get('/pinChat',[$controller,'pinChat']);
+		Route::get('/unpinChat',[$controller,'unpinChat']);
+		Route::get('/readChat',[$controller,'readChat']);
+		Route::get('/unreadChat',[$controller,'unreadChat']);
+		Route::get('/joinGroup',[$controller,'joinGroup']);
+		Route::get('/leaveGroup',[$controller,'leaveGroup']);
+		Route::get('/removeChat',[$controller,'removeChat']);
+		Route::get('/addGroupParticipant',[$controller,'addGroupParticipant']);
+		Route::get('/removeGroupParticipant',[$controller,'removeGroupParticipant']);
+		Route::get('/promoteGroupParticipant',[$controller,'promoteGroupParticipant']);
+		Route::get('/demoteGroupParticipant',[$controller,'demoteGroupParticipant']);
+		Route::get('/typing',[$controller,'typing']);
+		Route::get('/recording',[$controller,'recording']);
+		Route::get('/labelChat',[$controller,'labelChat']);
+		Route::get('/unlabelChat',[$controller,'unlabelChat']);
+	});
+
 	Route::group(['prefix' => '/webhooks'] ,function() use ($controller){
 		Route::get('/webhook',[$controller,'webhook']);
 	});
