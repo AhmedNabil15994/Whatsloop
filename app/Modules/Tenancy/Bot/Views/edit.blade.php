@@ -96,6 +96,16 @@
                                 </select>
                             </div>
                         </div> 
+                        <div class="form-group row mb-3">
+                            <label class="col-md-3 col-form-label" for="lang"> {{ trans('main.lang') }}</label>
+                            <div class="col-md-9">
+                                <select class="selectpicker" data-style="btn-outline-myPR" name="lang">
+                                    <option value="">{{ trans('main.choose') }}</option>
+                                    <option value="0" {{ $data->data->lang == 0 ? 'selected' : '' }}>{{ trans('main.arabic') }}</option>
+                                    <option value="1" {{ $data->data->lang == 1 ? 'selected' : '' }}>{{ trans('main.english') }}</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="reply" data-id="1">
                             <div class="form-group row mb-3 {{ $data->data->reply_type == 1 ? '' : 'hidden' }}">
                                 <label class="col-3 col-form-label">{{ trans('main.messageContent') }} :</label>

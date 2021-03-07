@@ -95,7 +95,17 @@
                                     <option value="8" {{ old('reply_type') == 8 ? 'selected' : '' }}>{{ trans('main.webhook') }}</option>
                                 </select>
                             </div>
-                        </div> 
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-md-3 col-form-label" for="lang"> {{ trans('main.lang') }}</label>
+                            <div class="col-md-9">
+                                <select class="selectpicker" data-style="btn-outline-myPR" name="lang">
+                                    <option value="">{{ trans('main.choose') }}</option>
+                                    <option value="0">{{ trans('main.arabic') }}</option>
+                                    <option value="1">{{ trans('main.english') }}</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="reply" data-id="1">
                             <div class="form-group row mb-3 hidden">
                                 <label class="col-3 col-form-label">{{ trans('main.messageContent') }} :</label>

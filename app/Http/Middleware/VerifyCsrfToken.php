@@ -22,5 +22,7 @@ class VerifyCsrfToken extends Middleware
         '/groupMsgs/add/uploadImage/*',
 
         '/profile/personalInfo/uploadImage',
+
+        '/whatsloop/webhooks/messages-webhook',
     ];
 }

@@ -77,7 +77,6 @@ class Bot extends Model{
         $data->reply_type_text = self::getReplyType($source->reply_type);
         $data->reply = $source->reply;
         $data->reply2 = self::formatReply($source->reply);
-        $data->file_name = $source->file_name;
         $data->https_url = $source->https_url;
         $data->url_title = $source->url_title;
         $data->url_desc = $source->url_desc;
@@ -96,6 +95,8 @@ class Bot extends Model{
         $data->webhook_url = $source->webhook_url;
         $data->templates = $source->templates != null ? unserialize($source->templates) : [];
         $data->status = $source->status;
+        $data->lang = $source->lang;
+        $data->langText = $source->lang == 0 ? trans('main.arabic') : trans('main.english');
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);
         return $data;
