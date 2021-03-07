@@ -64,46 +64,49 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    				$myMessage = $reply;
 	    			}else{
 	    				if($langPref == 0){
-	    					$notFoundMessage = 'لم استطع فهمك !:(';
+	    					$notFoundMessage = 'اسف لم استطع فهمك ! :(';
 	    				}else{
-	    					$notFoundMessage = "I Couldn't Reach You !:(";
+	    					$notFoundMessage = "Sorry I Couldn't Reach You ! :(";
 	    				}
 	    				$myMessage = $notFoundMessage;
+	    				$sendData['body'] = $myMessage;
 		    			$result = $mainWhatsLoopObj->sendMessage($sendData);
 	    			}
 
-	    			if($botObj->message_type == 1){
-	    				$sendData['body'] = $myMessage;
-		    			$result = $mainWhatsLoopObj->sendMessage($sendData);
-	    			}elseif($botObj->message_type == 2){
-	    				$sendData['filename'] = $botObj->file_name;
-	    				$sendData['body'] = $botObj->file;
-	    				$sendData['caption'] = $botObj->reply;
-		    			$result = $mainWhatsLoopObj->sendFile($sendData);
-	    			}elseif($botObj->message_type == 3){
-	    				$sendData['filename'] = $botObj->file_name;
-	    				$sendData['body'] = $botObj->file;
-		    			$result = $mainWhatsLoopObj->sendFile($sendData);
-	    			}elseif($botObj->message_type == 4){
-	    				$sendData['audio'] = $botObj->file;
-		    			$result = $mainWhatsLoopObj->sendPTT($sendData);
-	    			}elseif($botObj->message_type == 5){
-	    				$sendData['body'] = $botObj->https_url;
-        				$sendData['title'] = $botObj->url_title;
-        				$sendData['description'] = $botObj->url_desc;
-        				$sendData['previewBase64'] = base64_encode(file_get_contents($botObj->photo));
-		    			$result = $mainWhatsLoopObj->sendFile($sendData);
-	    			}elseif($botObj->message_type == 6){
-	    				$sendData['contactId'] = $botObj->whatsapp_no;
-		    			$result = $mainWhatsLoopObj->sendContact($sendData);
-	    			}elseif($botObj->message_type == 7){
-	    				$sendData['lat'] = $botObj->lat;
-	    				$sendData['lng'] = $botObj->lng;
-	    				$sendData['address'] = $botObj->address;
-		    			$result = $mainWhatsLoopObj->sendLocation($sendData);
-	    			}elseif($botObj->message_type == 8){
-	    				$sendData['body'] = $botObj->webhook_url;
-		    			$result = $mainWhatsLoopObj->sendContact($sendData);
+	    			if($botObj){
+	    				if($botObj->message_type == 1){
+		    				$sendData['body'] = $myMessage;
+			    			$result = $mainWhatsLoopObj->sendMessage($sendData);
+		    			}elseif($botObj->message_type == 2){
+		    				$sendData['filename'] = $botObj->file_name;
+		    				$sendData['body'] = $botObj->file;
+		    				$sendData['caption'] = $botObj->reply;
+			    			$result = $mainWhatsLoopObj->sendFile($sendData);
+		    			}elseif($botObj->message_type == 3){
+		    				$sendData['filename'] = $botObj->file_name;
+		    				$sendData['body'] = $botObj->file;
+			    			$result = $mainWhatsLoopObj->sendFile($sendData);
+		    			}elseif($botObj->message_type == 4){
+		    				$sendData['audio'] = $botObj->file;
+			    			$result = $mainWhatsLoopObj->sendPTT($sendData);
+		    			}elseif($botObj->message_type == 5){
+		    				$sendData['body'] = $botObj->https_url;
+	        				$sendData['title'] = $botObj->url_title;
+	        				$sendData['description'] = $botObj->url_desc;
+	        				$sendData['previewBase64'] = base64_encode(file_get_contents($botObj->photo));
+			    			$result = $mainWhatsLoopObj->sendFile($sendData);
+		    			}elseif($botObj->message_type == 6){
+		    				$sendData['contactId'] = $botObj->whatsapp_no;
+			    			$result = $mainWhatsLoopObj->sendContact($sendData);
+		    			}elseif($botObj->message_type == 7){
+		    				$sendData['lat'] = $botObj->lat;
+		    				$sendData['lng'] = $botObj->lng;
+		    				$sendData['address'] = $botObj->address;
+			    			$result = $mainWhatsLoopObj->sendLocation($sendData);
+		    			}elseif($botObj->message_type == 8){
+		    				$sendData['body'] = $botObj->webhook_url;
+			    			$result = $mainWhatsLoopObj->sendContact($sendData);
+		    			}
 	    			}
 
 	    			if($result->ok()){
