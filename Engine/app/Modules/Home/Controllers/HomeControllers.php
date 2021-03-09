@@ -92,7 +92,6 @@ class HomeControllers extends Controller {
         }
 
         $dataList['data'] = $serverResult->json();
-
         // Customization For QR Code Images
         if(in_array($status, ['status','qr_code'])){
         	$image = '/uploads/qrCode' . time() . '.png';
@@ -106,7 +105,6 @@ class HomeControllers extends Controller {
             }
 	        $dataList['data']['qrCode'] = URL::to($image);
         }
-
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);        
     }
