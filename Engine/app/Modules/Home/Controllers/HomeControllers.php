@@ -15,13 +15,14 @@ class HomeControllers extends Controller {
         }else{
         	$result = $serverResult->json();
         	$extraResult = array_values($result);
+
         	if(isset($result['error']) && !empty($result['error'])){
             	return [0,$result['error']];
         	}
         	if(isset($result['result']) && $result['result'] == 'failed'){
             	return [0,$result['message']];
         	}
-        	if(isset($extraResult[0]) && $extraResult[0] == false){
+        	if(isset($extraResult[0]) && !empty($extraResult[0]) && $extraResult[0] == false){
             	return [0,$result['message']];
         	}
         	if(isset($result['result']) && $result['result'] == "Couldn't delete chat or leaving group. Invalid number"){
@@ -53,7 +54,7 @@ class HomeControllers extends Controller {
     		}
     	}
 
-    	if(in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat'])){
+    	if(in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory'])){
     		if(isset($input['chatId']) && !empty($input['chatId'])){
     			$input['chatId'] = $input['chatId'].'@c.us';
     		}
@@ -74,7 +75,7 @@ class HomeControllers extends Controller {
     		}
     	}
 
-    	if(isset($input['phone']) && !empty($input['phone']) && !in_array($status, ['banTest','checkPhone','dialog','allMessages','messagesHistory'])){
+    	if(isset($input['phone']) && !empty($input['phone']) && !in_array($status, ['banTest','checkPhone'])){
     		if(!is_array($input['phone'])){
     			$input['chatId'] = $input['phone'].'@c.us';
     			unset($input['phone']);
