@@ -18,8 +18,8 @@
                 <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
             </div>
         </div>
-    </div>     
-    <!-- end page title --> 
+    </div>
+    <!-- end page title -->
     <input type="hidden" name="modelProps" value="{{ json_encode($data->modelProps) }}">
     <form class="form-horizontal" method="POST" action="{{ URL::to('/addGroupNumbers/create') }}">
         <div class="row">
@@ -42,9 +42,41 @@
                                         @foreach($data->groups as $group)
                                         <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>{{ $group->channel .' - '.$group->title }}</option>
                                         @endforeach
+                                        <option value="@">{{ trans('main.add') }}</option>
                                     </select>
                                 </div>
-                            </div> 
+                            </div>
+                            <div class="new hidden">
+                                <hr>
+                                <p><i class="fa fa-plus"></i> {{ trans('main.add').' '.trans('main.group') }}</p>
+                                <div class="form-group row mb-3">
+                                    <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
+                                    <div class="col-9">
+                                        <select class="selectpicker channel" data-style="btn-outline-myPR">
+                                            <option value="">{{ trans('main.channel') }}</option>
+                                            @foreach($data->channels as $channel)
+                                                <option value="{{ $channel->id }}" {{ old('channel') == $channel->name || (Session::has('channel') && Session::get('channel') == $channel->id) ? 'selected' : '' }}>{{ $channel->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.titleAr') }} :</label>
+                                    <div class="col-9">
+                                        <input type="text" class="form-control name_ar" placeholder="{{ trans('main.titleAr') }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.titleEn') }} :</label>
+                                    <div class="col-9">
+                                        <input type="text" class="form-control name_en" placeholder="{{ trans('main.titleEn') }}">
+                                        <input type="hidden" name="status">
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-success mb-2 addGR float-right">{{ trans('main.add').' '.trans('main.group') }}</button>
+                                <div class="clearfix"></div>
+                            </div>
+                            <hr>
                             <div class="form-group row mb-3">
                                 <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.attachExcel') }} :</label>
                                 <div class="col-9">

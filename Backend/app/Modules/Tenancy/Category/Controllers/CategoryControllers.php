@@ -24,7 +24,7 @@ class CategoryControllers extends Controller {
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
-        
+
         $data['mainData'] = [
             'title' => trans('main.categories'),
             'url' => 'categories',
@@ -148,7 +148,7 @@ class CategoryControllers extends Controller {
                 'class' => 'form-control',
                 'label' => trans('main.titleEn'),
                 'specialAttr' => '',
-            ],            
+            ],
         ];
         return $data;
     }
@@ -193,7 +193,7 @@ class CategoryControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.categories') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.User.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.User.Views.edit')->with('data', (object) $data);
     }
 
     public function update($id) {
@@ -229,34 +229,26 @@ class CategoryControllers extends Controller {
 
         if($nameUpdateFlag == 1){
             $data['name'] = $input['name_ar'].' - '.$input['name_en'];
-            $updateResult = $mainWhatsLoopObj->updateLabel($data); 
-            if($updateResult->ok()){
-                $result = $updateResult->json();
-                if($result['result'] == 'failed'){
-                    Session::flash('error', $result['message']);
-                    return \Redirect::back()->withInput();
-                }
-            }else{
-                Session::flash('error', trans('main.serverError'));
+            $updateResult = $mainWhatsLoopObj->updateLabel($data);
+            $result = $updateResult->json();
+
+            if($result['status']['status'] != 1){
+                Session::flash('error', $result['status']['message']);
                 return \Redirect::back()->withInput();
             }
         }
 
         if($colorUpdateFlag == 1){
             $data['color'] = Category::getColor($input['color_id'])[3];
-            $updateResult = $mainWhatsLoopObj->updateLabel($data); 
-            if($updateResult->ok()){
-                $result = $updateResult->json();
-                if($result['result'] == 'failed'){
-                    Session::flash('error', $result['message']);
-                    return \Redirect::back()->withInput();
-                }
-            }else{
-                Session::flash('error', trans('main.serverError'));
+            $updateResult = $mainWhatsLoopObj->updateLabel($data);
+            $result = $updateResult->json();
+
+            if($result['status']['status'] != 1){
+                Session::flash('error', $result['status']['message']);
                 return \Redirect::back()->withInput();
             }
         }
-        
+
         $dataObj->channel = $input['channel'];
         $dataObj->color_id = $input['color_id'];
         $dataObj->name_ar = $input['name_ar'];
@@ -280,7 +272,7 @@ class CategoryControllers extends Controller {
 
     public function create() {
         $input = \Request::all();
-        
+
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
@@ -291,19 +283,14 @@ class CategoryControllers extends Controller {
         $labelId = '';
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['name'] = $input['name_ar'].' - '.$input['name_en'];
-        $addResult = $mainWhatsLoopObj->createLabel($data); 
-        if($addResult->ok()){
-            $result = $addResult->json();
-            if($result['result'] == 'failed'){
-                Session::flash('error', $result['message']);
-                return \Redirect::back()->withInput();
-            }elseif($result['result'] == 'success'){
-                $labelId = $result['label']['id'];
-            }
-        }else{
-            Session::flash('error', trans('main.serverError'));
+        $addResult = $mainWhatsLoopObj->createLabel($data);
+        $result = $addResult->json();
+        if($result['status']['status'] != 1){
+            Session::flash('error', $result['status']['message']);
             return \Redirect::back()->withInput();
         }
+
+        $labelId = $result['data']['label']['id'];
 
         $dataObj = new Category;
         $dataObj->channel = $input['channel'];
@@ -329,7 +316,7 @@ class CategoryControllers extends Controller {
         // Perform Whatsapp Integration
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['labelId'] = $dataObj->labelId;
-        $updateResult = $mainWhatsLoopObj->removeLabel($data); 
+        $updateResult = $mainWhatsLoopObj->removeLabel($data);
         return \Helper::globalDelete($dataObj);
     }
 
@@ -338,19 +325,15 @@ class CategoryControllers extends Controller {
         foreach ($input['data'] as $item) {
             $col = $item[1];
             $dataObj = Category::find($item[0]);
-            
+
             if($col == 'color_id'){
                 $mainWhatsLoopObj = new \MainWhatsLoop();
                 $data['labelId'] = $dataObj->labelId;
                 $data['color'] = Category::getColor($item[2])[3];
-                $updateResult = $mainWhatsLoopObj->updateLabel($data); 
-                if($updateResult->ok()){
-                    $result = $updateResult->json();
-                    if($result['result'] == 'failed'){
-                        return \TraitsFunc::ErrorMessage($result['message']);
-                    }
-                }else{
-                    return \TraitsFunc::ErrorMessage(trans('main.serverError'));
+                $updateResult = $mainWhatsLoopObj->updateLabel($data);
+                $result = $updateResult->json();
+                if($result['status']['status'] != 1){
+                    return \TraitsFunc::ErrorMessage($result['status']['message']);
                 }
             }
 
@@ -411,7 +394,7 @@ class CategoryControllers extends Controller {
 
     public function getChartData($start=null,$end=null,$type,$moduleName){
         $input = \Request::all();
-        
+
         if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
             $start = $input['from'];
             $end = $input['to'];
@@ -426,7 +409,7 @@ class CategoryControllers extends Controller {
             for($i=0;$i<$daysCount;$i++){
                 $datesArray[$i] = date('Y-m-d',strtotime($start.'+'.$i."day") );
             }
-            $datesArray[$daysCount] = $end;  
+            $datesArray[$daysCount] = $end;
         }else{
             for($i=1;$i<24;$i++){
                 $datesArray[$i] = date('Y-m-d H:i:s',strtotime($start.'+'.$i." hour") );

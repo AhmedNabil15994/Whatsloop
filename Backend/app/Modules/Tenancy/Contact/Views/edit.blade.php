@@ -18,8 +18,8 @@
                 <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
             </div>
         </div>
-    </div>     
-    <!-- end page title --> 
+    </div>
+    <!-- end page title -->
     <div class="row">
         <div class="col-8">
             <div class="card">
@@ -45,7 +45,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div> 
+                                    </div>
                                     <div class="form-group row mb-3">
                                         <label class="col-md-3 col-form-label" for="name"> {{ trans('main.name') }}</label>
                                         <div class="col-md-9">
@@ -59,7 +59,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group row mb-3">
-                                        <label class="col-md-3 col-form-label" for="whatsappNo"> {{ trans('main.whatsappNo') }}</label>
+                                        <label class="col-md-3 col-form-label" for="phone"> {{ trans('main.whatsappNo') }}</label>
                                         <div class="col-md-9">
                                             <input type="tel" name="phone" class="form-control teles" value="{{ $data->data->phone2 }}" placeholder="{{ trans('main.whatsappNo') }}">
                                         </div>

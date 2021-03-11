@@ -108,12 +108,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    			$result = $mainWhatsLoopObj->sendMessage($sendData);
 	    			}
 
-	    			if($result->ok()){
-			            $statusObj['data'] = $result->json();
-			        }else{
+	    			if($result['status']['status'] != 1){
 			            return \TraitsFunc::ErrorMessage("Server Error", 400);
 			        }
-			        
+
+			        $statusObj['data'] = $result->json();
 			        $statusObj['status'] = \TraitsFunc::SuccessResponse();
 			        return \Response::json((object) $statusObj); 
 	    		}	

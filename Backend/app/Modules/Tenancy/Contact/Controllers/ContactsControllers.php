@@ -28,7 +28,7 @@ class ContactsControllers extends Controller {
             'nameOne' => 'contact',
             'modelName' => 'Contact',
             'icon' => 'fas fa-users',
-            'sortName' => 'name_'.LANGUAGE_PREF,
+            'sortName' => 'name',
         ];
 
         $data['searchData'] = [
@@ -190,7 +190,7 @@ class ContactsControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
         $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.Contact.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.Contact.Views.edit')->with('data', (object) $data);
     }
 
     public function update($id) {
@@ -241,7 +241,7 @@ class ContactsControllers extends Controller {
     }
 
     public function add() {
-        $data['designElems'] = $this->getData();        
+        $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.contacts') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['channels'] = $data['designElems']['userObj']->channels;
@@ -253,12 +253,21 @@ class ContactsControllers extends Controller {
 
     public function create() {
         $input = \Request::all();
-        dd($input);
+//        dd($input);
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
+
+        $groupObj = GroupNumber::getOne($input['group_id']);
+        if($groupObj == null) {
+            return Redirect('404');
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['groupId'] = $groupObj->groupId;
+
         $modelProps = ['name','email','country','city','phone'];
         $userInputs = $input;
 
@@ -272,8 +281,17 @@ class ContactsControllers extends Controller {
 
             $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$input['phone'])->first();
             if(!$contactObj){
+
+                $data['participantPhone'] = str_replace('+', '', $input['phone']);
+                $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
+                $result = $addResult->json();
+                if($result['status']['status'] != 1){
+                    Session::flash('error', $result['status']['message']);
+                    return redirect()->back()->withInput();
+                }
+
                 $dataObj = new Contact;
-                $dataObj->name = $input['name'];
+                $dataObj->name = $input['client_name'];
                 $dataObj->phone = $input['phone'];
                 $dataObj->city = $input['city'];
                 $dataObj->email = $input['email'];
@@ -286,14 +304,15 @@ class ContactsControllers extends Controller {
                 $dataObj->created_by = USER_ID;
                 $dataObj->created_at = DATE_TIME;
                 $dataObj->save();
+            }else{
+                Session::flash('error', trans('main.phoneError'));
+                return redirect()->back()->withInput();
             }
-            Session::flash('error', trans('main.phoneError'));
-            return redirect()->back()->withInput();
         }elseif($type == 3){
             if(!isset($input['whatsappNos']) || empty($input['whatsappNos'])){
                 Session::flash('error', trans('main.whatsappNosValidate'));
                 return redirect()->back()->withInput();
-            }   
+            }
             $input['whatsappNos'] = trim($input['whatsappNos']);
             $numbersArr = explode(PHP_EOL, $input['whatsappNos']);
             if(count($numbersArr) > 100){
@@ -304,6 +323,15 @@ class ContactsControllers extends Controller {
                 $phone = '+'.str_replace('\r', '', $numbersArr[$i]);
                 $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$phone)->first();
                 if(!$contactObj){
+
+                    $data['participantPhone'] = str_replace('+', '', $phone);
+                    $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
+                    $result = $addResult->json();
+                    if($result['status']['status'] != 1){
+                        Session::flash('error', $result['status']['message']);
+                        return redirect()->back()->withInput();
+                    }
+
                     $dataObj = new Contact;
                     $dataObj->phone = $phone;
                     $dataObj->group_id = $input['group_id'];
@@ -335,7 +363,7 @@ class ContactsControllers extends Controller {
             foreach ($userInputs as $key=> $userInput) {
                 if(!in_array($key, $modelProps)){
                     Session::flash('error', trans('main.invalidColumn').' '.$key);
-                    return redirect()->back(); 
+                    return redirect()->back();
                 }
 
                 for ($i = 0; $i < count($userInputs['phone']); $i++) {
@@ -353,12 +381,12 @@ class ContactsControllers extends Controller {
                     $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
 
                 }
-            }      
+            }
 
             if(count($storeData) > 100){
                 Session::flash('error', trans('main.numberlimit',['number'=>100]));
                 return redirect()->back()->withInput();
-            } 
+            }
 
             foreach ($storeData as $value) {
                 $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',"+".$value['phone'])->first();
@@ -371,6 +399,15 @@ class ContactsControllers extends Controller {
                     }
                     $value['phone'] = $phone;
                     $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
+
+                    $data['participantPhone'] = str_replace('+', '', $phone);
+                    $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
+                    $result = $addResult->json();
+                    if($result['status']['status'] != 1){
+                        Session::flash('error', $result['status']['message']);
+                        return redirect()->back()->withInput();
+                    }
+
                     Contact::insert($value);
                 }else{
                     $foundData[] = $phone;
@@ -379,7 +416,11 @@ class ContactsControllers extends Controller {
         }
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
-        Session::flash('success', nl2br(trans('main.addSuccess') . '.! \n'.trans('main.whatsappNos').implode(',', $foundData).trans('main.ingroup')));
+        $returnText = trans('main.addSuccess');
+        if(isset($foundData) && !empty($foundData)){
+            $returnText = nl2br(trans('main.addSuccess') . '.! \n'.trans('main.whatsappNos').implode(',', $foundData).trans('main.ingroup'));
+        }
+        Session::flash('success', $returnText);
         return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 
@@ -455,7 +496,7 @@ class ContactsControllers extends Controller {
 
     public function getChartData($start=null,$end=null,$type,$moduleName){
         $input = \Request::all();
-        
+
         if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
             $start = $input['from'];
             $end = $input['to'];
@@ -470,7 +511,7 @@ class ContactsControllers extends Controller {
             for($i=0;$i<$daysCount;$i++){
                 $datesArray[$i] = date('Y-m-d',strtotime($start.'+'.$i."day") );
             }
-            $datesArray[$daysCount] = $end;  
+            $datesArray[$daysCount] = $end;
         }else{
             for($i=1;$i<24;$i++){
                 $datesArray[$i] = date('Y-m-d H:i:s',strtotime($start.'+'.$i." hour") );

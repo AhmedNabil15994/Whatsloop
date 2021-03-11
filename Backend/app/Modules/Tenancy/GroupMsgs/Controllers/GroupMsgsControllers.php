@@ -263,8 +263,10 @@ class GroupMsgsControllers extends Controller {
                 Session::flash('error', trans('main.numberlimit',['number'=>100]));
                 return redirect()->back()->withInput();
             } 
+            $myPhones = [];
             for ($i = 0; $i < count($numbersArr) ; $i++) {
                 $phone = '+'.str_replace('\r', '', $numbersArr[$i]);
+                $myPhones[] = str_replace('+', '', $phone);
                 $contactObj = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('phone',$phone)->first();
                 if(!$contactObj){
                     $dataObj = new Contact;
@@ -280,6 +282,21 @@ class GroupMsgsControllers extends Controller {
                     $foundData[] = $phone;
                 }
             }
+
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $data['groupName'] = $input['name_ar'].' - '.$input['name_en'] ;
+            $data['phones'] = $myPhones;
+            $addResult = $mainWhatsLoopObj->group($data);
+            $result = $addResult->json();
+
+            if($result['status']['status'] != 1){
+                Session::flash('error', $result['status']['message']);
+                return redirect()->back()->withInput();
+            }
+
+            $groupObj->groupId = str_replace('@g.us', '', $result['data']['chatId']);
+            $groupObj->groupCode = str_replace('https://chat.whatsapp.com/', '', $result['data']['groupInviteLink']);
+            $groupObj->save();
         }else{
             $groupObj = GroupNumber::getOne($input['group_id']);
             if($groupObj == null){
@@ -295,8 +312,10 @@ class GroupMsgsControllers extends Controller {
         }
 
         $date = now();
+        $flag = 0;
         if(isset($input['date']) && !empty($input['date'])){
             $date = $input['date'];
+            $flag = 1;
         }
 
         $message = '';
@@ -367,10 +386,50 @@ class GroupMsgsControllers extends Controller {
             }
         }
 
+        if($flag == 0){
+            $dataObj = GroupMsg::getData($dataObj);
+            $result = $this->sendData($dataObj,$groupObj->groupId);
+            if($result == 0){
+                return \TraitsFunc::ErrorMessage("Server Error", 400);
+            }
+        }
+
         Session::forget('msgFile');
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
         return redirect()->to($this->getData()['mainData']['url'].'/');
+    }
+
+    public function sendData($botObj,$groupId){
+        $sendData['chatId'] = $groupId.'@g.us';
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        
+        if($botObj->message_type == 1){
+            $sendData['body'] = $botObj->message;
+            $result = $mainWhatsLoopObj->sendMessage($sendData);
+        }elseif($botObj->message_type == 2){
+            $sendData['filename'] = $botObj->file_name;
+            $sendData['body'] = 'https://whatsloop.net/resources/Gallery/181595515052_WhatsLoop.png';//$botObj->file;
+            $sendData['caption'] = $botObj->reply;
+            $result = $mainWhatsLoopObj->sendFile($sendData);
+        }elseif($botObj->message_type == 3){
+            $sendData['audio'] = $botObj->file;
+            $result = $mainWhatsLoopObj->sendPTT($sendData);
+        }elseif($botObj->message_type == 4){
+            $sendData['body'] = $botObj->https_url;
+            $sendData['title'] = $botObj->url_title;
+            $sendData['description'] = $botObj->url_desc;
+            $sendData['previewBase64'] = base64_encode(file_get_contents($botObj->photo));
+            $result = $mainWhatsLoopObj->sendFile($sendData);
+        }elseif($botObj->message_type == 5){
+            $sendData['contactId'] = $botObj->whatsapp_no;
+            $result = $mainWhatsLoopObj->sendContact($sendData);
+        }
+
+        if($result['status']['status'] != 1){
+            return 0;
+        }
+        return 1;
     }
 
     public function view($id) {

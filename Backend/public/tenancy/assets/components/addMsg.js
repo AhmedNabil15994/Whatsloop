@@ -93,7 +93,7 @@ $(function(){
 		e.preventDefault();
 		e.stopPropagation();
 		
-		if (!$(".teles").intlTelInput("isValidNumber")) {
+		if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.form-group.row').hasClass('hidden')) {
 		    if(lang == 'en'){
 		        return errorNotification("This Phone Number Isn't Valid!");
 		    }else{

@@ -168,8 +168,8 @@ return [
 	'titleArValidate' => 'Title Arabic Field is required',
 	'titleEnValidate' => 'Title English Field is required',
 
-	'replies' => 'Ready Replies',
-	'categories' => 'Categories',
+	'replies' => 'Quick Replies',
+	'categories' => 'Labels',
 	'color' => 'Color',
 	'colorValidate' => 'Color Field is required',
 
@@ -191,7 +191,7 @@ return [
 	'excelExample' => 'Excel File Example',
 	'download' => 'Download',
 
-	'whatsappNos2' => 'You can paste your numbers like that: 
+	'whatsappNos2' => 'You can paste your numbers like that:
 966512345678
 966512345678',
 	'mainSettings' => 'Main Settings',
@@ -357,7 +357,7 @@ return [
 
 	'send_contact' => 'Send Contact',
 	'send_contact_p1' => 'You can send a contact you must type the sender phone number (966xxxxxxxxx)',
-		
+
 	'edit_contact' => 'Edit Contact',
 	'edit_contact_p1' => 'You can send a contact',
 	'copy_code' => 'Copy Code',

@@ -23,10 +23,10 @@ class GroupNumber extends Model{
         $source = self::NotDeleted()->where(function ($query) use ($input) {
                     if (isset($input['name_ar']) && !empty($input['name_ar'])) {
                         $query->where('name_ar', 'LIKE', '%' . $input['name_ar'] . '%');
-                    } 
+                    }
                     if (isset($input['name_en']) && !empty($input['name_en'])) {
                         $query->where('name_en', 'LIKE', '%' . $input['name_en'] . '%');
-                    } 
+                    }
                     if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
@@ -66,6 +66,8 @@ class GroupNumber extends Model{
         $data->channel = $source->channel;
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
+        $data->groupId = $source->groupId;
+        $data->groupCode = $source->groupCode;
         $data->title = $source->{'name_'.LANGUAGE_PREF};
         $data->description_ar = $source->description_ar;
         $data->description_en = $source->description_en;

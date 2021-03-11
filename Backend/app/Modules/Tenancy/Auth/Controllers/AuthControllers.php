@@ -37,11 +37,11 @@ class AuthControllers extends Controller {
         );
 
         $validate = \Validator::make($input, $rules,$message);
-        
+
         if($validate->fails()){
             return \TraitsFunc::ErrorMessage($validate->messages()->first());
         }
-       
+
         $userObj = User::checkUserBy('phone',$input['phone']);
         if ($userObj == null) {
             return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
@@ -52,7 +52,7 @@ class AuthControllers extends Controller {
             return \TraitsFunc::ErrorMessage(trans('auth.invalidPassword'));
         }
 
-        // Send Code Here 
+        // Send Code Here
         $code = rand(1000,10000);
         $userObj->code = $code;
         $userObj->save();
@@ -60,15 +60,15 @@ class AuthControllers extends Controller {
 
         $whatsLoopObj =  new \MainWhatsLoop();
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
-        $data['phone'] = $input['phone'];
+        $data['phone'] = str_replace('+','',$input['phone']);
         $test = $whatsLoopObj->sendMessage($data);
-
-        if($test->ok()){
-            \Session::put('check_user_id',$userObj->id);
-            return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
-        }else{
+        $result = $test->json();
+        if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
         }
+
+        \Session::put('check_user_id',$userObj->id);
+        return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
     }
 
     public function checkByCode(){
@@ -88,12 +88,12 @@ class AuthControllers extends Controller {
         session(['group_name' => $userObj->Group->name_ar]);
         $channels = User::getData($userObj)->channels;
         session(['channel' => $channels[0]->id]);
-        
+
 
         Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
         return \TraitsFunc::SuccessResponse(trans('auth.welcome') . $userObj->name_ar);
     }
-    
+
     public function logout() {
         $lang = Session::get('locale');
         session()->flush();
@@ -132,22 +132,24 @@ class AuthControllers extends Controller {
         if ($userObj == null) {
             return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
         }
-        
-        // Send Code Here 
+
+        // Send Code Here
         $code = rand(1000,10000);
         $userObj->code = $code;
         $userObj->save();
 
 
-        $whatsLoopObj =  new \WhatsLoop();
-        $test = $whatsLoopObj->sendMessage('كود التحقق الخاص بك هو : '.$code,$input['phone']);
-
-        if(json_decode($test)->Code == 'OK'){
-            Session::put('check_user_id',$userObj->id);
-            return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
-        }else{
+        $whatsLoopObj =  new \MainWhatsLoop();
+        $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+        $data['phone'] = str_replace('+','',$input['phone']);
+        $test = $whatsLoopObj->sendMessage($data);
+        $result = $test->json();
+        if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
         }
+
+        Session::put('check_user_id',$userObj->id);
+        return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
     }
 
     public function checkResetPassword(){
@@ -222,7 +224,7 @@ class AuthControllers extends Controller {
             }else{
                 Session::forget('locale');
                 Session::put('locale', $request->locale);
-            } 
+            }
             return Redirect::back();
         }
     }

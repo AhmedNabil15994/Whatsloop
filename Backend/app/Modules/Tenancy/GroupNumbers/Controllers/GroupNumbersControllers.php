@@ -132,7 +132,7 @@ class GroupNumbersControllers extends Controller {
                 'label' => trans('main.descriptionEn'),
                 'specialAttr' => '',
             ],
-            
+
         ];
         return $data;
     }
@@ -177,7 +177,7 @@ class GroupNumbersControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.groupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.User.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.User.Views.edit')->with('data', (object) $data);
     }
 
     public function update($id) {
@@ -220,7 +220,7 @@ class GroupNumbersControllers extends Controller {
 
     public function create(Request $request) {
         $input = \Request::all();
-        
+
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             if($request->ajax()){
@@ -229,18 +229,32 @@ class GroupNumbersControllers extends Controller {
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
-        
+
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['groupName'] = $input['name_ar'].' - '.$input['name_en'] ;
+        $userObj = User::getOne(USER_ID);
+        $data['phones'] = [str_replace('+', '', $userObj->phone)];
+        $addResult = $mainWhatsLoopObj->group($data);
+        $result = $addResult->json();
+
+        if($result['status']['status'] != 1){
+            Session::flash('error', $result['status']['message']);
+            return redirect()->back()->withInput();
+        }
 
         $dataObj = new GroupNumber;
         $dataObj->channel = $input['channel'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
+        $dataObj->groupId = str_replace('@g.us', '', $result['data']['chatId']);
+        $dataObj->groupCode = str_replace('https://chat.whatsapp.com/', '', $result['data']['groupInviteLink']);
         if($request->ajax()){
             $input['status'] = 1;
             $input['description_ar'] = '';
             $input['description_en'] = '';
         }
-        
+
         $dataObj->description_ar = $input['description_ar'];
         $dataObj->description_en = $input['description_en'];
         $dataObj->sort = GroupNumber::newSortIndex();
@@ -302,6 +316,7 @@ class GroupNumbersControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.addGroupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
+        $data['channels'] = User::getData(User::getOne(USER_ID))->channels;
         $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
         return view('Tenancy.GroupNumbers.Views.add')->with('data', (object) $data);
     }
@@ -317,6 +332,7 @@ class GroupNumbersControllers extends Controller {
         if($groupObj == null) {
             return Redirect('404');
         }
+
         $modelProps = ['name','email','country','city','phone'];
         $userInputs = $input;
         unset($userInputs['status']);
@@ -327,7 +343,7 @@ class GroupNumbersControllers extends Controller {
         foreach ($userInputs as $key=> $userInput) {
             if(!in_array($key, $modelProps)){
                 Session::flash('error', trans('main.invalidColumn').' '.$key);
-                return redirect()->back(); 
+                return redirect()->back();
             }
             for ($i = 0; $i < count($userInputs['phone']); $i++) {
                 if(!isset($storeData[$i])){
@@ -343,8 +359,10 @@ class GroupNumbersControllers extends Controller {
                 $storeData[$i]['created_by'] = USER_ID;
                 $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
             }
-        }       
+        }
 
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['groupId'] = $groupObj->groupId;
         foreach ($storeData as $value) {
             $phone = "+".$value['phone'];
             $phone = str_replace('\r', '', $phone);
@@ -355,13 +373,21 @@ class GroupNumbersControllers extends Controller {
                 }
                 $value['phone'] = str_replace('\r', '', $phone);
                 $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
-                Contact::insert($value);          
+
+                $data['participantPhone'] = str_replace('+', '', $value['phone']);
+                $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
+                $result = $addResult->json();
+                if($result['status']['status'] != 1){
+                    Session::flash('error', $result['status']['message']);
+                    return redirect()->back()->withInput();
+                }
+                Contact::insert($value);
             }
         }
 
         WebActions::newType(1,'Contact');
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to($this->getData()['mainData']['url'].'/');        
+        return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 
     public function charts() {
@@ -393,7 +419,7 @@ class GroupNumbersControllers extends Controller {
 
     public function getChartData($start=null,$end=null,$type,$moduleName){
         $input = \Request::all();
-        
+
         if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
             $start = $input['from'];
             $end = $input['to'];
@@ -408,7 +434,7 @@ class GroupNumbersControllers extends Controller {
             for($i=0;$i<$daysCount;$i++){
                 $datesArray[$i] = date('Y-m-d',strtotime($start.'+'.$i."day") );
             }
-            $datesArray[$daysCount] = $end;  
+            $datesArray[$daysCount] = $end;
         }else{
             for($i=1;$i<24;$i++){
                 $datesArray[$i] = date('Y-m-d H:i:s',strtotime($start.'+'.$i." hour") );

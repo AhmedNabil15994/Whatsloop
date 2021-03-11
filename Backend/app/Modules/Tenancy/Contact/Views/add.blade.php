@@ -18,8 +18,8 @@
                 <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
             </div>
         </div>
-    </div>     
-    <!-- end page title --> 
+    </div>
+    <!-- end page title -->
     <input type="hidden" name="modelProps" value="{{ json_encode($data->modelProps) }}">
     <div class="row">
         <div class="col-8">
@@ -30,7 +30,7 @@
                         <div id="basicwizard">
                             <ul class="nav nav-pills bg-light nav-justified form-wizard-header mb-4">
                                 <li class="nav-item">
-                                    <a href="#basictab1" data-toggle="tab" class="active nav-link rounded-0 pt-2 pb-2"> 
+                                    <a href="#basictab1" data-toggle="tab" class="active nav-link rounded-0 pt-2 pb-2">
                                         <i class="mdi mdi-cogs mr-1"></i>
                                         <span class="d-none d-sm-inline">{{ trans('main.mainSettings') }}</span>
                                     </a>
@@ -70,7 +70,7 @@
                                                         <option value="@">{{ trans('main.add') }}</option>
                                                     </select>
                                                 </div>
-                                            </div> 
+                                            </div>
                                             <div class="new hidden">
                                                 <hr>
                                                 <p><i class="fa fa-plus"></i> {{ trans('main.add').' '.trans('main.group') }}</p>
@@ -84,7 +84,7 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                </div> 
+                                                </div>
                                                 <div class="form-group row mb-3">
                                                     <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.titleAr') }} :</label>
                                                     <div class="col-9">
@@ -121,9 +121,9 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row mb-3">
-                                                <label class="col-md-3 col-form-label" for="whatsappNo"> {{ trans('main.whatsappNo') }}</label>
+                                                <label class="col-md-3 col-form-label" for="phone"> {{ trans('main.whatsappNo') }}</label>
                                                 <div class="col-md-9">
-                                                    <input type="tel" name="whatsappNo" class="form-control teles" placeholder="{{ trans('main.whatsappNo') }}">
+                                                    <input type="tel" name="phone" class="form-control teles" placeholder="{{ trans('main.whatsappNo') }}">
                                                 </div>
                                             </div>
                                         </div> <!-- end col -->
@@ -170,7 +170,7 @@
                                                 <div class="col-9">
                                                     <textarea class="form-control" name="whatsappNos" placeholder="{{ trans('main.whatsappNos2') }}"></textarea>
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </div> <!-- end col -->
                                     </div> <!-- end row -->
                                 </div>

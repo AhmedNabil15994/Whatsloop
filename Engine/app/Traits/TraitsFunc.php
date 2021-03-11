@@ -67,7 +67,7 @@ trait TraitsFunc
 
 	public static function NotFound(){
         $statusObj['status'] = new \stdClass();
-        $statusObj['status']->satuts = 0;
+        $statusObj['status']->status = 0;
         $statusObj['status']->code = 204;
         $statusObj['status']->message = 'This Item Not Found Or Deleted';
         return \Response::json((object) $statusObj);
@@ -75,7 +75,7 @@ trait TraitsFunc
 
     public static function NotAllowed(){
         $statusObj['status'] = new \stdClass();
-        $statusObj['status']->satuts = 0;
+        $statusObj['status']->status = 0;
         $statusObj['status']->code = 405;
         $statusObj['status']->message = 'Error in process, Method Not Allowed';
         return \Response::json((object) $statusObj);
@@ -83,7 +83,7 @@ trait TraitsFunc
 
 	public static function ValidationError($validator){
         $statusObj['status'] = new \stdClass();
-        $statusObj['status']->satuts = 0;
+        $statusObj['status']->status = 0;
         $statusObj['status']->code = 400;
         $statusObj['status']->message = $validator->messages()->first();
         return \Response::json((object) $statusObj);
@@ -91,7 +91,7 @@ trait TraitsFunc
 
     public static function ErrorMessage($message = "Error in process, please try again later", $code = 400){     
         $statusObj['status'] = new \stdClass();
-        $statusObj['status']->satuts = 0;
+        $statusObj['status']->status = 0;
         $statusObj['status']->code = $code;
         $statusObj['status']->message = $message;
         return \Response::json((object) $statusObj);

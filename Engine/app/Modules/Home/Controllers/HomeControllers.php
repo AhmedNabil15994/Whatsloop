@@ -15,15 +15,15 @@ class HomeControllers extends Controller {
         }else{
         	$result = $serverResult->json();
         	$extraResult = array_values($result);
-
         	if(isset($result['error']) && !empty($result['error'])){
             	return [0,$result['error']];
         	}
         	if(isset($result['result']) && $result['result'] == 'failed'){
             	return [0,$result['message']];
         	}
-        	if(isset($extraResult[0]) && !empty($extraResult[0]) && $extraResult[0] == false){
-            	return [0,$result['message']];
+
+            if(isset($extraResult[0]) && $extraResult[0] == false){
+                return [0,$result['message']];
         	}
         	if(isset($result['result']) && $result['result'] == "Couldn't delete chat or leaving group. Invalid number"){
             	return [0,"Couldn't delete chat or leaving group. Invalid number"];
@@ -48,6 +48,14 @@ class HomeControllers extends Controller {
     		}
     	}
 
+        if(isset($input['phones']) && !empty($input['phones']) && $status == 'group' ){
+            $phones=[];
+            foreach ($input['phones'] as $value) {
+                $phones[]=$value.'@c.us';
+            }
+            $input['chatIds'] = $phones;
+        }
+
     	if(isset($input['messageId']) && !empty($input['messageId']) && in_array($status, ['forwardMessage'])){
     		if(!is_array($input['messageId'])){
     			$input['messageId'] = [$input['messageId']];
@@ -67,7 +75,7 @@ class HomeControllers extends Controller {
 
     	if(in_array($status, ['addGroupParticipant','removeGroupParticipant','promoteGroupParticipant','demoteGroupParticipant'])){
     		if(isset($input['participantPhone']) && !empty($input['participantPhone'])){
-    			$input['participantPhone'] = $input['participantPhone'].'@c.us';
+    			$input['participantChatId'] = $input['participantPhone'].'@c.us';
     		}
 
     		if(isset($input['groupId']) && !empty($input['groupId'])){

@@ -14,7 +14,7 @@ $(function(){
 	$.each(modelProps,function(index,item){
 		options+='<option value="'+index+'">'+item+'</option>';
 	});
-	
+
 	function handleFile(f) {
      //Loop through files
         var reader = new FileReader();
@@ -23,7 +23,7 @@ $(function(){
             var data = e.target.result;
             var result;
             var workbook = XLSX.read(data, { type: 'binary' });
-            
+
             var sheet_name_list = workbook.SheetNames;
             sheet_name_list.forEach(function (y) { /* iterate through sheets */
                 //Convert the cell value to Json
@@ -39,7 +39,7 @@ $(function(){
             $.each(oneItem,function(index,item){
             	if(index != '__rowNum__'){
             		cols.push(index);
-            		var selectProps =   '<select class="selectpicker" data-style="btn-outline-primary">'+options+'</select>';
+            		var selectProps =   '<select class="selectpicker" data-style="btn-outline-myPR">'+options+'</select>';
 					selectProps =   '<div class="form-group row mb-2">'+
 										'<label class="col-3 col-form-label">'+storeAs+' :</label>'+
 										'<div class="col-9">'+selectProps+'</div>'+
@@ -103,5 +103,39 @@ $(function(){
 		   	this.removeFile(file);
 	    },
 	});
+
+    $('select[name="group_id"]').on('change',function(){
+        if($(this).val() == '@'){
+            $('.new').slideDown(250);
+        }else{
+            $('.new').slideUp(250);
+        }
+    });
+
+    $('.new .addGR').on('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+        $.ajax({
+            type: 'POST',
+            url: '/groupNumbers/create',
+            data:{
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'name_ar': $('.new input.name_ar').val(),
+                'name_en': $('.new input.name_en').val(),
+                'channel': $('.new select.channel').val(),
+            },
+            success:function(data){
+                if(!data.title && data.status.status != 1){
+                    errorNotification(data.status.message);
+                }else{
+                    $("select[name='group_id'] option:last").before('<option value="'+data.id+'" selected>'+data.name_en+'</option>');
+                    $("select[name='group_id']").selectpicker('refresh');
+                    $('.new input').val('');
+                    $('.new').slideUp(250);
+                }
+            },
+        });
+    });
 
 });

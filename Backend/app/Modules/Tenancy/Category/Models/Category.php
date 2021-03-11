@@ -23,13 +23,13 @@ class Category extends Model{
         $source = self::NotDeleted()->where(function ($query) use ($input) {
                     if (isset($input['color_id']) && !empty($input['color_id'])) {
                         $query->where('color_id',$input['color_id']);
-                    } 
+                    }
                     if (isset($input['name_ar']) && !empty($input['name_ar'])) {
                         $query->where('name_ar', 'LIKE', '%' . $input['name_ar'] . '%');
-                    } 
+                    }
                     if (isset($input['name_en']) && !empty($input['name_en'])) {
                         $query->where('name_en', 'LIKE', '%' . $input['name_en'] . '%');
-                    } 
+                    }
                     if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
@@ -108,6 +108,11 @@ class Category extends Model{
             $labelClass = 'dark';
             $hexColor = '#323a46';
             $colorName = 'Nepal';
+        }else{
+            $color = '';
+            $labelClass = '';
+            $hexColor = '';
+            $colorName = '';
         }
         return [$color,$labelClass,$hexColor,$colorName];
     }
