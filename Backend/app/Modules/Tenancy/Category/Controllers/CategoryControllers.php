@@ -306,7 +306,7 @@ class CategoryControllers extends Controller {
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to($this->getData()['mainData']['url'].'/');
+        return redirect()->to($this->getData()['mainData']['url'].'/edit/'.$dataObj->id);
     }
 
     public function delete($id) {

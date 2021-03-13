@@ -265,9 +265,6 @@ class ContactsControllers extends Controller {
             return Redirect('404');
         }
 
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['groupId'] = $groupObj->groupId;
-
         $modelProps = ['name','email','country','city','phone'];
         $userInputs = $input;
 
@@ -281,15 +278,6 @@ class ContactsControllers extends Controller {
 
             $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$input['phone'])->first();
             if(!$contactObj){
-
-                $data['participantPhone'] = str_replace('+', '', $input['phone']);
-                $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
-                $result = $addResult->json();
-                if($result['status']['status'] != 1){
-                    Session::flash('error', $result['status']['message']);
-                    return redirect()->back()->withInput();
-                }
-
                 $dataObj = new Contact;
                 $dataObj->name = $input['client_name'];
                 $dataObj->phone = $input['phone'];
@@ -323,19 +311,10 @@ class ContactsControllers extends Controller {
                 $phone = '+'.str_replace('\r', '', $numbersArr[$i]);
                 $contactObj = Contact::NotDeleted()->where('group_id',$input['group_id'])->where('phone',$phone)->first();
                 if(!$contactObj){
-
-                    $data['participantPhone'] = str_replace('+', '', $phone);
-                    $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
-                    $result = $addResult->json();
-                    if($result['status']['status'] != 1){
-                        Session::flash('error', $result['status']['message']);
-                        return redirect()->back()->withInput();
-                    }
-
                     $dataObj = new Contact;
-                    $dataObj->phone = $phone;
+                    $dataObj->phone = trim($phone);
                     $dataObj->group_id = $input['group_id'];
-                    $dataObj->name = $phone;
+                    $dataObj->name = trim($phone);
                     $dataObj->status = $input['status'];
                     $dataObj->sort = Contact::newSortIndex();
                     $dataObj->created_by = USER_ID;
@@ -397,17 +376,8 @@ class ContactsControllers extends Controller {
                     if(!isset($value['name']) || empty($value['name'])){
                         $value['name'] = $phone;
                     }
-                    $value['phone'] = $phone;
+                    $value['phone'] = trim($phone);
                     $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
-
-                    $data['participantPhone'] = str_replace('+', '', $phone);
-                    $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
-                    $result = $addResult->json();
-                    if($result['status']['status'] != 1){
-                        Session::flash('error', $result['status']['message']);
-                        return redirect()->back()->withInput();
-                    }
-
                     Contact::insert($value);
                 }else{
                     $foundData[] = $phone;

@@ -310,7 +310,8 @@ $('#SubmitBTN').on('click',function(e){
     e.stopPropagation();
     $('input[name="status"]').val(1);
     var phone =  $(".teles").intlTelInput("getNumber");
-    if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.form-group.row').hasClass('hidden')) {
+    if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.form-group.row').hasClass('hidden') &&(
+            ($('input[name="vType"]').length && $('input[name="vType"]').val() == 2) || !$('input[name="vType"]').length)){
         if(lang == 'en'){
             errorNotification("This Phone Number Isn't Valid!");
         }else{
@@ -324,7 +325,8 @@ $('#SubmitBTN').on('click',function(e){
 $('#SaveBTN').on('click',function(){
     $('input[name="status"]').val(0);
     var phone =  $(".teles").intlTelInput("getNumber");
-    if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.form-group.row').hasClass('hidden')) {
+    if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.form-group.row').hasClass('hidden') &&(
+            ($('input[name="vType"]').length && $('input[name="vType"]').val() == 2) || !$('input[name="vType"]').length)){
         if(lang == 'en'){
             errorNotification("This Phone Number Isn't Valid!");
         }else{

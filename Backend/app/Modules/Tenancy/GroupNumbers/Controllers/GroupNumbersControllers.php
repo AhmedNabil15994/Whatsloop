@@ -231,24 +231,11 @@ class GroupNumbersControllers extends Controller {
         }
 
 
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['groupName'] = $input['name_ar'].' - '.$input['name_en'] ;
-        $userObj = User::getOne(USER_ID);
-        $data['phones'] = [str_replace('+', '', $userObj->phone)];
-        $addResult = $mainWhatsLoopObj->group($data);
-        $result = $addResult->json();
-
-        if($result['status']['status'] != 1){
-            Session::flash('error', $result['status']['message']);
-            return redirect()->back()->withInput();
-        }
 
         $dataObj = new GroupNumber;
         $dataObj->channel = $input['channel'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
-        $dataObj->groupId = str_replace('@g.us', '', $result['data']['chatId']);
-        $dataObj->groupCode = str_replace('https://chat.whatsapp.com/', '', $result['data']['groupInviteLink']);
         if($request->ajax()){
             $input['status'] = 1;
             $input['description_ar'] = '';
@@ -361,8 +348,6 @@ class GroupNumbersControllers extends Controller {
             }
         }
 
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['groupId'] = $groupObj->groupId;
         foreach ($storeData as $value) {
             $phone = "+".$value['phone'];
             $phone = str_replace('\r', '', $phone);
@@ -371,16 +356,8 @@ class GroupNumbersControllers extends Controller {
                 if(!isset($value['name']) || empty($value['name'])){
                     $value['name'] = $phone;
                 }
-                $value['phone'] = str_replace('\r', '', $phone);
+                $value['phone'] = trim(str_replace('\r', '', $phone));
                 $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
-
-                $data['participantPhone'] = str_replace('+', '', $value['phone']);
-                $addResult = $mainWhatsLoopObj->addGroupParticipant($data);
-                $result = $addResult->json();
-                if($result['status']['status'] != 1){
-                    Session::flash('error', $result['status']['message']);
-                    return redirect()->back()->withInput();
-                }
                 Contact::insert($value);
             }
         }

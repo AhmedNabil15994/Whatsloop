@@ -87,7 +87,7 @@ class GroupMsg extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $data->sent_type = trans('main.inPrgo');
+        $data->sent_type = self::getStatus($source);
         $data->sent_msgs = 0;
 
         $data->id = $source->id;
@@ -106,7 +106,8 @@ class GroupMsg extends Model{
         $data->url_image = $source->url_image;
         $data->contacts_count = $source->contacts_count;
         $data->messages_count = $source->messages_count;
-        $data->unsent_msgs = $source->messages_count * $source->contacts_count;
+        $data->sent_msgs = $source->sent_count;
+        $data->unsent_msgs = $source->messages_count * $source->unsent_count;
         $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name) : "";
         $data->file_name = $source->file_name;
         $data->file_size = $data->file != '' ? \ImagesHelper::getPhotoSize($data->file) : '';
@@ -118,6 +119,18 @@ class GroupMsg extends Model{
         $data->created_at = \Helper::formatDate($source->created_at);
         return $data;
     }  
+
+    static function getStatus($source){
+        if($source->publish_at > date('Y-m-d H:i:s')){
+            return trans('main.publishSoon');
+        }
+
+        if($source->sent_count + $source->unsent_count == $source->contacts_count){
+            return trans('main.done');
+        }else{
+            return trans('main.inPrgo');
+        }
+    }
 
     static function getMessage($source){
         $text = '';

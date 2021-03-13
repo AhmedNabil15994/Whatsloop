@@ -22,6 +22,8 @@ class CreateGroupMessagesTable extends Migration
             $table->dateTime('publish_at')->nullable();
             $table->integer('contacts_count')->default(0);
             $table->integer('messages_count')->default(0);
+            $table->integer('sent_count')->default(0);
+            $table->integer('unsent_count')->default(0);
             $table->string('file_name')->nullable();
             $table->string('https_url')->nullable();
             $table->string('url_title')->nullable();

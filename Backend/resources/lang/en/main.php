@@ -237,6 +237,8 @@ return [
 	'contacts_count' => 'Contacts Count',
 	'view' => 'View',
 	'inPrgo' => "In Progress",
+	'publishSoon' => 'Will Be Published Soon',
+	'done' => 'Done',
 	'chat' => 'Start Conversation',
 	'customers' => 'Customers',
 	'products' => 'Products',
