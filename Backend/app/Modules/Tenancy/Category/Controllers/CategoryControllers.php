@@ -156,14 +156,12 @@ class CategoryControllers extends Controller {
     protected function validateInsertObject($input){
         $rules = [
             'channel' => 'required',
-            'name_ar' => 'required',
-            'name_en' => 'required',
+            'name_'.LANGUAGE_PREF => 'required',
         ];
 
         $message = [
             'channel.required' => trans('main.channelValidate'),
-            'name_ar.required' => trans('main.titleArValidate'),
-            'name_en.required' => trans('main.titleEnValidate'),
+            'name_'.LANGUAGE_PREF.'.required' => trans('main.title'.ucfirst(LANGUAGE_PREF).'Validate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -228,7 +226,7 @@ class CategoryControllers extends Controller {
         $data['labelId'] = $dataObj->labelId;
 
         if($nameUpdateFlag == 1){
-            $data['name'] = $input['name_ar'].' - '.$input['name_en'];
+            $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
             $updateResult = $mainWhatsLoopObj->updateLabel($data);
             $result = $updateResult->json();
 
@@ -282,7 +280,7 @@ class CategoryControllers extends Controller {
         // Perform Whatsapp Integration
         $labelId = '';
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['name'] = $input['name_ar'].' - '.$input['name_en'];
+        $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
         $addResult = $mainWhatsLoopObj->createLabel($data);
         $result = $addResult->json();
         if($result['status']['status'] != 1){
@@ -304,9 +302,24 @@ class CategoryControllers extends Controller {
         $dataObj->created_by = USER_ID;
         $dataObj->save();
 
+        if(isset($input['color_id']) && !empty($input['color_id'])){
+            $updateDate['color'] = Category::getColor($input['color_id'])[3];
+            $updateDate['labelId'] = $dataObj->labelId;
+            $updateResult = $mainWhatsLoopObj->updateLabel($updateDate);
+            $result = $updateResult->json();
+
+            if($result['status']['status'] != 1){
+                Session::flash('error', $result['status']['message']);
+                return \Redirect::back()->withInput();
+            }
+
+            $dataObj->color_id = $input['color_id'];
+            $dataObj->save();
+        }
+
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to($this->getData()['mainData']['url'].'/edit/'.$dataObj->id);
+        return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 
     public function delete($id) {
@@ -345,6 +358,21 @@ class CategoryControllers extends Controller {
 
         WebActions::newType(4,$this->getData()['mainData']['modelName']);
         return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+    }
+
+    public function reformLabelName($name_ar,$name_en){
+        $fullName= '';
+        if(!empty($name_ar)){
+            $fullName = $name_ar;
+            if(!empty($name_en)){
+                $fullName.= ' - '.$name_en;
+            }
+        }else{
+            if(!empty($name_en)){
+                $fullName=$name_en;
+            }
+        }
+        return $fullName;
     }
 
     public function arrange() {

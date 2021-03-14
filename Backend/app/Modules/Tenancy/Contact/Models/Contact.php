@@ -28,13 +28,17 @@ class Contact extends Model{
         return $this->belongsTo('App\Models\GroupNumber','group_id');
     }
 
+    public function Reports(){
+        return $this->hasMany('App\Models\ContactReport','contact','phone');
+    }
+
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)
             ->first();
     }
 
-    static function dataList($status=null,$id=null,$group_id=null) {
+    static function dataList($status=null,$id=null,$group_id=null,$withMessageStatus=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -75,40 +79,114 @@ class Contact extends Model{
             $source->where('group_id',$group_id);
         }
         $source->orderBy('sort','ASC');
-        return self::generateObj($source);
+        return self::generateObj($source,$withMessageStatus);
     }
 
-    static function generateObj($source){
-        $sourceArr = $source->get();
+    static function getFullContactsInfo($group_id,$group_message_id){
+        $source = self::NotDeleted()->with('Reports')->where('group_id',$group_id);
+        if(Session::has('channel')){
+            $source->whereHas('Group',function($groupQuery){
+                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+            });
+        }
+        $source->orderBy('sort','ASC');
+        return self::generateObj($source,'withMessageStatus',$group_message_id);
+    }
 
+    static function getContactsReports(){
+        $source = self::NotDeleted();
+        if(Session::has('channel')){
+            $source->whereHas('Group',function($groupQuery){
+                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+            });
+        }
+        $source = $source->select('*','phone as phones',\DB::raw('count(*) as total'))->groupBy('created_at','group_id')->orderBy('created_at','DESC')->get();
+
+        $list = [];
+        $i = 1;
+        foreach ($source as $key => $value) {
+            $contacts = self::NotDeleted()->where('group_id',$value->group_id)->where('created_at',$value->created_at)->get();
+            $contacts = reset($contacts);
+
+            $myContacts = [];
+            $hasWhatsapp = [];
+            $hasNoWhatsapp = [];
+            foreach ($contacts as $contact) {
+                $myContacts[] = str_replace('+', '', $contact->phone);
+                $hasWhatsapp[] = $contact->has_whatsapp  == 1 ? trans('main.yes') : '----'; 
+                $hasNoWhatsapp[] = $contact->has_whatsapp  == 0 ? trans('main.no') : '----'; 
+            }
+            
+            $list[$key] = new \stdClass();
+            $list[$key]->id = $i;
+            $list[$key]->group_id = $value->group_id;
+            $list[$key]->group_name = $value->Group->{'name_'.LANGUAGE_PREF};
+            $list[$key]->status = trans('main.done');
+            $list[$key]->total = $value->total;
+            $list[$key]->hasWhatsapp = implode(' <br/> ', $hasWhatsapp);
+            $list[$key]->hasNoWhatsapp = implode(' <br/> ', $hasNoWhatsapp);
+            $list[$key]->contacts = implode(' <br/> ', $myContacts);
+            $list[$key]->created_at = $value->created_at;
+            $i++;
+        }
+        return $list;
+    }
+
+    static function generateObj($source,$withMessageStatus=null,$group_message_id=null){
+        $sourceArr = $source->get();
         $list = [];
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
-            $list[$key] = self::getData($value);
+            $list[$key] = self::getData($value,$withMessageStatus,$group_message_id);
         }
-
         $data['data'] = $list;
-
         return $data;
     }
 
-    static function getData($source) {
+    static function getData($source,$withMessageStatus=null,$group_message_id=null) {
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->group_id = $source->group_id;
-        $data->group = $source->group_id != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
+        $data->group = $source->group_id != null ? $source->Group->{'name_ar'.LANGUAGE_PREF} : '';
         $data->phone = $source->phone;
         $data->phone2 = str_replace('+', '', $source->phone);
         $data->name = $source->name;
         $data->lang = $source->lang;
         $data->langText = $source->lang == 0 ? trans('main.arabic') : trans('main.english');
         $data->notes = $source->notes;
+        $data->has_whatsapp = $source->has_whatsapp;
         $data->email = $source->email != null ? $source->email : '';
         $data->city = $source->city != null ? $source->city : '';
         $data->country = $source->country != null ? $source->country : '';
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);
+        if($withMessageStatus != null){
+            $status = [];
+            $groupMsgObj = GroupMsg::getData(GroupMsg::getOne($group_message_id));
+            if($groupMsgObj->sent_type == trans('main.publishSoon')){
+                $status= ['dark',trans('main.publishSoon')];
+                $data->reportStatus = $status;
+                return $data;
+            }
+
+            $reportObj = $source->Reports()->where('group_message_id',$group_message_id)->first();
+            if($reportObj == null){
+                $status= ['info',trans('main.inPrgo')];
+            }else{
+                if($reportObj->status == 0){
+                    $status = ['danger',trans('main.notSent')];
+                }else if($reportObj->status == 1){
+                    $status = ['success',trans('main.sent')];
+                }else if($reportObj->status == 2){
+                    $status = ['info',trans('main.received')];
+                }else if($reportObj->status == 3){
+                    $status = ['primary',trans('main.seen')];
+                }
+            }
+            $data->reportStatus = $status;
+
+        }
         return $data;
     }
 

@@ -203,7 +203,7 @@
                         <ul class="nav-second-level">
                             @if(\Helper::checkRules('list-group-messages'))
                             <li class="{{ Active(URL::to('/groupMsgs*'),'menuitem-active') }}">
-                                <a href="{{ URL::to('/groupMsgs') }}">{{ trans('main.groupMsgsArc') }}</a>
+                                <a href="{{ URL::to('/groupMsgs') }}">{{ trans('main.groupMsgs') }}</a>
                             </li>
                             @endif
 

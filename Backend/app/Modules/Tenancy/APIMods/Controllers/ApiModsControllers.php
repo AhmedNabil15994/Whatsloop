@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use DataTables;
 use Storage;
+use App\Models\Contact;
+use App\Models\ContactReport;
 use App\Models\User;
 
 class ApiModsControllers extends Controller {
@@ -86,16 +88,16 @@ class ApiModsControllers extends Controller {
 
     public function report(Request $request) {
         if($request->ajax()){
-            // $data = User::dataList();
-            return Datatables::of([])->make(true);
+            $data = Contact::getContactsReports();
+            return Datatables::of($data)->rawColumns(['contacts','hasWhatsapp','hasNoWhatsapp'])->make(true);
         }
 
         $data['designElems']['mainData'] = [
-            'title' => trans('main.statuses'),
-            'url' => 'statuses',
-            'name' => 'statuses',
-            'nameOne' => 'status',
-            'modelName' => 'Status',
+            'title' => trans('main.groupNumberRepors'),
+            'url' => 'groupNumberRepors',
+            'name' => 'groupNumberRepors',
+            'nameOne' => 'groupNumberRepors',
+            'modelName' => 'groupNumberRepors',
             'icon' => 'mdi mdi-file-account-outline',
         ];
         $data['designElems']['searchData'] = [];
@@ -107,65 +109,64 @@ class ApiModsControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'group' => [
+            'group_name' => [
                 'label' => trans('main.group'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'group_id',
+                'data-col' => 'group_name',
                 'anchor-class' => '',
             ],
-            'addType' => [
+            'status' => [
                 'label' => trans('main.addType'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'addType',
-                'anchor-class' => '',
+                'data-col' => 'status',
+                'anchor-class' => 'badge badge-success',
             ],
-            'contactsNos' => [
+            'contacts' => [
                 'label' => trans('main.contactsNos'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'contactsNos',
+                'data-col' => 'contacts',
                 'anchor-class' => '',
             ],
-            'hasWhats' => [
+            'hasWhatsapp' => [
                 'label' => trans('main.hasWhats'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'hasWhats',
+                'data-col' => 'hasWhatsapp',
                 'anchor-class' => '',
             ],
-            'hasNotWhats' => [
+            'hasNoWhatsapp' => [
                 'label' => trans('main.hasNotWhats'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'hasNotWhats',
+                'data-col' => 'hasNoWhatsapp',
                 'anchor-class' => '',
             ],
-            'addNos' => [
+            'total' => [
                 'label' => trans('main.addNos'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'addNos',
+                'data-col' => 'total',
                 'anchor-class' => '',
             ],
             'created_at' => [
                 'label' => trans('main.sentDate'),
                 'type' => '',
                 'className' => '',
-                'data-col' => '',
+                'data-col' => 'created_at',
                 'anchor-class' => '',
             ],
         ];
-
         $data['dis'] = true;
         return view('Tenancy.User.Views.index')->with('data', (object) $data);
     }
 
     public function msgsArchive(Request $request){
         if($request->ajax()){
-            // $data = User::dataList();
-            return Datatables::of([])->make(true);
+            $data = ContactReport::dataList();
+            return Datatables::of($data['data'])->rawColumns(['status'])->make(true);
         }
 
         $userObj = User::getData(User::getOne(USER_ID));
@@ -201,18 +202,6 @@ class ApiModsControllers extends Controller {
                 'index' => '0',
                 'label' => trans('main.id'),
             ],
-            'sender' => [
-                'type' => 'text',
-                'class' => 'form-control m-input',
-                'index' => '1',
-                'label' => trans('main.sender'),
-            ],
-            'receiver' => [
-                'type' => 'text',
-                'class' => 'form-control m-input',
-                'index' => '2',
-                'label' => trans('main.receiver'),
-            ],
             'channel' => [
                 'type' => 'select',
                 'class' => 'form-control',
@@ -220,18 +209,18 @@ class ApiModsControllers extends Controller {
                 'options' => $channels,
                 'label' => trans('main.channel'),
             ],
+            'contact' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'index' => '3',
+                'label' => trans('main.receiver'),
+            ],
             'message_type' => [
                 'type' => 'select',
                 'class' => 'form-control',
                 'index' => '',
                 'options' => $message_types,
                 'label' => trans('main.message_type'),
-            ],
-            'message_content' => [
-                'type' => 'text',
-                'class' => 'form-control m-input',
-                'index' => '5',
-                'label' => trans('main.message_content'),
             ],
             'status' => [
                 'type' => 'select',
@@ -263,6 +252,13 @@ class ApiModsControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
+            'channel' => [
+                'label' => trans('main.channel'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'channel',
+                'anchor-class' => '',
+            ],
             'sender' => [
                 'label' => trans('main.sender'),
                 'type' => '',
@@ -270,18 +266,11 @@ class ApiModsControllers extends Controller {
                 'data-col' => 'sender',
                 'anchor-class' => '',
             ],
-            'receiver' => [
+            'phone2' => [
                 'label' => trans('main.receiver'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'receiver',
-                'anchor-class' => '',
-            ],
-            'channel' => [
-                'label' => trans('main.channel'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'channel',
                 'anchor-class' => '',
             ],
             'message_type' => [

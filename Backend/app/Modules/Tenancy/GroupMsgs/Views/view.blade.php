@@ -172,7 +172,7 @@
                                 <div class="card-body cont-card">
                                     <div class="row">
                                         <div class="col-8">{{ $contact->phone }}</div>
-                                        <div class="col-4"><span class="badge badge-info">{{ trans('main.inPrgo') }}</span></div>
+                                        <div class="col-4"><span class="badge badge-{{ $contact->reportStatus[0] }}">{{ $contact->reportStatus[1] }}</span></div>
                                     </div>
                                 </div>
                             </div>

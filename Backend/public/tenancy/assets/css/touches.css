@@ -313,7 +313,9 @@ html[dir="rtl"] .datepicker{
   text-align: right;
   direction: rtl;
 }
-
+html[dir="rtl"] .navbar-custom .topnav-menu .nav-link{
+  direction: rtl;
+}
 .card-bot{
   position: relative;
   min-height: 800px;

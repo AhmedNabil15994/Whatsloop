@@ -34,7 +34,7 @@ trait TraitsFunc
         );
     }
 
-    public function Creator(){
+    public function MainCreator(){
         return $this->belongsTo(UserProfile::class, 'created_by', 'id')
             ->withDefault(function ($user) {
                 $user->display_name = '';

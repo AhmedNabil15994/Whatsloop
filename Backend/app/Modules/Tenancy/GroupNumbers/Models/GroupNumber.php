@@ -66,8 +66,6 @@ class GroupNumber extends Model{
         $data->channel = $source->channel;
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
-        $data->groupId = $source->groupId;
-        $data->groupCode = $source->groupCode;
         $data->title = $source->{'name_'.LANGUAGE_PREF};
         $data->description_ar = $source->description_ar;
         $data->description_en = $source->description_en;

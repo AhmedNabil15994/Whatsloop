@@ -173,6 +173,8 @@ return [
 	'color' => 'Color',
 	'colorValidate' => 'Color Field is required',
 
+	'yes' => 'Yes',
+	'no' => 'No',
 	'green' => 'Green',
 	'blue' => 'Blue',
 	'yellow' => 'Yellow',

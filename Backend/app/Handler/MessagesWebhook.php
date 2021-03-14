@@ -2,6 +2,7 @@
 namespace App\Handler;
 use App\Models\Bot;
 use App\Models\ChatSession;
+use App\Models\ContactReport;
 use \Spatie\WebhookClient\ProcessWebhookJob;
 use Http;
 use Session;
@@ -11,6 +12,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    $data = json_decode($this->webhookCall, true);
 	    $mainData = $data['payload'];
 	    $messages = @$mainData['messages'];
+	    $actions = @$mainData['ack'];
 
 	    if(!empty($messages)){
 	    	foreach ($messages as $message) {
@@ -68,7 +70,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 			    			$result = $mainWhatsLoopObj->sendMessage($sendData);
 		    			}elseif($botObj->reply_type == 2){
 		    				$sendData['filename'] = $botObj->file_name;
-		    				$sendData['body'] = 'https://whatsloop.net/resources/Gallery/181595515052_WhatsLoop.png';//$botObj->file;
+		    				$sendData['body'] = $botObj->file;
 		    				$sendData['caption'] = $botObj->reply;
 			    			$result = $mainWhatsLoopObj->sendFile($sendData);
 		    			}elseif($botObj->reply_type == 3){
@@ -117,6 +119,24 @@ class MessagesWebhook extends ProcessWebhookJob{
 			        return \Response::json((object) $statusObj); 
 	    		}	
 
+	    	}
+	    }
+
+	    if(!empty($actions)){
+	    	foreach ($actions as $action) {
+	    		$action = (array) $action;
+	    		$sender = $action['chatId'];
+	    		$messageId = $action['id'];
+	    		if($action['status'] == 'delivered'){
+	    			$statusInt = 2;
+	    			$contactObj = ContactReport::where('contact','+'.str_replace('@c.us', '', $sender))->where('message_id',$messageId)->update(['status' => $statusInt]);
+	    		}elseif ($action['status'] == 'viewed') {
+	    			$statusInt = 3;
+	    			$contactObj = ContactReport::where('contact','+'.str_replace('@c.us', '', $sender))->where('message_id',$messageId)->update(['status' => $statusInt]);
+	    		}
+
+		    	$statusObj['status'] = \TraitsFunc::SuccessResponse();
+			    return \Response::json((object) $statusObj); 
 	    	}
 	    }
 	}

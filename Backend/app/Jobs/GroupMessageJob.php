@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\GroupMsg;
+use App\Models\ContactReport;
 
 class GroupMessageJob implements ShouldQueue
 {
@@ -35,8 +36,8 @@ class GroupMessageJob implements ShouldQueue
      */
     public function handle()
     {   
-        $unsent = 0;
-        $sent = 0;
+        $unsent = $this->messageObj->unsent_msgs;
+        $sent = $this->messageObj->sent_msgs;
         foreach ($this->contacts as $contact) {
             $result = $this->sendData(str_replace('+', '', $contact->phone),(array) $this->messageObj);
             if($result == 1){
@@ -60,7 +61,7 @@ class GroupMessageJob implements ShouldQueue
             $result = $mainWhatsLoopObj->sendMessage($sendData);
         }elseif($messageObj['message_type'] == 2){
             $sendData['filename'] = $messageObj['file_name'];
-            $sendData['body'] = 'https://whatsloop.net/resources/Gallery/181595515052_WhatsLoop.png';//$messageObj['file'];
+            $sendData['body'] = $messageObj['file'];
             $sendData['caption'] = $messageObj['reply'];
             $result = $mainWhatsLoopObj->sendFile($sendData);
         }elseif($messageObj['message_type'] == 3){
@@ -77,9 +78,17 @@ class GroupMessageJob implements ShouldQueue
             $result = $mainWhatsLoopObj->sendContact($sendData);
         }
 
+        $status = 1;
         if($result['status']['status'] != 1){
-            return 0;
+            $status = 0;
         }
-        return 1;
+
+        $messageId = '';
+        if(isset($result['data']) && isset($result['data']['id'])){
+            $messageId = $result['data']['id'];
+        }
+
+        ContactReport::newStatus('+'.$contact,$messageObj['group_id'],$messageObj['id'],$status,$messageId);
+        return $status;
     }
 }

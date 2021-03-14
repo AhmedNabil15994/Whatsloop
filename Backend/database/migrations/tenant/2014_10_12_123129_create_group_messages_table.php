@@ -20,6 +20,7 @@ class CreateGroupMessagesTable extends Migration
             $table->integer('message_type');
             $table->text('message');
             $table->dateTime('publish_at')->nullable();
+            $table->integer('later')->default(0);
             $table->integer('contacts_count')->default(0);
             $table->integer('messages_count')->default(0);
             $table->integer('sent_count')->default(0);

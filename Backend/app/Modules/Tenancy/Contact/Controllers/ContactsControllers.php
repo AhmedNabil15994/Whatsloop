@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
+use App\Jobs\CheckWhatsappJob;
 use DataTables;
 use Storage;
 use Excel;
@@ -267,6 +268,7 @@ class ContactsControllers extends Controller {
 
         $modelProps = ['name','email','country','city','phone'];
         $userInputs = $input;
+        $consForQueue = [];
 
         $type = $input['vType'];
 
@@ -292,6 +294,7 @@ class ContactsControllers extends Controller {
                 $dataObj->created_by = USER_ID;
                 $dataObj->created_at = DATE_TIME;
                 $dataObj->save();
+                $consForQueue[] = $dataObj;
             }else{
                 Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
@@ -320,6 +323,7 @@ class ContactsControllers extends Controller {
                     $dataObj->created_by = USER_ID;
                     $dataObj->created_at = DATE_TIME;
                     $dataObj->save();
+                    $consForQueue[] = $dataObj;
                 }else{
                     $foundData[] = $phone;
                 }
@@ -378,11 +382,18 @@ class ContactsControllers extends Controller {
                     }
                     $value['phone'] = trim($phone);
                     $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
+                    $consForQueue[] = $value;
                     Contact::insert($value);
                 }else{
                     $foundData[] = $phone;
                 }
             }
+        }
+
+        $chunks = 400;
+        $contacts = array_chunk($consForQueue,$chunks);
+        foreach ($contacts as $contact) {
+            dispatch(new CheckWhatsappJob($contact));
         }
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);

@@ -43,7 +43,7 @@ class GroupMsgsControllers extends Controller {
         ];
 
         $data['mainData'] = [
-            'title' => trans('main.groupMsgsArc'),
+            'title' => trans('main.groupMsgs'),
             'url' => 'groupMsgs',
             'name' => 'groupMessages',
             'nameOne' => 'group-message',
@@ -181,7 +181,7 @@ class GroupMsgsControllers extends Controller {
                 'data-col' => 'unsent_msgs',
                 'anchor-class' => 'badge badge-secondary',
             ],
-            'created_at' => [
+            'publish_at' => [
                 'label' => trans('main.sentDate'),
                 'type' => '',
                 'className' => '',
@@ -327,6 +327,7 @@ class GroupMsgsControllers extends Controller {
         $dataObj->message_type = $input['message_type'];
         $dataObj->message = $message;
         $dataObj->publish_at = $date;
+        $dataObj->later = $flag;
         $dataObj->contacts_count = Contact::NotDeleted()->where('group_id',$groupObj->id)->count();
         $dataObj->messages_count = count($messagesArr);
         $dataObj->sort = GroupMsg::newSortIndex();
@@ -395,7 +396,7 @@ class GroupMsgsControllers extends Controller {
             return Redirect('404');
         }
         $data['data'] = GroupMsg::getData($groupMsgObj);
-        $data['contacts'] = Contact::dataList(1,null,$groupMsgObj->group_id)['data'];
+        $data['contacts'] = Contact::getFullContactsInfo($groupMsgObj->group_id,$groupMsgObj->id)['data'];
         $data['designElems']['mainData'] = $this->getData()['mainData'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
