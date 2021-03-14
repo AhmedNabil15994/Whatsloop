@@ -122,7 +122,7 @@ class MainWhatsLoop {
     Instances
     ----------------------------------------------------------*/
 
-    public function status(){
+    public function status($data=[]){
         $mainURL = $this->baseUrl.'instances/status';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,
@@ -130,7 +130,7 @@ class MainWhatsLoop {
         ])->post($mainURL,$data);
     }
 
-    public function qr_code(){
+    public function qr_code($data=[]){
         $mainURL = $this->baseUrl.'instances/qr_code';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,

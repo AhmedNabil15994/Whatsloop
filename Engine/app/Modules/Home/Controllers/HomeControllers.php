@@ -106,8 +106,10 @@ class HomeControllers extends Controller {
             $destinationPath = public_path() . $image;
             if($status == 'status'){
             	$result = $serverResult->json();
-            	$qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['qrCode']));
-                $succ = file_put_contents($destinationPath, $qrCode);   
+                if(isset($result['qrCode'])){
+                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['qrCode']));
+                    $succ = file_put_contents($destinationPath, $qrCode);   
+                }
             }else{
 	            $succ = file_put_contents($destinationPath, $serverResult);
             }

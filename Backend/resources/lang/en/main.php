@@ -367,4 +367,9 @@ return [
 	'copy_code' => 'Copy Code',
 	'show_code' => 'Show Code',
 
+	'authenticated' => 'Authorization passed successfully',
+	'init' => 'Initial Status',
+	'loading' => 'The system is still loading, try again in 1 minute',
+	'gotQrCode' => 'There is a QR code and you need to take a picture of it in the Whatsapp application by going to Menu -> WhatsApp Web -> Add. QR code is valid for one minute.',
+
 ];

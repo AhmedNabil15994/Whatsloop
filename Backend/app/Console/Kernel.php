@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         $tenants = \DB::table('tenants')->get();
         foreach($tenants as $tenant){
             $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id);
+            $schedule->command('tenants:run instance:status --tenants='.$tenant->id);
         }
 
         $schedule->command('queue:work')->everyMinute();

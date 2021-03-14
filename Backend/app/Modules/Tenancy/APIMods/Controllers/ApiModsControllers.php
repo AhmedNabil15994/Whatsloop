@@ -8,6 +8,7 @@ use DataTables;
 use Storage;
 use App\Models\Contact;
 use App\Models\ContactReport;
+use App\Models\UserStatus;
 use App\Models\User;
 
 class ApiModsControllers extends Controller {
@@ -16,7 +17,8 @@ class ApiModsControllers extends Controller {
 
     public function index(Request $request) {
         if($request->ajax()){
-            return Datatables::of([])->make(true);
+            $data = UserStatus::dataList();
+            return Datatables::of($data['data'])->make(true);
         }
 
         $data['designElems']['mainData'] = [
@@ -26,6 +28,13 @@ class ApiModsControllers extends Controller {
             'nameOne' => 'status',
             'modelName' => 'Status',
             'icon' => 'mdi mdi-format-list-bulleted-type',
+        ];
+
+        $statuses = [
+            ['id' => 1,'title' => trans('main.authenticated')],
+            ['id' => 2,'title' => trans('main.init')],
+            ['id' => 3,'title' => trans('main.loading')],
+            ['id' => 4,'title' => trans('main.gotQrCode')],
         ];
         $data['designElems']['searchData'] = [
             'id' => [
@@ -38,7 +47,7 @@ class ApiModsControllers extends Controller {
                 'type' => 'select',
                 'class' => 'form-control',
                 'index' => '',
-                'options' => [],
+                'options' => $statuses,
                 'label' => trans('main.status'),
             ],
             'from' => [
@@ -66,7 +75,7 @@ class ApiModsControllers extends Controller {
                 'anchor-class' => '',
             ],
 
-            'status' => [
+            'statusText' => [
                 'label' => trans('main.status'),
                 'type' => '',
                 'className' => '',
