@@ -91,6 +91,7 @@ $(function(){
 				columnDefsVar.push({
 					'targets': 0,
 					'title' : item['label'],
+					'orderable':false,
 				});
 			}else{
 				columnDefsVar.push({

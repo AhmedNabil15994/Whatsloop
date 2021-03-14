@@ -23,7 +23,7 @@ class HomeControllers extends Controller {
         	}
 
             if(isset($extraResult[0]) && $extraResult[0] == false){
-                return [0,$result['message']];
+                return [0,@$result['message']];
         	}
         	if(isset($result['result']) && $result['result'] == "Couldn't delete chat or leaving group. Invalid number"){
             	return [0,"Couldn't delete chat or leaving group. Invalid number"];
