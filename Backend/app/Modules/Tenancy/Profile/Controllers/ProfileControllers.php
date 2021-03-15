@@ -17,7 +17,7 @@ use Storage;
 use DataTables;
 use Validator;
 use App\Jobs\MessageJob;
-use App\Jobs\ReadMessagesJob;
+use App\Jobs\ReadChatsJob;
 
 
 class ProfileControllers extends Controller {
@@ -479,7 +479,7 @@ class ProfileControllers extends Controller {
         }
 
         $messages = ChatMessage::where('fromMe',0)->groupBy('chatId')->pluck('chatId');
-        dispatch(new ReadMessagesJob(reset($messages),$status));
+        dispatch(new ReadChatsJob(reset($messages),$status));
 
         Session::flash('success',trans('main.inPrgo'));
         return redirect()->back();

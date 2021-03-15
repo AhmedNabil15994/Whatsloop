@@ -14,6 +14,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    $messages = @$mainData['messages'];
 	    $actions = @$mainData['ack'];
 
+	    // If New Message Sent
 	    if(!empty($messages)){
 	    	foreach ($messages as $message) {
 	    		$message = (array) $message;
@@ -122,6 +123,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    	}
 	    }
 
+	    // If Chat Status Changed
 	    if(!empty($actions)){
 	    	foreach ($actions as $action) {
 	    		$action = (array) $action;
