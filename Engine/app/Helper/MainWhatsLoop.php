@@ -139,6 +139,14 @@ class MainWhatsLoop {
         return $result; 
     }
 
+    public function screenshot($data=[]){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'screenshot';
+        $data['token'] = $this->token;
+        $result = Http::get($fullURL,$data);
+        return $result;
+    }
+
     public function takeover($data=[]){
         $mainURL = $this->baseUrl.$this->instanceId.'/';
         $fullURL = $mainURL.'takeover?token='.$this->token;

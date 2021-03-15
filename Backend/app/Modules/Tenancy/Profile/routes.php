@@ -35,6 +35,13 @@ Route::group(['prefix' => '/profile'] , function () {
     Route::post('/updateZid', [$controller,'updateZid']);
 
     Route::get('/subscription', [$controller,'subscription']);
+    
+    Route::get('/subscription/screenshot', [$controller,'screenshot']);
+    Route::get('/subscription/reconnect', [$controller,'reconnect']);
+    Route::get('/subscription/closeConn', [$controller,'closeConn']);
+    Route::get('/subscription/sync', [$controller,'sync']);
+    Route::get('/subscription/read/{status}', [$controller,'read']);
+
 
     Route::get('/apiSetting', [$controller,'apiSetting']);
     

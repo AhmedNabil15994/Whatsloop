@@ -14,17 +14,18 @@ class HomeControllers extends Controller {
             return [0,$result['error']];
         }else{
         	$result = $serverResult->json();
-        	$extraResult = array_values($result);
         	if(isset($result['error']) && !empty($result['error'])){
             	return [0,$result['error']];
         	}
         	if(isset($result['result']) && $result['result'] == 'failed'){
             	return [0,$result['message']];
         	}
-
-            if(isset($extraResult[0]) && $extraResult[0] == false){
-                return [0,@$result['message']];
-        	}
+            if(is_array($result)){
+                $extraResult = array_values($result);
+                if(isset($extraResult[0]) && $extraResult[0] == false){
+                    return [0,@$result['message']];
+                }
+            }
         	if(isset($result['result']) && $result['result'] == "Couldn't delete chat or leaving group. Invalid number"){
             	return [0,"Couldn't delete chat or leaving group. Invalid number"];
         	}
@@ -101,8 +102,8 @@ class HomeControllers extends Controller {
 
         $dataList['data'] = $serverResult->json();
         // Customization For QR Code Images
-        if(in_array($status, ['status','qr_code'])){
-        	$image = '/uploads/qrCode' . time() . '.png';
+        if(in_array($status, ['status','qr_code','screenshot'])){
+        	$image = '/uploads/instanceImage' . time() . '.png';
             $destinationPath = public_path() . $image;
             if($status == 'status'){
             	$result = $serverResult->json();
@@ -113,7 +114,7 @@ class HomeControllers extends Controller {
             }else{
 	            $succ = file_put_contents($destinationPath, $serverResult);
             }
-	        $dataList['data']['qrCode'] = URL::to($image);
+	        $dataList['data']['image'] = URL::to($image);
         }
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);        

@@ -10,10 +10,14 @@ use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
 use App\Models\Variable;
 use App\Models\UserChannels;
+use App\Models\ChatMessage;
 use App\Models\PaymentInfo;
+use App\Models\UserStatus;
 use Storage;
 use DataTables;
 use Validator;
+use App\Jobs\MessageJob;
+use App\Jobs\ReadMessagesJob;
 
 
 class ProfileControllers extends Controller {
@@ -387,13 +391,98 @@ class ProfileControllers extends Controller {
             'title' => trans('main.subscriptionManage'),
             'icon' => 'fa fa-cogs',
         ];
+
+        // Perform Whatsapp Integration
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $updateResult = $mainWhatsLoopObj->me();
+        $result = $updateResult->json();
+        if($result['status']['status'] != 1){
+            Session::flash('error', $result['status']['message']);
+            return back()->withInput();
+        }
+     
         $data['data'] = $userObj;
-        $data['channel'] = UserChannels::getOne(Session::get('channel'));
+        $data['me'] = (object) $result['data'];
+        $data['status'] = UserStatus::getData(UserStatus::orderBy('id','DESC')->first());
+        $data['allMessages'] = ChatMessage::count();
+        $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
+        $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
+        $data['channel'] = UserChannels::getData(UserChannels::getOne(Session::get('channel')));
         $data['contactsCount'] = Contact::NotDeleted()->whereHas('Group',function($groupQuery){
             $groupQuery->where('channel',Session::get('channel'));
         })->count();
-        $data['usersCount'] = User::NotDeleted()->where('channels','LIKE','%'.Session::get('channel').'%')->count();
+        
         return view('Tenancy.Profile.Views.subscription')->with('data', (object) $data);
+    }
+
+    public function screenshot(){
+        // Perform Whatsapp Integration
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $updateResult = $mainWhatsLoopObj->screenshot();
+        $result = $updateResult->json();
+
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+        $dataList['image'] = $result['data']['image'];
+        $dataList['status'] = \TraitsFunc::SuccessResponse();
+        return \Response::json((object) $dataList);           
+    }
+
+    public function reconnect(){
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $updateResult = $mainWhatsLoopObj->reboot();
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+        Session::flash('success',trans('main.reconnectDone'));
+        return redirect()->back();
+    }
+
+    public function closeConn(){
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $updateResult = $mainWhatsLoopObj->logout();
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+        Session::flash('success',trans('main.logoutDone'));
+        return redirect()->back();
+    }
+
+    public function sync(){
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->messages($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        dispatch(new MessageJob($result['data']['messages']));
+        
+        Session::flash('success',trans('main.syncInProgress'));
+        return redirect()->back();
+    }
+
+    public function read($status){
+        $status = (int) $status;
+        if(!in_array($status, [0,1])){
+            return redirect('404');
+        }
+
+        $messages = ChatMessage::where('fromMe',0)->groupBy('chatId')->pluck('chatId');
+        dispatch(new ReadMessagesJob(reset($messages),$status));
+
+        Session::flash('success',trans('main.inPrgo'));
+        return redirect()->back();
     }
 
     public function apiSetting(Request $request){

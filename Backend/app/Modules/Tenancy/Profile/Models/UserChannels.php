@@ -70,6 +70,10 @@ class  UserChannels extends Model{
         $dataObj->token = $source->token;
         $dataObj->start_date = $source->start_date;
         $dataObj->end_date = $source->end_date;
+        $dataObj->days = (strtotime($source->end_date) - strtotime($source->start_date)) / (60 * 60 * 24);
+        $dataObj->usedDays = (strtotime(date('Y-m-d')) - strtotime($source->start_date)) / (60 * 60 * 24);
+        $dataObj->leftDays = $dataObj->days - $dataObj->usedDays;
+        $dataObj->rate = ($dataObj->leftDays / $dataObj->days) * 100;
         return $dataObj;
     }
 

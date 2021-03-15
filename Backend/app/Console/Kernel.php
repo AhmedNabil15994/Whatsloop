@@ -28,12 +28,12 @@ class Kernel extends ConsoleKernel
 
         $tenants = \DB::table('tenants')->get();
         foreach($tenants as $tenant){
-            $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute();
-            $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes();
+            $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute()->withoutOverlapping();
+            $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes()->withoutOverlapping();
         }
 
-        $schedule->command('queue:restart')->everyMinute();
-        $schedule->command('queue:work')->everyMinute();
+        $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
+        $schedule->command('queue:restart')->hourly()->withoutOverlapping();
     }
 
     /**

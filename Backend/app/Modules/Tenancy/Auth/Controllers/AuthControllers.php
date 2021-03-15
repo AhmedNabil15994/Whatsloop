@@ -58,6 +58,16 @@ class AuthControllers extends Controller {
         $userObj->save();
 
 
+        // $whatsLoopObj =  new \WhatsLoop();
+        // $test = $whatsLoopObj->sendMessage('كود التحقق الخاص بك هو : '.$code,$input['phone']);
+
+        // if(json_decode($test)->Code == 'OK'){
+        //     \Session::put('check_user_id',$userObj->id);
+        //     return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
+        // }else{
+        //     return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+        // }
+
         $whatsLoopObj =  new \MainWhatsLoop();
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
         $data['phone'] = str_replace('+','',$input['phone']);
@@ -138,6 +148,15 @@ class AuthControllers extends Controller {
         $userObj->code = $code;
         $userObj->save();
 
+        // $whatsLoopObj =  new \WhatsLoop();
+        // $test = $whatsLoopObj->sendMessage('كود التحقق الخاص بك هو : '.$code,$input['phone']);
+
+        // if(json_decode($test)->Code == 'OK'){
+        //     Session::put('check_user_id',$userObj->id);
+        //     return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
+        // }else{
+        //     return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+        // }
 
         $whatsLoopObj =  new \MainWhatsLoop();
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;

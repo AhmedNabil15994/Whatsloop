@@ -138,6 +138,14 @@ class MainWhatsLoop {
         ])->post($mainURL,$data);
     }
 
+    public function screenshot($data=[]){
+        $mainURL = $this->baseUrl.'instances/screenshot';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
     public function logout($data=[]){
         $mainURL = $this->baseUrl.'instances/logout';
         return Http::withHeaders([
@@ -200,7 +208,7 @@ class MainWhatsLoop {
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,
             'CHANNELTOKEN' => $this->token,
-        ])->post($mainURL,$data);
+        ])->post($mainURL);
     }
 
     public function me(){
@@ -208,7 +216,7 @@ class MainWhatsLoop {
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,
             'CHANNELTOKEN' => $this->token,
-        ])->post($mainURL,$data);
+        ])->post($mainURL);
     }
 
     // ['pushname' => new Name]

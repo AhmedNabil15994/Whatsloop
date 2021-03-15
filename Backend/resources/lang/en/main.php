@@ -327,6 +327,7 @@ return [
 	'leftDays' => 'Left Days',
 	'day' => 'Day',
 	'synced' => 'Synced',
+	'notSynced' => 'Not Synced',
 	'phone_connected' => 'Phone Connected',
 	'channel_no' => 'Channel Number',
 	'intro' => 'Introduction',
@@ -372,4 +373,14 @@ return [
 	'loading' => 'The system is still loading, try again in 1 minute',
 	'gotQrCode' => 'There is a QR code and you need to take a picture of it in the Whatsapp application by going to Menu -> WhatsApp Web -> Add. QR code is valid for one minute.',
 
+	'screenshot' => 'Screenshot',
+	'sync' => 'Sync',
+	'reestablish' => 'Re-establish Connection',
+	'closeConn' => 'Close Connection',
+	'readAll' => 'Read All Messages',
+	'unreadAll' => 'Un-read All Messages',
+
+	'reconnectDone' => 'Re-established Connection Successfully',
+	'logoutDone' => 'Connection Closed Successfully',
+	'syncInProgress' => 'Messages Sync is In Progress',
 ];
