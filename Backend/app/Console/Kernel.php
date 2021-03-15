@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        \App\Console\Commands\DelayedGroupMessages::class,
+        \App\Console\Commands\InstanceStatus::class,
     ];
 
     /**
