@@ -70,3 +70,11 @@ Route::group(['prefix' => '/users'] , function () {
 	$controller = App\Http\Controllers\HomeControllers::class;
     Route::post('/{status}', [$controller,'index'])->middleware('instance');
 });
+
+/*----------------------------------------------------------
+Channels
+----------------------------------------------------------*/
+Route::group(['prefix' => '/channels'] , function () {
+	$controller = App\Http\Controllers\HomeControllers::class;
+    Route::post('/createChannel', [$controller,'createChannel']);
+});

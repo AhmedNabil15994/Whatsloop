@@ -3,6 +3,8 @@
 use Request;
 use Response;
 use URL;
+use App\Models\Variable;
+use Illuminate\Support\Facades\Http;
 
 class HomeControllers extends Controller {
 
@@ -116,6 +118,23 @@ class HomeControllers extends Controller {
             }
 	        $dataList['data']['image'] = URL::to($image);
         }
+        $dataList['status'] = \TraitsFunc::SuccessResponse();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function createChannel(){
+        $input['type'] = 'whatsapp';
+        $input['uid'] = Variable::getVar("API_KEY");
+        $baseUrl = Variable::getVar("INSTANCES_URL");
+        $fullURL = $baseUrl.'newInstance';
+        $serverResult = Http::post($fullURL,$input);
+
+        $formatResponeResult = $this->formatResponse($serverResult);
+        if($formatResponeResult[0] == 0){
+            return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
+        }
+
+        $dataList['data'] = $serverResult->json();
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);        
     }
