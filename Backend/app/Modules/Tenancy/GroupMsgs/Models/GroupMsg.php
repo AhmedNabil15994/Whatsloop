@@ -67,7 +67,7 @@ class GroupMsg extends Model{
         if($id != null){
             $source->whereNotIn('id',$id);
         }
-        $source->orderBy('sort','ASC');
+        $source->orderBy('id','DESC');
         return self::generateObj($source);
     }
 

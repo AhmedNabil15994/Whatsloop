@@ -123,26 +123,23 @@ class ContactReport extends Model{
     }
 
     static function newStatus($contact,$group_id,$group_message_id,$status,$message_id=''){
-        if($message_id != ''){
-            $dataObj = self::where('contact',$contact)->where('message_id',$message_id)->first();
-        }else{
-            $dataObj = self::where('contact',$contact)->where('group_id',$group_id)->where('group_message_id',$group_message_id)->first();
-        }
+        $dataObj = self::where('contact',$contact)->where('group_id',$group_id)->where('group_message_id',$group_message_id)->first();
 
-        if($dataObj != null){
+        if($dataObj == null){
+            $dataObj = new self;
+            $dataObj->contact = $contact;
+            $dataObj->group_id = $group_id;
+            $dataObj->group_message_id = $group_message_id;
             $dataObj->status = $status;
-            if($message_id != ''){
-                $dataObj->message_id = $message_id;
-            }
+            $dataObj->message_id = $message_id;
+            $dataObj->created_at = date('Y-m-d H:i:s');
             $dataObj->save();
         }
 
-        $dataObj = new self;
-        $dataObj->contact = $contact;
-        $dataObj->group_id = $group_id;
-        $dataObj->group_message_id = $group_message_id;
         $dataObj->status = $status;
-        $dataObj->message_id = $message_id;
+        if($message_id != ''){
+            $dataObj->message_id = $message_id;
+        }
         $dataObj->created_at = date('Y-m-d H:i:s');
         $dataObj->save();
     }

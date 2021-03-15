@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\GroupMsg;
 use App\Models\GroupNumber;
 use App\Models\Contact;
+use App\Models\ContactReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -381,12 +382,22 @@ class GroupMsgsControllers extends Controller {
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
                 dispatch(new GroupMessageJob($data,$dataObj));
             });
+        }else{
+            $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->get();
+            foreach ($contacts as $contact) {
+                $reportObj = new ContactReport;
+                $reportObj->contact = $contact->phone;
+                $reportObj->group_id = $groupObj->id;
+                $reportObj->group_message_id = $dataObj->id;
+                $reportObj->status = 0;
+                $reportObj->save();
+            }
         }
 
         Session::forget('msgFile');
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to($this->getData()['mainData']['url'].'/');
+        return redirect()->to($this->getData()['mainData']['url'].'/view/'.$dataObj->id);
     }
 
     public function view($id) {

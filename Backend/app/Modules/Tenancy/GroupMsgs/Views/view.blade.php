@@ -162,7 +162,7 @@
                     </div> 
                     <div class="form-group row mains">
                         <label class="col-3 col-form-label">{{ trans('main.recipients') }} :</label>
-                        <div class="col-9 cards">
+                        <div class="col-9 cards" style="overflow-y: scroll;">
                             <div class="row mb-2">
                                 <div class="col-8">{{ trans('main.phone') }}</div>      
                                 <div class="col-4">{{ trans('main.status') }}</div>      

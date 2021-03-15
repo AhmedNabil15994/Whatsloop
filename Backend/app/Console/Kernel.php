@@ -32,8 +32,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes();
         }
 
+        $schedule->command('queue:restart')->everyMinute();
         $schedule->command('queue:work')->everyMinute();
-        $schedule->command('queue:restart')->everyFiveMinutes();
     }
 
     /**

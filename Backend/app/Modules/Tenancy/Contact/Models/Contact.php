@@ -170,7 +170,7 @@ class Contact extends Model{
                 return $data;
             }
 
-            $reportObj = $source->Reports()->where('group_message_id',$group_message_id)->first();
+            $reportObj = $source->Reports()->where('group_message_id',$group_message_id)->where('group_id',$source->group_id)->orderBy('id','DESC')->first();
             if($reportObj == null){
                 $status= ['info',trans('main.inPrgo')];
             }else{
