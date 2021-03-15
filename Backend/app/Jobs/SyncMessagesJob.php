@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\ChatMessage;
 
-class MessageJob implements ShouldQueue
+class SyncMessagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -34,10 +34,7 @@ class MessageJob implements ShouldQueue
     {
         if(!empty($this->messages)){
             foreach ($this->messages as $message) {
-                $messageObj = ChatMessage::where('id',$message['id'])->first();
-                if($messageObj == null){
-                    ChatMessage::newMessage($message);
-                }            
+                ChatMessage::newMessage($message);
             }
         }
     }

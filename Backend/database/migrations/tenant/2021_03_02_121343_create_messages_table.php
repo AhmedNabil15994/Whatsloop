@@ -10,17 +10,17 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->string('id')->unique();
-            $table->text('body');
-            $table->integer('fromMe');
+            $table->text('body')->nullable();
+            $table->integer('fromMe')->nullable();
             $table->integer('isForwarded')->nullable();
-            $table->string('author');
-            $table->string('time');
-            $table->string('chatId');
-            $table->integer('messageNumber');
-            $table->string('type');
-            $table->integer('type_id')->nullable();
-            $table->string('senderName');
-            $table->string('chatName');
+            $table->string('author')->nullable();
+            $table->string('time')->nullable();
+            $table->string('chatId')->nullable();
+            $table->integer('messageNumber')->nullable();
+            $table->string('type')->nullable();
+            $table->string('status')->nullable();
+            $table->string('senderName')->nullable();
+            $table->string('chatName')->nullable();
             $table->string('quotedMsgBody')->nullable();
             $table->string('quotedMsgId')->nullable();
             $table->string('quotedMsgType')->nullable();

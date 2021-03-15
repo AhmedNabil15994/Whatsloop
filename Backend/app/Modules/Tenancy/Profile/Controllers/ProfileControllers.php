@@ -16,7 +16,7 @@ use App\Models\UserStatus;
 use Storage;
 use DataTables;
 use Validator;
-use App\Jobs\MessageJob;
+use App\Jobs\SyncMessagesJob;
 use App\Jobs\ReadChatsJob;
 
 
@@ -466,7 +466,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
 
-        dispatch(new MessageJob($result['data']['messages']));
+        dispatch(new SyncMessagesJob($result['data']['messages']));
         
         Session::flash('success',trans('main.syncInProgress'));
         return redirect()->back();

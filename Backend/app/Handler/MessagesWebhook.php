@@ -3,6 +3,7 @@ namespace App\Handler;
 use App\Models\Bot;
 use App\Models\ChatSession;
 use App\Models\ContactReport;
+use App\Models\ChatMessage;
 use \Spatie\WebhookClient\ProcessWebhookJob;
 use Http;
 use Session;
@@ -13,6 +14,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    $mainData = $data['payload'];
 	    $messages = @$mainData['messages'];
 	    $actions = @$mainData['ack'];
+	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    // If New Message Sent
 	    if(!empty($messages)){
@@ -59,7 +61,6 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			])->first();
 
 	    			$sendData['chatId'] = $sender;
-	    			$mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    			if($botObj){
 	    				$botObj = Bot::getData($botObj);
@@ -100,24 +101,24 @@ class MessagesWebhook extends ProcessWebhookJob{
 			    			$result = $mainWhatsLoopObj->sendContact($sendData);
 		    			}
 
-	    			}else{
-	    				if($langPref == 0){
-	    					$notFoundMessage = 'اسف لم استطع فهمك ! :(';
-	    				}else{
-	    					$notFoundMessage = "Sorry I Couldn't Reach You ! :(";
-	    				}
-	    				$myMessage = $notFoundMessage;
-	    				$sendData['body'] = $myMessage;
-		    			$result = $mainWhatsLoopObj->sendMessage($sendData);
+				        if(isset($result['data']) && isset($result['data']['id'])){
+				            $messageId = $result['data']['id'];
+				            $lastMessage['status'] = 'BOT';
+				            $lastMessage['id'] = $messageId;
+				            $lastMessage['chatId'] = $sender;
+				            ChatMessage::newMessage($lastMessage);
+				        }
 	    			}
-
-	    			if($result['status']['status'] != 1){
-			            return \TraitsFunc::ErrorMessage("Server Error", 400);
-			        }
-
-			        $statusObj['data'] = $result->json();
-			        $statusObj['status'] = \TraitsFunc::SuccessResponse();
-			        return \Response::json((object) $statusObj); 
+	    			// else{
+	    			// 	if($langPref == 0){
+	    			// 		$notFoundMessage = 'اسف لم استطع فهمك ! :(';
+	    			// 	}else{
+	    			// 		$notFoundMessage = "Sorry I Couldn't Reach You ! :(";
+	    			// 	}
+	    			// 	$myMessage = $notFoundMessage;
+	    			// 	$sendData['body'] = $myMessage;
+		    		// 	$result = $mainWhatsLoopObj->sendMessage($sendData);
+	    			// }
 	    		}	
 
 	    	}
@@ -136,9 +137,6 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			$statusInt = 3;
 	    			$contactObj = ContactReport::where('contact','+'.str_replace('@c.us', '', $sender))->where('message_id',$messageId)->update(['status' => $statusInt]);
 	    		}
-
-		    	$statusObj['status'] = \TraitsFunc::SuccessResponse();
-			    return \Response::json((object) $statusObj); 
 	    	}
 	    }
 	}

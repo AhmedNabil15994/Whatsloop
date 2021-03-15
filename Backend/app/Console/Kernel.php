@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         //
         \App\Console\Commands\DelayedGroupMessages::class,
         \App\Console\Commands\InstanceStatus::class,
+        \App\Console\Commands\SyncMessages::class,
     ];
 
     /**
@@ -30,8 +31,9 @@ class Kernel extends ConsoleKernel
 
         $tenants = \DB::table('tenants')->get();
         foreach($tenants as $tenant){
-            $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute()->withoutOverlapping();
-            $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes()->withoutOverlapping();
+            $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute();
+            $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes();
+            $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->everyMinute();
         }
 
         // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();

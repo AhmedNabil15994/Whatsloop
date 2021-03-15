@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\GroupMsg;
 use App\Models\ContactReport;
+use App\Models\ChatMessage;
 
 class GroupMessageJob implements ShouldQueue
 {
@@ -86,6 +87,10 @@ class GroupMessageJob implements ShouldQueue
         $messageId = '';
         if(isset($result['data']) && isset($result['data']['id'])){
             $messageId = $result['data']['id'];
+            $lastMessage['status'] = 'APP';
+            $lastMessage['id'] = $messageId;
+            $lastMessage['chatId'] = $sendData['chatId'];
+            ChatMessage::newMessage($lastMessage);
         }
 
         ContactReport::newStatus('+'.$contact,$messageObj['group_id'],$messageObj['id'],$status,$messageId);

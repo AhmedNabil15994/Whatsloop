@@ -13,27 +13,30 @@ class ChatMessage extends Model{
         return self::where('id', $id)->first();
     }
 
-    static function newMessage($source) {
+    static function newMessage($source){
         $source = (object) $source;
-        $data = new  self;
-        $data->id = $source->id;
-        $data->body = $source->body;
-        $data->fromMe = $source->fromMe;
-        $data->isForwarded = $source->isForwarded;
-        $data->author = $source->author;
-        $data->time = $source->time;
-        $data->chatId = $source->chatId;
-        $data->messageNumber = $source->messageNumber;
-        if(isset($source->status)){
-            $data->status = $source->status;
+        $dataObj = self::where('id',$source->id)->first();
+        if($dataObj == null){
+            $dataObj = new  self;
         }
-        $data->type = $source->type;
-        // $data->type_id = $source->type_id;
-        $data->senderName = $source->senderName;
-        $data->chatName = $source->chatName;
-        $data->quotedMsgBody = $source->quotedMsgBody;
-        $data->quotedMsgId = $source->quotedMsgId;
-        $data->quotedMsgType = $source->quotedMsgType;
-        return $data->save();
+        
+        $dataObj->id = $source->id;
+        $dataObj->body = isset($source->body) ? $source->body : '';
+        $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
+        $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
+        $dataObj->author = isset($source->author) ? $source->author : '';
+        $dataObj->time = isset($source->time) ? $source->time : '';
+        $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
+        $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
+        if(isset($source->status)){
+            $dataObj->status = $source->status;
+        }
+        $dataObj->type = isset($source->type) ? $source->type : '' ;
+        $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
+        $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
+        $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
+        $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
+        $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
+        return $dataObj->save();
     }  
 }
