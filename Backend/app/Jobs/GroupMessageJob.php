@@ -13,7 +13,7 @@ use App\Models\ContactReport;
 
 class GroupMessageJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
      * Create a new job instance.
@@ -87,7 +87,7 @@ class GroupMessageJob implements ShouldQueue
         if(isset($result['data']) && isset($result['data']['id'])){
             $messageId = $result['data']['id'];
         }
-        
+
         ContactReport::newStatus('+'.$contact,$messageObj['group_id'],$messageObj['id'],$status,$messageId);
         return $status;
     }

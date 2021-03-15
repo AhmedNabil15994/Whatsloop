@@ -34,8 +34,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes()->withoutOverlapping();
         }
 
-        $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
-        $schedule->command('queue:restart')->hourly()->withoutOverlapping();
+        // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
+        // $schedule->command('queue:restart')->hourly()->withoutOverlapping();
     }
 
     /**
