@@ -77,4 +77,6 @@ Channels
 Route::group(['prefix' => '/channels'] , function () {
 	$controller = App\Http\Controllers\HomeControllers::class;
     Route::post('/createChannel', [$controller,'createChannel']);
+    Route::post('/deleteChannel', [$controller,'deleteChannel']);
+    Route::post('/', [$controller,'channels']);
 });

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Variable;
 use App\Models\UserChannels;
 
 class MainWhatsLoop {
@@ -572,6 +571,24 @@ class MainWhatsLoop {
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,
             'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    /*----------------------------------------------------------
+    Channels
+    ----------------------------------------------------------*/
+
+    // ['chatId' => chatId ,]
+    public function createChannel(){
+        $mainURL = $this->baseUrl.'channels/createChannel';
+        return Http::post($mainURL);
+    }
+
+    public function setSettings($channelId,$channelToken,$data){
+        $mainURL = $this->baseUrl.'instances/updateSettings';
+        return Http::withHeaders([
+            'CHANNELID' => $channelToken,
+            'CHANNELTOKEN' => $channelId,
         ])->post($mainURL,$data);
     }
 }

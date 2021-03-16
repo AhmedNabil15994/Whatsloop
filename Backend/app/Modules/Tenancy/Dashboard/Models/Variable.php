@@ -11,6 +11,12 @@ class  Variable extends Model{
     protected $primaryKey = 'id';
     public $timestamps = false;
 
+    protected $fillable = [
+        'id',
+        'var_key',
+        'var_value',
+    ];
+
     static function getOne($id) {
         return self::NotDeleted()
             ->find($id);

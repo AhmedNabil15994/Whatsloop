@@ -6,7 +6,9 @@ use App\Models\Central\CentralUser;
 use App\Models\Tenant\Tenant;
 use App\Models\Tenant\TenantPivot;
 use App\Models\User;
+use App\Models\Variable;
 use App\Models\UserChannels;
+use App\Models\Central\Channel;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,29 +49,81 @@ class CentralController extends Controller
             'is_active' => 1,
             'is_approved' => 1
         ]);
-        
-        $user = $tenant->run(function() use(&$centralUser){
-            UserChannels::create([
-                'id' => 1002,
-                'name' => 'Whats Loop Demo',
-                'token' => 'a8924830787bd9c55fb58c1ace37f83d',
-                'start_date' => date('Y-m-d'),
-                'end_date' => date('Y-m-d',strtotime('+1 year')),
+
+        // Create New Instance For New Domain
+        // $mainWhatsLoopObj = new \MainWhatsLoop();
+        // $updateResult = $mainWhatsLoopObj->createChannel();
+        // $result = $updateResult->json();
+        // if($result['status']['status'] != 1){
+        //     Session::flash('error', $result['status']['message']);
+        //     return back()->withInput();
+        // }
+
+        // $channel = [
+        //     'id' => $result['data']['channel']['id'],
+        //     'token' => $result['data']['channel']['token'],
+        //     'name' => 'Channel #'.$result['data']['channel']['id'],
+        //     'start_date' => date('Y-m-d'),
+        //     'end_date' => date('Y-m-d',strtotime('+1 month')),
+        // ];
+
+        $channelCode = rand(10010101,20);
+        $channel = [
+            'id' => $channelCode,
+            'name' => 'WhatsApp #'.$channelCode,
+            'token' => 'a8924830787bd9c55fb58c1ace37f83d',
+            'start_date' => date('Y-m-d'),
+            'end_date' => date('Y-m-d',strtotime('+1 month')),
+        ];
+        $extraChannelData = $channel;
+        $extraChannelData['tenant_id'] = $tenant->id;
+        $extraChannelData['global_user_id'] = $centralUser->global_id;
+
+        Channel::create($extraChannelData);
+
+        $user = $tenant->run(function() use(&$centralUser,$channel){
+            UserChannels::create($channel);
+            Variable::insert([
+                [
+                    'var_key' => 'SallaURL',
+                    'var_value' => 'https://api.salla.dev/admin/v2',
+                ],
+                [
+                    'var_key' => 'ZidURL',
+                    'var_value' => 'https://api.zid.sa/v1',
+                ],
             ]);
-            
+
             return User::create([
                 'global_id' => $centralUser->global_id,
                 'name' => request('name'),
-                'phone' => request('phone'),
+                'phone' => '+'.request('phone'),
                 'group_id' => 1,
                 'status' => 1,
                 'sort' => 1,
-                'channels' => serialize([1002,1003]),
+                'channels' => serialize([$channel['id']]),
                 'password' => Hash::make(request('password')),
                 'is_active' => 1,
                 'is_approved' => 1
             ]);
         });
+
+        // Update User With Settings For Whatsapp Based On His Domain
+        // $myData = [
+        //     'sendDelay' => '5',
+        //     'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
+        //     'webhookStatuses' => 1,
+        //     'statusNotificationsOn' => 1,
+        //     'ackNotificationsOn' => 1,
+        //     'ackNotificationsOn' => 1,
+        //     'parallelHooks' => 1,
+        // ];
+        // $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
+        // $result = $updateResult->json();
+        // if($result['status']['status'] != 1){
+        //     Session::flash('error', $result['status']['message']);
+        //     return back()->withInput();
+        // }
 
         return $this->impersonateUser($tenant,$user->id);
     }

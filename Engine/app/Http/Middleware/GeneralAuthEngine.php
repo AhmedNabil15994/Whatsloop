@@ -8,15 +8,16 @@ class GeneralAuthEngine
 {
 
     public function handle($request, Closure $next){
-        if (!isset($_SERVER['HTTP_CHANNELID'])  && $request->segment(1) != 'channels' && !in_array($request->segment(2), ['createChannel'])) {
+        $channelsRoutes = ['createChannel','deleteChannel',null];
+        if (!isset($_SERVER['HTTP_CHANNELID'])  && $request->segment(1) != 'channels' && !in_array($request->segment(2), $channelsRoutes)) {
             return \TraitsFunc::ErrorMessage("Channel ID is invalid", 401);
         }
 
-        if (!isset($_SERVER['HTTP_CHANNELTOKEN']) && $request->segment(1) != 'channels' && !in_array($request->segment(2), ['createChannel'])) {
+        if (!isset($_SERVER['HTTP_CHANNELTOKEN']) && $request->segment(1) != 'channels' && !in_array($request->segment(2), $channelsRoutes)) {
             return \TraitsFunc::ErrorMessage("Channel Token is invalid", 401);
         }
 
-        if($request->segment(1) != 'channels' && !in_array($request->segment(2), ['createChannel'])){
+        if($request->segment(1) != 'channels' && !in_array($request->segment(2), $channelsRoutes)){
             $channelId = $_SERVER['HTTP_CHANNELID'];
             $channelToken = $_SERVER['HTTP_CHANNELTOKEN'];
 

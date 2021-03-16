@@ -134,8 +134,43 @@ class HomeControllers extends Controller {
             return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
         }
 
+        $dataList['data']['channel'] = $serverResult->json()['result']['instance'];
+        $dataList['status'] = \TraitsFunc::SuccessResponse();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function deleteChannel(){
+        $input = Request::all();
+        $input['instanceId'] = $input['channelId'];
+        $input['uid'] = Variable::getVar("API_KEY");
+        $baseUrl = Variable::getVar("INSTANCES_URL");
+        $fullURL = $baseUrl.'deleteInstance';
+        $serverResult = Http::post($fullURL,$input);
+
+        $formatResponeResult = $this->formatResponse($serverResult);
+        if($formatResponeResult[0] == 0){
+            return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
+        }
+
         $dataList['data'] = $serverResult->json();
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);        
     }
+
+    public function channels(){
+        $input['uid'] = Variable::getVar("API_KEY");
+        $baseUrl = Variable::getVar("INSTANCES_URL");
+        $fullURL = $baseUrl.'listInstances';
+        $serverResult = Http::post($fullURL,$input);
+
+        $formatResponeResult = $this->formatResponse($serverResult);
+        if($formatResponeResult[0] == 0){
+            return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
+        }
+
+        $dataList['data']['channels'] = $serverResult->json()['result'];
+        $dataList['status'] = \TraitsFunc::SuccessResponse();
+        return \Response::json((object) $dataList);        
+    }
+
 }
