@@ -41,15 +41,18 @@ class CheckWhatsappJob implements ShouldQueue
     }
 
     public function checkWhatsappAvailability($contact){
-        $checkData['chatId'] = $contact.'@c.us';
+        $checkData['phone'] = $contact;
         $mainWhatsLoopObj = new \MainWhatsLoop();
 
-        $checkResult = $mainWhatsLoopObj->userStatus($checkData);
+        $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
         $result = $checkResult->json();
 
-        $status = 1;
         if($result['status']['status'] != 1){
             $status = 0;
+        }
+
+        if($result['data']){
+            $status = $result['data']['result'] == 'exists' ? 1 : 0;
         }
 
         return $status;

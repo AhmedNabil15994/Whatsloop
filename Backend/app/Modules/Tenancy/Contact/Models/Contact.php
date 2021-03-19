@@ -114,7 +114,7 @@ class Contact extends Model{
             foreach ($contacts as $contact) {
                 $myContacts[] = str_replace('+', '', $contact->phone);
                 $hasWhatsapp[] = $contact->has_whatsapp  == 1 ? trans('main.yes') : '----'; 
-                $hasNoWhatsapp[] = $contact->has_whatsapp  == 0 ? trans('main.no') : '----'; 
+                $hasNoWhatsapp[] = $contact->has_whatsapp  == 0 ? trans('main.yes') : '----'; 
             }
             
             $list[$key] = new \stdClass();
