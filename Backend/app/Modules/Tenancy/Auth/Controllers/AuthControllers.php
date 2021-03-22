@@ -68,17 +68,30 @@ class AuthControllers extends Controller {
         //     return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
         // }
 
-        $whatsLoopObj =  new \MainWhatsLoop();
-        $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
-        $data['phone'] = str_replace('+','',$input['phone']);
-        $test = $whatsLoopObj->sendMessage($data);
-        $result = $test->json();
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
-        }
+        $isAdmin = in_array($userObj->group_id, [1,]);
+        session(['group_id' => $userObj->group_id]);
+        session(['user_id' => $userObj->id]);
+        session(['email' => $userObj->email]);
+        session(['name' => $userObj->name]);
+        session(['is_admin' => $isAdmin]);
+        session(['group_name' => $userObj->Group->name_ar]);
+        $channels = User::getData($userObj)->channels;
+        session(['channel' => $channels[0]->id]);
 
-        \Session::put('check_user_id',$userObj->id);
-        return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
+        Session::flash('success', trans('auth.passwordChanged'));
+        return redirect('/dashboard');
+        
+        // $whatsLoopObj =  new \MainWhatsLoop();
+        // $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+        // $data['phone'] = str_replace('+','',$input['phone']);
+        // $test = $whatsLoopObj->sendMessage($data);
+        // $result = $test->json();
+        // if($result['status']['status'] != 1){
+        //     return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+        // }
+
+        // \Session::put('check_user_id',$userObj->id);
+        // return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
     }
 
     public function checkByCode(){
