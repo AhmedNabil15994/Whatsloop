@@ -525,7 +525,7 @@ class BotControllers extends Controller {
             $files = $request->file('file');
             $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
             
-            if( $typeID == 2 && !in_array($type, ['file','image']) ){
+            if( $typeID == 2 && !in_array($type, ['file','photo']) ){
                 return \TraitsFunc::ErrorMessage(trans('main.selectFile'));
             }
 
@@ -537,7 +537,7 @@ class BotControllers extends Controller {
                 return \TraitsFunc::ErrorMessage(trans('main.selectSound'));
             }
 
-            if( $typeID == 5 && $type != 'image' ){
+            if( $typeID == 5 && $type != 'photo' ){
                 return \TraitsFunc::ErrorMessage(trans('main.urlImage'));
             }
 

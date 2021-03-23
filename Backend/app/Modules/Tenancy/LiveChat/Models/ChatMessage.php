@@ -13,6 +13,25 @@ class ChatMessage extends Model{
         return self::where('id', $id)->first();
     }
 
+    static function dataList($chatId,$limit) {
+        $source = self::where('chatId',$chatId)->orderBy('time','DESC');  
+        return self::generateObj($source,$limit);
+    }
+
+    static function generateObj($source,$limit){
+        $sourceArr = $source->paginate($limit);
+        $list = [];
+        foreach($sourceArr as $key => $value) {
+            $list[$key] = new \stdClass();
+            $list[$key] = self::getData($value);
+        }
+        $data['data'] = $list;
+        $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        return $data;
+    }
+
+
+
     static function newMessage($source){
         $source = (object) $source;
         $dataObj = self::where('id',$source->id)->first();
@@ -32,12 +51,16 @@ class ChatMessage extends Model{
             $dataObj->status = $source->status;
         }
         $dataObj->type = isset($source->type) ? $source->type : '' ;
+        if(isset($source->message_type)){
+            $dataObj->message_type = $source->message_type;
+        }
         $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
         $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
         $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
         $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
         $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
-        return $dataObj->save();
+        $dataObj->save();
+        return $dataObj;
     }
 
     static function getData($source){
@@ -50,10 +73,11 @@ class ChatMessage extends Model{
             $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
             $dataObj->author = isset($source->author) ? $source->author : '';
             $dataObj->time = isset($source->time) ? $source->time : '';
+            $dataObj->created_at = isset($source->time) ? self::reformDate($source->time) : ''; 
             $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
             $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
             $dataObj->status = $source->status != null ? $source->status : ($source->status == null && $source->fromMe == 0 ? $source->senderName : '');
-            $dataObj->type = isset($source->type) ? $source->type : '' ;
+            $dataObj->message_type = $source->message_type  == null ? 'text' :  $source->message_type ;
             $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
             $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
             $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
@@ -62,4 +86,18 @@ class ChatMessage extends Model{
             return $dataObj;
         }
     }  
+
+    static function reformDate($time){
+        $diff = (time() - $time ) / (3600 * 24);
+        $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
+        if(round($diff) == 0){
+            return date('h:i A',$time);;
+        }else if($diff == 1){
+            return trans('main.yesterday');
+        }else if($diff > 1 && $diff < 7){
+            return $date->locale(LANGUAGE_PREF)->dayName;
+        }else{
+            return date('Y-m-d h:i:s A',$time);
+        }
+    }
 }

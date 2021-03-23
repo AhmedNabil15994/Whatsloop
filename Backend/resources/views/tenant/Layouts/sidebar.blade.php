@@ -121,6 +121,25 @@
                 </li>
                 @endif
 
+                @if(\Helper::checkRules('list-livechat'))
+                <li class="{{ Active(URL::to('/livechat*'),'menuitem-active') }}">
+                    <a href="#sidebarlivechat" data-toggle="collapse">
+                        <i class="mdi mdi-forum-outline"></i>
+                        <span> {{ trans('main.livechat') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    @if(\Helper::checkRules('list-livechat'))
+                    <div class="collapse {{ Active(URL::to('/livechat*'),'show') }}" id="sidebarlivechat">
+                        <ul class="nav-second-level">
+                            <li class="{{ Active(URL::to('/livechat*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/livechat') }}">{{ trans('main.livechat') }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    @endif
+                </li>
+                @endif
+
                 @if(\Helper::checkRules('list-bots'))
                 <li class="{{ Active(URL::to('/bots*'),'menuitem-active') }}">
                     <a href="#sidebarBots" data-toggle="collapse">

@@ -20,6 +20,7 @@ window.Vue = require('vue').default;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('chat-application', require('./components/ChatApplication.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -29,36 +30,11 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 const app = new Vue({
     el: '#app',
+    data: {
+    	userID: null
+  	},
+ 	mounted () {
+    	// Assign the ID from meta tag for future use in application
+    	this.userID = document.head.querySelector('meta[name="userID"]').content
+  	}
 });
-
-
-import Echo from 'laravel-echo'
-
-window._ = require('lodash')
-window.Popper = require('popper.js').default
-window.io = require('socket.io-client')
-
-// Socket.io
-window.Echo = new Echo({
-  broadcaster: 'socket.io',
-  host: window.location.hostname + ':6001'
-})
-
-try {
-  window.$ = window.jQuery = require('jquery')
-
-  require('bootstrap')
-} catch (e) {
-}
-
-window.axios = require('axios')
-
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-
-let token = document.head.querySelector('meta[name="csrf-token"]')
-
-if (token) {
-  window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content
-} else {
-  console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token')
-}

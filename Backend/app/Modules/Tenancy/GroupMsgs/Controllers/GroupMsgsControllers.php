@@ -492,7 +492,7 @@ class GroupMsgsControllers extends Controller {
             $files = $request->file('file');
             $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
             
-            if( $typeID == 2 && !in_array($type, ['file','image']) ){
+            if( $typeID == 2 && !in_array($type, ['file','photo']) ){
                 return \TraitsFunc::ErrorMessage(trans('main.selectFile'));
             }
 
@@ -500,7 +500,7 @@ class GroupMsgsControllers extends Controller {
                 return \TraitsFunc::ErrorMessage(trans('main.selectSound'));
             }
 
-            if( $typeID == 4 && $type != 'image' ){
+            if( $typeID == 4 && $type != 'photo' ){
                 return \TraitsFunc::ErrorMessage(trans('main.urlImage'));
             }
 

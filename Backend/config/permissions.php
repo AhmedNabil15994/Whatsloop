@@ -16,6 +16,8 @@ return [
     'ProfileControllers@postChangePassword' => 'general',
     'ProfileControllers@services' => 'general',
 
+    'LiveChatControllers@index' => 'list-livechat',
+
     'ProfileControllers@paymentInfo' => 'paymentInfo',
     'ProfileControllers@postPaymentInfo' => 'paymentInfo',
 

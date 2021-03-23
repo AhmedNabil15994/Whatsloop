@@ -24,5 +24,8 @@ class VerifyCsrfToken extends Middleware
         '/profile/personalInfo/uploadImage',
 
         '/whatsloop/webhooks/messages-webhook',
+        '/livechatApi/pinChat',
+        '/livechatApi/unpinChat',
+        '/livechatApi/sendMessage',
     ];
 }

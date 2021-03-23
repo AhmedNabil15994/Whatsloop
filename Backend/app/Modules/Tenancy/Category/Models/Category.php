@@ -71,10 +71,26 @@ class Category extends Model{
         $data->hexColor = $extraData[2];
         $data->colorName = $extraData[3];
         $data->title = $source->{'name_'.LANGUAGE_PREF};
+        $data->whatsappName = self::getName($source->name_ar,$source->name_en);
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);
         return $data;
+    }
+
+    static function getName($name_ar,$name_en){
+        $fullName= '';
+        if(!empty($name_ar)){
+            $fullName = $name_ar;
+            if(!empty($name_en)){
+                $fullName.= ' - '.$name_en;
+            }
+        }else{
+            if(!empty($name_en)){
+                $fullName=$name_en;
+            }
+        }
+        return $fullName;
     }
 
     static function getColor($color_id){

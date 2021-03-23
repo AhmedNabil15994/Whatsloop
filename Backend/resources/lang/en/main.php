@@ -383,4 +383,7 @@ return [
 	'reconnectDone' => 'Re-established Connection Successfully',
 	'logoutDone' => 'Connection Closed Successfully',
 	'syncInProgress' => 'Messages Sync is In Progress',
+
+	'yesterday' => 'Yesterday',
+	'livechat' => 'Live Chat',
 ];

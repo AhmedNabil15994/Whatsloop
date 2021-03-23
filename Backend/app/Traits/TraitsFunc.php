@@ -89,6 +89,14 @@ trait TraitsFunc
         return \Response::json((object) $statusObj);
     }
 
+    public static function SuccessMessage($message = 'Data Generated Successfully'){
+        $statusObj['status'] = new stdClass();
+        $statusObj['status']->status = 1;
+        $statusObj['status']->code = 200;
+        $statusObj['status']->message = $message;
+        return (object) $statusObj['status'];
+    }
+
     public static function SuccessResponse($message = 'Data Generated Successfully'){
         $statusObj['status'] = new stdClass();
         $statusObj['status']->status = 1;
