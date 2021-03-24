@@ -13,7 +13,7 @@
 		}
 	},
 	"devMode": true,
-	"host": "0.0.0.0",
+	"host": "0.0.0.0", 
 	"port": "6001",
 	"protocol": "http",
 	"socketio": {},
@@ -32,4 +32,5 @@
 		"allowMethods": "",
 		"allowHeaders": ""
 	}
+	
 }
