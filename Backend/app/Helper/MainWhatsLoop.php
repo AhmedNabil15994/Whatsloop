@@ -7,11 +7,11 @@ class MainWhatsLoop {
 
     protected $instanceId = "", $token = "",$baseUrl = "";
 
-    public function __construct() {
-        // $channelObj =  UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->first();
-        $this->instanceId = '242690'; //$channelObj->id;
-        $this->token = '9ullq4rvy14kq31n'; //$channelObj->token;
-        $this->baseUrl = 'http://engine.whatsloop.loc/';
+    public function __construct($instanceId=null,$token=null) {
+        $channelObj =  UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->first();
+        $this->instanceId = $instanceId == null ? $channelObj->id : $instanceId;
+        $this->token = $token == null ? $channelObj->token : $token;
+        $this->baseUrl = 'http://wloop.net/engine/';
     }
 
     /*----------------------------------------------------------
@@ -578,7 +578,6 @@ class MainWhatsLoop {
     Channels
     ----------------------------------------------------------*/
 
-    // ['chatId' => chatId ,]
     public function createChannel(){
         $mainURL = $this->baseUrl.'channels/createChannel';
         return Http::post($mainURL);

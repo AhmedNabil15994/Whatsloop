@@ -51,30 +51,32 @@ class CentralController extends Controller
         ]);
 
         // Create New Instance For New Domain
-        // $mainWhatsLoopObj = new \MainWhatsLoop();
-        // $updateResult = $mainWhatsLoopObj->createChannel();
-        // $result = $updateResult->json();
-        // if($result['status']['status'] != 1){
-        //     Session::flash('error', $result['status']['message']);
-        //     return back()->withInput();
-        // }
+        $channelObj = Channel::find(139624);
+        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        $updateResult = $mainWhatsLoopObj->createChannel();
+        $result = $updateResult->json();
 
-        // $channel = [
-        //     'id' => $result['data']['channel']['id'],
-        //     'token' => $result['data']['channel']['token'],
-        //     'name' => 'Channel #'.$result['data']['channel']['id'],
-        //     'start_date' => date('Y-m-d'),
-        //     'end_date' => date('Y-m-d',strtotime('+1 month')),
-        // ];
+        if($result['status']['status'] != 1){
+            \Session::flash('error', $result['status']['message']);
+            return back()->withInput();
+        }
 
-        $channelCode = rand(10010101,20);
         $channel = [
-            'id' => $channelCode,
-            'name' => 'WhatsApp #'.$channelCode,
-            'token' => 'a8924830787bd9c55fb58c1ace37f83d',
+            'id' => $result['data']['channel']['id'],
+            'token' => $result['data']['channel']['token'],
+            'name' => 'Channel #'.$result['data']['channel']['id'],
             'start_date' => date('Y-m-d'),
             'end_date' => date('Y-m-d',strtotime('+1 month')),
         ];
+
+        // $channelCode = rand(10010101,20);
+        // $channel = [
+        //     'id' => $channelCode,
+        //     'name' => 'WhatsApp #'.$channelCode,
+        //     'token' => 'a8924830787bd9c55fb58c1ace37f83d',
+        //     'start_date' => date('Y-m-d'),
+        //     'end_date' => date('Y-m-d',strtotime('+1 month')),
+        // ];
         $extraChannelData = $channel;
         $extraChannelData['tenant_id'] = $tenant->id;
         $extraChannelData['global_user_id'] = $centralUser->global_id;
@@ -108,22 +110,24 @@ class CentralController extends Controller
             ]);
         });
 
+
+
         // Update User With Settings For Whatsapp Based On His Domain
-        // $myData = [
-        //     'sendDelay' => '1',
-        //     'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
-        //     'webhookStatuses' => 1,
-        //     'statusNotificationsOn' => 1,
-        //     'ackNotificationsOn' => 1,
-        //     'chatUpdateOn' => 1,
-        //     'parallelHooks' => 1,
-        // ];
-        // $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
-        // $result = $updateResult->json();
-        // if($result['status']['status'] != 1){
-        //     Session::flash('error', $result['status']['message']);
-        //     return back()->withInput();
-        // }
+        $myData = [
+            'sendDelay' => '0',
+            'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
+            'webhookStatuses' => 1,
+            'statusNotificationsOn' => 1,
+            'ackNotificationsOn' => 1,
+            'chatUpdateOn' => 1,
+            'parallelHooks' => 1,
+        ];
+        $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
+        $result = $updateResult->json();
+        if($result['status']['status'] != 1){
+            \Session::flash('error', $result['status']['message']);
+            return back()->withInput();
+        }
 
         return $this->impersonateUser($tenant,$user->id);
     }

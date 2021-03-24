@@ -24,6 +24,15 @@ class Variables extends Migration
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
         });
+
+        \DB::table('variables')->insert([
+            'var_key' => 'API_KEY',
+            'var_value' => 'rokKW1f5J6XGtIgUjP3mHatF4lH2',
+        ]);
+        \DB::table('variables')->insert([
+            'var_key' => 'INSTANCES_URL',
+            'var_value' => 'https://us-central1-app-chat-api-com.cloudfunctions.net/',
+        ]);
     }
 
     /**

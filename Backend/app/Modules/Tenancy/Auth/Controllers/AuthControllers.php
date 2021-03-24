@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Central\Channel;
 use App\Models\LoginHistory;
 use App\Models\BlockedUser;
 use App\Models\Variable;
@@ -80,8 +81,9 @@ class AuthControllers extends Controller {
 
         // Session::flash('success', trans('auth.passwordChanged'));
         // return redirect('/dashboard');
-        
-        $whatsLoopObj =  new \MainWhatsLoop();
+        // $channelObj = Channel::find(139624);
+        // dd($channelObj);
+        $whatsLoopObj =  new \MainWhatsLoop('139624','72pb2371l07ur177');
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
         $data['phone'] = str_replace('+','',$input['phone']);
         $test = $whatsLoopObj->sendMessage($data);

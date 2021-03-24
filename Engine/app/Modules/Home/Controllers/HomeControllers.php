@@ -157,6 +157,23 @@ class HomeControllers extends Controller {
         return \Response::json((object) $dataList);        
     }
 
+    public function transferDays(){
+        $input = Request::all();
+        $input['uid'] = Variable::getVar("API_KEY");
+        $baseUrl = Variable::getVar("INSTANCES_URL");
+        $fullURL = $baseUrl.'transferDays';
+        $serverResult = Http::post($fullURL,$input);
+
+        $formatResponeResult = $this->formatResponse($serverResult);
+        if($formatResponeResult[0] == 0){
+            return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
+        }
+
+        $dataList['data'] = $serverResult->json();
+        $dataList['status'] = \TraitsFunc::SuccessResponse();
+        return \Response::json((object) $dataList);      
+    }
+
     public function channels(){
         $input['uid'] = Variable::getVar("API_KEY");
         $baseUrl = Variable::getVar("INSTANCES_URL");
