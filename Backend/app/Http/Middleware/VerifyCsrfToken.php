@@ -27,5 +27,7 @@ class VerifyCsrfToken extends Middleware
         '/livechatApi/pinChat',
         '/livechatApi/unpinChat',
         '/livechatApi/sendMessage',
+        '/livechatApi/readChat',
+        '/livechatApi/unreadChat',
     ];
 }

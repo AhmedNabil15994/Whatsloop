@@ -19,7 +19,7 @@ class CreateBotsTable extends Migration
             $table->integer('message_type');
             $table->text('message');
             $table->integer('reply_type');
-            $table->string('reply')->nullable();
+            $table->text('reply')->nullable();
             $table->string('file_name')->nullable();
             $table->string('https_url')->nullable();
             $table->string('url_title')->nullable();

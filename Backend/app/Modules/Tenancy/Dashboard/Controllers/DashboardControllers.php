@@ -16,6 +16,14 @@ class DashboardControllers extends Controller {
     public function Dashboard()
     {   
         $input = \Request::all();
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $result = $mainWhatsLoopObj->status();
+        $result = $result->json();
+        if(isset($result['data'])){
+            if($result['data']['accountStatus'] == 'got qr code'){
+                $data['qrImage'] = $result['data']['image'];
+            }
+        } 
         Session::forget('check_user_id');
         $now = date('Y-m-d');
         $start = $now;

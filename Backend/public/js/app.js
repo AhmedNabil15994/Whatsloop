@@ -1946,14 +1946,30 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     var app = this;
-    app.testBroadCasting();
+    app.testBroadCastingIncomingMessage();
+    app.testBroadCastingBotMessage();
+    app.loadDialogs();
   },
   methods: {
-    testBroadCasting: function testBroadCasting() {
+    testBroadCastingIncomingMessage: function testBroadCastingIncomingMessage() {
       // Start socket.io listener
-      Echo.channel('newMessage-201069273925').listen('SendMessage', function (data) {
+      Echo.channel('NewIncomingMessage').listen('IncomingMessage', function (data) {
         console.log(data);
       }); // End socket.io listener
+    },
+    testBroadCastingBotMessage: function testBroadCastingBotMessage() {
+      // Start socket.io listener
+      Echo.channel('NewBotMessage').listen('BotMessage', function (data) {
+        console.log(data);
+      }); // End socket.io listener
+    },
+    loadDialogs: function loadDialogs() {
+      var app = this;
+      app.loadingMessages = true;
+      app.messages = [];
+      axios.get('livechat/dialogs').then(function (resp) {
+        console.log(resp.data);
+      });
     }
   }
 });
@@ -48270,7 +48286,9 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", [
       _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-4" }, [_c("h3", [_vm._v("Users list")])])
+        _c("div", { staticClass: "col-4" }, [
+          _c("h3", [_vm._v("Chat Application")])
+        ])
       ])
     ])
   }

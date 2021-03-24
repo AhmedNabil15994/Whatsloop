@@ -4,13 +4,16 @@
 	"clients": [],
 	"database": "redis",
 	"databaseConfig": {
-		"redis": {},
+		"redis": {
+			"port": "6379",
+        	"host": "localhost"
+		},
 		"sqlite": {
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
 	"devMode": true,
-	"host": null,
+	"host": "0.0.0.0",
 	"port": "6001",
 	"protocol": "http",
 	"socketio": {},

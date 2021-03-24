@@ -4,7 +4,8 @@ use App\Models\Bot;
 use App\Models\ChatSession;
 use App\Models\ContactReport;
 use App\Models\ChatMessage;
-use App\Events\SendMessage;
+use App\Events\IncomingMessage;
+use App\Events\BotMessage;
 use \Spatie\WebhookClient\ProcessWebhookJob;
 use Http;
 use Session;
@@ -26,20 +27,26 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 	    		if($message['fromMe'] == false){
 
-	    			// Fire Send Message Event For Web Application
+	    			// Fire Incoming Message Event For Web Application
 				    $messagesData['last'] = 100;
 				    $messagesData['chatId'] = str_replace('@c.us', '', $sender);
 					$result = $mainWhatsLoopObj->messages($messagesData);
+
 					if(isset($result['data']) && isset($result['data']['messages'])){
 						$count = count($result['data']['messages']);
 						$lastObj = $result['data']['messages'][$count - 1];
 						if(strpos($lastObj['body'], '://')){
+
 							$lastObj['message_type'] = \ImagesHelper::checkExtensionType(substr($lastObj['body'], strrpos($lastObj['body'], '.') + 1));
+							$fileName = '/uploads/chats/'.substr($lastObj['body'], strrpos($lastObj['body'], '/' )+1);
+            				$destinationPath = public_path() . $fileName;
+            				$succ = file_put_contents($destinationPath, file_get_contents($lastObj['body']));
+							$lastObj['body'] = config("app.BASE_URL").$fileName;
 						}else{
 							$lastObj['message_type'] = 'text';
 						}
 				        $messageObj = ChatMessage::newMessage($lastObj);
-				    	broadcast(new SendMessage(ChatMessage::getData($messageObj)));
+				    	broadcast(new IncomingMessage(ChatMessage::getData($messageObj)));
 					}
 
 	    			if(in_array(strtolower($senderMessage), ['english','عربي','#','خروج','exit'])){
@@ -132,8 +139,12 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $lastMessage['status'] = 'BOT';
 				            $lastMessage['id'] = $messageId;
 				            $lastMessage['chatId'] = $sender;
+				            $lastMessage['fromMe'] = 1;
 				            $lastMessage['message_type'] = $message_type;
-				            ChatMessage::newMessage($lastMessage);
+				            $messageObj = ChatMessage::newMessage($lastMessage);
+				            $messageObj['bot_details'] = $botObj;
+	    					// Fire Bot Message Event For Web Application
+				    		broadcast(new BotMessage($messageObj));
 				        }
 	    			}
 	    			// else{

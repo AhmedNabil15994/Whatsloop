@@ -78,6 +78,7 @@ class ChatMessage extends Model{
             $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
             $dataObj->status = $source->status != null ? $source->status : ($source->status == null && $source->fromMe == 0 ? $source->senderName : '');
             $dataObj->message_type = $source->message_type  == null ? 'text' :  $source->message_type ;
+            $dataObj->whatsAppMessageType = $source->type  != null ? $source->type : '';
             $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
             $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
             $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;

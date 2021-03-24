@@ -80,6 +80,11 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/groupMessages/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
+            case "chats":
+                $fullPath = $path.'/uploads' . '/chats/'. $filename;
+                $checkFile = $checkFile . '/chats/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
             
         }
 
@@ -135,6 +140,10 @@ class ImagesHelper {
             $directory = $path . 'bots/' . $id;
         }
 
+        if ($strAction == 'chats') {
+            $directory = $path . 'chats/';
+        }
+
         if ($strAction == 'groupMessages') {
             $directory = $path . 'groupMessages/' . $id;
         }
@@ -151,6 +160,72 @@ class ImagesHelper {
 
         $filePath = str_replace('/storage', '', Storage::url($fieldInput));
         if (File::move(storage_path().'/app'.$filePath, $directory.'/'.$fileName_full)){
+            return $fileName_full;
+        }
+
+        return false;
+    }
+
+    static function uploadFileFromRequest($strAction, $fieldInput, $fileType = '') {
+
+        if ($fieldInput == '') {
+            return false;
+        }
+
+        if (is_object($fieldInput)) {
+            $fileObj = $fieldInput;
+        } else {
+            if (!Request::hasFile($fieldInput)) {
+                return false;
+            }
+
+            $fileObj = Request::file($fieldInput);
+        }
+
+        if ($fileObj->getSize() >= 10000000) {
+            return false;
+        }
+
+        $extensionExplode = explode('/' , $fileObj->getMimeType()); // getting image extension
+        unset($extensionExplode[0]);
+        $extensionExplode = array_values($extensionExplode);
+        $extension = $extensionExplode[0];
+
+        if($fileType == '' || $fileType == 'photo' || $fileType == 'image'){
+            $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
+        }elseif($fileType == 'file'){
+            $appliedExtensions = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf',];
+        }elseif($fileType == 'video'){
+            $appliedExtensions = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv'];
+        }else{
+            $appliedExtensions = $fileType;
+        }
+
+        if (!in_array($extension, $appliedExtensions)) {
+            return false;
+        }
+        
+        $rand = rand() . date("YmdhisA");
+        $fileName = $rand;
+        $directory = '';
+
+        $path = public_path() . '/uploads/';
+
+        if ($strAction == 'chats') {
+            $directory = $path . 'chats/';
+        }
+
+        $fileName_full = $fileName . '.' . $extension;
+
+        if ($directory == '') {
+            return false;
+        }
+
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
+        if ($fileObj->move($directory, $fileName_full)){
             return $fileName_full;
         }
 

@@ -110,12 +110,12 @@ class CentralController extends Controller
 
         // Update User With Settings For Whatsapp Based On His Domain
         // $myData = [
-        //     'sendDelay' => '5',
+        //     'sendDelay' => '1',
         //     'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
         //     'webhookStatuses' => 1,
         //     'statusNotificationsOn' => 1,
         //     'ackNotificationsOn' => 1,
-        //     'ackNotificationsOn' => 1,
+        //     'chatUpdateOn' => 1,
         //     'parallelHooks' => 1,
         // ];
         // $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);

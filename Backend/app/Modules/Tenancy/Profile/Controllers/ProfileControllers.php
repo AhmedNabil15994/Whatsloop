@@ -396,6 +396,7 @@ class ProfileControllers extends Controller {
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $updateResult = $mainWhatsLoopObj->me();
         $result = $updateResult->json();
+        // dd($result);
         if($result['status']['status'] != 1){
             Session::flash('error', $result['status']['message']);
             return back()->withInput();
@@ -452,7 +453,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
         Session::flash('success',trans('main.logoutDone'));
-        return redirect()->back();
+        return redirect()->to('/dashboard');
     }
 
     public function sync(){

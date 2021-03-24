@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col-4">
-                <h3>Users list</h3>
+                <h3>Chat Application</h3>
             </div>
         </div>
     </div>
@@ -23,16 +23,34 @@
     },
     created () {
       let app = this
-      app.testBroadCasting()
+      app.testBroadCastingIncomingMessage()
+      app.testBroadCastingBotMessage()
+      app.loadDialogs()
     },
     methods: {
-      testBroadCasting () {
+      testBroadCastingIncomingMessage () {
         // Start socket.io listener
-          Echo.channel('newMessage-201069273925')
-            .listen('SendMessage', (data) => {
+          Echo.channel('NewIncomingMessage')
+            .listen('IncomingMessage', (data) => {
               console.log(data)
             })
           // End socket.io listener
+      },
+      testBroadCastingBotMessage () {
+        // Start socket.io listener
+          Echo.channel('NewBotMessage')
+            .listen('BotMessage', (data) => {
+              console.log(data)
+            })
+          // End socket.io listener
+      },
+      loadDialogs () {
+        let app = this
+        app.loadingMessages = true
+        app.messages = []
+        axios.get('livechat/dialogs').then((resp) => {
+          console.log(resp.data);
+        })
       },
     }
   }

@@ -65,6 +65,20 @@
         </div>
     </div>
     <!-- end row -->
+    @if(isset($data->qrImage))
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title">QR</h4>
+                    <div class="row mt-4 text-center">
+                        <img src="{{ $data->qrImage }}" alt="">
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+    @endif
 
     <div class="row">
         <div class="col-xl-6">

@@ -15,8 +15,8 @@ class CreateChannelsTable extends Migration
     {
         Schema::create('channels', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id');
-            $table->string('global_user_id');
+            $table->string('tenant_id')->nullable();
+            $table->string('global_user_id')->nullable();
             $table->string('name');
             $table->string('token');
             $table->date('start_date');
@@ -40,6 +40,13 @@ class CreateChannelsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
+        \DB::table('channels')->insert([
+            'id' => '242690',
+            'token' => '9ullq4rvy14kq31n',
+            'name' => 'My Own Channel',
+            'start_date' => date('Y-m-d'),
+            'end_date' => date('Y-m-d',strtotime('+1 month')),
+        ]);
     }
 
     /**
