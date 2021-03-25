@@ -21,9 +21,16 @@ class DashboardControllers extends Controller {
         $result = $result->json();
         if(isset($result['data'])){
             if($result['data']['accountStatus'] == 'got qr code'){
-                $data['qrImage'] = $result['data']['image'];
+                if(isset($result['data']['qrCode'])){
+                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $destinationPath = public_path() . $image;
+                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
+                    $succ = file_put_contents($destinationPath, $qrCode);   
+                    // $data['qrImage'] = \URL::to('/public'.$image);
+                    $data['qrImage'] = \URL::to('/').$image;
+                }
             }
-        } 
+        }
         Session::forget('check_user_id');
         $now = date('Y-m-d');
         $start = $now;

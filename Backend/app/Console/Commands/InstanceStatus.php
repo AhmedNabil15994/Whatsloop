@@ -42,25 +42,28 @@ class InstanceStatus extends Command
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $result = $mainWhatsLoopObj->status();
         $result = $result->json();
-
-        $status = $result['data']['accountStatus'];
-        if($status == 'authenticated'){
-            $statusInt = 1;
-        }else if($status == 'init'){
-            $statusInt = 2;
-        }else if($status == 'loading'){
-            $statusInt = 3;
-        }else if($status == 'got qr code'){
-            $statusInt = 4;
+        if(isset($result['data']) && !empty($result['data'])){
+            $status = $result['data']['accountStatus'];
+            if($status == 'authenticated'){
+                $statusInt = 1;
+            }else if($status == 'init'){
+                $statusInt = 2;
+            }else if($status == 'loading'){
+                $statusInt = 3;
+            }else if($status == 'got qr code'){
+                $statusInt = 4;
+            }
         }
 
-        if($result['status']['status'] == 1){
-            $userStatusObj = new UserStatus;
-            $userStatusObj->status = $statusInt;
-            $userStatusObj->created_at = date('Y-m-d H:i:s');
-            $userStatusObj->save();
-        }
 
+        if(isset($result['status']) && !empty($result['status'])){
+            if($result['status']['status'] == 1){
+                $userStatusObj = new UserStatus;
+                $userStatusObj->status = $statusInt;
+                $userStatusObj->created_at = date('Y-m-d H:i:s');
+                $userStatusObj->save();
+            }
+        }
         
     }
 }

@@ -51,7 +51,7 @@ class CentralController extends Controller
         ]);
 
         // Create New Instance For New Domain
-        $channelObj = Channel::find(139624);
+        $channelObj = Channel::first();
         $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
         $updateResult = $mainWhatsLoopObj->createChannel();
         $result = $updateResult->json();
@@ -113,21 +113,21 @@ class CentralController extends Controller
 
 
         // Update User With Settings For Whatsapp Based On His Domain
-        $myData = [
-            'sendDelay' => '0',
-            'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
-            'webhookStatuses' => 1,
-            'statusNotificationsOn' => 1,
-            'ackNotificationsOn' => 1,
-            'chatUpdateOn' => 1,
-            'parallelHooks' => 1,
-        ];
-        $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
-        $result = $updateResult->json();
-        if($result['status']['status'] != 1){
-            \Session::flash('error', $result['status']['message']);
-            return back()->withInput();
-        }
+        // $myData = [
+        //     'sendDelay' => '0',
+        //     'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
+        //     'webhookStatuses' => 1,
+        //     'statusNotificationsOn' => 1,
+        //     'ackNotificationsOn' => 1,
+        //     'chatUpdateOn' => 1,
+        //     'parallelHooks' => 1,
+        // ];
+        // $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
+        // $result = $updateResult->json();
+        // if($result['status']['status'] != 1){
+        //     \Session::flash('error', $result['status']['message']);
+        //     return back()->withInput();
+        // }
 
         return $this->impersonateUser($tenant,$user->id);
     }

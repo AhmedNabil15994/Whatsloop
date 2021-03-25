@@ -81,9 +81,8 @@ class AuthControllers extends Controller {
 
         // Session::flash('success', trans('auth.passwordChanged'));
         // return redirect('/dashboard');
-        // $channelObj = Channel::find(139624);
-        // dd($channelObj);
-        $whatsLoopObj =  new \MainWhatsLoop('139624','72pb2371l07ur177');
+        $channelObj = \DB::connection('main')->table('channels')->first();
+        $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
         $data['phone'] = str_replace('+','',$input['phone']);
         $test = $whatsLoopObj->sendMessage($data);
