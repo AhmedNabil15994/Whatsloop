@@ -39,7 +39,9 @@ class LiveChatControllers extends Controller {
         $result = $result->json();
 
         if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
+            if( $result['status']['message'] != 'chat already pinned'){
+                return \TraitsFunc::ErrorMessage($result['status']['message']);
+            }
         }
         ChatDialog::where('id',$input['chatId'])->update(['is_pinned' => 1]);
         $dataList['data'] = $result['data'];
