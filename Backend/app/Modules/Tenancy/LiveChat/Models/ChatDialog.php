@@ -13,8 +13,13 @@ class ChatDialog extends Model{
         return self::where('id', $id)->first();
     }
 
-    static function dataList($limit) {
-        $source = self::orderBy('last_time','DESC');  
+    static function dataList($limit,$name=null) {
+        if($name != null){
+            $limit = 0;
+            $source = self::where('name','LIKE','%'.$name.'%')->orderBy('last_time','DESC');  
+        }else{
+            $source = self::orderBy('last_time','DESC');  
+        }
         return self::generateObj($source,$limit);
     }
 
@@ -24,7 +29,7 @@ class ChatDialog extends Model{
     }
 
     static function generateObj($source,$limit=null){
-        if($limit != null){
+        if($limit != null && $limit != 0){
             $sourceArr = $source->paginate($limit);
         }else{
             $sourceArr = $source->get();
@@ -37,6 +42,8 @@ class ChatDialog extends Model{
         if($limit !=  null){
             $data['data'] = $list;
             $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        }else if($limit == 0){
+            $data['data'] = $list;
         }else{
             $data = $list;
         }
@@ -51,7 +58,7 @@ class ChatDialog extends Model{
         }
         
         $dataObj->id = $source->id;
-        $dataObj->name = isset($source->name) ? $source->name : '';
+        $dataObj->name = isset($source->name) ? self::reformName($source->name) : '';
         $dataObj->image = isset($source->image) ? $source->image : '';
         $dataObj->metadata = isset($source->metadata) ? serialize($source->metadata) : '';
         $dataObj->last_time = isset($source->last_time) ? $source->last_time : '';
@@ -84,6 +91,16 @@ class ChatDialog extends Model{
 
             return $dataObj;
         }
+    }
+
+    static function reformName($name){
+        if(strpos($name, '+') !== false){
+            $newName = str_replace('+', '', str_replace(' ', '', $name));
+            Logger($newName);
+        }else{
+            $newName = $name;
+        }
+        return $newName;
     }
 
     static function reformDate($time){

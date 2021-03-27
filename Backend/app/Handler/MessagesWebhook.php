@@ -40,7 +40,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 					if(isset($result['data']) && isset($result['data']['messages'])){
 						$count = count($result['data']['messages']);
 						$lastObj = $result['data']['messages'][$count - 1];
-						if(strpos($lastObj['body'], '://')){
+						if(strpos($lastObj['body'], '://') !== false){
 
 							$lastObj['message_type'] = \ImagesHelper::checkExtensionType(substr($lastObj['body'], strrpos($lastObj['body'], '.') + 1));
 							$fileName = '/uploads/chats/'.substr($lastObj['body'], strrpos($lastObj['body'], '/' )+1);

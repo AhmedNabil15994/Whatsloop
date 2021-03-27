@@ -19,11 +19,14 @@ class LiveChatControllers extends Controller {
     public function dialogs(Request $request) {
         $input = \Request::all();
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
+        $data['name'] = isset($input['name']) && !empty($input['name']) ? $input['name'] : null;
 
-        $dialogs = ChatDialog::dataList($data['limit']);
+        $dialogs = ChatDialog::dataList($data['limit'],$data['name']);
  
         $dataList = $dialogs;
-        $dataList['pinnedConvs'] = ChatDialog::getPinned();
+        if($data['name'] == null){
+            $dataList['pinnedConvs'] = ChatDialog::getPinned();
+        }
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);        
     }
