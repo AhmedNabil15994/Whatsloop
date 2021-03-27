@@ -23,6 +23,7 @@ class LiveChatControllers extends Controller {
         $dialogs = ChatDialog::dataList($data['limit']);
  
         $dataList = $dialogs;
+        $dataList['pinnedConvs'] = ChatDialog::getPinned();
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);        
     }

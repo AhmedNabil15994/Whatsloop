@@ -127,7 +127,7 @@ class ChatMessage extends Model{
         }else if($diff > 1 && $diff < 7){
             return $date->locale(LANGUAGE_PREF)->dayName;
         }else{
-            return date('Y-m-d h:i:s A',$time);
+            return date('Y-m-d',$time);
         }
     }
 }

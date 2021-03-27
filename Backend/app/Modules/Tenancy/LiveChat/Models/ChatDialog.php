@@ -18,15 +18,28 @@ class ChatDialog extends Model{
         return self::generateObj($source,$limit);
     }
 
-    static function generateObj($source,$limit){
-        $sourceArr = $source->paginate($limit);
+    static function getPinned(){
+        $source = self::where('is_pinned',1)->orderBy('last_time','DESC');  
+        return self::generateObj($source);
+    }
+
+    static function generateObj($source,$limit=null){
+        if($limit != null){
+            $sourceArr = $source->paginate($limit);
+        }else{
+            $sourceArr = $source->get();
+        }
         $list = [];
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
             $list[$key] = self::getData($value);
         }
-        $data['data'] = $list;
-        $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        if($limit !=  null){
+            $data['data'] = $list;
+            $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        }else{
+            $data = $list;
+        }
         return $data;
     }
 
@@ -42,8 +55,12 @@ class ChatDialog extends Model{
         $dataObj->image = isset($source->image) ? $source->image : '';
         $dataObj->metadata = isset($source->metadata) ? serialize($source->metadata) : '';
         $dataObj->last_time = isset($source->last_time) ? $source->last_time : '';
-        $dataObj->is_pinned = isset($source->is_pinned) ? $source->is_pinned : 0;
-        $dataObj->is_read = isset($source->is_read) ? $source->is_read : 0;
+        if(isset($source->is_pinned)){
+            $dataObj->is_pinned = $source->is_pinned;
+        }
+        if(isset($source->is_read)){
+            $dataObj->is_read = $source->is_read;
+        }
         $dataObj->save();
         return $dataObj;
     }
@@ -79,7 +96,7 @@ class ChatDialog extends Model{
         }else if($diff > 1 && $diff < 7){
             return $date->locale(LANGUAGE_PREF)->dayName;
         }else{
-            return date('Y-m-d h:i:s A',$time);
+            return date('Y-m-d',$time);
         }
     }
 }
