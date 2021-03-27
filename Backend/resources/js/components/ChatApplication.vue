@@ -23,22 +23,25 @@
     },
     created () {
       let app = this
-      app.testBroadCastingIncomingMessage()
-      app.testBroadCastingBotMessage()
+      let fullUrl = window.location.hostname
+      let arrs = fullUrl.split('.')
+      let domain = arrs[0]
+      app.testBroadCastingIncomingMessage(domain)
+      app.testBroadCastingBotMessage(domain)
       app.loadDialogs()
     },
     methods: {
-      testBroadCastingIncomingMessage () {
+      testBroadCastingIncomingMessage (domain) {
         // Start socket.io listener
-          Echo.channel('NewIncomingMessage')
+          Echo.channel(domain+'-NewIncomingMessage')
             .listen('IncomingMessage', (data) => {
               console.log(data)
             })
           // End socket.io listener
       },
-      testBroadCastingBotMessage () {
+      testBroadCastingBotMessage (domain) {
         // Start socket.io listener
-          Echo.channel('NewBotMessage')
+          Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
               console.log(data)
             })

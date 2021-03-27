@@ -21,9 +21,11 @@ class IncomingMessage implements ShouldBroadcastNow
      * @return void
      */
     public $message;
-    public function __construct($message)
+    public $domain;
+    public function __construct($domain,$message)
     {
         $this->message = $message;
+        $this->domain = $domain;
     }
 
     /**
@@ -33,6 +35,6 @@ class IncomingMessage implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {   
-        return new Channel('NewIncomingMessage');
+        return new Channel($this->domain.'-NewIncomingMessage');
     }
 }

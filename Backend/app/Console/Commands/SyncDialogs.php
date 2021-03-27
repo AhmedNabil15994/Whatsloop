@@ -3,24 +3,23 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Jobs\SyncMessagesJob;
-use App\Models\ChatMessage;
+use App\Jobs\SyncDialogsJob;
 
-class SyncMessages extends Command
+class SyncDialogs extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sync:messages';
+    protected $signature = 'sync:dialogs';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sync User Messages Every Minute';
+    protected $description = 'Sync User Dialogs Every Minute';
 
     /**
      * Create a new command instance.
@@ -42,14 +41,10 @@ class SyncMessages extends Command
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
-        $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
-        if($lastMessageObj != null){
-            $data['min_time'] = $lastMessageObj->time;
-        }
-        $updateResult = $mainWhatsLoopObj->messages($data);
+        $updateResult = $mainWhatsLoopObj->dialogs($data);
         if(isset($updateResult['data']) && !empty($updateResult['data'])){
             $result = $updateResult->json();
-            dispatch(new SyncMessagesJob($result['data']['messages']));
+            dispatch(new SyncDialogsJob($result['data']['dialogs']));
         }
         
     }

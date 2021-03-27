@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\DelayedGroupMessages::class,
         \App\Console\Commands\InstanceStatus::class,
         \App\Console\Commands\SyncMessages::class,
+        \App\Console\Commands\SyncDialogs::class,
     ];
 
     /**
@@ -34,6 +35,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute();
             $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyFiveMinutes();
             $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->everyMinute();
+            $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->everyMinute();
         }
 
         // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();

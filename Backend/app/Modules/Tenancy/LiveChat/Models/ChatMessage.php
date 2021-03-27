@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 
 class ChatMessage extends Model{
+    use \TraitsFunc;
 
     protected $table = 'messages';
     protected $primaryKey = 'id';
@@ -13,24 +14,36 @@ class ChatMessage extends Model{
         return self::where('id', $id)->first();
     }
 
-    static function dataList($chatId,$limit) {
-        $source = self::where('chatId',$chatId)->orderBy('time','DESC');  
+    static function dataList($chatId=null,$limit=null) {
+        $input = \Request::all();
+        $source = self::NotDeleted();
+        if(isset($input['message']) && !empty($input['message'])){
+            $source->where('body','LIKE','%'.$input['message'].'%')->orWhere('caption','LIKE','%'.$input['message'].'%');
+        }
+        if($chatId != null){
+            $source->where('chatId',$chatId);
+        }
+        $source->orderBy('time','DESC');
         return self::generateObj($source,$limit);
     }
 
-    static function generateObj($source,$limit){
-        $sourceArr = $source->paginate($limit);
+    static function generateObj($source,$limit=null){
+        if($limit != null){
+            $sourceArr = $source->paginate($limit);
+        }else{
+            $sourceArr = $source->get();
+        }
         $list = [];
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
             $list[$key] = self::getData($value);
         }
         $data['data'] = $list;
-        $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        if($limit != null){
+            $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        }
         return $data;
     }
-
-
 
     static function newMessage($source){
         $source = (object) $source;
@@ -55,6 +68,7 @@ class ChatMessage extends Model{
             $dataObj->message_type = $source->message_type;
         }
         $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
+        $dataObj->caption = isset($source->caption) ? $source->caption : '' ;
         $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
         $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
         $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
@@ -79,14 +93,29 @@ class ChatMessage extends Model{
             $dataObj->status = $source->status != null ? $source->status : ($source->status == null && $source->fromMe == 0 ? $source->senderName : '');
             $dataObj->message_type = $source->message_type  == null ? 'text' :  $source->message_type ;
             $dataObj->whatsAppMessageType = $source->type  != null ? $source->type : '';
-            $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
+            $dataObj->senderName = isset($source->senderName) && $source->senderName != null ? $source->senderName : $source->chatName ;
+            $dataObj->caption = isset($source->caption) ? $source->caption : '' ;
             $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
+            $dataObj->sending_status = $source->sending_status;
+            $dataObj->sending_status_text = self::getSendingStatus($source->sending_status);
             $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
             $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
             $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
             return $dataObj;
         }
     }  
+
+    static function getSendingStatus($status){
+        if($status == 0){
+            return trans('main.notSent');
+        }else if($status == 1){
+            return trans('main.sent');
+        }else if($status == 2){
+            return trans('main.received');
+        }else if($status == 3){
+            return trans('main.seen');
+        }
+    }
 
     static function reformDate($time){
         $diff = (time() - $time ) / (3600 * 24);

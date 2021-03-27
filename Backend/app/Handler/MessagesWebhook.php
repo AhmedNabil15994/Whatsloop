@@ -1,6 +1,7 @@
 <?php
 namespace App\Handler;
 use App\Models\Bot;
+use App\Models\User;
 use App\Models\ChatSession;
 use App\Models\ContactReport;
 use App\Models\ChatMessage;
@@ -16,6 +17,10 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    $mainData = $data['payload'];
 	    $messages = @$mainData['messages'];
 	    $actions = @$mainData['ack'];
+		$tenantUser = User::first();
+		$tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$tenantUser->global_id)->first();
+		$userObj = \DB::connection('main')->table('domains')->where('tenant_id',$tenantObj->tenant_id)->first();
+
 	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    // If New Message Sent
@@ -46,7 +51,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 							$lastObj['message_type'] = 'text';
 						}
 				        $messageObj = ChatMessage::newMessage($lastObj);
-				    	broadcast(new IncomingMessage(ChatMessage::getData($messageObj)));
+				    	broadcast(new IncomingMessage($userObj->domain , ChatMessage::getData($messageObj)));
 					}
 
 	    			if(in_array(strtolower($senderMessage), ['english','عربي','#','خروج','exit'])){
@@ -144,7 +149,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $messageObj = ChatMessage::newMessage($lastMessage);
 				            $messageObj['bot_details'] = $botObj;
 	    					// Fire Bot Message Event For Web Application
-				    		broadcast(new BotMessage($messageObj));
+				    		broadcast(new BotMessage($userObj->domain,$messageObj));
 				        }
 	    			}
 	    			// else{
@@ -174,7 +179,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		}elseif ($action['status'] == 'viewed') {
 	    			$statusInt = 3;
 	    			$contactObj = ContactReport::where('contact','+'.str_replace('@c.us', '', $sender))->where('message_id',$messageId)->update(['status' => $statusInt]);
+	    		}else{
+	    			$statusInt = 1;
 	    		}
+
+	    		ChatMessage::where('id',$messageId)->update(['sending_status'=>$statusInt]);
 	    	}
 	    }
 	}

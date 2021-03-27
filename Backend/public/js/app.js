@@ -1946,20 +1946,23 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     var app = this;
-    app.testBroadCastingIncomingMessage();
-    app.testBroadCastingBotMessage();
+    var fullUrl = window.location.hostname;
+    var arrs = fullUrl.split('.');
+    var domain = arrs[0];
+    app.testBroadCastingIncomingMessage(domain);
+    app.testBroadCastingBotMessage(domain);
     app.loadDialogs();
   },
   methods: {
-    testBroadCastingIncomingMessage: function testBroadCastingIncomingMessage() {
+    testBroadCastingIncomingMessage: function testBroadCastingIncomingMessage(domain) {
       // Start socket.io listener
-      Echo.channel('NewIncomingMessage').listen('IncomingMessage', function (data) {
+      Echo.channel(domain + '-NewIncomingMessage').listen('IncomingMessage', function (data) {
         console.log(data);
       }); // End socket.io listener
     },
-    testBroadCastingBotMessage: function testBroadCastingBotMessage() {
+    testBroadCastingBotMessage: function testBroadCastingBotMessage(domain) {
       // Start socket.io listener
-      Echo.channel('NewBotMessage').listen('BotMessage', function (data) {
+      Echo.channel(domain + '-NewBotMessage').listen('BotMessage', function (data) {
         console.log(data);
       }); // End socket.io listener
     },

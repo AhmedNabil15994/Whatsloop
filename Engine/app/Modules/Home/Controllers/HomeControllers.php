@@ -65,7 +65,7 @@ class HomeControllers extends Controller {
     		}
     	}
 
-    	if(in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory'])){
+    	if(in_array($status, ['dialogs','pinChat','unpinChat','readChat','unreadChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory'])){
     		if(isset($input['chatId']) && !empty($input['chatId'])){
     			$input['chatId'] = $input['chatId'].'@c.us';
     		}
@@ -92,6 +92,13 @@ class HomeControllers extends Controller {
     			unset($input['phone']);
     		}
     	}
+
+        if(isset($input['liveChatId']) && !empty($input['liveChatId']) && in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','typing','recording','allMessages','dialogs'])){
+            if(!is_array($input['liveChatId'])){
+                $input['chatId'] = $input['liveChatId'];
+                unset($input['liveChatId']);
+            }
+        }
 
     	// Whatsapp Integration
     	$whatsLoopObj =  new \MainWhatsLoop();

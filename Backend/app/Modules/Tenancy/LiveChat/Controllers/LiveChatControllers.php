@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\ChatMessage;
+use App\Models\ChatDialog;
 use App\Models\Category;
 
 
@@ -17,46 +18,29 @@ class LiveChatControllers extends Controller {
 
     public function dialogs(Request $request) {
         $input = \Request::all();
-        $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
-        $data['page'] = isset($input['page']) && !empty($input['page']) ? $input['page'] : 0;
-        $result = $mainWhatsLoopObj->dialogs($data);
-        $result = $result->json();
 
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
-        }
-
-
-        $dialogs = $result['data']['dialogs'];
-        $dials = [];
-        foreach ($dialogs as $key => $dialog) {
-            $dials[$key] = $dialog;
-            $dials[$key]['lastMessage'] = ChatMessage::getData(ChatMessage::where('chatId',$dialog['id'])->orderBy('time','DESC')->first());
-            if(isset($dialog['metadata']) && isset($dialog['metadata']['labels']) && isset($dialog['metadata']['labels'][0])){
-                $dials[$key]['label'] = Category::getOne($dialog['metadata']['labels'][0]) != null ? Category::getData(Category::getOne($dialog['metadata']['labels'][0])) : [];
-            }
-        }
-
-        $dataList['data'] = $dials;
-        $dataList['status'] = $result['status'];
+        $dialogs = ChatDialog::dataList($data['limit']);
+ 
+        $dataList = $dialogs;
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);        
     }
 
     public function pinChat(Request $request) {
         $input = \Request::all();
-        if(!isset($input['phone']) || empty($input['phone']) ){
-            return \TraitsFunc::ErrorMessage("Phone Field Is Required");
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['chatId'] = $input['phone'];
+        $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->pinChat($data);
         $result = $result->json();
 
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-
+        ChatDialog::where('id',$input['chatId'])->update(['is_pinned' => 1]);
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);        
@@ -64,72 +48,72 @@ class LiveChatControllers extends Controller {
 
     public function unpinChat(Request $request) {
         $input = \Request::all();
-        if(!isset($input['phone']) || empty($input['phone']) ){
-            return \TraitsFunc::ErrorMessage("Phone Field Is Required");
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['chatId'] = $input['phone'];
+        $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->unpinChat($data);
         $result = $result->json();
 
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-
+        ChatDialog::where('id',$input['chatId'])->update(['is_pinned' => 0]);
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);        
+        return \Response::json((object) $dataList);      
     }
 
     public function messages(Request $request) {
         $input = \Request::all();
-        if(!isset($input['phone']) || empty($input['phone']) ){
-            return \TraitsFunc::ErrorMessage("Phone Field Is Required");
+        if((!isset($input['chatId']) || empty($input['chatId'])) && (!isset($input['message']) || empty($input['message']))){
+            return \TraitsFunc::ErrorMessage("Chat ID Field Is Required");
         }
-        $data['chatId'] = $input['phone'];
+        $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
 
-        $dataList = ChatMessage::dataList($data['chatId'].'@c.us',$data['limit']);
+        $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);        
     }
 
     public function readChat(Request $request) {
         $input = \Request::all();
-        if(!isset($input['phone']) || empty($input['phone']) ){
-            return \TraitsFunc::ErrorMessage("Phone Field Is Required");
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['chatId'] = $input['phone'];
+        $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->readChat($data);
         $result = $result->json();
 
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-
+        ChatDialog::where('id',$input['chatId'])->update(['is_read' => 1]);
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);        
+        return \Response::json((object) $dataList);   
     }
 
     public function unreadChat(Request $request) {
         $input = \Request::all();
-        if(!isset($input['phone']) || empty($input['phone']) ){
-            return \TraitsFunc::ErrorMessage("Phone Field Is Required");
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['chatId'] = $input['phone'];
+        $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->unreadChat($data);
         $result = $result->json();
 
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-
+        ChatDialog::where('id',$input['chatId'])->update(['is_read' => 0]);
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);        
+        return \Response::json((object) $dataList);     
     }
    
     public function sendMessage(Request $request) {
@@ -138,11 +122,11 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Type Field Is Required");
         }
 
-        if(!isset($input['phone']) || empty($input['phone']) ){
-            return \TraitsFunc::ErrorMessage("Phone Field Is Required");
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Field Is Required");
         }
 
-        $sendData['phone'] = $input['phone'];
+        $sendData['chatId'] = $input['chatId'];
         $mainWhatsLoopObj = new \MainWhatsLoop();
 
         if($input['type'] == 1){
@@ -260,7 +244,7 @@ class LiveChatControllers extends Controller {
             $messageId = $result['data']['id'];
             $lastMessage['status'] = 'APP';
             $lastMessage['id'] = $messageId;
-            $lastMessage['chatId'] = $sendData['phone'].'@c.us';
+            $lastMessage['chatId'] = $sendData['chatId'];
             $lastMessage['time'] = time();
             $lastMessage['body'] = $bodyData;
             $lastMessage['message_type'] = $message_type;

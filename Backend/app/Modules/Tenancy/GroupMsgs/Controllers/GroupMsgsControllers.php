@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
 use App\Jobs\GroupMessageJob;
+use App\Jobs\CheckWhatsappJob;
 use DataTables;
 use Storage;
 use Redirect;
@@ -381,6 +382,7 @@ class GroupMsgsControllers extends Controller {
             $chunks = 400;
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
                 dispatch(new GroupMessageJob($data,$dataObj));
+                dispatch(new CheckWhatsappJob($data));
             });
         }else{
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->get();

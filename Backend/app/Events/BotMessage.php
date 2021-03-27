@@ -21,9 +21,11 @@ class BotMessage implements ShouldBroadcastNow
      * @return void
      */
     public $message;
-    public function __construct($message)
+    public $domain;
+    public function __construct($domain,$message)
     {
         $this->message = $message;
+        $this->domain = $domain;
     }
 
     /**
@@ -33,6 +35,6 @@ class BotMessage implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {   
-        return new Channel('NewBotMessage');
+        return new Channel($this->domain.'-NewBotMessage');
     }
 }

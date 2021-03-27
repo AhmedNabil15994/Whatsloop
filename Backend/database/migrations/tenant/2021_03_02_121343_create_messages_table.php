@@ -22,9 +22,13 @@ class CreateMessagesTable extends Migration
             $table->string('status')->nullable();
             $table->string('senderName')->nullable();
             $table->string('chatName')->nullable();
+            $table->text('caption')->nullable();
+            $table->integer('sending_status')->default(2);
             $table->string('quotedMsgBody')->nullable();
             $table->string('quotedMsgId')->nullable();
             $table->string('quotedMsgType')->nullable();
+            $table->integer('deleted_by')->nullable();
+            $table->dateTime('deleted_at')->nullable();
         });
     }
 
