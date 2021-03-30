@@ -150,7 +150,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $messageObj['bot_details'] = $botObj;
 				            $messageObj['time'] = time();
 	    					// Fire Bot Message Event For Web Application
-				    		broadcast(new BotMessage($userObj->domain,$messageObj));
+				    		broadcast(new BotMessage($userObj->domain , ChatMessage::getData($messageObj)));
 				        }
 	    			}
 	    			// else{

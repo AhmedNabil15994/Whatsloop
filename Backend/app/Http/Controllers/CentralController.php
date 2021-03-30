@@ -69,14 +69,6 @@ class CentralController extends Controller
             'end_date' => date('Y-m-d',strtotime('+1 month')),
         ];
 
-        // $channelCode = rand(10010101,20);
-        // $channel = [
-        //     'id' => $channelCode,
-        //     'name' => 'WhatsApp #'.$channelCode,
-        //     'token' => 'a8924830787bd9c55fb58c1ace37f83d',
-        //     'start_date' => date('Y-m-d'),
-        //     'end_date' => date('Y-m-d',strtotime('+1 month')),
-        // ];
         $extraChannelData = $channel;
         $extraChannelData['tenant_id'] = $tenant->id;
         $extraChannelData['global_user_id'] = $centralUser->global_id;
@@ -116,10 +108,13 @@ class CentralController extends Controller
         // $myData = [
         //     'sendDelay' => '0',
         //     'webhookUrl' => str_replace('://', '://'.request('subdomain').'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
+        //     'instanceStatuses' => 1,
         //     'webhookStatuses' => 1,
         //     'statusNotificationsOn' => 1,
         //     'ackNotificationsOn' => 1,
         //     'chatUpdateOn' => 1,
+        //     'videoUploadOn' => 1,
+        //     'guaranteedHooks' => 1,
         //     'parallelHooks' => 1,
         // ];
         // $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
