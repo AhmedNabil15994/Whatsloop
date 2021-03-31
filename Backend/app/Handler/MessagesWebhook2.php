@@ -13,7 +13,7 @@ use \Spatie\WebhookClient\ProcessWebhookJob;
 use Http;
 use Session;
 
-class MessagesWebhook extends ProcessWebhookJob{
+class MessagesWebhook2 extends ProcessWebhookJob{
 	public function handle(){
 	    $data = json_decode($this->webhookCall, true);
 	    $mainData = $data['payload'];
@@ -143,10 +143,10 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $lastMessage['time'] = time();
 				            $lastMessage['sending_status'] = 1;
 				            $messageObj = ChatMessage::getData(ChatMessage::newMessage($lastMessage));
-	    					$dialogObj = ChatDialog::getData(ChatDialog::getOne($sender)); 
-				            $dialogObj->lastMessage->bot_details = $botObj;
+	    					// $dialogObj = ChatDialog::getData(ChatDialog::getOne($sender)); 
+				            // $dialogObj->lastMessage->bot_details = $botObj;
 	    					// Fire Bot Message Event For Web Application
-				    		broadcast(new BotMessage($userObj->domain , $dialogObj));
+				    		// broadcast(new BotMessage($userObj->domain , $dialogObj));
 				        }
 	    			}
 	    			// else{
@@ -159,7 +159,12 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			// 	$sendData['body'] = $myMessage;
 		    		// 	$result = $mainWhatsLoopObj->sendMessage($sendData);
 	    			// }
-	    		}	
+	    		}else{
+	    			$messageObj = ChatMessage::getOne($message['id']);
+	    			if($messageObj->status == 'BOT'){
+						$this->handleMessages($userObj->domain,$message);
+	    			}
+	    		}
 
 	    	}
 	    }
@@ -206,6 +211,10 @@ class MessagesWebhook extends ProcessWebhookJob{
 	        $messageObj = ChatMessage::newMessage($message);
 			$dialogObj = ChatDialog::getData(ChatDialog::getOne($message['chatId'])); 
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
+		}else{
+	        $messageObj = ChatMessage::newMessage($message);
+			$dialogObj = ChatDialog::getData(ChatDialog::getOne($message['chatId'])); 
+			broadcast(new BotMessage($domain , $dialogObj));
 		}
 	}
 }

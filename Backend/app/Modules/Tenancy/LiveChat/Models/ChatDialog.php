@@ -100,7 +100,6 @@ class ChatDialog extends Model{
     static function reformName($name){
         if(strpos($name, '+') !== false){
             $newName = str_replace('+', '', str_replace(' ', '', $name));
-            Logger($newName);
         }else{
             $newName = $name;
         }
