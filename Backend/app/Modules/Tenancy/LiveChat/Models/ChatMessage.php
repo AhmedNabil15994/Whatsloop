@@ -63,9 +63,15 @@ class ChatMessage extends Model{
         if(isset($source->status)){
             $dataObj->status = $source->status;
         }
-        $dataObj->type = isset($source->type) ? $source->type : '' ;
+        if(isset($source->type)){
+            $dataObj->type = $source->type;
+        }
+        // $dataObj->type = isset($source->type) ? $source->type : '' ;
         if(isset($source->message_type)){
             $dataObj->message_type = $source->message_type;
+        }
+        if(isset($source->sending_status)){
+            $dataObj->sending_status = $source->sending_status ;
         }
         $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
         $dataObj->caption = isset($source->caption) ? $source->caption : '' ;
@@ -80,6 +86,7 @@ class ChatMessage extends Model{
     static function getData($source){
         $dataObj = new \stdClass();
         if($source){
+            $dates = self::reformDate($source->time);
             $source = (object) $source;
             $dataObj->id = $source->id;
             $dataObj->body = isset($source->body) ? $source->body : '';
@@ -87,7 +94,8 @@ class ChatMessage extends Model{
             $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
             $dataObj->author = isset($source->author) ? $source->author : '';
             $dataObj->time = isset($source->time) ? $source->time : '';
-            $dataObj->created_at = isset($source->time) ? self::reformDate($source->time) : ''; 
+            $dataObj->created_at_day = isset($source->time) ? $dates[0]  : ''; 
+            $dataObj->created_at_time = isset($source->time) ? $dates[1]  : ''; 
             $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
             $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
             $dataObj->status = $source->status != null ? $source->status : ($source->status == null && $source->fromMe == 0 ? $source->senderName : '');
@@ -121,13 +129,13 @@ class ChatMessage extends Model{
         $diff = (time() - $time ) / (3600 * 24);
         $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
         if(round($diff) == 0){
-            return date('h:i A',$time);;
-        }else if($diff == 1){
-            return trans('main.yesterday');
+            return [date('Y-m-d',$time),date('h:i A',$time)];
+        }else if($diff>0 && $diff<=1){
+            return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){
-            return $date->locale(LANGUAGE_PREF)->dayName;
+            return [$date->locale(LANGUAGE_PREF)->dayName,date('h:i A',$time)];
         }else{
-            return date('Y-m-d',$time);
+            return [date('Y-m-d',$time),date('h:i A',$time)];
         }
     }
 }

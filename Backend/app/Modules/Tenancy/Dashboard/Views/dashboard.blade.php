@@ -67,12 +67,29 @@
     <!-- end row -->
     @if(isset($data->qrImage))
     <div class="row">
-        <div class="col-xl-6">
+        <div class="col-xl-8">
             <div class="card">
                 <div class="card-body">
                     <h4 class="header-title">QR</h4>
                     <div class="row mt-4 text-center">
-                        <img src="{{ $data->qrImage }}" alt="">
+                        <div class="col-8 text-left">
+                            <h2 class="header-title">To send and receive messages, you have to authorize our server like for WhatsApp Web.</h2>
+                            <ul class="list-unstyled">
+                                <li>1. Open the WhatsApp app on your phone</li>
+                                <li>2. Press Settings->WhatsApp WEB and then plus</li>
+                                <li>3. Scan a code and wait a minute</li>
+                                <li>4. Keep your phone turned on and connected to the Internet</li>
+                                <li>A QR code is valid only for 45 seconds. Message sennding will be available right after authorization.</li>
+                            </ul>
+                            <hr>
+                            <h2 class="header-title">Attention</h2>
+                            <p>To connect to api, you need to scan the QR code from the device on which WhatsApp is registered.</p>
+                            <p>If your account is registered less than a month ago, you need to pass a secure authorization to reduce the likelihood of blocking.</p>
+                        </div>  
+                        <div class="col-4">
+                            <img class="qrImage" src="{{ $data->qrImage }}" alt="">    
+                            <span>This image should be scanned</span>                    
+                        </div>    
                     </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->

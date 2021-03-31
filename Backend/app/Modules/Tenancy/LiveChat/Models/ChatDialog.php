@@ -13,12 +13,16 @@ class ChatDialog extends Model{
         return self::where('id', $id)->first();
     }
 
+    public function Messages(){
+        return $this->hasMany('App\Models\ChatMessage','author','id');
+    }
+
     static function dataList($limit,$name=null) {
         if($name != null){
             $limit = 0;
-            $source = self::where('name','LIKE','%'.$name.'%')->orderBy('last_time','DESC');  
+            $source = self::with('Messages')->where('name','LIKE','%'.$name.'%')->orderBy('last_time','DESC');  
         }else{
-            $source = self::orderBy('last_time','DESC');  
+            $source = self::with('Messages')->orderBy('last_time','DESC');  
         }
         return self::generateObj($source,$limit);
     }
@@ -80,10 +84,10 @@ class ChatDialog extends Model{
             $dataObj->name = isset($source->name) ? $source->name : '';
             $dataObj->image = isset($source->image) ? $source->image : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
-            $dataObj->last_time = isset($source->time) ? self::reformDate($source->last_time) : ''; 
+            $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
             $dataObj->is_pinned = $source->is_pinned;
             $dataObj->is_read = $source->is_read;
-
+            $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
             $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('time','DESC')->first());
             if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){
                 $dataObj->label = Category::getOne($dataObj->metadata['labels'][0]) != null ? Category::getData(Category::getOne($dataObj->metadata['labels'][0])) : [];
@@ -108,7 +112,7 @@ class ChatDialog extends Model{
         $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
         if(round($diff) == 0){
             return date('h:i A',$time);;
-        }else if($diff == 1){
+        }else if($diff>0 && $diff<=1){
             return trans('main.yesterday');
         }else if($diff > 1 && $diff < 7){
             return $date->locale(LANGUAGE_PREF)->dayName;

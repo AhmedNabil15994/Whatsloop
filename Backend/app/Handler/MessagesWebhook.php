@@ -7,6 +7,7 @@ use App\Models\ContactReport;
 use App\Models\ChatMessage;
 use App\Events\IncomingMessage;
 use App\Events\BotMessage;
+use App\Events\MessageStatus;
 use \Spatie\WebhookClient\ProcessWebhookJob;
 use Http;
 use Session;
@@ -35,6 +36,8 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			// Fire Incoming Message Event For Web Application
 				    $messagesData['last'] = 100;
 				    $messagesData['chatId'] = str_replace('@c.us', '', $sender);
+				    $messagesData['min_time'] = $message['time'];
+				    $messagesData['max_time'] = $message['time'];
 					$result = $mainWhatsLoopObj->messages($messagesData);
 
 					if(isset($result['data']) && isset($result['data']['messages'])){
@@ -50,6 +53,8 @@ class MessagesWebhook extends ProcessWebhookJob{
 						}else{
 							$lastObj['message_type'] = 'text';
 						}
+				        $lastObj['sending_status'] = 1;
+				        $lastObj['time'] = $message['time'];
 				        $messageObj = ChatMessage::newMessage($lastObj);
 				    	broadcast(new IncomingMessage($userObj->domain , ChatMessage::getData($messageObj)));
 					}
@@ -97,23 +102,28 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    				$reply = $botObj->reply;
 	    				$myMessage = $reply;
 	    				$message_type = '';
+	    				$whats_message_type = '';
 	    				if($botObj->reply_type == 1){
 	    					$message_type = 'text';
+	    					$whats_message_type = 'chat';
 		    				$sendData['body'] = $myMessage;
 			    			$result = $mainWhatsLoopObj->sendMessage($sendData);
 		    			}elseif($botObj->reply_type == 2){
 		    				$message_type = \ImagesHelper::checkExtensionType(substr($botObj->file_name, strrpos($botObj->file_name, '.') + 1));
+	    					$whats_message_type = $message_type == 'photo' ? 'image' : 'document' ;
 		    				$sendData['filename'] = $botObj->file_name;
 		    				$sendData['body'] = $botObj->file;
 		    				$sendData['caption'] = $botObj->reply;
 			    			$result = $mainWhatsLoopObj->sendFile($sendData);
 		    			}elseif($botObj->reply_type == 3){
 	    					$message_type = 'video';
+	    					$whats_message_type = 'video';
 		    				$sendData['filename'] = $botObj->file_name;
 		    				$sendData['body'] = $botObj->file;
 			    			$result = $mainWhatsLoopObj->sendFile($sendData);
 		    			}elseif($botObj->reply_type == 4){
 	    					$message_type = 'sound';
+	    					$whats_message_type = 'ppt';
 		    				$sendData['audio'] = $botObj->file;
 			    			$result = $mainWhatsLoopObj->sendPTT($sendData);
 		    			}elseif($botObj->reply_type == 5){
@@ -125,16 +135,19 @@ class MessagesWebhook extends ProcessWebhookJob{
 			    			$result = $mainWhatsLoopObj->sendLink($sendData);
 		    			}elseif($botObj->reply_type == 6){
 	    					$message_type = 'contact';
+	    					$whats_message_type = 'contact';
 		    				$sendData['contactId'] = $botObj->whatsapp_no;
 			    			$result = $mainWhatsLoopObj->sendContact($sendData);
 		    			}elseif($botObj->reply_type == 7){
 	    					$message_type = 'location';
+	    					$whats_message_type = 'location';
 		    				$sendData['lat'] = $botObj->lat;
 		    				$sendData['lng'] = $botObj->lng;
 		    				$sendData['address'] = $botObj->address;
 			    			$result = $mainWhatsLoopObj->sendLocation($sendData);
 		    			}elseif($botObj->reply_type == 8){
 	    					$message_type = 'webhook';
+	    					$whats_message_type = 'webhook';
 		    				$sendData['body'] = $botObj->webhook_url;
 			    			$result = $mainWhatsLoopObj->sendContact($sendData);
 		    			}
@@ -146,11 +159,13 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $lastMessage['chatId'] = $sender;
 				            $lastMessage['fromMe'] = 1;
 				            $lastMessage['message_type'] = $message_type;
-				            $messageObj = ChatMessage::newMessage($lastMessage);
-				            $messageObj['bot_details'] = $botObj;
-				            $messageObj['time'] = time();
+				            $lastMessage['type'] = $whats_message_type;
+				            $lastMessage['time'] = time();
+				            $lastMessage['sending_status'] = 1;
+				            $messageObj = ChatMessage::getData(ChatMessage::newMessage($lastMessage));
+				            $messageObj->bot_details = $botObj;
 	    					// Fire Bot Message Event For Web Application
-				    		broadcast(new BotMessage($userObj->domain , ChatMessage::getData($messageObj)));
+				    		broadcast(new BotMessage($userObj->domain , $messageObj));
 				        }
 	    			}
 	    			// else{
@@ -185,6 +200,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		}
 
 	    		ChatMessage::where('id',$messageId)->update(['sending_status'=>$statusInt]);
+				broadcast(new MessageStatus($userObj->domain, $sender, $messageId , $statusInt ));
 	    	}
 	    }
 	}

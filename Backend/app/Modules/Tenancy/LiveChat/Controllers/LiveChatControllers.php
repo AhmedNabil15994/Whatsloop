@@ -98,6 +98,7 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
         ChatDialog::where('id',$input['chatId'])->update(['is_read' => 1]);
+        ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 3]);
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);   
@@ -117,6 +118,7 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
         ChatDialog::where('id',$input['chatId'])->update(['is_read' => 0]);
+        ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 2]);
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);     

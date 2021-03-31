@@ -1951,6 +1951,7 @@ __webpack_require__.r(__webpack_exports__);
     var domain = arrs[0];
     app.testBroadCastingIncomingMessage(domain);
     app.testBroadCastingBotMessage(domain);
+    app.testBroadUpdateMessageStatus(domain);
     app.loadDialogs();
   },
   methods: {
@@ -1963,6 +1964,12 @@ __webpack_require__.r(__webpack_exports__);
     testBroadCastingBotMessage: function testBroadCastingBotMessage(domain) {
       // Start socket.io listener
       Echo.channel(domain + '-NewBotMessage').listen('BotMessage', function (data) {
+        console.log(data);
+      }); // End socket.io listener
+    },
+    testBroadUpdateMessageStatus: function testBroadUpdateMessageStatus(domain) {
+      // Start socket.io listener
+      Echo.channel(domain + '-UpdateMessageStatus').listen('MessageStatus', function (data) {
         console.log(data);
       }); // End socket.io listener
     },

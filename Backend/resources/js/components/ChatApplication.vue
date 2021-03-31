@@ -28,6 +28,7 @@
       let domain = arrs[0]
       app.testBroadCastingIncomingMessage(domain)
       app.testBroadCastingBotMessage(domain)
+      app.testBroadUpdateMessageStatus(domain)
       app.loadDialogs()
     },
     methods: {
@@ -43,6 +44,14 @@
         // Start socket.io listener
           Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
+              console.log(data)
+            })
+          // End socket.io listener
+      },
+      testBroadUpdateMessageStatus (domain) {
+        // Start socket.io listener
+          Echo.channel(domain+'-UpdateMessageStatus')
+            .listen('MessageStatus', (data) => {
               console.log(data)
             })
           // End socket.io listener
