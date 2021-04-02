@@ -18,12 +18,19 @@ class ChatDialog extends Model{
     }
 
     static function dataList($limit,$name=null) {
+        $input = \Request::all();
         if($name != null){
             $limit = 0;
-            $source = self::with('Messages')->where('name','LIKE','%'.$name.'%')->orderBy('last_time','DESC');  
+            $source = self::with('Messages')->where('name','LIKE','%'.$name.'%');  
         }else{
-            $source = self::with('Messages')->orderBy('last_time','DESC');  
+            $source = self::with('Messages');  
         }
+
+        if(isset($input['mine']) && !empty($input['mine'])){
+            $source->where('modsArr','LIKE','%'.serialize([$input['mine']]).'%');
+        }
+
+        $source->orderBy('last_time','DESC');
         return self::generateObj($source,$limit);
     }
 
@@ -76,7 +83,7 @@ class ChatDialog extends Model{
         return $dataObj;
     }
 
-    static function getData($source){
+    static function getData($source,$metaData=false){
         $dataObj = new \stdClass();
         if($source){
             $source = (object) $source;
@@ -87,10 +94,14 @@ class ChatDialog extends Model{
             $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
             $dataObj->is_pinned = $source->is_pinned;
             $dataObj->is_read = $source->is_read;
-            $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
-            $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('time','DESC')->first());
-            if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){
-                $dataObj->label = Category::getOne($dataObj->metadata['labels'][0]) != null ? Category::getData(Category::getOne($dataObj->metadata['labels'][0])) : [];
+            $dataObj->modsArr = $source->modsArr != null ? unserialize($source->modsArr) : [];
+            if($metaData == false){
+                $dataObj->moderators = User::dataList(null,$dataObj->modsArr)['data'];
+                $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
+                $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('time','DESC')->first());
+                if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){
+                    $dataObj->label = Category::dataList($dataObj->metadata['labels'])['data'];
+                }
             }
 
             return $dataObj;

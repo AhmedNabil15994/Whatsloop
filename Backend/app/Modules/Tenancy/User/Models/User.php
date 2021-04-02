@@ -100,7 +100,7 @@ class User extends Authenticatable implements Syncable
         return \ImagesHelper::GetImagePath('users', $id, $photo);
     }
 
-    static function dataList() {
+    static function dataList($group_id = null,$ids = null) {
         $input = \Request::all();
 
         $source = self::NotDeleted();
@@ -121,6 +121,12 @@ class User extends Authenticatable implements Syncable
         }
         if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
             $source->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
+        }
+        if($group_id != null){
+            $source->where('group_id',$group_id);
+        }
+        if($ids != null){
+            $source->whereIn('id',$ids);
         }
         $source->orderBy('sort', 'ASC');
         return self::generateObj($source);

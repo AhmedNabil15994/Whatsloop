@@ -36,6 +36,15 @@ class Groups extends Migration
                 'sort' => 1,
             ],
         ]);
+        \DB::table('groups')->insert([
+            [
+                'name_ar' => 'المشرفين',
+                'name_en' => 'Mods',
+                'status' => 1,
+                'sort' => 2,
+            ],
+        ]);
+
     }
 
     /**

@@ -108,6 +108,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 			    			$result = $mainWhatsLoopObj->sendPTT($sendData);
 		    			}elseif($botObj->reply_type == 5){
 	    					$message_type = 'link';
+	    					$whats_message_type = 'link';
 		    				$sendData['body'] = $botObj->https_url;
 	        				$sendData['title'] = $botObj->url_title;
 	        				$sendData['description'] = $botObj->url_desc;
@@ -142,6 +143,8 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $lastMessage['type'] = $whats_message_type;
 				            $lastMessage['time'] = time();
 				            $lastMessage['sending_status'] = 1;
+            				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sender)->where('chatName','!=',null)->first();
+            				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
 				            $messageObj = ChatMessage::getData(ChatMessage::newMessage($lastMessage));
 	    					$dialogObj = ChatDialog::getData(ChatDialog::getOne($sender)); 
 				            $dialogObj->lastMessage->bot_details = $botObj;

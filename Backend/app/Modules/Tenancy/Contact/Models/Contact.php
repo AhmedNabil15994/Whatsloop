@@ -38,6 +38,13 @@ class Contact extends Model{
             ->first();
     }
 
+    static function getOneByPhone($phone){
+        $contactObj = self::NotDeleted()->where('phone','+'.$phone)->orderBy('id','DESC')->first();
+        if($contactObj != null){
+            return self::getData($contactObj,null,null,true);
+        }
+    }
+
     static function dataList($status=null,$id=null,$group_id=null,$withMessageStatus=null) {
         $input = \Request::all();
 
@@ -143,7 +150,7 @@ class Contact extends Model{
         return $data;
     }
 
-    static function getData($source,$withMessageStatus=null,$group_message_id=null) {
+    static function getData($source,$withMessageStatus=null,$group_message_id=null,$dets=false) {
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->group_id = $source->group_id;
@@ -157,6 +164,10 @@ class Contact extends Model{
         $data->has_whatsapp = $source->has_whatsapp;
         $data->email = $source->email != null ? $source->email : '';
         $data->city = $source->city != null ? $source->city : '';
+        if($dets != false){
+            $cats = ContactLabel::where('contact',$data->phone2)->pluck('category_id');
+            $data->labels = Category::dataList(reset($cats))['data'];
+        }
         $data->country = $source->country != null ? $source->country : '';
         $data->status = $source->status;
         $data->sort = $source->sort;

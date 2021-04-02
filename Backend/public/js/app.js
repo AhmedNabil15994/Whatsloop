@@ -1950,14 +1950,24 @@ __webpack_require__.r(__webpack_exports__);
     var arrs = fullUrl.split('.');
     var domain = arrs[0];
     app.testBroadCastingIncomingMessage(domain);
+    app.testBroadCastingSentMessage(domain);
     app.testBroadCastingBotMessage(domain);
     app.testBroadUpdateMessageStatus(domain);
+    app.testBroadUpdateDialogPinStatus(domain);
+    app.testBroadUpdateChatReadStatus(domain);
+    app.testBroadUpdateChatLabelStatus(domain);
     app.loadDialogs();
   },
   methods: {
     testBroadCastingIncomingMessage: function testBroadCastingIncomingMessage(domain) {
       // Start socket.io listener
       Echo.channel(domain + '-NewIncomingMessage').listen('IncomingMessage', function (data) {
+        console.log(data);
+      }); // End socket.io listener
+    },
+    testBroadCastingSentMessage: function testBroadCastingSentMessage(domain) {
+      // Start socket.io listener
+      Echo.channel(domain + '-NewSentMessage').listen('SentMessage', function (data) {
         console.log(data);
       }); // End socket.io listener
     },
@@ -1970,6 +1980,24 @@ __webpack_require__.r(__webpack_exports__);
     testBroadUpdateMessageStatus: function testBroadUpdateMessageStatus(domain) {
       // Start socket.io listener
       Echo.channel(domain + '-UpdateMessageStatus').listen('MessageStatus', function (data) {
+        console.log(data);
+      }); // End socket.io listener
+    },
+    testBroadUpdateDialogPinStatus: function testBroadUpdateDialogPinStatus(domain) {
+      // Start socket.io listener
+      Echo.channel(domain + '-UpdateDialogPinStatus').listen('DialogPinStatus', function (data) {
+        console.log(data);
+      }); // End socket.io listener
+    },
+    testBroadUpdateChatReadStatus: function testBroadUpdateChatReadStatus(domain) {
+      // Start socket.io listener
+      Echo.channel(domain + '-UpdateChatReadStatus').listen('ChatReadStatus', function (data) {
+        console.log(data);
+      }); // End socket.io listener
+    },
+    testBroadUpdateChatLabelStatus: function testBroadUpdateChatLabelStatus(domain) {
+      // Start socket.io listener
+      Echo.channel(domain + '-UpdateChatLabelStatus').listen('ChatLabelStatus', function (data) {
         console.log(data);
       }); // End socket.io listener
     },

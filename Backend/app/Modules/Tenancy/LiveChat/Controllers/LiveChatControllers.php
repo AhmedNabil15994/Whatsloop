@@ -6,6 +6,15 @@ use Illuminate\Support\Facades\Session;
 use App\Models\ChatMessage;
 use App\Models\ChatDialog;
 use App\Models\Category;
+use App\Models\Contact;
+use App\Models\ContactLabel;
+use App\Models\Reply;
+use App\Models\User;
+use App\Models\ChatEmpLog;
+use App\Events\SentMessage;
+use App\Events\DialogPinStatus;
+use App\Events\ChatReadStatus;
+use App\Events\ChatLabelStatus;
 
 
 class LiveChatControllers extends Controller {
@@ -46,7 +55,13 @@ class LiveChatControllers extends Controller {
                 return \TraitsFunc::ErrorMessage($result['status']['message']);
             }
         }
-        ChatDialog::where('id',$input['chatId'])->update(['is_pinned' => 1]);
+
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_pinned = 1;
+        $dialogObj->save();
+
+        broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);        
@@ -65,7 +80,13 @@ class LiveChatControllers extends Controller {
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-        ChatDialog::where('id',$input['chatId'])->update(['is_pinned' => 0]);
+
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_pinned = 0;
+        $dialogObj->save();
+
+        broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);      
@@ -78,6 +99,15 @@ class LiveChatControllers extends Controller {
         }
         $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
+
+        $is_admin = 0;
+        $user_id = 4; 
+        if(!$is_admin){
+            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+            if(in_array($user_id, $dialogObj->modsArr)){
+                ChatEmpLog::newLog($input['chatId']);
+            }
+        }
 
         $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
         $dataList['status'] = \TraitsFunc::SuccessMessage();
@@ -97,8 +127,14 @@ class LiveChatControllers extends Controller {
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-        ChatDialog::where('id',$input['chatId'])->update(['is_read' => 1]);
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_read = 1;
+        $dialogObj->save();
+
         ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 3]);
+        broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
+        
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);   
@@ -117,8 +153,14 @@ class LiveChatControllers extends Controller {
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-        ChatDialog::where('id',$input['chatId'])->update(['is_read' => 0]);
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_read = 0;
+        $dialogObj->save();
+
         ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 2]);
+        broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
+
         $dataList['data'] = $result['data'];
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);     
@@ -134,7 +176,9 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Chat ID Field Is Required");
         }
 
+
         $sendData['chatId'] = $input['chatId'];
+        $caption = '';
         $mainWhatsLoopObj = new \MainWhatsLoop();
 
         if($input['type'] == 1){
@@ -145,6 +189,7 @@ class LiveChatControllers extends Controller {
             $message_type = 'text';
             $sendData['body'] = $input['message'];
             $bodyData = $input['message'];
+            $whats_message_type = 'chat';
             $result = $mainWhatsLoopObj->sendMessage($sendData);
         }elseif($input['type'] == 2){
             if ($request->hasFile('file')) {
@@ -160,8 +205,10 @@ class LiveChatControllers extends Controller {
                 if($message_type == 'photo'){
                     if(isset($input['caption']) && !empty($input['caption']) ){
                         $sendData['caption'] = $input['caption'];
+                        $caption = $input['caption'];
                     }
                 }
+                $whats_message_type = $message_type == 'photo' ? 'image' : 'document' ;
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }
         }elseif($input['type'] == 3){
@@ -175,6 +222,7 @@ class LiveChatControllers extends Controller {
                 $message_type = "video";
                 $sendData['filename'] = $fileName;
                 $sendData['body'] = $bodyData;
+                $whats_message_type = 'video';
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }
         }elseif($input['type'] == 4){
@@ -186,6 +234,7 @@ class LiveChatControllers extends Controller {
                 }            
                 $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
                 $message_type = "sound";
+                $whats_message_type = 'ppt';
                 $sendData['audio'] = $bodyData;
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }
@@ -196,6 +245,7 @@ class LiveChatControllers extends Controller {
             }
 
             $message_type = 'contact';
+            $whats_message_type = 'contact';
             $sendData['contactId'] = $input['contact'];
             $bodyData = $input['contact'];
             $result = $mainWhatsLoopObj->sendContact($sendData);
@@ -213,6 +263,7 @@ class LiveChatControllers extends Controller {
             }
 
             $message_type = 'location';
+            $whats_message_type = 'location';
             $sendData['lat'] = $input['lat'];
             $sendData['lng'] = $input['lng'];
             $sendData['address'] = $input['address'];
@@ -237,6 +288,7 @@ class LiveChatControllers extends Controller {
             }
 
             $message_type = 'link';
+            $whats_message_type = 'link';
             $sendData['body'] = $input['link'];
             $sendData['title'] = $input['link_title'];
             $sendData['description'] = $input['link_description'];
@@ -249,19 +301,237 @@ class LiveChatControllers extends Controller {
 
         $result = $result->json();
         if(isset($result['data']) && isset($result['data']['id'])){
+            $checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
             $messageId = $result['data']['id'];
             $lastMessage['status'] = 'APP';
             $lastMessage['id'] = $messageId;
+            $lastMessage['fromMe'] = 1;
             $lastMessage['chatId'] = $sendData['chatId'];
             $lastMessage['time'] = time();
             $lastMessage['body'] = $bodyData;
+            $lastMessage['caption'] = $caption;
+            $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
             $lastMessage['message_type'] = $message_type;
+            $lastMessage['sending_status'] = 1;
+            $lastMessage['type'] = $whats_message_type;
             $messageObj = ChatMessage::newMessage($lastMessage);
+            $dialogObj = ChatDialog::getData(ChatDialog::getOne($sendData['chatId'])); 
+            $domain = explode('.', $request->getHost())[0];
+            broadcast(new SentMessage($domain , $dialogObj ));
         }
 
-        $dataList['data'] = $messageObj;
+        $is_admin = 0;
+        $user_id = 4; 
+        if(!$is_admin){
+            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+            if(in_array($user_id, $dialogObj->modsArr)){
+                ChatEmpLog::newLog($input['chatId'],3);
+            }
+        }
+
+        // $dataList['data'] = ChatMessage::getData($messageObj);
         $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
         return \Response::json((object) $dataList);        
     }
 
+    public function liveChatLogout(){
+        $is_admin = 0;
+        $user_id = 4;
+        if(!$is_admin){
+            $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
+            if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
+                $lastObj->ended = 1;
+                $lastObj->save();
+                ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
+            }
+        }
+    }
+
+    public function labels(Request $request) {
+        $input = \Request::all();
+        $dataList = Category::dataList();
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function labelChat(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+
+        if(!isset($input['labelId']) || empty($input['labelId']) ){
+            return \TraitsFunc::ErrorMessage("Label ID Is Required");
+        }
+
+        $data['liveChatId'] = $input['chatId'];
+        $data['labelId'] = $input['labelId'];
+        
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $result = $mainWhatsLoopObj->labelChat($data);
+        $result = $result->json();
+
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+
+        $contactLabelObj = ContactLabel::newRecord(str_replace('@c.us', '', $input['chatId']),$data['labelId']);
+       
+        $domain = explode('.', $request->getHost())[0];
+        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($input['chatId'])) , Category::getData(Category::getOne($input['labelId'])) , 1 ));
+        $dataList['data'] = $result['data'];
+        $dataList['status'] =  $result['status'];
+        return \Response::json((object) $dataList);  
+    }
+
+    public function unlabelChat(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+
+        if(!isset($input['labelId']) || empty($input['labelId']) ){
+            return \TraitsFunc::ErrorMessage("Label ID Is Required");
+        }
+
+        $data['liveChatId'] = $input['chatId'];
+        $data['labelId'] = $input['labelId'];
+        
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $result = $mainWhatsLoopObj->unlabelChat($data);
+        $result = $result->json();
+
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+
+        ContactLabel::where('contact',str_replace('@c.us', '', $input['chatId']))->where('category_id',$data['labelId'])->delete();
+        $domain = explode('.', $request->getHost())[0];
+        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($input['chatId'])) , Category::getData(Category::getOne($input['labelId'])) , 0 ));
+        $dataList['data'] = $result['data'];
+        $dataList['status'] =  $result['status'];
+        return \Response::json((object) $dataList);    
+    }
+
+    public function contact(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+        
+        $dataObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']),true);
+        $dataObj->contact_details = Contact::getOneByPhone(str_replace('@c.us', '', $input['chatId']));
+        $dataList['data'] = $dataObj;
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);      
+    }
+
+    public function updateContact(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+        $updateArr = [];
+        if(isset($input['name']) && !empty($input['name'])){
+            $updateArr['name'] = $input['name'];
+        }
+        if(isset($input['email']) && !empty($input['email'])){
+            $updateArr['email'] = $input['email'];
+        }
+        if(isset($input['city']) && !empty($input['city'])){
+            $updateArr['city'] = $input['city'];
+        }
+        if(isset($input['country']) && !empty($input['country'])){
+            $updateArr['country'] = $input['country'];
+        }
+        if(isset($input['notes']) && !empty($input['notes'])){
+            $updateArr['notes'] = $input['notes'];
+        }
+        if(isset($input['lang']) && !empty($input['lang']) && in_array($input['lang'], [0,1])){
+            $updateArr['lang'] = $input['lang'];
+        }
+        Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->update($updateArr);
+        
+        $dataList['status'] = \TraitsFunc::SuccessMessage('Data Updated Successfully.');
+        return \Response::json((object) $dataList);      
+    }
+
+    public function quickReplies(Request $request) {
+        $input = \Request::all();
+        $dataList = Reply::dataList();
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function moderators(Request $request) {
+        $input = \Request::all();
+        $dataList = User::dataList(2);
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function assignMod(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+        if(!isset($input['modId']) || empty($input['modId']) ){
+            return \TraitsFunc::ErrorMessage("Moderator ID Is Required");
+        }
+
+        $modObj = User::getOne($input['modId']);
+        if($modObj == null || $modObj->group_id != 2){
+            return \TraitsFunc::ErrorMessage('Invalid Moderator');
+        }
+
+        $dialogObj = ChatDialog::getOne($input['chatId']);
+        $modArrs = $dialogObj->modsArr;
+        if($modArrs == null){
+            $dialogObj->modsArr = serialize([$input['modId']]);
+            $dialogObj->save();
+        }else{
+            $oldArr = unserialize($dialogObj->modsArr);
+            if(!in_array($input['modId'], $oldArr)){
+                array_push($oldArr, $input['modId']);
+                $dialogObj->modsArr = serialize($oldArr);
+                $dialogObj->save();
+            }
+        }
+        $dataList['status'] = \TraitsFunc::SuccessMessage("Moderator Added To Conversation Successfully.");
+        return \Response::json((object) $dataList);        
+    }
+
+    public function removeMod(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+        if(!isset($input['modId']) || empty($input['modId']) ){
+            return \TraitsFunc::ErrorMessage("Moderator ID Is Required");
+        }
+
+        $modObj = User::getOne($input['modId']);
+        if($modObj == null || $modObj->group_id != 2){
+            return \TraitsFunc::ErrorMessage('Invalid Moderator');
+        }
+
+        $dialogObj = ChatDialog::getOne($input['chatId']);
+        $modArrs = $dialogObj->modsArr;
+        if($modArrs == null){
+            return \TraitsFunc::ErrorMessage("Moderator Not Belonged To This Conversation");
+        }else{
+            $oldArr = unserialize($dialogObj->modsArr);
+            if(!in_array($input['modId'], $oldArr)){
+                return \TraitsFunc::ErrorMessage("Moderator Not Belonged To This Conversation");
+            }else{
+                if (($key = array_search($input['modId'], $oldArr)) !== false) {
+                    unset($oldArr[$key]);
+                }
+                $dialogObj->modsArr = serialize($oldArr);
+                $dialogObj->save();
+            }
+        }
+        $dataList['status'] = \TraitsFunc::SuccessMessage("Moderator Removed From Conversation Successfully.");
+        return \Response::json((object) $dataList);        
+    }
 }

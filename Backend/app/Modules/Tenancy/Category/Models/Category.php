@@ -17,7 +17,7 @@ class Category extends Model{
             ->first();
     }
 
-    static function dataList() {
+    static function dataList($ids=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -39,6 +39,11 @@ class Category extends Model{
         }else if(Session::has('channel')){
             $source->where('channel',Session::get('channel'));
         }
+
+        if($ids != null){
+            $source->whereIn('id',$ids);
+        }
+
         $source->orderBy('sort','ASC');
         return self::generateObj($source);
     }

@@ -93,7 +93,7 @@ class HomeControllers extends Controller {
     		}
     	}
 
-        if(isset($input['liveChatId']) && !empty($input['liveChatId']) && in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','typing','recording','allMessages','dialogs'])){
+        if(isset($input['liveChatId']) && !empty($input['liveChatId']) && in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','typing','recording','allMessages','dialogs','labelChat','unlabelChat'])){
             if(!is_array($input['liveChatId'])){
                 $input['chatId'] = $input['liveChatId'];
                 unset($input['liveChatId']);

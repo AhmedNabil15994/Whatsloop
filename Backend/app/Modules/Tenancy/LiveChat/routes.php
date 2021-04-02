@@ -13,8 +13,21 @@ Route::group(['prefix' => '/livechat'] , function () use ($controller) {
     Route::post('/unreadChat', [$controller,'unreadChat']);
 
     Route::get('/messages', [$controller,'messages']);
-    
     Route::post('/sendMessage', [$controller,'sendMessage']);
+    
+    Route::get('/labels', [$controller,'labels']);
+    Route::post('/labelChat', [$controller,'labelChat']);
+    Route::post('/unlabelChat', [$controller,'unlabelChat']);
+
+    Route::get('/contact', [$controller,'contact']);
+    Route::post('/updateContact', [$controller,'updateContact']);
+
+    Route::get('/quickReplies', [$controller,'quickReplies']);
+
+    Route::get('/moderators', [$controller,'moderators']);
+    Route::post('/assignMod', [$controller,'assignMod']);
+    Route::post('/removeMod', [$controller,'removeMod']);
+    Route::post('/liveChatLogout',[$controller,'liveChatLogout']);
 });
 
 Route::group(['prefix' => '/livechatApi'] , function () use ($controller) {
@@ -26,6 +39,19 @@ Route::group(['prefix' => '/livechatApi'] , function () use ($controller) {
     Route::post('/unreadChat', [$controller,'unreadChat']);
     
     Route::get('/messages', [$controller,'messages']);
-    
     Route::post('/sendMessage', [$controller,'sendMessage']);
+
+    Route::get('/labels', [$controller,'labels']);
+    Route::post('/labelChat', [$controller,'labelChat']);
+    Route::post('/unlabelChat', [$controller,'unlabelChat']);
+
+    Route::get('/contact', [$controller,'contact']);
+    Route::post('/updateContact', [$controller,'updateContact']);
+
+    Route::get('/quickReplies', [$controller,'quickReplies']);
+
+    Route::get('/moderators', [$controller,'moderators']);
+    Route::post('/assignMod', [$controller,'assignMod']);
+    Route::post('/removeMod', [$controller,'removeMod']);
+    Route::post('/liveChatLogout',[$controller,'liveChatLogout']);
 });

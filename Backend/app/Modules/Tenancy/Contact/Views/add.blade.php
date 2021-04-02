@@ -80,7 +80,7 @@
                                                         <select class="selectpicker channel" data-style="btn-outline-myPR">
                                                             <option value="">{{ trans('main.channel') }}</option>
                                                             @foreach($data->channels as $channel)
-                                                            <option value="{{ $channel->id }}" {{ old('channel') == $channel->name || (Session::has('channel') && Session::get('channel') == $channel->id) ? 'selected' : '' }}>{{ $channel }}</option>
+                                                            <option value="{{ $channel->id }}" {{ old('channel') == $channel->name || (Session::has('channel') && Session::get('channel') == $channel->id) ? 'selected' : '' }}>{{ $channel->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
