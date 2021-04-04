@@ -168,7 +168,7 @@ class User extends Authenticatable implements Syncable
         $data->photo = self::selectImage($source);
         $data->photo_name = $source->image;
         $data->photo_size = $data->photo != '' ? \ImagesHelper::getPhotoSize($data->photo) : '';
-        $data->group = $source->Group != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
+        $data->group = $source->Group != null ? $source->Group->name_ar : '';
         $data->group_id = $source->group_id;
         $data->email = $source->email;
         $data->company = $source->company;
