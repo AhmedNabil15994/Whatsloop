@@ -417,10 +417,21 @@ class LiveChatControllers extends Controller {
         $input = \Request::all();
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }   
+
+        $chatObj = ChatDialog::getOne($input['chatId']);
+        if($chatObj == null){
+            return \TraitsFunc::ErrorMessage("Dialog Is Missing");
         }
-        
-        $dataObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']),true);
-        $dataObj->contact_details = Contact::getOneByPhone(str_replace('@c.us', '', $input['chatId']));
+
+        $contactObj = Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->first();
+        $contact_details = [];
+        if($contactObj != null){
+            $contact_details = Contact::getData($contactObj,null,null,true);
+        }        
+
+        $dataObj = ChatDialog::getData($chatObj,true);
+        $dataObj->contact_details = $contact_details;
         $dataList['data'] = $dataObj;
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);      
@@ -450,6 +461,7 @@ class LiveChatControllers extends Controller {
         if(isset($input['lang']) && !empty($input['lang']) && in_array($input['lang'], [0,1])){
             $updateArr['lang'] = $input['lang'];
         }
+
         Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->update($updateArr);
         
         $dataList['status'] = \TraitsFunc::SuccessMessage('Data Updated Successfully.');

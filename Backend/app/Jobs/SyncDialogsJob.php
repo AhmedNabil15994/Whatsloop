@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\ChatDialog;
+use App\Models\Contact;
 
 class SyncDialogsJob implements ShouldQueue
 {
@@ -35,6 +36,7 @@ class SyncDialogsJob implements ShouldQueue
         if(!empty($this->dialogs)){
             foreach ($this->dialogs as $dialog) {
                 ChatDialog::newDialog($dialog);
+                Contact::newPhone($dialog['id']);
             }
         }
     }

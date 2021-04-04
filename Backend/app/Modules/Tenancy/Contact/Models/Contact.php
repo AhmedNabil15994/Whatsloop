@@ -38,6 +38,22 @@ class Contact extends Model{
             ->first();
     }
 
+    static function newPhone($phone){
+        $phone = '+'.str_replace('@c.us', '', $phone);
+        $contactObj = self::where('phone',$phone)->first();
+        if($contactObj == null){
+            $contactObj = new self;
+            $contactObj->name = $phone;
+            $contactObj->phone = $phone;
+            $contactObj->group_id = 1;
+            $contactObj->sort = self::newSortIndex();
+        }
+        $contactObj->has_whatsapp = 1;
+        $contactObj->status = 1;
+        $contactObj->created_at = date('Y-m-d H:i:s');
+        $contactObj->save();
+    }
+
     static function getOneByPhone($phone){
         $contactObj = self::NotDeleted()->where('phone','+'.$phone)->orderBy('id','DESC')->first();
         if($contactObj != null){

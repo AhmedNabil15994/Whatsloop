@@ -261,6 +261,9 @@ class GroupNumbersControllers extends Controller {
     public function delete($id) {
         $id = (int) $id;
         $dataObj = GroupNumber::getOne($id);
+        if($dataObj == null || $id == 1) {
+            return Redirect('404');
+        }
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
     }
