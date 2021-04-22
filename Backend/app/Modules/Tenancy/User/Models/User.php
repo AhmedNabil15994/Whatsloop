@@ -100,7 +100,7 @@ class User extends Authenticatable implements Syncable
         return \ImagesHelper::GetImagePath('users', $id, $photo);
     }
 
-    static function dataList($group_id = null,$ids = null) {
+    static function dataList($group_id = null,$ids = null,$langPref=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted();
@@ -129,16 +129,16 @@ class User extends Authenticatable implements Syncable
             $source->whereIn('id',$ids);
         }
         $source->orderBy('sort', 'ASC');
-        return self::generateObj($source);
+        return self::generateObj($source,$langPref);
     }
 
-    static function generateObj($source){
+    static function generateObj($source,$langPref=null){
         $sourceArr = $source->get();
 
         $list = [];
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
-            $list[$key] = self::getData($value);
+            $list[$key] = self::getData($value,$langPref);
         }
 
         $data['data'] = $list;
@@ -162,13 +162,13 @@ class User extends Authenticatable implements Syncable
         }
     }
 
-    static function getData($source) {
+    static function getData($source,$langPref=null) {
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->photo = self::selectImage($source);
         $data->photo_name = $source->image;
         $data->photo_size = $data->photo != '' ? \ImagesHelper::getPhotoSize($data->photo) : '';
-        $data->group = $source->Group != null ? $source->Group->name_ar : '';
+        $data->group = $source->Group != null ? $langPref == null ? $source->Group->{'name_'.LANGUAGE_PREF} : $source->Group->{'name_'.$langPref} : '';
         $data->group_id = $source->group_id;
         $data->email = $source->email;
         $data->company = $source->company;

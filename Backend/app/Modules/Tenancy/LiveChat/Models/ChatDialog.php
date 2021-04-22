@@ -96,7 +96,7 @@ class ChatDialog extends Model{
             $dataObj->is_read = $source->is_read;
             $dataObj->modsArr = $source->modsArr != null ? unserialize($source->modsArr) : [];
             if($metaData == false){
-                $dataObj->moderators = User::dataList(null,$dataObj->modsArr)['data'];
+                $dataObj->moderators = User::dataList(null,$dataObj->modsArr,'ar')['data'];
                 $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
                 $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('time','DESC')->first());
                 if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){

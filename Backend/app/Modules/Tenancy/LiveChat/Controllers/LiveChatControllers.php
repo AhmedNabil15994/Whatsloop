@@ -329,7 +329,7 @@ class LiveChatControllers extends Controller {
             }
         }
 
-        // $dataList['data'] = ChatMessage::getData($messageObj);
+        $dataList['data'] = ChatMessage::getData($messageObj);
         $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
         return \Response::json((object) $dataList);        
     }
