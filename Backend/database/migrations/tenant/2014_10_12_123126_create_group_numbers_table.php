@@ -30,7 +30,7 @@ class CreateGroupNumbersTable extends Migration
             $table->dateTime('deleted_at')->nullable();
         });
 
-        \DB::table('groups')->insert([
+        \DB::table('group_numbers')->insert([
             [
                 'name_ar' => 'المزامنة',
                 'name_en' => 'Sync',
