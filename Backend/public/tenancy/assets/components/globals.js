@@ -67,6 +67,17 @@ function deleteItem($id) {
     });
 }
 
+$('select[data-toggle="select2"]').select2();
+$('select#selectize-select').selectize({
+    create:!0,
+    sortField:{
+        field:"text",
+        direction:"asc"
+    },
+    dropdownParent:"body"
+});
+// $('select[data-toggle="selectize-select"]').selectize();
+
 $(".teles").intlTelInput({
     initialCountry: $('input[name="countriesCode"]').val(),
     preferredCountries: ["sa","ae","bh","kw","om","eg"],
@@ -305,7 +316,7 @@ $('.pdf-but').on('click',function(e){
     $('.buttons-pdf')[0].click();
 });
 
-$('#SubmitBTN').on('click',function(e){
+$('#SubmitBTN,.SaveBTN').on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
     $('input[name="status"]').val(1);
@@ -322,6 +333,32 @@ $('#SubmitBTN').on('click',function(e){
         $('form').submit();
     }
 });
+
+$('.SaveBTNs').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    $('input[name="status"]').val(1);
+    var errors = 0;
+    $.each($('input.teles'),function(index,item){
+        var phone =  $(item).intlTelInput("getNumber");
+        if (!$(item).intlTelInput("isValidNumber") && $(item).attr("name") == 'phone' && !$(item).parents('.form-group').hasClass('hidden')){
+            errors+= 1;
+        }else{
+            $(item).val(phone);
+        }
+    });
+    
+    if(errors == 0){
+        $('form').submit();
+    }else{
+        if(lang == 'en'){
+            errorNotification("This Phone Number Isn't Valid!");
+        }else{
+            errorNotification("هذا رقم الجوال غير موجود");
+        }
+    }
+});
+
 $('#SaveBTN').on('click',function(){
     $('input[name="status"]').val(0);
     var phone =  $(".teles").intlTelInput("getNumber");
@@ -337,13 +374,117 @@ $('#SaveBTN').on('click',function(){
         $('form').submit();
     }
 });
+
+function initUploadFiles(id) {
+        // set the dropzone container id
+    // set the preview element template
+    var previewNode = $(id + " .dropzone-item");
+    previewNode.id = "";
+    var previewTemplate = previewNode.parent('.dropzone-items').html();
+    var uploadUrl = myURL + "/editImage";
+    if(id != '#kt_dropzone_5'){
+        previewNode.remove();
+        uploadUrl = myURL + "/uploadImage";
+    }
+
+    var myDropzone5 = new Dropzone(id, { // Make the whole body a dropzone
+        url: uploadUrl, // Set the url for your upload script location
+        parallelUploads: 20,
+        maxFilesize: 1, // Max filesize in MB
+        previewTemplate: previewTemplate,
+        previewsContainer: id + " .dropzone-items", // Define the container to display the previews
+        clickable: id + " .dropzone-select", // Define the element that should be used as click trigger to select files.
+        paramName: "files",
+        success:function(file,data){
+            if(data){
+                // data = JSON.parse(data);
+                if(data.status.status != 1){
+                    errorNotification(data.status.message);
+                }
+            }
+        },
+    });
+
+    myDropzone5.on("addedfile", function(file) {
+        // Hookup the start button
+        $(document).find( id + ' .dropzone-item').css('display', '');
+    });
+
+    // Update the total progress bar
+    myDropzone5.on("totaluploadprogress", function(progress) {
+        $( id + " .progress-bar").css('width', progress + "%");
+    });
+
+    myDropzone5.on("sending", function(file) {
+        // Show the total progress bar when upload starts
+        $( id + " .progress-bar").css('opacity', "1");
+    });
+
+    // Hide the total progress bar when nothing's uploading anymore
+    myDropzone5.on("complete", function(progress) {
+        var thisProgressBar = id + " .dz-complete";
+        setTimeout(function(){
+            $( thisProgressBar + " .progress-bar, " + thisProgressBar + " .progress").css('opacity', '0');
+        }, 300)
+    });
+}
+
+if($('#kt_dropzone_4').length){
+    initUploadFiles('#kt_dropzone_4');
+}
+
+if($('#kt_dropzone_5').length){
+    initUploadFiles('#kt_dropzone_5');
+}
+
+if($('.summernote').length){
+    $('.summernote').summernote({
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto'],
+        height: 300,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript','Arial']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']]
+        ]
+    });
+}
+
 $('.Reset').on('click',function(){
     $('input').attr('value','');
-    // $('#kt_summernote_1').summernote('code', '');
+    $('.summernote').summernote('code', '');
     $('textarea').val('');
     $('select').val('');
     $('input[type="checkbox"]').attr('checked',false);
 });
 $('.pageReset').on('click',function(){
     location.reload();
+});
+$('.dropzone-item.edited .DeleteFiles').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var elemParent = $(this).parents('.dropzone-item');
+    var id = $(this).data('area');
+    var name = $(this).data('name');
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+    $.ajax({
+        type: 'POST',
+        url: myURL+'/deleteImage',
+        data:{
+            '_token': $('meta[name="csrf-token"]').attr('content'),
+            'id': id,
+            'name': name,
+        },
+        success:function(data){
+            if(data.status.status == 1){
+                successNotification(data.status.message);
+                elemParent.remove();
+            }else{
+                errorNotification(data.status.message);
+            }
+        },
+    });
 });

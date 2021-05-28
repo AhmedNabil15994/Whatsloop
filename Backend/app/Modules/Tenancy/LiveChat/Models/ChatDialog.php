@@ -27,7 +27,7 @@ class ChatDialog extends Model{
         }
 
         if(isset($input['mine']) && !empty($input['mine'])){
-            $source->where('modsArr','LIKE','%'.serialize([$input['mine']]).'%');
+            $source->where('modsArr','LIKE','%'.USER_ID.'%');
         }
 
         $source->orderBy('last_time','DESC');
@@ -69,7 +69,7 @@ class ChatDialog extends Model{
         }
         
         $dataObj->id = $source->id;
-        $dataObj->name = isset($source->name) ? self::reformName($source->name) : '';
+        $dataObj->name = $dataObj->name != null ? $dataObj->name : (isset($source->name) ? self::reformName($source->name) : '');
         $dataObj->image = isset($source->image) ? $source->image : '';
         $dataObj->metadata = isset($source->metadata) ? serialize($source->metadata) : '';
         $dataObj->last_time = isset($source->last_time) ? $source->last_time : '';
@@ -96,7 +96,11 @@ class ChatDialog extends Model{
             $dataObj->is_read = $source->is_read;
             $dataObj->modsArr = $source->modsArr != null ? unserialize($source->modsArr) : [];
             if($metaData == false){
-                $dataObj->moderators = User::dataList(null,$dataObj->modsArr,'ar')['data'];
+                $cats = ContactLabel::where('contact',str_replace('@c.us', '', $source->id))->pluck('category_id');
+                $cats = reset($cats);
+                $cats = empty($cats) ? [0] : $cats;
+                $dataObj->labels = Category::dataList(null,$cats)['data'];
+                $dataObj->moderators = !empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
                 $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
                 $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('time','DESC')->first());
                 if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){

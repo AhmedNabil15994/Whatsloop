@@ -1,0 +1,83 @@
+@font-face {
+    font-family: "flaticon";
+    src: url("../fonts/flaticon.ttf") format("truetype"),
+url("../fonts/flaticon.woff") format("woff"),
+url("../fonts/flaticon.woff2") format("woff2"),
+url("../fonts/flaticon.eot") format("embedded-opentype"),
+url("../fonts/flaticon.svg") format("svg");
+}
+
+i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
+    font-family: flaticon !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.flaticon-bag:before {
+    content: "\f101";
+}
+.flaticon-calendar:before {
+    content: "\f102";
+}
+.flaticon-chat-box:before {
+    content: "\f103";
+}
+.flaticon-chat:before {
+    content: "\f104";
+}
+.flaticon-envelope:before {
+    content: "\f105";
+}
+.flaticon-facebook:before {
+    content: "\f106";
+}
+.flaticon-friends:before {
+    content: "\f107";
+}
+.flaticon-gmail:before {
+    content: "\f108";
+}
+.flaticon-home:before {
+    content: "\f109";
+}
+.flaticon-instagram:before {
+    content: "\f10a";
+}
+.flaticon-layers:before {
+    content: "\f10b";
+}
+.flaticon-menu:before {
+    content: "\f10c";
+}
+.flaticon-phone-call:before {
+    content: "\f10d";
+}
+.flaticon-report:before {
+    content: "\f10e";
+}
+.flaticon-robot:before {
+    content: "\f10f";
+}
+.flaticon-send:before {
+    content: "\f110";
+}
+.flaticon-twitter:before {
+    content: "\f111";
+}
+.flaticon-user-male-black-shape-with-plus-sign:before {
+    content: "\f112";
+}
+.flaticon-whatsapp:before {
+    content: "\f113";
+}
+.flaticon-youtube-1:before {
+    content: "\f114";
+}
+.flaticon-youtube:before {
+    content: "\f115";
+}

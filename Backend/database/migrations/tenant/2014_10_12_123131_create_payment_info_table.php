@@ -23,6 +23,8 @@ class CreatePaymentInfoTable extends Migration
             $table->string('region')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('tax_id')->nullable();
+            $table->integer('payment_method')->nullable();
+            $table->integer('currency')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

@@ -327,8 +327,8 @@ class SallaControllers extends Controller {
                 $categories_ar = [];
                 $categories_en = [];
                 foreach ($categories as $category) {
-                    $categories_ar[]= isset($category['name']['ar']) && !empty($category['name']['ar']) ? $category['name']['ar'] : $category['name']['en'] ;
-                    $categories_en[]= isset($category['name']['en']) && !empty($category['name']['en']) ? $category['name']['en'] : $category['name']['ar'] ;
+                    @$categories_ar[]= isset($category['name']['ar']) && !empty($category['name']['ar']) ? $category['name']['ar'] : $category['name']['en'] ;
+                    @$categories_en[]= isset($category['name']['en']) && !empty($category['name']['en']) ? $category['name']['en'] : $category['name']['ar'] ;
                 }
                 $dataObj->sku = $value->sku;
                 $dataObj->quantity = $value->quantity;
@@ -562,7 +562,7 @@ class SallaControllers extends Controller {
                 'type' => '',
                 'className' => 'text-center pre-space',
                 'data-col' => 'content_'.LANGUAGE_PREF,
-                'anchor-class' => '',
+                'anchor-class' => 'pre-space',
             ],   
             'statusText' => [
                 'label' => trans('main.status'),
@@ -642,4 +642,56 @@ class SallaControllers extends Controller {
         return \Redirect::back()->withInput();
     }
 
+    public function templatesAdd() {
+        $service = $this->service;
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.add') . ' '.trans('main.templates'),
+            'url' => 'services/'.$service.'/templates',
+            'name' => 'templates',
+            'nameOne' => $service.'-template',
+            'service' => $service,
+            'icon' => 'fa fa-plus',
+        ];
+        $userObj = User::getData(User::getOne(USER_ID));
+        $data['channel'] = $userObj->channels[0];
+        $options = [['id'=>'ترحيب بالعميل','name'=>'ترحيب بالعميل']];
+        if (Schema::hasTable($service.'_order_status')) {
+            $statuses = DB::table($service.'_order_status')->get();
+            foreach ($statuses as $value) {
+                $options[] = ['id'=>$value->name,'name'=>$value->name];
+            }
+        }
+        $data['statuses'] = $options;
+        return view('Tenancy.ExternalServices.Views.add')->with('data', (object) $data);      
+    }
+
+    public function templatesCreate() {
+        $service = $this->service;
+        $input = \Request::all();
+        $dataObj = ModTemplate::NotDeleted()->where('mod_id',1)->where('statusText',$input['statusText'])->where('status',1)->first();
+        if($dataObj && $input['status'] == 1){
+            Session::flash('error', trans('main.statusFound'));
+            return \Redirect::back()->withInput();
+        }
+
+        $dataObj = new ModTemplate;
+        $dataObj->channel = $input['channel'];
+        $dataObj->content_ar = $input['content_ar'];
+        $dataObj->content_en = $input['content_en'];
+        $dataObj->statusText = $input['statusText'];
+        $dataObj->status = $input['status'];
+        $dataObj->mod_id = 1;
+        $dataObj->updated_at = DATE_TIME;
+        $dataObj->updated_by = USER_ID;
+        $dataObj->save();
+
+        Session::flash('success', trans('main.editSuccess'));
+        return \Redirect::back()->withInput();
+    }
+
+    public function templatesDelete($id) {
+        $id = (int) $id;
+        $dataObj = ModTemplate::getOne($id);
+        return \Helper::globalDelete($dataObj);
+    }
 }

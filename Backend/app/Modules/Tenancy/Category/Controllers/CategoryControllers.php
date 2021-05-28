@@ -59,13 +59,13 @@ class CategoryControllers extends Controller {
             'name_ar' => [
                 'type' => 'text',
                 'class' => 'form-control m-input',
-                'index' => '1',
+                'index' => '3',
                 'label' => trans('main.titleAr'),
             ],
             'name_en' => [
                 'type' => 'text',
                 'class' => 'form-control m-input',
-                'index' => '2',
+                'index' => '4',
                 'label' => trans('main.titleEn'),
             ],
             'color_id' => [

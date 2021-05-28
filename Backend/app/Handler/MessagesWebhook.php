@@ -7,6 +7,7 @@ use App\Models\ContactReport;
 use App\Models\ChatMessage;
 use App\Models\ChatDialog;
 use App\Events\IncomingMessage;
+use App\Models\UserExtraQuota;
 use App\Events\BotMessage;
 use App\Events\MessageStatus;
 use \Spatie\WebhookClient\ProcessWebhookJob;
@@ -22,6 +23,19 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$tenantUser = User::first();
 		$tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$tenantUser->global_id)->first();
 		$userObj = \DB::connection('main')->table('domains')->where('tenant_id',$tenantObj->tenant_id)->first();
+
+
+		$startDay = strtotime(date('Y-m-d 00:00:00'));
+        $endDay = strtotime(date('Y-m-d 23:59:59'));
+        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',$tenantUser->membership_id)->first()->features;
+        $featuresId = unserialize($membershipFeatures);
+        $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
+        $dailyCount = @(int) $features[0];
+        $extraQuotas = UserExtraQuota::getOneForUserByType($tenantUser->global_id,1);
+        if($dailyCount <= $messagesCount + $extraQuotas){
+            return 1;
+        }
 
 	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
@@ -93,7 +107,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    					$whats_message_type = $message_type == 'photo' ? 'image' : 'document' ;
 		    				$sendData['filename'] = $botObj->file_name;
 		    				$sendData['body'] = $botObj->file;
-		    				$sendData['caption'] = $botObj->reply;
+		    				$sendData['caption'] = $botObj->reply2;
 			    			$result = $mainWhatsLoopObj->sendFile($sendData);
 		    			}elseif($botObj->reply_type == 3){
 	    					$message_type = 'video';
@@ -140,6 +154,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $lastMessage['chatId'] = $sender;
 				            $lastMessage['fromMe'] = 1;
 				            $lastMessage['message_type'] = $message_type;
+				            $lastMessage['body'] = $botObj->reply;
 				            $lastMessage['type'] = $whats_message_type;
 				            $lastMessage['time'] = time();
 				            $lastMessage['sending_status'] = 1;

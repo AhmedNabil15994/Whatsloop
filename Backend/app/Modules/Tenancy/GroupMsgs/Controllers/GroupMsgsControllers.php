@@ -4,7 +4,9 @@ use App\Models\User;
 use App\Models\GroupMsg;
 use App\Models\GroupNumber;
 use App\Models\Contact;
+use App\Models\ChatMessage;
 use App\Models\ContactReport;
+use App\Models\UserExtraQuota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -125,70 +127,70 @@ class GroupMsgsControllers extends Controller {
                 'type' => '',
                 'className' => '',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable badge badge-secondary',
+                'anchor-class' => 'editable ',
             ],
             'group' => [
                 'label' => trans('main.group'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'group_id',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'message_type_text' => [
                 'label' => trans('main.message_type'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'message_type',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'message' => [
                 'label' => trans('main.message_content'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'message',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'sent_type' => [
                 'label' => trans('main.sent_type'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'sent_type',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'messages_count' => [
                 'label' => trans('main.msgs_no'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'messages_count',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'contacts_count' => [
                 'label' => trans('main.contacts_count'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'contacts_count',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'sent_msgs' => [
                 'label' => trans('main.sent_msgs'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'sent_msgs',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'unsent_msgs' => [
                 'label' => trans('main.unsent_msgs'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'unsent_msgs',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'publish_at' => [
                 'label' => trans('main.sentDate'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'publish_at',
-                'anchor-class' => 'badge badge-secondary',
+                'anchor-class' => '',
             ],
             'actions' => [
                 'label' => trans('main.actions'),
@@ -227,6 +229,18 @@ class GroupMsgsControllers extends Controller {
     }
 
     public function add() {
+        $startDay = strtotime(date('Y-m-d 00:00:00'));
+        $endDay = strtotime(date('Y-m-d 23:59:59'));
+        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $dailyCount = Session::get('dailyMessageCount');
+        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
+        if($dailyCount <= $messagesCount + $extraQuotas){
+            Session::flash('error', trans('main.messageQuotaError'));
+            return redirect()->back()->withInput();
+        }
+
+        Session::forget('msgFile');
+
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
@@ -314,14 +328,26 @@ class GroupMsgsControllers extends Controller {
             $checkMessage = $input['messageText'];
         }else if($input['message_type'] == 2){
             $message = $input['message']; 
-            $checkMessage = $input['messageText'];
+            $checkMessage = $input['message'];
         }else if($input['message_type'] == 5){
             $checkMessage = $input['https_url'];
         }else if($input['message_type'] == 6){
             $checkMessage = $input['whatsapp_no'];
         }
 
+        $contactsCount = Contact::NotDeleted()->where('group_id',$groupObj->id)->count();
         $messagesArr = str_split(strip_tags($checkMessage), 140);
+
+        $startDay = strtotime(date('Y-m-d 00:00:00'));
+        $endDay = strtotime(date('Y-m-d 23:59:59'));
+        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $dailyCount = Session::get('dailyMessageCount');
+        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
+        if($dailyCount <= $messagesCount + $extraQuotas + (count($messagesArr) * $contactsCount )){
+            Session::flash('error', trans('main.messageQuotaError'));
+            return redirect()->back()->withInput();
+        }
+
 
         $dataObj = new GroupMsg;
         $dataObj->channel = $groupObj->channel;
@@ -330,7 +356,7 @@ class GroupMsgsControllers extends Controller {
         $dataObj->message = $message;
         $dataObj->publish_at = $date;
         $dataObj->later = $flag;
-        $dataObj->contacts_count = Contact::NotDeleted()->where('group_id',$groupObj->id)->count();
+        $dataObj->contacts_count = $contactsCount;
         $dataObj->messages_count = count($messagesArr);
         $dataObj->sort = GroupMsg::newSortIndex();
         $dataObj->status = $input['status'];
@@ -492,7 +518,23 @@ class GroupMsgsControllers extends Controller {
         }
         if ($request->hasFile('file')) {
             $files = $request->file('file');
+
+            $file_size = $files->getSize();
+            $file_size = $file_size/(1024 * 1024);
+            $file_size = number_format($file_size,2);
+            $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+            $totalStorage = Session::get('storageSize');
+            $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+            if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+            }
+
+            
             $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
+            $fileSize = $files->getSize();
+            if($fileSize >= 100000){
+                return \TraitsFunc::ErrorMessage(trans('main.file100kb'));
+            }
             
             if( $typeID == 2 && !in_array($type, ['file','photo']) ){
                 return \TraitsFunc::ErrorMessage(trans('main.selectFile'));

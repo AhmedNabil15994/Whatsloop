@@ -23,7 +23,7 @@ $(function(){
 		    maxFiles: 1,
 		    maxFilesize: 10, // MB
 		    addRemoveLinks: true,
-		    previewTemplate: $('#uploadPreviewTemplate').html(),
+		    // previewTemplate: $('#uploadPreviewTemplate').html(),
 		    accept: function(file, done) {
 		        if (file.name == "justinbieber.jpg") {
 		            done("Naha, you don't.");

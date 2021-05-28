@@ -53,7 +53,7 @@ class ExternalServices {
         }elseif($service == 'zid'){
             $modelData = $this->formatZidResponse($result);
         }
-        return $this->reformatModelData($modelData);
+        return self::reformatModelData($modelData);
     }
 
     function formatSallaResponse($result){
@@ -91,7 +91,7 @@ class ExternalServices {
         return $modelData;
     }
 
-    function reformatModelData($data){
+    static function reformatModelData($data){
         $editedData = [];
         foreach ($data as $value) {
             $newObj = $value;
@@ -147,11 +147,14 @@ class ExternalServices {
     function checkTableData($tableName,$dataObj){
         if (Schema::hasTable($tableName)) {
             $tableDataCount = DB::table($tableName)->count();
-            if(count($dataObj) != $tableDataCount){
-                if($tableDataCount > 0){
-                    DB::table($tableName)->truncate();
-                }
-                DB::table($tableName)->insert($dataObj);
+            if(count($dataObj) < $tableDataCount){
+                DB::table($tableName)->truncate();
+            }
+            foreach ($dataObj as $value) {
+                $checkObj = DB::table($tableName)->where('id',$value['id'])->first();
+                if(!$checkObj){
+                    DB::table($tableName)->insert($value);
+                }   
             }
         }
     }

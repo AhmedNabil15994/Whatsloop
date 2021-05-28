@@ -262,6 +262,25 @@
                     </a>
                 </li>
                 @endif
+
+                @if(\Helper::checkRules('list-tickets'))
+                <li class="{{ Active(URL::to('/tickets*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/tickets') }}">
+                        <i class="dripicons-ticket"></i>
+                        <span> {{ trans('main.tickets') }} </span>
+                    </a>
+                </li>
+                @endif
+
+                @if(\Helper::checkRules('list-storage'))
+                <li class="{{ Active(URL::to('/storage*'),'menuitem-active') }}">
+                    <a href="{{ URL::to('/storage') }}">
+                        <i class="mdi mdi-folder-star-outline"></i>
+                        <span> {{ trans('main.storage') }} </span>
+                    </a>
+                </li>
+                @endif
+
                 @if(\Helper::checkRules('list-users,list-groups'))
                 <li class="{{ Active(URL::to('/users*'),'menuitem-active') }} {{ Active(URL::to('/groups*'),'menuitem-active') }}">
                     <a href="#sidebarUsers" data-toggle="collapse">

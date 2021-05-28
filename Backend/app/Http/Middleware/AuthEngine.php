@@ -31,9 +31,12 @@ class AuthEngine
         define('GROUP_ID', Session::get('group_id'));
         define('GROUP_NAME', Session::get('group_name'));
         define('FULL_NAME', Session::get('name'));
-
+        define('GLOBAL_ID', Session::get('global_id'));
+        define('TENANT_ID', Session::get('tenant_id'));
+        define('DOMAIN', Session::get('domain'));
         // Update login date realtime
         $userObj = User::getOne(USER_ID);
+        
         $permissions = User::checkUserPermissions($userObj);        
         define('IS_ADMIN', $userObj->group_id == 1 ? true : false);
         define('PERMISSIONS', $permissions);

@@ -109,4 +109,5 @@ return [
 	'list-variables2' => 'اعدادات لوحة التحكم',
 	'edit-variable2' => 'تعديل الاعدادات لوحة التحكم',
 	'add-number-to-group' => 'اضافة الي مجموعات الارقام',
+	'list-livechat' => 'المحادثة المباشرة',
 ];

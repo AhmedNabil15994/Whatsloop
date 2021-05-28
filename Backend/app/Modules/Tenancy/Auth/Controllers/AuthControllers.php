@@ -2,9 +2,9 @@
 
 use App\Models\User;
 use App\Models\Central\Channel;
-use App\Models\LoginHistory;
-use App\Models\BlockedUser;
 use App\Models\Variable;
+use App\Models\UserChannels;
+use App\Models\UserAddon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -21,8 +21,13 @@ class AuthControllers extends Controller {
         if(Session::has('user_id')){
             return redirect('/dashboard');
         }
-        $data['code'] = \Helper::getCountryCode()->countryCode;
+        $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         return view('Tenancy.Auth.Views.login')->with('data',(object) $data);
+    }
+
+    public function loginByCode() {
+        Session::put('check_user_id',\Request::get('user_id'));
+        return view('Tenancy.Auth.Views.loginByCode');
     }
 
     public function doLogin() {
@@ -59,40 +64,61 @@ class AuthControllers extends Controller {
         $userObj->save();
 
 
-        // $whatsLoopObj =  new \WhatsLoop();
-        // $test = $whatsLoopObj->sendMessage('كود التحقق الخاص بك هو : '.$code,$input['phone']);
+        if($userObj->two_auth == 1){
+            $channelObj = \DB::connection('main')->table('channels')->first();
+            $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
+            $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+            $data['phone'] = str_replace('+','',$input['phone']);
+            $test = $whatsLoopObj->sendMessage($data);
+            $result = $test->json();
+            if($result['status']['status'] != 1){
+                return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+            }
+            \Session::put('check_user_id',$userObj->id);
+            return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
+        }else{
+            $this->setSessions($userObj);
 
-        // if(json_decode($test)->Code == 'OK'){
-        //     \Session::put('check_user_id',$userObj->id);
-        //     return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
-        // }else{
-        //     return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
-        // }
-
-        // $isAdmin = in_array($userObj->group_id, [1,]);
-        // session(['group_id' => $userObj->group_id]);
-        // session(['user_id' => $userObj->id]);
-        // session(['email' => $userObj->email]);
-        // session(['name' => $userObj->name]);
-        // session(['is_admin' => $isAdmin]);
-        // session(['group_name' => $userObj->Group->name_ar]);
-        // $channels = User::getData($userObj)->channels;
-        // session(['channel' => $channels[0]->id]);
-
-        // Session::flash('success', trans('auth.passwordChanged'));
-        // return redirect('/dashboard');
-        $channelObj = \DB::connection('main')->table('channels')->first();
-        $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
-        $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
-        $data['phone'] = str_replace('+','',$input['phone']);
-        $test = $whatsLoopObj->sendMessage($data);
-        $result = $test->json();
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+            Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
+            return \TraitsFunc::LoginResponse(trans('auth.welcome') . $userObj->name_ar);
         }
+    }
 
-        \Session::put('check_user_id',$userObj->id);
-        return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
+    public function setSessions($userObj){
+        $isAdmin = in_array($userObj->group_id, [1,]);
+        session(['group_id' => $userObj->group_id]);
+        session(['global_id' => $userObj->global_id]);
+        session(['user_id' => $userObj->id]);
+        session(['email' => $userObj->email]);
+        session(['name' => $userObj->name]);
+        session(['domain' => $userObj->domain]);
+        session(['is_admin' => $isAdmin]);
+        session(['group_name' => $userObj->Group->name_ar]);
+        // $channels = User::getData($userObj)->channels;
+        $channels = $userObj->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($userObj->channels))->get() : [];
+        session(['channel' => $channels[0]->id]);
+        session(['membership' => $userObj->membership_id]);
+        if($isAdmin){
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+            session(['addons' => $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons)) : []]);
+        }else{
+            $mainUser = User::first();
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
+            session(['addons' => $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons)) : []]);
+        }
+        session(['tenant_id' => $tenantObj->tenant_id]);
+
+        // Get Membership and Extra Quotas Features
+        $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',Session::get('membership'))->first()->features;
+        $featuresId = unserialize($membershipFeatures);
+        $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
+        $dailyMessageCount = (int) $features[0];
+        $employessCount = (int) $features[1];
+        $storageSize = (int) $features[2];
+        session(['dailyMessageCount' => $dailyMessageCount]);
+        session(['employessCount' => $employessCount]);
+        session(['storageSize' => $storageSize]);
+
     }
 
     public function checkByCode(){
@@ -100,19 +126,11 @@ class AuthControllers extends Controller {
         $code = $input['code'];
         $user_id = Session::get('check_user_id');
         $userObj = User::getOne($user_id);
-        if($code != $userObj->code){
+        // dd($userObj);
+        if($code != $userObj->code && $code != $userObj->pin_code){
             return \TraitsFunc::ErrorMessage(trans('auth.codeError'));
         }
-        $isAdmin = in_array($userObj->group_id, [1,]);
-        session(['group_id' => $userObj->group_id]);
-        session(['user_id' => $userObj->id]);
-        session(['email' => $userObj->email]);
-        session(['name' => $userObj->name]);
-        session(['is_admin' => $isAdmin]);
-        session(['group_name' => $userObj->Group->name_ar]);
-        $channels = User::getData($userObj)->channels;
-        session(['channel' => $channels[0]->id]);
-
+        $this->setSessions($userObj);
 
         Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
         return \TraitsFunc::SuccessResponse(trans('auth.welcome') . $userObj->name_ar);
@@ -130,7 +148,7 @@ class AuthControllers extends Controller {
         if(Session::has('user_id')){
             return redirect('/dashboard');
         }
-        $data['code'] = \Helper::getCountryCode()->countryCode;
+        $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         return view('Tenancy.Auth.Views.resetPassword')->with('data',(object) $data);
     }
 
@@ -172,7 +190,8 @@ class AuthControllers extends Controller {
         //     return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
         // }
 
-        $whatsLoopObj =  new \MainWhatsLoop();
+        $channelObj = \DB::connection('main')->table('channels')->first();
+        $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
         $data['phone'] = str_replace('+','',$input['phone']);
         $test = $whatsLoopObj->sendMessage($data);
@@ -236,15 +255,7 @@ class AuthControllers extends Controller {
         $userObj->save();
         Session::forget('check_user_id');
 
-        $isAdmin = in_array($userObj->group_id, [1,]);
-        session(['group_id' => $userObj->group_id]);
-        session(['user_id' => $userObj->id]);
-        session(['email' => $userObj->email]);
-        session(['name' => $userObj->name]);
-        session(['is_admin' => $isAdmin]);
-        session(['group_name' => $userObj->Group->name_ar]);
-        $channels = User::getData($userObj)->channels;
-        session(['channel' => $channels[0]->id]);
+        $this->setSessions($userObj);
 
         Session::flash('success', trans('auth.passwordChanged'));
         return redirect('/dashboard');

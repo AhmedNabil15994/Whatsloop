@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Bot;
+use App\Models\UserExtraQuota;
 use App\Models\Template;
 use App\Models\Photo;
 use Illuminate\Http\Request;
@@ -108,28 +109,28 @@ class BotControllers extends Controller {
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable badge badge-secondary',
+                'anchor-class' => 'editable',
             ],
             'message_type_text' => [
                 'label' => trans('main.messageType'),
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'message_type',
-                'anchor-class' => 'editable badge badge-secondary',
+                'anchor-class' => 'editable',
             ],
             'message' => [
                 'label' => trans('main.clientMessage'),
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'message',
-                'anchor-class' => 'editable badge badge-secondary',
+                'anchor-class' => 'editable',
             ],
             'reply_type_text' => [
                 'label' => trans('main.replyType'),
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'reply_type',
-                'anchor-class' => 'editable badge badge-secondary',
+                'anchor-class' => 'editable',
             ],
             'actions' => [
                 'label' => trans('main.actions'),
@@ -410,7 +411,7 @@ class BotControllers extends Controller {
         $id = (int) $id;
         $dataObj = Bot::getOne($id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
-        \ImagesHelper::deleteDirectory(public_path('/').'/uploads/'.$this->getData()['mainData']['name'].'/'.$id);
+        \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/'.$this->getData()['mainData']['name'].'/'.$id);
         return \Helper::globalDelete($dataObj);
     }
 
@@ -523,6 +524,17 @@ class BotControllers extends Controller {
         }
         if ($request->hasFile('file')) {
             $files = $request->file('file');
+
+            $file_size = $files->getSize();
+            $file_size = $file_size/(1024 * 1024);
+            $file_size = number_format($file_size,2);
+            $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+            $totalStorage = Session::get('storageSize');
+            $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+            if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+            }
+
             $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
             
             if( $typeID == 2 && !in_array($type, ['file','photo']) ){

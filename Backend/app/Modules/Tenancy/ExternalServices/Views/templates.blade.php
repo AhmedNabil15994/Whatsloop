@@ -7,6 +7,11 @@
 <link href="{{ asset('libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('libs/datatables.net-select-bs4/css//select.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<style type="text/css" media="screen">
+    .badge.text-muted{
+        background-color: #1d2128;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -14,7 +19,7 @@
 <div class="container-fluid">
     <!-- start page title -->
     <div class="row">
-        <div class="col-12">
+        <div class="col-11">
             <div class="page-title-box">
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
@@ -26,9 +31,24 @@
                 <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
             </div>
         </div>
+        <div class="col-1 text-right">
+            <div class="btn-group dropleft mb-3 mt-2">
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="mdi mdi-cog"></i>
+                </button>
+                <div class="dropdown-menu">
+                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
+                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
+                        <i class="fa fa-plus"></i> {{ trans('main.add') }}
+                    </a>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>     
     <!-- end page title --> 
     <input type="hidden" name="data-area" value="{{ \Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) }}">
+    <input type="hidden" name="data-cols" value="{{ \Helper::checkRules('delete-'.$data->designElems['mainData']['nameOne']) }}">
     <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
 
     <div class="row">
@@ -107,15 +127,15 @@
                                     <div class="m-separator"></div>
                                     <div class="row">
                                         <div class="col-lg-12 text-right">
-                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-danger" id="m_reset">
+                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-outline-secondary" id="m_reset">
                                                 <span>
-                                                    <i class="la la-close"></i>
+                                                    <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
                                             <div class="mb-0 text-center" style="display: inline-block;">
-                                                <button class="ladda-button btn btn-primary btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                    <span class="ladda-label"><i class="la la-search"></i> {{ trans('main.search') }}</span>
+                                                <button class="ladda-button btn btn-info btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
                                                     <span class="ladda-spinner"></span>
                                                     <div class="ladda-progress" style="width: 75px;"></div>
                                                 </button>
@@ -132,17 +152,10 @@
                         <thead>
                             <tr>
                                 @foreach($data->designElems['tableData'] as $one)
-                                <th class="text-center">{{ $one['label'] }}</th>
+                                <th class="text-center {{ $one['className'] }}" >{{ $one['label'] }}</th>
                                 @endforeach
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr>
-                                @foreach($data->designElems['tableData'] as $one)
-                                <th class="text-center">{{ $one['label'] }}</th>
-                                @endforeach
-                            </tr>
-                        </tfoot>
                     </table>
                     <!--end: Datatable-->
                 </div> <!-- end card body-->

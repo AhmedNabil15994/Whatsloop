@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserChannels;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Stancl\Tenancy\Features\UserImpersonation;
@@ -34,10 +35,27 @@ class ImpersonatesController extends Controller
         session(['email' => $userObj->email]);
         session(['name' => $userObj->name]);
         session(['is_admin' => $isAdmin]);
-        session(['group_name' => '']);
-        $channels = User::getData($userObj)->channels;
+        session(['group_name' => $userObj->Group->name_ar]);
+        // $channels = User::getData($userObj)->channels;
+        $channels = $userObj->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($userObj->channels))->get() : [];
         session(['channel' => $channels[0]->id]);
+        session(['membership' => $userObj->membership_id]);
+        if($isAdmin){
+            session(['addons' => $userObj->addons !=  null ? unserialize($userObj->addons) : []]);
+        }else{
+            $mainUser = User::first();
+            session(['addons' => $mainUser->addons !=  null ? unserialize($mainUser->addons) : []]);
+        }
 
+        $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',Session::get('membership'))->first()->features;
+        $featuresId = unserialize($membershipFeatures);
+        $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
+        $dailyMessageCount = (int) $features[0];
+        $employessCount = (int) $features[1];
+        $storageSize = (int) $features[2];
+        session(['dailyMessageCount' => $dailyMessageCount]);
+        session(['employessCount' => $employessCount]);
+        session(['storageSize' => $storageSize]);
         // Auth::guard($token->auth_guard)->loginUsingId($token->user_id);
 
         $token->delete();

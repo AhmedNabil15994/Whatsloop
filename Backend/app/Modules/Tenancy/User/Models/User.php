@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Central\CentralUser;
+use App\Models\CentralUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +12,7 @@ use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
 
 class User extends Authenticatable implements Syncable
 {
-    use HasFactory, Notifiable,\TraitsFunc,ResourceSyncing;
+    use HasFactory,\TraitsFunc,ResourceSyncing;
     
     /**
      * The attributes that are mass assignable.
@@ -20,15 +20,26 @@ class User extends Authenticatable implements Syncable
      * @var array
      */
     protected $fillable = [
+        'id',
         'name',
+        'duration_type',
         'email',
         'password',
         'code',
         'phone',
+        'domain',
+        'company',
+        'membership_id',
+        'addons',
         'group_id',
         'channels',
         'extra_rules',
         'image',
+        'pin_code',
+        'emergency_number',
+        'notifications',
+        'offers',
+        'two_auth',
         'sort',
         'is_active',
         'is_approved',
@@ -85,6 +96,20 @@ class User extends Authenticatable implements Syncable
             'name',
             'password',
             'phone',
+            'email',
+            'notifications',
+            'offers',
+            'image',
+            'pin_code',
+            'emergency_number',
+            'two_auth',
+            'company',
+            'membership_id',
+            'duration_type',
+            'addons',
+            'status',
+            'is_active',
+            'is_approved',
         ];
     }
 
@@ -165,10 +190,12 @@ class User extends Authenticatable implements Syncable
     static function getData($source,$langPref=null) {
         $data = new  \stdClass();
         $data->id = $source->id;
+        $data->global_id = $source->global_id;
         $data->photo = self::selectImage($source);
         $data->photo_name = $source->image;
         $data->photo_size = $data->photo != '' ? \ImagesHelper::getPhotoSize($data->photo) : '';
         $data->group = $source->Group != null ? $langPref == null ? $source->Group->{'name_'.LANGUAGE_PREF} : $source->Group->{'name_'.$langPref} : '';
+        $data->duration_type = $source->duration_type;
         $data->group_id = $source->group_id;
         $data->email = $source->email;
         $data->company = $source->company;
@@ -177,7 +204,13 @@ class User extends Authenticatable implements Syncable
         $data->status = $source->status;
         $data->notifications = $source->notifications;
         $data->offers = $source->offers;
+        $data->domain = $source->domain;
         $data->sort = $source->sort;
+        $data->pin_code = $source->pin_code;
+        $data->emergency_number = $source->emergency_number;
+        $data->two_auth = $source->two_auth;
+        $data->membership_id = $source->membership_id;
+        $data->addons = $source->addons;
         $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
         $data->channels = $source->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($source->channels))->get() : [];
@@ -215,6 +248,9 @@ class User extends Authenticatable implements Syncable
     }
 
     static function checkUserPermissions($userObj) {
+        if($userObj->group_id == 1){
+            return array_values(\Helper::getAllPerms());
+        }
         $endPermissionUser = [];
         $endPermissionGroup = [];
 
@@ -232,13 +268,7 @@ class User extends Authenticatable implements Syncable
     }
 
     static function userPermission(array $rule){
-
-        if(USER_ID && IS_ADMIN == false) {
-            return count(array_intersect($rule, PERMISSIONS)) > 0;
-        }
-                            // <span class="m-form__help LastUpdate">تم الحفظ فى :  {{ $data->data->created_at }}</span>
-
-        return true;
+        return count(array_intersect($rule, \Session::has('user_id') ? PERMISSIONS : [])) > 0;
     }
 
 }

@@ -22,8 +22,11 @@ Route::group(['prefix' => '/services/salla'] , function (){
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/reports', [$controller,'reports']);
 	Route::get('/templates', [$controller,'templates']);
+	Route::get('/templates/add', [$controller,'templatesAdd']);
+	Route::post('/templates/create', [$controller,'templatesCreate']);
 	Route::get('/templates/edit/{id}', [$controller,'templatesEdit']);
 	Route::post('/templates/update/{id}', [$controller,'templatesUpdate']);
+    Route::get('/templates/delete/{id}', [$controller,'templatesDelete']);
 });
 
 Route::group(['prefix' => '/services/zid'] , function (){
@@ -33,6 +36,9 @@ Route::group(['prefix' => '/services/zid'] , function (){
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/reports', [$controller,'reports']);
 	Route::get('/templates', [$controller,'templates']);
+	Route::get('/templates/add', [$controller,'templatesAdd']);
+	Route::post('/templates/create', [$controller,'templatesCreate']);
 	Route::get('/templates/edit/{id}', [$controller,'templatesEdit']);
 	Route::post('/templates/update/{id}', [$controller,'templatesUpdate']);
+    Route::get('/templates/delete/{id}', [$controller,'templatesDelete']);
 });

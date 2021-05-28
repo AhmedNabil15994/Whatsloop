@@ -24,10 +24,11 @@ class HomeControllers extends Controller {
         	}
             if(is_array($result)){
                 $extraResult = array_values($result);
-                if(isset($extraResult[0]) && $extraResult[0] == false){
+                if(isset($extraResult[0]) && $extraResult[0] == false && !isset($result['sendDelay'])){
                     return [0,@$result['message']];
-                }
+                }                
             }
+
         	if(isset($result['result']) && $result['result'] == "Couldn't delete chat or leaving group. Invalid number"){
             	return [0,"Couldn't delete chat or leaving group. Invalid number"];
         	}

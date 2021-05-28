@@ -69,7 +69,7 @@ class Bot extends Model{
     static function getData($source) {
         $data = new  \stdClass();
         $data->id = $source->id;
-        $data->channel = $source->channel;
+        $data->channel = trans('main.channel').' #'.$source->channel;
         $data->message_type = $source->message_type;
         $data->message_type_text = self::getMessageType($source->message_type);
         $data->message = $source->message;
@@ -104,7 +104,7 @@ class Bot extends Model{
 
     static function formatReply($reply){
         if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $reply)){
-            $reply = preg_replace("/\*([^*]+)\*/", "<b >$1</b>", $reply );
+            $reply = preg_replace("/\*([^*]+)\*/", "*$1*", $reply );
             return $reply;
         }
     }

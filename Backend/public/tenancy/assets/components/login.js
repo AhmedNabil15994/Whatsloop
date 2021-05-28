@@ -20,7 +20,6 @@ $(function(){
             }else{
                 errorNotification("هذا رقم الجوال غير موجود");
             }
-            Ladda.stopAll();
         }
 
         if(password && phone){
@@ -34,12 +33,15 @@ $(function(){
                     'phone': phone,
                 },
                 success:function(data){
-                    Ladda.stopAll();
                     if(data.status.status == 1){
                         successNotification(data.status.message);
-                        $('.codes').removeClass('hidden');
-                        $('button.loginBut').addClass('check');
-                        $('button.loginBut.check').removeClass('loginBut');
+                        if(data.status.code == 205){
+                            location.reload();
+                        }else{
+                            $('.codes').removeClass('hidden');
+                            $('button.loginBut').addClass('check');
+                            $('button.loginBut.check').removeClass('loginBut');
+                        }                        
                     }else{
                         errorNotification(data.status.message);
                     }
@@ -63,7 +65,6 @@ $(function(){
                     'code': code,
                 },
                 success:function(data){
-                    Ladda.stopAll();
                     if(data.status.status == 1){
                         window.location.href = "/dashboard";
                     }else{

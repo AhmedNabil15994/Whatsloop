@@ -59,7 +59,7 @@
                                 <select class="selectpicker" data-style="btn-outline-myPR" name="channel">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($data->channels as $group)
-                                    <option value="{{ $group->id }}" {{ $data->data->channel == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                    <option value="{{ $group->id }}" {{ str_replace(trans('main.channel'). ' #', '', $data->data->channel) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -110,7 +110,7 @@
                             <div class="form-group row mb-3 {{ $data->data->reply_type == 1 ? '' : 'hidden' }}">
                                 <label class="col-3 col-form-label">{{ trans('main.messageContent') }} :</label>
                                 <div class="col-9">
-                                    <textarea name="replyText" class="form-control summernote" placeholder="{{ trans('main.messageContent') }}">{{ $data->data->reply_type == 1 ?  $data->data->reply : '' }}</textarea>
+                                    <textarea name="replyText" class="form-control" placeholder="{{ trans('main.messageContent') }}">{{ $data->data->reply_type == 1 ?  $data->data->reply : '' }}</textarea>
                                 </div>
                             </div> 
                         </div>

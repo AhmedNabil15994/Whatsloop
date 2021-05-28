@@ -90,7 +90,7 @@
 
                     <p class="text-muted mb-2 font-13"><strong>{{ trans('main.company_name') }} :</strong><span class="ml-2">{{ $data->data->company }}</span></p>
 
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2">{{ $data->data->channelCodes }}</span></p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ $data->data->channelCodes }}</span></p>
                 </div>
             </div>
         </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use App\Models\UserExtraQuota;
 use App\Models\WebActions;
 use DataTables;
 use Storage;
@@ -340,6 +341,13 @@ class UsersControllers extends Controller {
     }
 
     public function add() {
+        $empsCount = User::NotDeleted()->count();
+        $dailyCount = Session::get('employessCount');
+        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,2);
+        if($dailyCount <= $empsCount + $extraQuotas){
+            Session::flash('error', trans('main.empQuotaError'));
+            return redirect()->back()->withInput();
+        }
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.users') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
@@ -350,6 +358,14 @@ class UsersControllers extends Controller {
 
     public function create() {
         $input = \Request::all();
+
+        $empsCount = User::NotDeleted()->count();
+        $dailyCount = Session::get('employessCount');
+        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,2);
+        if($dailyCount <= $empsCount + $extraQuotas){
+            Session::flash('error', trans('main.empQuotaError'));
+            return redirect()->back()->withInput();
+        }
 
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
@@ -387,7 +403,6 @@ class UsersControllers extends Controller {
         }
 
         $dataObj->name = $input['name'];
-        $dataObj->global_id = User::getOne(USER_ID)->global_id;
         $dataObj->group_id = $input['group_id'];
         $dataObj->email = $input['email'];
         $dataObj->phone = $input['phone'];
@@ -422,7 +437,7 @@ class UsersControllers extends Controller {
     public function delete($id) {
         $id = (int) $id;
         $dataObj = User::getOne($id);
-        \ImagesHelper::deleteDirectory(public_path('/').'/uploads/'.$this->getData()['mainData']['name'].'/'.$id);
+        \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/'.$this->getData()['mainData']['name'].'/'.$id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
     }
@@ -546,6 +561,17 @@ class UsersControllers extends Controller {
         $rand = rand() . date("YmdhisA");
         if ($request->hasFile('file')) {
             $files = $request->file('file');
+
+            $file_size = $files->getSize();
+            $file_size = $file_size/(1024 * 1024);
+            $file_size = number_format($file_size,2);
+            $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+            $totalStorage = Session::get('storageSize');
+            $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+            if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+            }
+
             Storage::put($rand,$files);
             Session::put('photos',$rand);
             return \TraitsFunc::SuccessResponse('');

@@ -73,6 +73,9 @@ class ChatMessage extends Model{
         if(isset($source->sending_status)){
             $dataObj->sending_status = $source->sending_status ;
         }
+
+
+        $dataObj->frontId = isset($source->frontId) ? $source->frontId : '' ;
         $dataObj->senderName = isset($source->senderName) ? $source->senderName : '' ;
         $dataObj->caption = isset($source->caption) ? $source->caption : '' ;
         $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
@@ -86,6 +89,7 @@ class ChatMessage extends Model{
     static function getData($source){
         $dataObj = new \stdClass();
         if($source){
+            $quotedMsgObj = null;
             $dates = self::reformDate($source->time);
             $source = (object) $source;
             $dataObj->id = $source->id;
@@ -105,10 +109,17 @@ class ChatMessage extends Model{
             $dataObj->caption = isset($source->caption) ? $source->caption : '' ;
             $dataObj->chatName = isset($source->chatName) ? $source->chatName : '' ;
             $dataObj->sending_status = $source->sending_status;
+            $dataObj->frontId = $source->frontId;
             $dataObj->sending_status_text = self::getSendingStatus($source->sending_status);
             $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
             $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
             $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
+            if($dataObj->quotedMsgId != null){
+                $dataObj->quotedMsgObj = self::getData(self::getOne($source->quotedMsgId));
+            }
+            if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image'])){
+                $dataObj->file_size = 0;//self::getPhotoSize($dataObj->body);
+            }
             return $dataObj;
         }
     }  
@@ -137,5 +148,15 @@ class ChatMessage extends Model{
         }else{
             return [date('Y-m-d',$time),date('h:i A',$time)];
         }
+    }
+
+    static function getPhotoSize($url){
+        if($url == ""){
+            return '';
+        }
+        $image = get_headers($url, 1);
+        $bytes = $image["Content-Length"];
+        $mb = $bytes/(1024 * 1024);
+        return number_format($mb,2) . " MB ";
     }
 }

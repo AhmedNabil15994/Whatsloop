@@ -108,5 +108,5 @@ return [
 	'list-variables2' => 'Panel Settings',
 	'edit-variable2' => 'Edit Panel Setting',
 	'add-number-to-group' => 'Add To Numbers Groups',
-	
+	'list-livechat' => 'Live Chat',
 ];

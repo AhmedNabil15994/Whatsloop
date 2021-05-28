@@ -37,8 +37,10 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        $this->mapWebRoutes();
-        $this->mapApiRoutes();
+        // $this->mapWebRoutes();
+        // $this->mapApiRoutes();
+        $this->mapGuestRoutes();
+        $this->mapModuleRoutes();
         // $this->configureRateLimiting();
 
         // $this->routes(function () {
@@ -65,26 +67,63 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-    protected function mapWebRoutes()
+    // protected function mapWebRoutes()
+    // {
+    //     foreach ($this->centralDomains() as $domain) {
+    //         Route::middleware('web')
+    //             ->domain($domain)
+    //             ->namespace($this->namespace)
+    //             ->group(base_path('routes/web.php'));
+    //     }
+    // }
+
+    protected function mapGuestRoutes()
     {
+        @define('DATE_TIME', date("Y-m-d H:i:s"));
         foreach ($this->centralDomains() as $domain) {
-            Route::middleware('web')
+            Route::middleware('general')
                 ->domain($domain)
                 ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
+                ->group(function () {
+                    require app_path('Modules/Central/Auth/routes.php');
+            });
         }
     }
 
-    protected function mapApiRoutes()
+    protected function mapModuleRoutes()
     {
-        foreach ($this->centralDomains() as $domain) {
-            Route::prefix('api')
+        @define('DATE_TIME', date("Y-m-d H:i:s"));
+        foreach ($this->centralDomains() as $domain) {        
+            Route::middleware('centralAuth')
                 ->domain($domain)
-                ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
+                ->group(function (){
+                    require app_path('Modules/Central/Dashboard/routes.php');
+                    require app_path('Modules/Central/User/routes.php');
+                    require app_path('Modules/Central/Group/routes.php');
+                    require app_path('Modules/Central/Membership/routes.php');
+                    require app_path('Modules/Central/Feature/routes.php');
+                    require app_path('Modules/Central/Addons/routes.php');
+                    require app_path('Modules/Central/ExtraQuota/routes.php');
+                    require app_path('Modules/Central/FAQ/routes.php');
+                    require app_path('Modules/Central/Changelog/routes.php');
+                    require app_path('Modules/Central/Department/routes.php');
+                    require app_path('Modules/Central/Ticket/routes.php');
+                    require app_path('Modules/Central/Client/routes.php');
+            });
         }
     }
+
+    // protected function mapApiRoutes()
+    // {
+    //     foreach ($this->centralDomains() as $domain) {
+    //         Route::prefix('api')
+    //             ->domain($domain)
+    //             ->middleware('api')
+    //             ->namespace($this->namespace)
+    //             ->group(base_path('routes/api.php'));
+    //     }
+    // }
 
     protected function centralDomains(): array
     {

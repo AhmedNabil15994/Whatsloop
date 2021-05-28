@@ -27,7 +27,7 @@ Route::group(['prefix' => '/livechat'] , function () use ($controller) {
     Route::get('/moderators', [$controller,'moderators']);
     Route::post('/assignMod', [$controller,'assignMod']);
     Route::post('/removeMod', [$controller,'removeMod']);
-    Route::post('/liveChatLogout',[$controller,'liveChatLogout']);
+    Route::get('/liveChatLogout',[$controller,'liveChatLogout']);
 });
 
 Route::group(['prefix' => '/livechatApi'] , function () use ($controller) {
@@ -53,5 +53,5 @@ Route::group(['prefix' => '/livechatApi'] , function () use ($controller) {
     Route::get('/moderators', [$controller,'moderators']);
     Route::post('/assignMod', [$controller,'assignMod']);
     Route::post('/removeMod', [$controller,'removeMod']);
-    Route::post('/liveChatLogout',[$controller,'liveChatLogout']);
+    Route::get('/liveChatLogout',[$controller,'liveChatLogout']);
 });

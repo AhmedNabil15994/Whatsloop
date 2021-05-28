@@ -3,6 +3,7 @@
 use App\Models\GroupNumber;
 use App\Models\User;
 use App\Models\Contact;
+use App\Models\ChatDialog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
@@ -236,6 +237,8 @@ class ContactsControllers extends Controller {
         $dataObj->updated_at = DATE_TIME;
         $dataObj->save();
 
+        ChatDialog::where('id',str_replace('+', '', $dataObj->phone).'@c.us')->update(['name'=>$dataObj->name]);
+
         WebActions::newType(2,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.editSuccess'));
         return \Redirect::back()->withInput();
@@ -254,7 +257,6 @@ class ContactsControllers extends Controller {
 
     public function create() {
         $input = \Request::all();
-//        dd($input);
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
@@ -419,6 +421,8 @@ class ContactsControllers extends Controller {
             $dataObj = Contact::find($item[0]);
             if($col == 'phone'){
                 $item[2] = '+'.$item[2];
+            }elseif ($col == 'name') {
+                ChatDialog::where('id',str_replace('+', '', $dataObj->phone).'@c.us')->update(['name'=>$item[2]]);
             }
             $dataObj->$col = $item[2];
             $dataObj->updated_at = DATE_TIME;

@@ -123,7 +123,7 @@ class ApiModsControllers extends Controller {
                 'type' => '',
                 'className' => '',
                 'data-col' => 'group_name',
-                'anchor-class' => '',
+                'anchor-class' => 'badge badge-primary',
             ],
             'status' => [
                 'label' => trans('main.addType'),

@@ -78,6 +78,27 @@
                                 <input class="form-control" value="{{ $data->paymentInfo ? $data->paymentInfo->country : '' }}" name="country" placeholder="{{ trans('main.country') }}">
                             </div>
                         </div> 
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">{{ trans('main.paymentMethod') }} :</label>
+                            <div class="col-9">
+                                <select name="payment_method" class="form-control">
+                                    <option value="">{{ trans('main.choose') }}</option>
+                                    <option value="1" {{ $data->paymentInfo->payment_method == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
+                                    <option value="2" {{ $data->paymentInfo->payment_method == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
+                                    <option value="3" {{ $data->paymentInfo->payment_method == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
+                                </select>
+                            </div>
+                        </div> 
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">{{ trans('main.currency') }} :</label>
+                            <div class="col-9">
+                                <select name="currency" class="form-control">
+                                    <option value="">{{ trans('main.choose') }}</option>
+                                    <option value="1" {{ $data->paymentInfo->currency == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
+                                    <option value="2" {{ $data->paymentInfo->currency == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
+                                </select>
+                            </div>
+                        </div> 
                         <hr class="mt-5">
                         <div class="form-group justify-content-end row">
                             <div class="col-9">
@@ -104,7 +125,7 @@
 
                     <p class="text-muted mb-2 font-13"><strong>{{ trans('main.company_name') }} :</strong><span class="ml-2">{{ $data->data->company }}</span></p>
 
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2">{{ $data->data->channelCodes }}</span></p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ $data->data->channelCodes }}</span></p>
                 </div>
             </div>
         </div>

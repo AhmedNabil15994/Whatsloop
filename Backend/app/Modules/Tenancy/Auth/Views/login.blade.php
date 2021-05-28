@@ -6,77 +6,56 @@
         <meta name="description" content="#" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        @include('tenant.Layouts.head')
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ asset('css/login-bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
+        <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{{ asset('css/login-style.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">
-        <div class="account-pages mt-5 mb-5">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-lg-6 col-xl-5">
-                        <div class="card bg-pattern">
-                            <div class="card-body p-4">
-                                <div class="text-center w-75 m-auto">
-                                    <div class="auth-logo">
-                                        <input type="hidden" name="country_code" value="{{ $data->code }}">
-                                        <a href="#" class="logo logo-dark text-center">
-                                            <span class="logo-lg">
-                                                <img src="{{ asset('images/logo.png') }}" alt="" height="22">
-                                            </span>
-                                        </a>
-                                        <a href="#" class="logo logo-light text-center">
-                                            <span class="logo-lg">
-                                                <img src="{{ asset('images/logo.png') }}" alt="" height="22">
-                                            </span>
-                                        </a>
-                                    </div>
-                                    <p class="text-muted mb-4 mt-3">{{ trans('auth.loginToPanel') }}</p>
-                                </div>
-                                <div>
-                                    <div class="form-group mb-3">
-                                        <label for="emailaddress">{{ trans('auth.phone') }}</label>
-                                        <input class="form-control" placeholder="{{ trans('auth.phonePlaceHolder') }}" type="tel" id="telephone">
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label for="password">{{ trans('auth.password') }}</label>
-                                        <div class="input-group input-group-merge">
-                                            <input type="password" id="password" class="form-control" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}">
-                                            <div class="input-group-append" data-password="false">
-                                                <div class="input-group-text" style="padding: 13px;">
-                                                    <span class="password-eye"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mb-3 codes hidden">
-                                        <label for="emailaddress">{{ trans('auth.code') }}</label>
-                                        <input class="form-control" placeholder="{{ trans('auth.codePlaceHolder') }}" type="tel" name="code">
-                                    </div>
-                                    <div class="form-group mb-0 text-center">
-                                        <button class="ladda-button btn btn-primary btn-block loginBut" dir="ltr" data-style="expand-right">
-                                            <span class="ladda-label">{{ trans('auth.loginButton') }}</span>
-                                            <span class="ladda-spinner"></span>
-                                            <div class="ladda-progress" style="width: 75px;"></div>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div> <!-- end card-body -->
+        <section class="main--page">
+            <div class="container-fluid">
+                <div class="row login-page">
+                    <div class="col-lg-12 col-xl-6 control-side">
+                        <div class="logo">
+                            <img src="{{ asset('images/logo.png') }}" alt="Whatsapp-loop">
                         </div>
-                        <!-- end card -->
-                        <div class="row mt-3">
-                            <div class="col-12 text-center">
-                                <p> <a href="{{ URL::to('/getResetPassword') }}" class="text-white-50 ml-1">{{ trans('auth.forgotPassword') }}</a></p>
-                            </div> <!-- end col -->
+                        <div class="user-form">
+                            <input type="hidden" name="country_code" value="{{ $data->code }}">
+                            <form action="">
+                                @csrf
+                                <div class="form--title">{{ trans('auth.loginToPanel') }}</div>
+                                <input type="tel" id="telephone" name="phone" placeholder="{{ trans('auth.phonePlaceHolder') }}">
+                                <input type="password" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}">
+                                <div class="codes hidden">
+                                    <input placeholder="{{ trans('auth.codePlaceHolder') }}" type="tel" name="code">
+                                </div>
+                                <button type="button" class="loginBut">{{ trans('auth.loginButton') }}</button>
+                                <a href="{{ URL::to('/getResetPassword') }}" class="nav-link theme__dark">{{ trans('auth.forgotPassword') }}</a>
+                                {{-- <a href="#" class="nav-link theme__light">إنساء حساب جديد</a> --}}
+                            </form>
                         </div>
-                        <!-- end row -->
-                    </div> <!-- end col -->
+                    </div>
+                    <div class="col-lg-12 col-xl-6 slogan-side">
+                        <div class="overlay"></div>
+                        <img src="{{ asset('images/whatsapp-chat.png') }}" alt="">
+                    </div>
                 </div>
-                <!-- end row -->
             </div>
-            <!-- end container -->
-        </div>
-        <!-- end page -->
-        @include('tenant.Layouts.scripts')
+        </section>
+
         @include('tenant.Partials.notf_messages')
+
+        <!-- end page -->
+        <script src="{{ asset('js/vendor.min.js') }}"></script>
+        <script src="{{ asset('js/login-bootstrap.min.js') }}"></script>
+        {{-- <script src="{{ asset('js/login-main.js') }}"></script> --}}
+        <script src="{{ asset('js/toastr.min.js') }}"></script>
+        <script src="{{ asset('components/notifications.js') }}"></script>
+        <script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('js/utils.js') }}" type="text/javascript"></script>
         <script src="{{ asset('components/login.js') }}" type="text/javascript"></script>
     </body>
 </html>

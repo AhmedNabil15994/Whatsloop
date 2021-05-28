@@ -182,7 +182,9 @@ class Contact extends Model{
         $data->city = $source->city != null ? $source->city : '';
         if($dets != false){
             $cats = ContactLabel::where('contact',$data->phone2)->pluck('category_id');
-            $data->labels = Category::dataList(reset($cats))['data'];
+            $cats = reset($cats);
+            $cats = empty($cats) ? [0] : $cats;
+            $data->labels = Category::dataList(null,$cats)['data'];
         }
         $data->country = $source->country != null ? $source->country : '';
         $data->status = $source->status;

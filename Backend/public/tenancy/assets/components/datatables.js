@@ -52,6 +52,7 @@ $(function(){
 		var copyText = 'Copy';
 		var deleteText = 'Delete';
 		var showText = 'View Contacts';
+		var viewText = 'View';
 		var exportText = 'Export Contacts';
 		var actionsVar = 'Actions';
 		var detailsText = 'Details';
@@ -59,6 +60,7 @@ $(function(){
 		var showCols = "<i class='fa fas fa-angle-down'></i> عرض الأعمدة";
 		var direction = 'rtl';
 		var search = ' البحث: ';
+		var viewText = 'عرض';
 		var info = 'يتم العرض من  _START_ الي _END_ (العدد الكلي للسجلات _TOTAL_ )';
 		var lengthMenu = 'عرض _MENU_ سجلات';
 		var emptyTable = "لا يوجد نتائج مسجلة";
@@ -146,31 +148,44 @@ $(function(){
 					var exportButton = '';
 					var deleteButton = '';
 					if($('input[name="data-area"]').val() == 1){
-						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-xs btn-success"> <i class="mdi mdi-square-edit-outline"></i> '+editText+'</a>';
+						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon dropdown-item btn btn-xs text-success btn-soft-success"> <i class="mdi mdi-square-edit-outline"></i> '+editText+'</a>';
 					}
 
 					if($('input[name="data-tabs"]').length && $('input[name="data-tabs"]').val() == 1){
-						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-square-edit-outline"></i> '+copyText+'</a>';
+						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="fas fa-copy"></i> '+copyText+'</a>';
 					}
 
 					if(designElems.mainData.url == 'groupNumbers'){
-						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-eye"></i> '+showText+'</a>';
+						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-xs btn-soft-info"> <i class="mdi mdi-eye"></i> '+showText+'</a>';
 						if($('input[name="data-tests"]').length && $('input[name="data-tests"]').val() == 1){
-							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon btn btn-xs btn-secondary"> <i class="mdi mdi-microsoft-excel"></i> '+exportText+'</a>';
+							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon dropdown-item btn btn-xs text-secondary btn-soft-secondary"> <i class="mdi mdi-microsoft-excel"></i> '+exportText+'</a>';
 						}
 					}
 
 					if($('input[name="data-cols"]').val() == 1){
-						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-xs btn-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
+						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon dropdown-item btn btn-xs text-danger btn-soft-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
 					}
 
 					if(designElems.mainData.url == 'groupMsgs' && $('input[name="data-tab"]').val() == 1){
-						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon btn btn-xs btn-info"> <i class="mdi mdi-eye"></i> '+detailsText+'</a>';
+						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="mdi mdi-eye"></i> '+detailsText+'</a>';
 						editButton = '';
 						deleteButton = '';
 					}
 
-					return editButton + copyButton + showButton + exportButton + deleteButton;
+					if((designElems.mainData.url == 'tickets' || designElems.mainData.url == 'clients') && $('input[name="data-tab"]').val() == 1){
+						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="mdi mdi-eye"></i> '+viewText+'</a>';
+					}
+
+
+					
+					return '<div class="dropdown">'+
+		                        '<button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">'+
+	 								'<i class="icon-options"></i>'+
+                                '</button>'+
+		                        '<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">'+
+		                            editButton + copyButton + showButton + exportButton + deleteButton+
+		                        '</div>'+
+		                    '</div>'; 
 				},
 			});
 		}
@@ -186,7 +201,6 @@ $(function(){
 		dom:'Bfrtip',
 		dom:
 			"<'row'<'col-xs-12 col-sm-6 col-md-6'l><'col-xs-12 col-sm-6 col-md-6 text-right'B>>" +
-			"<'row'<'col-xs-6 col-sm-6 col-md-6'i>> " +
 			"<'row'<'col-sm-12 'tr>>" +
 			"<'row'<'col-xs-6 col-sm-6 col-md-6 'i><'col-xs-6 col-sm-6 col-md-6 'p>>", // read more: https://datatables.net/examples/basic_init/dom.html
         buttons: [

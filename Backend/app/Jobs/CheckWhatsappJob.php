@@ -51,7 +51,7 @@ class CheckWhatsappJob implements ShouldQueue
             $status = 0;
         }
 
-        if($result['data']){
+        if(isset($result['data'])){
             $status = $result['data']['result'] == 'exists' ? 1 : 0;
         }
 

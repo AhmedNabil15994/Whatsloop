@@ -10,11 +10,13 @@ use App\Models\Contact;
 use App\Models\ContactLabel;
 use App\Models\Reply;
 use App\Models\User;
+use App\Models\UserExtraQuota;
 use App\Models\ChatEmpLog;
 use App\Events\SentMessage;
 use App\Events\DialogPinStatus;
 use App\Events\ChatReadStatus;
 use App\Events\ChatLabelStatus;
+use App\Jobs\NewDialogJob;
 
 
 class LiveChatControllers extends Controller {
@@ -34,7 +36,7 @@ class LiveChatControllers extends Controller {
  
         $dataList = $dialogs;
         if($data['name'] == null){
-            $dataList['pinnedConvs'] = ChatDialog::getPinned();
+            $dataList['pinnedConvs'] = ChatDialog::getPinned()['data'];
         }
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);        
@@ -100,8 +102,8 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
 
-        $is_admin = 0;
-        $user_id = 4; 
+        $is_admin = IS_ADMIN;
+        $user_id = USER_ID; 
         if(!$is_admin){
             $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
             if(in_array($user_id, $dialogObj->modsArr)){
@@ -168,6 +170,16 @@ class LiveChatControllers extends Controller {
    
     public function sendMessage(Request $request) {
         $input = \Request::all();
+
+        $startDay = strtotime(date('Y-m-d 00:00:00'));
+        $endDay = strtotime(date('Y-m-d 23:59:59'));
+        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $dailyCount = Session::get('dailyMessageCount');
+        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
+        if($dailyCount <= $messagesCount + $extraQuotas){
+            return \TraitsFunc::ErrorMessage('Messages Quota Per Day Exceeded!!!');
+        }
+
         if(!isset($input['type']) || empty($input['type']) ){
             return \TraitsFunc::ErrorMessage("Type Field Is Required");
         }
@@ -176,10 +188,58 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Chat ID Field Is Required");
         }
 
-
         $sendData['chatId'] = $input['chatId'];
         $caption = '';
         $mainWhatsLoopObj = new \MainWhatsLoop();
+        $checkData['phone'] = str_replace('@c.us', '', $input['chatId']);
+        $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
+        $checkNoResult = $checkResult->json();
+
+        if($checkNoResult['status']['status'] != 1){
+            $status = 0;
+        }
+
+        if(isset($checkNoResult['data'])){
+            $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
+        }
+        if(!$status){   
+            return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
+        }
+
+        $domain = explode('.', $request->getHost())[0];
+
+        if(isset($input['messageType']) && $input['messageType'] == 'new'){
+            $chats = explode(',', $input['chatId']);
+            unset($input['chatId']);
+            foreach ($chats as $chat) {
+                $checkData['phone'] = str_replace('@c.us', '', $chat);
+                $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
+                $checkNoResult = $checkResult->json();
+
+                if($checkNoResult['status']['status'] != 1){
+                    $status = 0;
+                }
+
+                if(isset($checkNoResult['data'])){
+                    $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
+                }
+                if(!$status){   
+                    return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
+                }
+                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain));
+            }
+            $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
+            return \Response::json((object) $dataList);       
+        }
+
+        if(isset($input['replyOn']) && !empty($input['replyOn'])){
+            $quotedMessageObj = ChatMessage::where('id',$input['replyOn'])->first();
+            if(!$quotedMessageObj){
+                return \TraitsFunc::ErrorMessage('This Message Not Found to be replied');
+            }
+            $quotedMessageObj = ChatMessage::getData($quotedMessageObj);
+            $sendData['quotedMsgId'] = $input['replyOn'];
+        }
 
         if($input['type'] == 1){
             if(!isset($input['message']) || empty($input['message']) ){
@@ -194,12 +254,25 @@ class LiveChatControllers extends Controller {
         }elseif($input['type'] == 2){
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
-                $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
+
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
+
+                $myType = explode('/', $image->getMimeType())[1];
+                $message_type = \ImagesHelper::checkExtensionType($myType);
+
+                $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image,$message_type);
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
-                $message_type = \ImagesHelper::checkExtensionType(substr($bodyData, strrpos($bodyData, '.') + 1));
+                $bodyData = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $sendData['filename'] = $fileName;
                 $sendData['body'] = $bodyData;
                 if($message_type == 'photo'){
@@ -214,11 +287,22 @@ class LiveChatControllers extends Controller {
         }elseif($input['type'] == 3){
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
+
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
+
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                $bodyData = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $message_type = "video";
                 $sendData['filename'] = $fileName;
                 $sendData['body'] = $bodyData;
@@ -228,11 +312,22 @@ class LiveChatControllers extends Controller {
         }elseif($input['type'] == 4){
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
+
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
+                
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                $bodyData = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $message_type = "sound";
                 $whats_message_type = 'ppt';
                 $sendData['audio'] = $bodyData;
@@ -280,11 +375,22 @@ class LiveChatControllers extends Controller {
 
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
+
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
+
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $fullUrl = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                $fullUrl = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
             }
 
             $message_type = 'link';
@@ -314,19 +420,28 @@ class LiveChatControllers extends Controller {
             $lastMessage['message_type'] = $message_type;
             $lastMessage['sending_status'] = 1;
             $lastMessage['type'] = $whats_message_type;
+            if(isset($quotedMessageObj)){
+                $lastMessage['quotedMsgId'] = $input['replyOn'];
+                $lastMessage['quotedMsgBody'] = $quotedMessageObj->body;
+                $lastMessage['quotedMsgType'] = $quotedMessageObj->whatsAppMessageType;
+            }
+            if(isset($input['frontId']) && !empty($input['frontId'])){   
+                $lastMessage['frontId'] = $input['frontId'];
+            }
             $messageObj = ChatMessage::newMessage($lastMessage);
             $dialogObj = ChatDialog::getData(ChatDialog::getOne($sendData['chatId'])); 
-            $domain = explode('.', $request->getHost())[0];
             broadcast(new SentMessage($domain , $dialogObj ));
-        }
-
-        $is_admin = 0;
-        $user_id = 4; 
-        if(!$is_admin){
-            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-            if(in_array($user_id, $dialogObj->modsArr)){
-                ChatEmpLog::newLog($input['chatId'],3);
+        
+            $is_admin = IS_ADMIN;
+            $user_id = USER_ID; 
+            if(!$is_admin){
+                $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+                if(in_array($user_id, $dialogObj->modsArr)){
+                    ChatEmpLog::newLog($input['chatId'],3);
+                }
             }
+        }else{
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
 
         $dataList['data'] = ChatMessage::getData($messageObj);
@@ -335,8 +450,8 @@ class LiveChatControllers extends Controller {
     }
 
     public function liveChatLogout(){
-        $is_admin = 0;
-        $user_id = 4;
+        $is_admin = IS_ADMIN;
+        $user_id = USER_ID;
         if(!$is_admin){
             $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
             if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
@@ -345,6 +460,7 @@ class LiveChatControllers extends Controller {
                 ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
             }
         }
+        return redirect()->to('/dashboard');
     }
 
     public function labels(Request $request) {
@@ -364,6 +480,15 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Label ID Is Required");
         }
 
+        if(!isset($input['labelId']) || empty($input['labelId']) ){
+            return \TraitsFunc::ErrorMessage("Label ID Is Required");
+        }
+
+        $categoryObj = Category::NotDeleted()->where('labelId',$input['labelId'])->first();
+        if(!$categoryObj){
+            return \TraitsFunc::ErrorMessage("Label Not Found");
+        }
+
         $data['liveChatId'] = $input['chatId'];
         $data['labelId'] = $input['labelId'];
         
@@ -374,11 +499,11 @@ class LiveChatControllers extends Controller {
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-
-        $contactLabelObj = ContactLabel::newRecord(str_replace('@c.us', '', $input['chatId']),$data['labelId']);
+        // dd($input);
+        $contactLabelObj = ContactLabel::newRecord(str_replace('@c.us', '', $input['chatId']),$input['labelId']);
        
         $domain = explode('.', $request->getHost())[0];
-        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($input['chatId'])) , Category::getData(Category::getOne($input['labelId'])) , 1 ));
+        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($input['chatId'])) , Category::getData($categoryObj) , 1 ));
         $dataList['data'] = $result['data'];
         $dataList['status'] =  $result['status'];
         return \Response::json((object) $dataList);  
@@ -394,6 +519,11 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Label ID Is Required");
         }
 
+        $categoryObj = Category::NotDeleted()->where('labelId',$input['labelId'])->first();
+        if(!$categoryObj){
+            return \TraitsFunc::ErrorMessage("Label Not Found");
+        }
+
         $data['liveChatId'] = $input['chatId'];
         $data['labelId'] = $input['labelId'];
         
@@ -405,9 +535,9 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
 
-        ContactLabel::where('contact',str_replace('@c.us', '', $input['chatId']))->where('category_id',$data['labelId'])->delete();
+        ContactLabel::where('contact',str_replace('@c.us', '', $input['chatId']))->where('category_id',$input['labelId'])->delete();
         $domain = explode('.', $request->getHost())[0];
-        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($input['chatId'])) , Category::getData(Category::getOne($input['labelId'])) , 0 ));
+        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($input['chatId'])) , Category::getData($categoryObj) , 0 ));
         $dataList['data'] = $result['data'];
         $dataList['status'] =  $result['status'];
         return \Response::json((object) $dataList);    
@@ -442,27 +572,36 @@ class LiveChatControllers extends Controller {
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
-        $updateArr = [];
-        if(isset($input['name']) && !empty($input['name'])){
-            $updateArr['name'] = $input['name'];
-        }
-        if(isset($input['email']) && !empty($input['email'])){
-            $updateArr['email'] = $input['email'];
-        }
-        if(isset($input['city']) && !empty($input['city'])){
-            $updateArr['city'] = $input['city'];
-        }
-        if(isset($input['country']) && !empty($input['country'])){
-            $updateArr['country'] = $input['country'];
-        }
-        if(isset($input['notes']) && !empty($input['notes'])){
-            $updateArr['notes'] = $input['notes'];
-        }
-        if(isset($input['lang']) && !empty($input['lang']) && in_array($input['lang'], [0,1])){
-            $updateArr['lang'] = $input['lang'];
+        
+        $contactObj =  Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->first();
+        if(!$contactObj){
+            return \TraitsFunc::ErrorMessage("Invalid Contact");
         }
 
-        Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->update($updateArr);
+        if(isset($input['name']) && !empty($input['name'])){
+            $contactObj->name = $input['name'];
+        }
+        if(isset($input['email']) && !empty($input['email'])){
+            $contactObj->email = $input['email'];
+        }
+        if(isset($input['city']) && !empty($input['city'])){
+            $contactObj->city = $input['city'];
+        }
+        if(isset($input['country']) && !empty($input['country'])){
+            $contactObj->country = $input['country'];
+        }
+        if(isset($input['notes']) && !empty($input['notes'])){
+            $contactObj->notes = $input['notes'];
+        }
+        if(isset($input['lang']) && !empty($input['lang']) && in_array($input['lang'], [0,1])){
+            $contactObj->lang = $input['lang'];
+        }
+        $contactObj->save();
+        if(isset($input['name']) && !empty($input['name'])){
+            $chatObj = ChatDialog::where('id',$input['chatId'])->first();
+            $chatObj->name = $input['name'];
+            $chatObj->save();
+        }
         
         $dataList['status'] = \TraitsFunc::SuccessMessage('Data Updated Successfully.');
         return \Response::json((object) $dataList);      

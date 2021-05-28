@@ -139,7 +139,7 @@
                                             <div class="row">
                                                 <div class="col-sm-4">
                                                     <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                        {{ trans('main.channel') }} : <b>{{ $data->channel->id }}</b>
+                                                        {{ trans('main.channel') }} : <b># {{ $data->channel->id }}</b>
                                                     </a>
                                                 </div>
                                                 <div class="col-sm-4">

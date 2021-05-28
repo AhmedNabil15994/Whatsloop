@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Central\CentralUser;
-use App\Models\Tenant\Tenant;
-use App\Models\Tenant\TenantPivot;
+use App\Models\CentralUser;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Variable;
 use App\Models\UserChannels;
-use App\Models\Central\Channel;
+use App\Models\CentralChannel;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,28 +29,9 @@ class CentralController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'subdomain' => ['required','string','unique:domains,domain']        
         ]);
-        
-        $tenant = Tenant::create([
-            'phone' => request('phone'),
-            'title' => request('title'),
-            'description' => request('description')
-        ]);
-        
-        $tenant->domains()->create([
-            'domain' => request('subdomain'),
-        ]);
-
-        $centralUser = CentralUser::create([
-            'global_id' => (string) Str::orderedUuid(),
-            'name' => request('name'),
-            'phone' => request('phone'),
-            'password' => Hash::make(request('password')),
-            'is_active' => 1,
-            'is_approved' => 1
-        ]);
 
         // Create New Instance For New Domain
-        $channelObj = Channel::first();
+        $channelObj = CentralChannel::first();
         $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
         $updateResult = $mainWhatsLoopObj->createChannel();
         $result = $updateResult->json();
@@ -69,11 +49,32 @@ class CentralController extends Controller
             'end_date' => date('Y-m-d',strtotime('+1 month')),
         ];
 
+        $tenant = Tenant::create([
+            'phone' => request('phone'),
+            'title' => request('title'),
+            'description' => request('description')
+        ]);
+        
+        $tenant->domains()->create([
+            'domain' => request('subdomain'),
+        ]);
+
+        $centralUser = CentralUser::create([
+            'global_id' => (string) Str::orderedUuid(),
+            'name' => request('name'),
+            'phone' => request('phone'),
+            'password' => Hash::make(request('password')),
+            'is_active' => 1,
+            'is_approved' => 1,
+            'status' => 1,
+            'channels' => serialize([$channel['id']]),
+        ]);
+
         $extraChannelData = $channel;
         $extraChannelData['tenant_id'] = $tenant->id;
         $extraChannelData['global_user_id'] = $centralUser->global_id;
 
-        Channel::create($extraChannelData);
+        CentralChannel::create($extraChannelData);
 
         $user = $tenant->run(function() use(&$centralUser,$channel){
             UserChannels::create($channel);
@@ -94,6 +95,7 @@ class CentralController extends Controller
                 'phone' => '+'.request('phone'),
                 'group_id' => 1,
                 'status' => 1,
+                'domain' => request('subdomain'),
                 'sort' => 1,
                 'channels' => serialize([$channel['id']]),
                 'password' => Hash::make(request('password')),

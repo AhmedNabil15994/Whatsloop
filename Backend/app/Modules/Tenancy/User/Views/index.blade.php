@@ -63,7 +63,7 @@
     <input type="hidden" name="data-tabs" value="{{ \Helper::checkRules('copy-'.$data->designElems['mainData']['nameOne']) }}">
     @endif
 
-     @if($data->designElems['mainData']['url'] == 'groupMsgs')
+    @if($data->designElems['mainData']['url'] == 'groupMsgs' || $data->designElems['mainData']['url'] == 'tickets')
     <input type="hidden" name="data-tab" value="{{ \Helper::checkRules('view-'.$data->designElems['mainData']['nameOne']) }}">
     @endif
 
@@ -152,15 +152,15 @@
                                     <div class="m-separator"></div>
                                     <div class="row">
                                         <div class="col-lg-12 text-right">
-                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-danger" id="m_reset">
+                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-outline-secondary" id="m_reset">
                                                 <span>
-                                                    <i class="la la-close"></i>
+                                                    <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
                                             <div class="mb-0 text-center" style="display: inline-block;">
-                                                <button class="ladda-button btn btn-primary btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                    <span class="ladda-label"><i class="la la-search"></i> {{ trans('main.search') }}</span>
+                                                <button class="ladda-button btn btn-info btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
                                                     <span class="ladda-spinner"></span>
                                                     <div class="ladda-progress" style="width: 75px;"></div>
                                                 </button>
@@ -173,7 +173,7 @@
                     </div>
                     @endif
                     <!--begin: Datatable-->
-                    <table class="table table-striped dt-responsive nowrap w-100 table-hover table-bordered table-head-custom table-foot-custom" id="kt_datatable">
+                    <table class="table dt-responsive nowrap w-100" id="kt_datatable">
                         <thead>
                             <tr>
                                 @foreach($data->designElems['tableData'] as $one)
@@ -181,13 +181,6 @@
                                 @endforeach
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr>
-                                @foreach($data->designElems['tableData'] as $one)
-                                <th>{{ $one['label'] }}</th>
-                                @endforeach
-                            </tr>
-                        </tfoot>
                     </table>
                     <!--end: Datatable-->
                 </div> <!-- end card body-->

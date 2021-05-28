@@ -6,80 +6,51 @@
         <meta name="description" content="#" />
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        @include('tenant.Layouts.head')
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ asset('css/login-bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
+        <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{{ asset('css/login-style.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">
-        <div class="account-pages mt-5 mb-5">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-lg-6 col-xl-5">
-                        <div class="card bg-pattern">
-                            <div class="card-body p-4">
-                                <div class="text-center w-75 m-auto">
-                                    <div class="auth-logo">
-                                        <a href="#" class="logo logo-dark text-center">
-                                            <span class="logo-lg">
-                                                <img src="{{ asset('images/logo.png') }}" alt="" height="22">
-                                            </span>
-                                        </a>
-                                        <a href="#" class="logo logo-light text-center">
-                                            <span class="logo-lg">
-                                                <img src="{{ asset('images/logo.png') }}" alt="" height="22">
-                                            </span>
-                                        </a>
-                                    </div>
-                                    <p class="text-muted mb-4 mt-3">{{ trans('auth.change') }}</p>
-                                </div>
-                                <form action="{{ URL::to('/completeReset') }}" method="POST">
-                                    @csrf
-                                    <div class="form-group mb-3">
-                                        <label for="password">{{ trans('auth.password') }}</label>
-                                        <div class="input-group input-group-merge">
-                                            <input type="password" class="form-control" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}">
-                                            <div class="input-group-append" data-password="false">
-                                                <div class="input-group-text">
-                                                    <span class="password-eye"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mb-3">
-                                        <label for="password">{{ trans('auth.passwordConf') }}</label>
-                                        <div class="input-group input-group-merge">
-                                            <input type="password" class="form-control" name="password_confirmation" placeholder="{{ trans('auth.passwordConfPlaceHolder') }}">
-                                            <div class="input-group-append" data-password="false">
-                                                <div class="input-group-text">
-                                                    <span class="password-eye"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mb-0 text-center">
-                                        <button class="ladda-button btn btn-primary btn-block loginBut" dir="ltr" data-style="expand-right">
-                                            <span class="ladda-label">{{ trans('auth.change') }}</span>
-                                            <span class="ladda-spinner"></span>
-                                            <div class="ladda-progress" style="width: 75px;"></div>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div> <!-- end card-body -->
+        <section class="main--page">
+            <div class="container-fluid">
+                <div class="row login-page">
+                    <div class="col-lg-12 col-xl-6 control-side">
+                        <div class="logo">
+                            <img src="{{ asset('images/logo.png') }}" alt="Whatsapp-loop">
                         </div>
-                        <!-- end card -->
-                        <div class="row mt-3">
-                            <div class="col-12 text-center">
-                                <p> <a href="{{ URL::to('/login') }}" class="text-white-50 ml-1">{{ trans('auth.loginButton') }}</a></p>
-                            </div> <!-- end col -->
+                        <div class="user-form">
+                            <form action="{{ URL::to('/completeReset') }}" method="POST">
+                                @csrf
+                                <div class="form--title">{{ trans('auth.change') }}</div>
+                                <input type="password" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}">
+                                <input type="password" name="password_confirmation" placeholder="{{ trans('auth.passwordConfPlaceHolder') }}">
+                                <button type="submit" class="loginBut">{{ trans('auth.change') }}</button>
+                                <a href="{{ URL::to('/login') }}" class="nav-link theme__dark">{{ trans('auth.loginButton') }}</a>
+                            </form>
                         </div>
-                        <!-- end row -->
-                    </div> <!-- end col -->
+                    </div>
+                    <div class="col-lg-12 col-xl-6 slogan-side">
+                        <div class="overlay"></div>
+                        <img src="{{ asset('images/whatsapp-chat.png') }}" alt="">
+                    </div>
                 </div>
-                <!-- end row -->
             </div>
-            <!-- end container -->
-        </div>
+        </section>
         <!-- end page -->
-        @include('tenant.Layouts.scripts')
+
+        <script src="{{ asset('js/vendor.min.js') }}"></script>
+        <script src="{{ asset('js/login-bootstrap.min.js') }}"></script>
+        {{-- <script src="{{ asset('js/login-main.js') }}"></script> --}}
+        <script src="{{ asset('js/toastr.min.js') }}"></script>
+        <script src="{{ asset('components/notifications.js') }}"></script>
+        <script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('js/utils.js') }}" type="text/javascript"></script>
+
         @include('tenant.Partials.notf_messages')
+        
     </body>
 </html>

@@ -18,7 +18,7 @@ class CreateGroupMessagesTable extends Migration
             $table->string('channel');
             $table->integer('group_id');
             $table->integer('message_type');
-            $table->text('message');
+            $table->text('message')->nullable();
             $table->dateTime('publish_at')->nullable();
             $table->integer('later')->default(0);
             $table->integer('contacts_count')->default(0);

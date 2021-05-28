@@ -15,7 +15,7 @@
 	{{-- {{ dd($themeObj) }} --}}
 	<body class="loading" data-layout='{ "mode": "{{ $themeObj!=null ? $themeObj->theme : 'light' }}","width": "{{ $themeObj!=null ? $themeObj->width : 'fluid' }}","topbar": {"color": "{{ $themeObj!=null ? $themeObj->top_bar : 'dark' }}"},"menuPosition": "{{ $themeObj!=null ? $themeObj->menus_position : 'fixed' }}", "sidebar": {"size": "{{ $themeObj!=null ? $themeObj->sidebar_size : 'light' }}","showuser" : "{{ $themeObj!=null ? $themeObj->user_info : 'false' }}"}}'>
 		<!-- Begin page -->
-		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode()->countryCode }}">
+		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
         <div id="wrapper">
 			@include('tenant.Layouts.header')
 			@include('tenant.Layouts.sidebar')

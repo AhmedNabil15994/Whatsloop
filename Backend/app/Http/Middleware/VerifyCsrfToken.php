@@ -23,7 +23,20 @@ class VerifyCsrfToken extends Middleware
 
         '/profile/personalInfo/uploadImage',
 
-        '/whatsloop/webhooks/messages-webhook',
+        '/whatsloop/webhooks/*',
         '/livechatApi/*',
+
+        '/faqs/add/uploadImage',
+        '/faqs/edit/*/editImage',
+        
+        '/tickets/add/uploadImage',
+        '/tickets/edit/*/editImage',
+
+        '/changeLogs/add/uploadImage',
+        '/changeLogs/edit/*/editImage',
+
+        '/clients/add/uploadImage',
+        '/clients/edit/*/editImage',
+
     ];
 }

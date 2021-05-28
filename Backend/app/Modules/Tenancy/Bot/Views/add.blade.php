@@ -110,7 +110,7 @@
                             <div class="form-group row mb-3 hidden">
                                 <label class="col-3 col-form-label">{{ trans('main.messageContent') }} :</label>
                                 <div class="col-9">
-                                    <textarea name="replyText" class="form-control summernote" placeholder="{{ trans('main.messageContent') }}">{{ old('reply') }}</textarea>
+                                    <textarea name="replyText" class="form-control" placeholder="{{ trans('main.messageContent') }}">{{ old('reply') }}</textarea>
                                 </div>
                             </div> 
                         </div>

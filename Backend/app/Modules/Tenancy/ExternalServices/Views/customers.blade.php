@@ -3,6 +3,79 @@
 @section('title',$data->designElems['mainData']['title'])
 
 @section('styles')
+<style type="text/css" media="screen">
+    .card{
+        background: #FFF;
+    }
+    .card-box{
+        border-radius: 1rem;
+        position: relative;
+        min-height: 350px;
+    }
+    /*.accordion>.card{
+        background: #FFF;
+    }*/
+  /*  .accordion>.card>.card-header{
+        border: 1px solid #CCC;
+        border-radius: 5px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        background: transparent;
+    }*/
+    .divide-x{
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-top: 1px solid #e2e8f0;
+    }
+    .row.data{
+        padding: 10px;
+        background: #F1F5F9;
+        padding-top: 25px;
+        margin: 0;
+    }
+    .divide-x a{
+        display: inline-block;
+        width: 50%;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        color: #000;
+        font-size: 16px;
+    }
+    .divide-x a:hover{
+        background: rgba(148,163,184,0.12);
+    }
+    .divide-x a i{
+        color: #94A3B8;
+    }
+    html[dir="ltr"] .divide-x a:first-of-type{
+        border-right: 1px solid #e2e8f0;
+    }
+    html[dir="rtl"] .divide-x a:first-of-type{
+        border-left: 1px solid #e2e8f0;
+    }
+    .user-email{
+        margin-top: 12px;
+    }
+    .user-email{
+        display: block;
+        width: 100%;
+    }
+    .user-email p {
+        display: inline-block;
+        margin-bottom: 0;
+    }
+    .user-email p.info-title{
+        font-size: 14px;
+        font-weight: 600;
+        color: #3b3f5c;
+    }
+    .user-email p.usr-email-addr{
+        color: #888ea8;
+        font-size: 13px;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -111,15 +184,15 @@
                                     <div class="m-separator"></div>
                                     <div class="row">
                                         <div class="col-lg-12 text-right">
-                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-danger" id="m_reset">
+                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-outline-secondary" id="m_reset">
                                                 <span>
-                                                    <i class="la la-close"></i>
+                                                    <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
                                             <div class="mb-0 text-center" style="display: inline-block;">
-                                                <button class="ladda-button btn btn-primary btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                    <span class="ladda-label"><i class="la la-search"></i> {{ trans('main.search') }}</span>
+                                                <button class="ladda-button btn btn-info btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
                                                     <span class="ladda-spinner"></span>
                                                     <div class="ladda-progress" style="width: 75px;"></div>
                                                 </button>
@@ -131,37 +204,40 @@
                         </div>
                     </div>
                     @endif
-                    <div class="row">
+                    <div class="row data">
                         @foreach($data->data as $customer)
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="text-center card-box">
                                 <div class="pt-2 pb-2">
                                     <img src="{{ $customer->image }}" class="rounded-circle img-thumbnail avatar-xl" alt="profile-image">
 
-                                    <h4 class="mt-3"><a class="text-dark">{{ $customer->name }}</a></h4>
-                                    <button type="button" class="btn btn-success btn-sm waves-effect waves-light">{{ trans('main.chat') }}</button>
-
-                                    <div class="row mt-4">
-                                        <div class="col-4">
-                                            <div class="mt-3">
-                                                <h4 class="text-info"><i class="fa fa-phone"></i></h4>
-                                                <p class="mb-0 text-muted text-truncate">{{ $customer->phone }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="mt-3">
-                                                <h4 class="text-info"><i class="fa fa-envelope"></i></h4>
-                                                <p class="mb-0 text-muted text-truncate">{{ $customer->email }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="mt-3">
-                                                <h4 class="text-info"><i class="fa fa-map-marker"></i></h4>
-                                                <p class="mb-0 text-muted text-truncate">{{ $customer->country . " | " . $customer->city }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end row-->
-
+                                    <h4 class="mt-2 mb-3"><a class="text-dark">{{ $customer->name }}</a></h4>
+                                    <div class="user-email">
+                                        <p class="info-title float-left">{{ trans('auth.phone') }}: </p>
+                                        <p class="usr-email-addr float-right">{{ $customer->phone }}</p>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="user-email">
+                                        <p class="info-title float-left">{{ trans('main.email') }}: </p>
+                                        <p class="usr-email-addr float-right">{{ $customer->email }}</p>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="user-email">
+                                        <p class="info-title float-left">{{ trans('main.address') }}: </p>
+                                        <p class="usr-email-addr float-right">{{ $customer->country . ($customer->city != '' && $customer->country != '' ? " | "  : '') . $customer->city }}</p>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <!-- end row-->
+                                    <div class="divide-x">
+                                        <a class="float-left" href="mailto:{{ $customer->email }}">
+                                            <i class="fa fa-envelope"></i>
+                                            <span class="ml-2">{{ trans('main.emailV') }}</span>
+                                        </a>
+                                        <a class="float-right" href="tel:{{ $customer->phone }}">
+                                            <i class="fa fa-phone"></i>
+                                            <span class="ml-2">{{ trans('main.call') }}</span>
+                                        </a>
+                                    </div>
                                 </div> <!-- end .padding -->
                             </div> <!-- end card-box-->
                         </div> <!-- end col -->

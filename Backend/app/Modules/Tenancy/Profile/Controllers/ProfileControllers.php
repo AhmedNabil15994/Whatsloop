@@ -1,6 +1,8 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Addons;
+use App\Models\UserAddon;
 use App\Models\Group;
 use App\Models\Contact;
 use Illuminate\Http\Request;
@@ -13,6 +15,8 @@ use App\Models\UserChannels;
 use App\Models\ChatMessage;
 use App\Models\PaymentInfo;
 use App\Models\UserStatus;
+use App\Models\ExtraQuota;
+use App\Models\UserExtraQuota;
 use Storage;
 use DataTables;
 use Validator;
@@ -44,7 +48,9 @@ class ProfileControllers extends Controller {
     public function updatePersonalInfo(){
         $input = \Request::all();
         $mainUserObj = User::getOne(USER_ID);
-
+        $dataObj = User::getData($mainUserObj);
+        $domainObj = \DB::connection('main')->table('domains')->where('domain',$dataObj->domain)->first();
+        
         if(isset($input['email']) && !empty($input['email'])){
             $userObj = User::checkUserBy('email',$input['email'],USER_ID);
             if($userObj){
@@ -54,13 +60,45 @@ class ProfileControllers extends Controller {
             $mainUserObj->email = $input['email'];
         }
         if(isset($input['phone']) && !empty($input['phone'])){
-            $userObj = User::checkUserBy('phone','+'.$input['phone'],USER_ID);
+            $userObj = User::checkUserBy('phone',$input['phone'],USER_ID);
             if($userObj){
                 Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
             }
-            $mainUserObj->phone = '+'.$input['phone'];
+            $mainUserObj->phone = $input['phone'];
+
+            \DB::connection('main')->table('tenants')->where('id',$domainObj->tenant_id)->update([
+                'phone' => $input['phone'],
+            ]);
         }
+
+        if(isset($input['pin_code']) && !empty($input['pin_code'])){
+            $mainUserObj->pin_code = $input['pin_code'];
+        }
+
+        if(isset($input['two_auth']) && !empty($input['two_auth'])){
+            $mainUserObj->two_auth = $input['two_auth'];
+        }
+
+        if(isset($input['emergency_number']) && !empty($input['emergency_number'])){
+            $mainUserObj->emergency_number = $input['emergency_number'];
+        }
+
+        if(isset($input['domain']) && !empty($input['domain'])){
+            $checkDomainObj = \DB::connection('main')->table('domains')->where('domain',$input['domain'])->first();
+            if($checkDomainObj && $checkDomainObj->domain != $dataObj->domain){
+                Session::flash('error', trans('main.domainValidate2'));
+                return redirect()->back()->withInput();
+            }
+
+            $mainUserObj->domain = $input['domain'];
+            \DB::connection('main')->table('domains')->where('tenant_id',$domainObj->tenant_id)->limit(1)->update([
+                'domain' => $input['domain'],
+            ]);
+
+        }
+
+
 
         if(isset($input['company']) && !empty($input['company'])){
             $mainUserObj->company = $input['company'];
@@ -68,6 +106,9 @@ class ProfileControllers extends Controller {
 
         if(isset($input['name']) && !empty($input['name'])){
             $mainUserObj->name = $input['name'];
+            \DB::connection('main')->table('tenants')->where('id',$domainObj->tenant_id)->update([
+                'title' => $input['name'],
+            ]);
         }
 
         $mainUserObj->save();
@@ -179,6 +220,8 @@ class ProfileControllers extends Controller {
         $paymentInfoObj->address = $input['address'];
         $paymentInfoObj->address2 = $input['address2'];
         $paymentInfoObj->city = $input['city'];
+        $paymentInfoObj->payment_method = $input['payment_method'];
+        $paymentInfoObj->currency = $input['currency'];
         $paymentInfoObj->region = $input['region'];
         $paymentInfoObj->country = $input['country'];
         $paymentInfoObj->postal_code = $input['postal_code'];
@@ -272,6 +315,105 @@ class ProfileControllers extends Controller {
         return \Redirect::back()->withInput();
     }
 
+    public function extraQuotas(){
+        $userObj = User::authenticatedUser();
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.extraQuotas'),
+            'icon' => 'fas fa-star',
+        ];
+        $data['data'] = $userObj;
+        $data['extraQuotas'] = ExtraQuota::dataList()['data'];
+        $userQuotas = UserExtraQuota::getForUser($userObj->global_id);
+        $data['userQuotas'] = reset($userQuotas[0]);
+        $data['userQuotas2'] = $userQuotas[1];
+        return view('Tenancy.Profile.Views.extraQuotas')->with('data', (object) $data);
+    }
+
+    public function postExtraQuotas($extraQuota_id){
+        $input = \Request::all();
+        $extraQuota_id = (int) $extraQuota_id;
+        $userObj = User::getOne(USER_ID);
+        $extraQuotaObj = ExtraQuota::getOne($extraQuota_id);
+        if(!$extraQuotaObj){
+            return redirect('404');
+        }
+        $userExtraQuotaObj = UserExtraQuota::NotDeleted()->where('user_id',USER_ID)->where('extra_quota_id',$extraQuota_id)->first();
+        if(!$userExtraQuotaObj){
+            $userExtraQuotaObj = new UserExtraQuota;
+        }
+        $userExtraQuotaObj->user_id = USER_ID;
+        $userExtraQuotaObj->extra_quota_id = $extraQuota_id;
+        $userExtraQuotaObj->tenant_id = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first()->tenant_id;
+        $userExtraQuotaObj->global_user_id = $mainUser->global_id;
+        $userExtraQuotaObj->start_date = date('Y-m-d');
+        $userExtraQuotaObj->end_date = date('Y-m-d', strtotime("+1 month",strtotime(date('Y-m-d'))));
+        $userExtraQuotaObj->created_by = USER_ID;
+        $userExtraQuotaObj->created_at = DATE_TIME;
+        $userExtraQuotaObj->save();
+
+
+        WebActions::newType(2,'User');
+        Session::flash('success', trans('main.editSuccess'));
+        return \Redirect::back()->withInput();
+    }
+
+    public function addons(){
+        $userObj = User::authenticatedUser();
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.addons'),
+            'icon' => 'fas fa-star',
+        ];
+        $mainUser = User::first();
+        $data['data'] = $userObj;
+        $data['addons'] = Addons::dataList()['data'];
+        $data['userAddons'] = $mainUser->addons != null ? unserialize($mainUser->addons) : [];;
+        $data['userAddons2'] = UserAddon::getAllDataForUser($mainUser->id);
+        return view('Tenancy.Profile.Views.addons')->with('data', (object) $data);
+    }
+
+    public function postAddons($addon_id){
+        $input = \Request::all();
+        $addon_id = (int) $addon_id;
+        $userObj = User::getOne(USER_ID);
+        $extraQuotaObj = Addons::getOne($addon_id);
+        if(!$extraQuotaObj){
+            return redirect('404');
+        }
+
+        $tryFlag = 0;
+        $userExtraQuotaObj = UserAddon::NotDeleted()->where('user_id',USER_ID)->where('addon_id',$addon_id)->first();
+        if(!$userExtraQuotaObj){
+            $userExtraQuotaObj = new UserAddon;
+            $start_date = date('Y-m-d');
+            $tryFlag = 1;
+        }else{
+            $start_date = $userExtraQuotaObj->start_date;
+        }
+
+        $userExtraQuotaObj->user_id = USER_ID;
+        $userExtraQuotaObj->addon_id = $addon_id;
+        $userExtraQuotaObj->tenant_id = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first()->tenant_id;
+        $userExtraQuotaObj->global_user_id = $userObj->global_id;
+        $userExtraQuotaObj->duration_type = isset($input['addons'][$addon_id][2]) ? 2 : 1;
+        $userExtraQuotaObj->start_date = $start_date;
+        $userExtraQuotaObj->end_date = date('Y-m-d', strtotime("+1 ".($userExtraQuotaObj->duration_type == 1 ? 'month' : 'year'),strtotime($start_date)));
+        $userExtraQuotaObj->created_by = USER_ID;
+        $userExtraQuotaObj->created_at = DATE_TIME;
+        $userExtraQuotaObj->save();
+
+
+        if($tryFlag){
+            $oldAddons = $userObj->addons != null ? unserialize($userObj->addons) : [];
+            $oldAddons[] = $addon_id;
+            $userObj->addons = serialize($oldAddons);
+            $userObj->save();
+        }
+
+        WebActions::newType(2,'User');
+        Session::flash('success', trans('main.editSuccess'));
+        return \Redirect::back()->withInput();
+    }
+
     public function services(){
         $data['designElems']['mainData'] = [
             'title' => trans('main.service_tethering'),
@@ -345,10 +487,10 @@ class ProfileControllers extends Controller {
             $zidStoreToken->created_by = USER_ID;
             $zidStoreToken->save();
         }else{
-            $sallaObj->var_value = $input['store_token'];
-            $sallaObj->updated_at = DATE_TIME;
-            $sallaObj->updated_by = USER_ID;
-            $sallaObj->save();
+            $zidStoreToken->var_value = $input['store_token'];
+            $zidStoreToken->updated_at = DATE_TIME;
+            $zidStoreToken->updated_by = USER_ID;
+            $zidStoreToken->save();
         }
 
         $zidStoreID = Variable::NotDeleted()->where('var_key','ZidStoreID')->first();
@@ -360,10 +502,10 @@ class ProfileControllers extends Controller {
             $zidStoreID->created_by = USER_ID;
             $zidStoreID->save();
         }else{
-            $sallaObj->var_value = $input['store_id'];
-            $sallaObj->updated_at = DATE_TIME;
-            $sallaObj->updated_by = USER_ID;
-            $sallaObj->save();
+            $zidStoreID->var_value = $input['store_id'];
+            $zidStoreID->updated_at = DATE_TIME;
+            $zidStoreID->updated_by = USER_ID;
+            $zidStoreID->save();
         }
 
         $zidMerchantToken = Variable::NotDeleted()->where('var_key','ZidMerchantToken')->first();
@@ -373,12 +515,12 @@ class ProfileControllers extends Controller {
             $zidMerchantToken->var_value = $input['merchant_token'];
             $zidMerchantToken->created_at = DATE_TIME;
             $zidMerchantToken->created_by = USER_ID;
-            $ZidMerchantToken->save();
+            $zidMerchantToken->save();
         }else{
-            $sallaObj->var_value = $input['merchant_token'];
-            $sallaObj->updated_at = DATE_TIME;
-            $sallaObj->updated_by = USER_ID;
-            $sallaObj->save();
+            $zidMerchantToken->var_value = $input['merchant_token'];
+            $zidMerchantToken->updated_at = DATE_TIME;
+            $zidMerchantToken->updated_by = USER_ID;
+            $zidMerchantToken->save();
         }
 
         Session::flash('success', trans('main.editSuccess'));
@@ -409,9 +551,7 @@ class ProfileControllers extends Controller {
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
         $data['channel'] = UserChannels::getData(UserChannels::getOne(Session::get('channel')));
-        $data['contactsCount'] = Contact::NotDeleted()->whereHas('Group',function($groupQuery){
-            $groupQuery->where('channel',Session::get('channel'));
-        })->count();
+        $data['contactsCount'] = Contact::NotDeleted()->count();
         
         return view('Tenancy.Profile.Views.subscription')->with('data', (object) $data);
     }

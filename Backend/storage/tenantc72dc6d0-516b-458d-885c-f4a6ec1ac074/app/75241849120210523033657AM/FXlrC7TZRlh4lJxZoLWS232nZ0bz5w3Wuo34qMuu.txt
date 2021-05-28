@@ -1,0 +1,57 @@
+
+git reset --hard
+
+composer create-project --prefer-dist laravel/laravel blog
+
+php artisan clear-compiled
+
+php artisan view:clear
+
+php artisan route:clear
+
+php artisan config:clear
+
+php artisan cache:clear
+
+php artisan config:cache
+
+composer clear-cache
+
+composer dump-autoload
+
+
+sudo supervisorctl stop all
+php artisan queue:restart
+sudo supervisorctl start all
+
+
+
+./ngrok http -host-header=rewrite domain1.whatsloop.localhost:80
+
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+
+sudo cat /var/lib/update-notifier/updates-available
+
+sudo service network-manager restart
+
+
+
+
+sudo certbot --apache -d my-domain-name
+
+
+ //'ONLY_FULL_GROUP_BY', // Disable this to allow grouping by on>
+                'STRICT_TRANS_TABLES',
+                // 'NO_ZERO_IN_DATE',
+                // 'NO_ZERO_DATE',
+                'ERROR_FOR_DIVISION_BY_ZERO',
+                // 'NO_AUTO_CREATE_USER',
+                'NO_ENGINE_SUBSTITUTION'
+                
+                
+                60a1369cf8714be49fd4c0f29d592c88
+                
+                AIzaSyDudGX_xwGVuLWCjxfY1-RYDgaYfhKyu7k
+
+
+

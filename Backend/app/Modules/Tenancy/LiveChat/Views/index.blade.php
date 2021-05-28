@@ -18,7 +18,7 @@
 			<div class="content-page">
                 <div class="content">
                 	<div id="app">
-					    <chat-application></chat-application>
+					    <home></home>
 					</div>
 				</div>
 			</div>

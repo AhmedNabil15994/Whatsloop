@@ -8,7 +8,7 @@ class MainWhatsLoop {
     protected $instanceId = "", $token = "",$baseUrl = "";
 
     public function __construct($instanceId=null,$token=null) {
-        $channelObj =  UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
+        $channelObj =  UserChannels::NotDeleted()->orderBy('id','DESC')->first();//->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
         $this->instanceId = $instanceId == null ? $channelObj->id : $instanceId;
         $this->token = $token == null ? $channelObj->token : $token;
         $this->baseUrl = 'http://engine.whatsloop.loc/';
@@ -186,7 +186,7 @@ class MainWhatsLoop {
         ])->post($mainURL,$data);
     }
 
-    public function settings(){
+    public function settings($data){
         $mainURL = $this->baseUrl.'instances/settings';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,
@@ -582,6 +582,11 @@ class MainWhatsLoop {
     public function createChannel(){
         $mainURL = $this->baseUrl.'channels/createChannel';
         return Http::post($mainURL);
+    }
+
+    public function transferDays($data){
+        $mainURL = $this->baseUrl.'channels/transferDays';
+        return Http::post($mainURL,$data);
     }
 
     public function setSettings($channelId,$channelToken,$data){

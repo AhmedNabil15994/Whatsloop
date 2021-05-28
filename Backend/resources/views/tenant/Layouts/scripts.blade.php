@@ -4,6 +4,9 @@
 <script src="{{ asset('libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <!-- Sweet alert init js-->
 <script src="{{ asset('libs/bootstrap-select/js/bootstrap-select.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('libs/select2/js/select2.min.js') }}"></script>
+<script src="{{ asset('libs/selectize/js/standalone/selectize.min.js') }}"></script>
+<script src="{{ asset('libs/summernote/summernote-bs4.min.js') }}"></script>
 <script src="{{ asset('libs/chart.js/Chart.bundle.min.js') }}"></script>
 <script src="{{ asset('libs/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('libs/jquery.scrollto/jquery.scrollTo.min.js') }}"></script>

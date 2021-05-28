@@ -17,7 +17,7 @@ class Category extends Model{
             ->first();
     }
 
-    static function dataList($ids=null) {
+    static function dataList($ids=null,$labelIds=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -42,6 +42,10 @@ class Category extends Model{
 
         if($ids != null){
             $source->whereIn('id',$ids);
+        }
+
+        if($labelIds != null){
+            $source->whereIn('labelId',$labelIds);
         }
 
         $source->orderBy('sort','ASC');
@@ -75,7 +79,7 @@ class Category extends Model{
         $data->labelId = $source->labelId;
         $data->hexColor = $extraData[2];
         $data->colorName = $extraData[3];
-        $data->title = $source->{'name_'.LANGUAGE_PREF};
+        $data->title = \Session::has('group_id') ? $source->{'name_'.LANGUAGE_PREF} : $source->name_ar;
         $data->whatsappName = self::getName($source->name_ar,$source->name_en);
         $data->status = $source->status;
         $data->sort = $source->sort;

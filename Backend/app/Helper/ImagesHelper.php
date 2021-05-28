@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
+use App\Models\CentralUser;
+use App\Models\User;
 
 class ImagesHelper {
 
@@ -61,31 +63,67 @@ class ImagesHelper {
             return $default;
         }
 
+        $tenant = '';
+        if(!\Session::has('central')){
+            if(\Session::has('user_id')){
+                $tenant = TENANT_ID;
+            }
+        }
+
+        if($strAction == 'users'){
+            $userObj = CentralUser::getOne($id);
+            if(!$userObj){
+                $userObj = User::getOne($id);
+            }
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+            if($tenantObj){
+                $tenant = $tenantObj->tenant_id;
+            }
+        }
+
         $path = URL::to('/');
-        $checkFile = public_path() . '/uploads';
+        $checkFile = public_path() . '/uploads' . ($tenant != '' ? '/'.$tenant : '');
 
         switch ($strAction) {
             case "users":
-                $fullPath = $path.'/uploads' . '/users/' . $id . '/' . $filename;
+                $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/users/' . $id . '/' . $filename;
                 $checkFile = $checkFile . '/users/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
             case "bots":
-                $fullPath = $path.'/uploads' . '/bots/' . $id . '/' . $filename;
+                $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/bots/' . $id . '/' . $filename;
                 $checkFile = $checkFile . '/bots/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
             case "groupMessages":
-                $fullPath = $path.'/uploads' . '/groupMessages/' . $id . '/' . $filename;
+                $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/groupMessages/' . $id . '/' . $filename;
                 $checkFile = $checkFile . '/groupMessages/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
             case "chats":
-                $fullPath = $path.'/uploads' . '/chats/'. $filename;
+                $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/chats/'. $filename;
                 $checkFile = $checkFile . '/chats/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
-            
+
+            case "faqs":
+                $checkFile = public_path() . '/uploads';
+                $fullPath = $path.'/uploads' . '/faqs/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/faqs/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
+            case "tickets":
+                $checkFile = public_path() . '/uploads';
+                $fullPath = $path.'/uploads' . '/tickets/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/tickets/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
+            case "changeLogs":
+                $checkFile = public_path() . '/uploads';
+                $fullPath = $path.'/uploads' . '/changeLogs/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/changeLogs/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
         }
 
         return $default;
@@ -106,16 +144,16 @@ class ImagesHelper {
         if (Storage::size($fieldInput) >= 2000000) {
             return false;
         }
-
+        $oldExtension = explode('.', explode('/', $fieldInput)[1])[1];
         $extensionExplode = explode('/' , Storage::mimeType($fieldInput)); // getting image extension
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
-       
+
         if($fileType == '' || $fileType == 'photo' || $fileType == 'image'){
             $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
         }elseif($fileType == 'file'){
-            $appliedExtensions = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf',];
+            $appliedExtensions = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','vnd.openxmlformats-officedocument.spreadsheetml.sheet','zip','rar','pdf',];
         }elseif($fileType == 'video'){
             $appliedExtensions = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv'];
         }else{
@@ -125,12 +163,26 @@ class ImagesHelper {
         if (!in_array($extension, $appliedExtensions)) {
             return false;
         }
+
         
         $rand = rand() . date("YmdhisA");
         $fileName = 'whatsloop' . '-' . $rand;
         $directory = '';
 
-        $path = public_path() . '/uploads/';
+        $tenant = '';
+        if(!\Session::has('central')){
+            $tenant = TENANT_ID;
+        }
+
+        if($strAction == 'users'){
+            $userObj = CentralUser::getOne($id);
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+            if($userObj->group_id == 0){
+                $tenant = $tenantObj->tenant_id;
+            }
+        }
+
+        $path = public_path() . '/uploads/'.$tenant.'/';
 
         if ($strAction == 'users') {
             $directory = $path . 'users/' . $id;
@@ -148,7 +200,26 @@ class ImagesHelper {
             $directory = $path . 'groupMessages/' . $id;
         }
 
-        $fileName_full = $fileName . '.' . $extension;
+
+
+        if ($strAction == 'faqs') {
+            $directory = $path . 'faqs/' . $id;
+        }
+
+        if ($strAction == 'tickets') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'tickets/' . $id;
+        }
+
+        if ($strAction == 'changeLogs') {
+            $directory = $path . 'changeLogs/' . $id;
+        }
+
+        if ($strAction == 'central_users') {
+            $directory = $path . 'central_users/' . $id;
+        }
+
+        $fileName_full = $fileName . '.' . $oldExtension;
 
         if ($directory == '') {
             return false;
@@ -206,10 +277,14 @@ class ImagesHelper {
         }
         
         $rand = rand() . date("YmdhisA");
-        $fileName = $rand;
+        $fileName = 'whatsloop' . '-' . $rand;
         $directory = '';
 
         $path = public_path() . '/uploads/';
+        if(!\Session::has('central')){
+            $tenant = TENANT_ID;
+            $path = public_path() . '/uploads/'.$tenant.'/';
+        }
 
         if ($strAction == 'chats') {
             $directory = $path . 'chats/';
@@ -236,6 +311,7 @@ class ImagesHelper {
     // \ImagesHelper::deleteDirectory(public_path('/').'/uploads/users/15/filename.png');
     static function deleteDirectory($dir) {
         system('rm -r ' . escapeshellarg($dir), $retval);
+        // \File::deleteDirectory($dir);
         return $retval == 0; // UNIX commands return zero on success
     }
 

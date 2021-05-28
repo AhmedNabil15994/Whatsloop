@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('central.register') }}">
+                    <form method="POST" action="{{ URL::to('/register') }}">
                         @csrf
 
                         <div class="form-group row">
@@ -116,7 +116,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('central.login') }}">
+                        <form method="POST" action="{{ URL::to('/login') }}">
                             @csrf
                             <div class="form-group row">
                                 <label for="login_phone" class="col-md-4 col-form-label text-md-right">{{ __('login_phone') }}</label>

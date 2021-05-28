@@ -30,6 +30,12 @@ Route::group(['prefix' => '/profile'] , function () {
     Route::get('/offers', [$controller,'offers']);
     Route::post('/postOffers', [$controller,'postOffers']);
 
+    Route::get('/extraQuotas', [$controller,'extraQuotas']);
+    Route::get('/extraQuotas/{id}', [$controller,'postExtraQuotas']);
+
+    Route::get('/addons', [$controller,'addons']);
+    Route::post('/addons/{id}', [$controller,'postAddons']);
+
     Route::get('/services', [$controller,'services']);
     Route::post('/updateSalla', [$controller,'updateSalla']);
     Route::post('/updateZid', [$controller,'updateZid']);

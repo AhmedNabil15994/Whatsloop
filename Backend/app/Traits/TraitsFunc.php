@@ -105,6 +105,14 @@ trait TraitsFunc
         return \Response::json((object) $statusObj);
     }
 
+    public static function LoginResponse($message = 'Data Generated Successfully'){
+        $statusObj['status'] = new stdClass();
+        $statusObj['status']->status = 1;
+        $statusObj['status']->code = 205;
+        $statusObj['status']->message = $message;
+        return \Response::json((object) $statusObj);
+    }
+
     public static function PublicDDM($dataArr, $withoutLang = false) {
         $list = [];
         foreach($dataArr as $key => $value) {

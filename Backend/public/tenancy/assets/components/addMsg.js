@@ -4,13 +4,13 @@ $(function(){
 
 	$.each($('.reply .kt_dropzone_1'),function(index,item){
 		var dateID = $(this).parents('.reply').data('id');
-		$(item).dropzone({
+		var dropz = $(item).dropzone({
 		    url: myURL + "/uploadImage/"+dateID,
 		    paramName: "file", // The name that will be used to transfer the file
 		    maxFiles: 1,
-		    maxFilesize: 10, // MB
+		    // maxFilesize: 0.1, // MB
 		    addRemoveLinks: true,
-		    previewTemplate: $('#uploadPreviewTemplate').html(),
+		    // previewTemplate: $('#uploadPreviewTemplate').html(),
 		    accept: function(file, done) {
 		        if (file.name == "justinbieber.jpg") {
 		            done("Naha, you don't.");
@@ -19,10 +19,12 @@ $(function(){
 		        }
 		    },
 		    success:function(file,data){
+		    	var dropzone = this;
 		        if(data){
 		            if(data.status.status != 1){
 		                errorNotification(data.status.message);
-		            }
+						dropzone.removeFile(file);		            
+					}
 		        }
 		    },
 		});

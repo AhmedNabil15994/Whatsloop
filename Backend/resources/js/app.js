@@ -1,40 +1,98 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
-
 window.Vue = require('vue').default;
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+Vue.component('home', require('./components/site/home.vue').default);
 
-// const files = require.context('./', true, /\.vue$/i)
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+import Vue from 'vue'
+import App from './App.vue'
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-Vue.component('chat-application', require('./components/ChatApplication.vue').default);
+import Axios from 'axios'
+Vue.prototype.$http = Axios;
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+import {store} from './store/index'
 
-const app = new Vue({
-    el: '#app',
-    data: {
-    	userID: null
-  	},
- 	mounted () {
-    	// Assign the ID from meta tag for future use in application
-    	this.userID = document.head.querySelector('meta[name="userID"]').content
-  	}
+import "vue-multiselect/dist/vue-multiselect.min.css";
+import 'remixicon/fonts/remixicon.css'
+
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+
+import './../assets/css/font-awesome.min.css';
+import "./../assets/css/fonts.css"
+
+
+import './../assets/css/bootstrap.min.css'
+
+import "./../assets/css/app.min.css"
+
+
+import "./../assets/css/style.css"
+
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+// Install BootstrapVue
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
+
+
+import Echo from 'laravel-echo'
+
+window.io = require('socket.io-client')
+
+// Socket.io
+window.Echo = new Echo({
+  broadcaster: 'socket.io',
+  host: window.location.hostname + ':6001'
 });
+
+
+
+import VueTelInput from "vue-tel-input";
+
+Vue.use(VueTelInput);
+
+
+import imageViewer  from 'image-viewer-vue'
+Vue.use(imageViewer)
+
+import vuescroll from 'vuescroll';
+Vue.use(vuescroll);
+
+Vue.prototype.$vuescrollConfig = {
+  bar: {
+    background: '#bab3ae',
+    size:'5px'
+  },
+  scrollPanel: {
+    initialScrollY: false,
+    initialScrollX: false,
+    scrollingX: false,
+    scrollingY: true,
+    speed: 3000,
+    easing: undefined,
+    verticalNativeBarPos: 'left'
+  }
+};
+
+
+import "./filters";
+
+
+
+
+
+
+import ScrollLoader from 'vue-scroll-loader'
+
+Vue.use(ScrollLoader);
+
+ 
+
+Vue.config.productionTip = false
+
+new Vue({
+  render: h => h(App),
+  store
+}).$mount('#app')

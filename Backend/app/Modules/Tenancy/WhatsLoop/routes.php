@@ -63,7 +63,9 @@ Route::group(['prefix' => '/whatsloop'] , function (){
 
 	Route::group(['prefix' => '/webhooks'] ,function() use ($controller){
 		Route::get('/webhook',[$controller,'webhook']);
-		Route::webhooks('/messages-webhook');
+		Route::webhooks('/messages-webhook','default');
+		Route::webhooks('/zid-webhook','Zid');
+		Route::webhooks('/salla-webhook','Salla');
 	});
 
 	Route::group(['prefix' => '/queues'] ,function() use ($controller){

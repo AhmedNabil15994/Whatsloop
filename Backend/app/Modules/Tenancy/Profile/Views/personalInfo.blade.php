@@ -63,7 +63,35 @@
                         <div class="form-group row">
                             <label class="col-3 col-form-label">{{ trans('main.phone') }} :</label>
                             <div class="col-9">
-                                <input class="form-control" type="tel" value="{{ $data->data->phone }}" name="phone" placeholder="{{ trans('main.phone') }}">
+                                <input class="form-control teles" type="tel" value="{{ $data->data->phone }}" name="phone" placeholder="{{ trans('main.phone') }}">
+                            </div>
+                        </div> 
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">{{ trans('main.domain') }} :</label>
+                            <div class="col-9">
+                                <input class="form-control" type="text" value="{{ $data->data->domain }}" name="domain" placeholder="{{ trans('main.domain') }}">
+                            </div>
+                        </div> 
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">{{ trans('main.pinCode') }} :</label>
+                            <div class="col-9">
+                                <input class="form-control" name="pin_code" value="{{ $data->data->pin_code }}" placeholder="{{ trans('main.pinCode') }}">
+                            </div>
+                        </div> 
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">{{ trans('main.emergencyNumber') }}</label>
+                            <div class="col-9">
+                                <input type="tel" name="emergency_number" value="{{ $data->data->emergency_number }}" class="form-control teles">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-3 col-form-label">{{ trans('main.twoAuthFactor') }} :</label>
+                            <div class="col-9">
+                                <select name="two_auth" class="form-control">
+                                    <option value="">{{ trans('main.choose') }}</option>
+                                    <option value="0" {{ $data->data->two_auth == 0 ? 'selected' : '' }}>{{ trans('main.no') }}</option>
+                                    <option value="1" {{ $data->data->two_auth == 1 ? 'selected' : '' }}>{{ trans('main.yes') }}</option>
+                                </select>
                             </div>
                         </div> 
                         <div class="form-group row mb-3">
@@ -107,7 +135,7 @@
                         <hr class="mt-5">
                         <div class="form-group justify-content-end row">
                             <div class="col-9">
-                                <button class="btn btn-success AddBTN">{{ trans('main.edit') }}</button>
+                                <button class="btn btn-success AddBTN SaveBTNs">{{ trans('main.edit') }}</button>
                                 <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
@@ -130,7 +158,7 @@
 
                     <p class="text-muted mb-2 font-13"><strong>{{ trans('main.company_name') }} :</strong><span class="ml-2">{{ $data->data->company }}</span></p>
 
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2">{{ $data->data->channelCodes }}</span></p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ $data->data->channelCodes }}</span></p>
                 </div>
             </div>
         </div>

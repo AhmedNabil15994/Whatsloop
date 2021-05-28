@@ -3,7 +3,7 @@
 class Helper
 {
 
-    static function formatDate($date, $formate = "Y-m-d h:i:s", $unix = false){
+    static function formatDate($date, $formate = "Y-m-d h:i:s A", $unix = false){
         $date = str_replace("," , '' , $date);
         $FinalDate = $unix != false ? gmdate($formate, $date) : date($formate, strtotime($date));
         return $FinalDate != '1970-01-01 12:00:00' ? $FinalDate : null;
@@ -34,6 +34,17 @@ class Helper
         }
 
         return $FinalDate != '1970-01-01 12:00:00' ? $FinalDate : null;
+    }
+
+    static function getFolderSize($path){
+        $file_size = 0;
+        foreach( \File::allFiles($path) as $file)
+        {
+            $file_size += $file->getSize();
+        }
+        $file_size = $file_size/(1024 * 1024);
+        $file_size = number_format($file_size,2) . " MB ";
+        return $file_size;
     }
 
     static function fixPaginate($url, $key) {
@@ -113,10 +124,11 @@ class Helper
     }
 
     static function checkRules($rule){
-        if(IS_ADMIN == 1){
+        if(IS_ADMIN == 1 && \Session::has('central') && \Session::get('central') == 1){
             return true;
         }
         $explodeRule = explode(',', $rule);
+        // dd(PERMISSIONS);
         $containsSearch = count(array_intersect($explodeRule, (array) PERMISSIONS)) > 0;
         if($containsSearch == true){
             return true;
@@ -137,9 +149,116 @@ class Helper
         return response()->json($data);
     }
 
+    static function getCentralPermissions($withTitles = null){
+        $data = [];
+        $perms = config('central_permissions');
+        foreach ($perms as $key => $perm) {
+            if($perm != 'general'){
+                $controller = explode('@', $key)[0];
+                $data[$controller][$perm] = [
+                    'perm_name' => $perm,
+                    'perm_title' => trans('permission.'.$perm),
+                ];
+            }
+        }
+        return $data;
+    }
+    
+    static function getAllPerms(){
+        $controllers = config('permissions');
+        $addons = \DB::connection('main')->table('addons')->whereIn('id',\Session::has('addons') ? \Session::get('addons') : [])->pluck('module');
+        $addons = reset($addons);
+        foreach ($addons as $addon) {
+            if($addon == 'Bot'){
+                $externalPermissions = [
+                    'BotControllers@index' => 'list-bots',
+                    'BotControllers@edit' => 'edit-bot',
+                    'BotControllers@update' => 'edit-bot',
+                    'BotControllers@fastEdit' => 'edit-bot',
+                    'BotControllers@add' => 'add-bot',
+                    'BotControllers@create' => 'add-bot',
+                    'BotControllers@copy' => 'copy-bot',
+                    'BotControllers@delete' => 'delete-bot',
+                    'BotControllers@sort' => 'sort-bot',
+                    'BotControllers@arrange' => 'sort-bot',
+                    'BotControllers@charts' => 'charts-bot',
+                    'BotControllers@uploadImage' => 'uploadImage-bot',
+                    'BotControllers@deleteImage' => 'deleteImage-bot',
+                ];
+            }elseif($addon == 'LiveChat'){
+                $externalPermissions = [
+                    'LiveChatControllers@index' => 'list-livechat',
+                    'LiveChatControllers@dialogs' => 'list-livechat',
+                    'LiveChatControllers@pinChat' => 'list-livechat',
+                    'LiveChatControllers@unpinChat' => 'list-livechat',
+                    'LiveChatControllers@readChat' => 'list-livechat',
+                    'LiveChatControllers@unreadChat' => 'list-livechat',
+                    'LiveChatControllers@messages' => 'list-livechat',
+                    'LiveChatControllers@sendMessage' => 'list-livechat',
+                    'LiveChatControllers@labels' => 'list-livechat',
+                    'LiveChatControllers@labelChat' => 'list-livechat',
+                    'LiveChatControllers@unlabelChat' => 'list-livechat',
+                    'LiveChatControllers@contact' => 'list-livechat',
+                    'LiveChatControllers@updateContact' => 'list-livechat',
+                    'LiveChatControllers@quickReplies' => 'list-livechat',
+                    'LiveChatControllers@moderators' => 'list-livechat',
+                    'LiveChatControllers@assignMod' => 'list-livechat',
+                    'LiveChatControllers@removeMod' => 'list-livechat',
+                    'LiveChatControllers@liveChatLogout' => 'list-livechat',
+                ];
+            }elseif($addon == 'GroupMsgs'){
+                $externalPermissions = [
+                    'GroupMsgsControllers@index' => 'list-group-messages',
+                    'GroupMsgsControllers@add' => 'add-group-message' ,
+                    'GroupMsgsControllers@create' => 'add-group-message',
+                    'GroupMsgsControllers@view' => 'view-group-message',
+                    'GroupMsgsControllers@charts' => 'charts-group-message',
+                    'GroupMsgsControllers@uploadImage' => 'uploadImage-group-message',
+                ];
+            }elseif($addon == 'zid'){
+                $externalPermissions = [
+                    'ZidControllers@customers' => 'zid-customers',
+                    'ZidControllers@products' => 'zid-products',
+                    'ZidControllers@orders' => 'zid-orders',
+                    'ZidControllers@reports' => 'zid-reports',
+                    'ZidControllers@templates' => 'zid-templates',
+                    'ZidControllers@templatesEdit' => 'edit-zid-template',
+                    'ZidControllers@templatesUpdate' => 'edit-zid-template',
+                    'ZidControllers@templatesAdd' => 'add-zid-template',
+                    'ZidControllers@templatesCreate' => 'add-zid-template',
+                    'ZidControllers@templatesDelete' => 'delete-zid-template',
+                    'ProfileControllers@updateZid' => 'updateZid',
+                ];
+            }elseif($addon == 'salla'){
+                $externalPermissions = [
+                    'SallaControllers@customers' => 'salla-customers',
+                    'SallaControllers@products' => 'salla-products',
+                    'SallaControllers@orders' => 'salla-orders',
+                    'SallaControllers@reports' => 'salla-reports',
+                    'SallaControllers@templates' => 'salla-templates',
+                    'SallaControllers@templatesEdit' => 'edit-salla-template',
+                    'SallaControllers@templatesUpdate' => 'edit-salla-template',
+                    'SallaControllers@templatesAdd' => 'add-salla-template',
+                    'SallaControllers@templatesCreate' => 'add-salla-template',
+                    'SallaControllers@templatesDelete' => 'delete-salla-template',
+                    'ProfileControllers@updateSalla' => 'updateSalla',
+                ];
+            }elseif($addon == 'zapier'){
+                $externalPermissions = [];
+            }elseif($addon == 'shopify'){
+                $externalPermissions = [];
+            }elseif($addon == 'whiteLogo'){
+                $externalPermissions = [];
+            }
+            $controllers = array_merge($controllers,$externalPermissions);
+        }
+        return $controllers;
+    }
+
+
     static function getPermissions($withTitles = null){
         $data = [];
-        $perms = config('permissions');
+        $perms = self::getAllPerms();
         foreach ($perms as $key => $perm) {
             if($perm != 'general'){
                 $controller = explode('@', $key)[0];

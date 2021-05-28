@@ -604,7 +604,7 @@ class ZidControllers extends Controller {
                 'type' => '',
                 'className' => 'text-center pre-space',
                 'data-col' => 'content_'.LANGUAGE_PREF,
-                'anchor-class' => '',
+                'anchor-class' => 'pre-space',
             ],   
             'statusText' => [
                 'label' => trans('main.status'),
@@ -685,4 +685,58 @@ class ZidControllers extends Controller {
         return \Redirect::back()->withInput();
     }
 
+    public function templatesAdd() {
+        $service = $this->service;
+        $data['designElems']['mainData'] = [
+            'title' => trans('main.add') . ' '.trans('main.templates'),
+            'url' => 'services/'.$service.'/templates',
+            'name' => 'templates',
+            'nameOne' => $service.'-template',
+            'service' => $service,
+            'icon' => 'fa fa-plus',
+        ];
+        $userObj = User::getData(User::getOne(USER_ID));
+        $data['channel'] = $userObj->channels[0];
+        $data['statuses'] = [
+                ['id'=>'جديد','name'=>'جديد'],
+                ['id'=>'جاري التجهيز','name'=>'جاري التجهيز'],
+                ['id'=>'جاهز','name'=>'جاهز'],
+                ['id'=>'جارى التوصيل','name'=>'جارى التوصيل'],
+                ['id'=>'تم التوصيل','name'=>'تم التوصيل'],
+                ['id'=>'تم الالغاء','name'=>'تم الالغاء'],
+                ['id'=>'ترحيب بالعميل','name'=>'ترحيب بالعميل'],
+        ];
+        return view('Tenancy.ExternalServices.Views.add')->with('data', (object) $data);      
+    }
+
+    public function templatesCreate() {
+        $service = $this->service;
+        $input = \Request::all();
+        
+        $dataObj = ModTemplate::NotDeleted()->where('mod_id',2)->where('statusText',$input['statusText'])->where('status',1)->first();
+        if($dataObj && $input['status'] == 1){
+            Session::flash('error', trans('main.statusFound'));
+            return \Redirect::back()->withInput();
+        }
+
+        $dataObj = new ModTemplate;
+        $dataObj->channel = $input['channel'];
+        $dataObj->content_ar = $input['content_ar'];
+        $dataObj->content_en = $input['content_en'];
+        $dataObj->statusText = $input['statusText'];
+        $dataObj->status = $input['status'];
+        $dataObj->mod_id = 2;
+        $dataObj->updated_at = DATE_TIME;
+        $dataObj->updated_by = USER_ID;
+        $dataObj->save();
+
+        Session::flash('success', trans('main.editSuccess'));
+        return \Redirect::back()->withInput();
+    }
+
+    public function templatesDelete($id) {
+        $id = (int) $id;
+        $dataObj = ModTemplate::getOne($id);
+        return \Helper::globalDelete($dataObj);
+    }
 }

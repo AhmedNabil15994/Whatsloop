@@ -16,8 +16,6 @@ return [
     'ProfileControllers@postChangePassword' => 'general',
     'ProfileControllers@services' => 'general',
 
-    'LiveChatControllers@index' => 'list-livechat',
-
     'ProfileControllers@paymentInfo' => 'paymentInfo',
     'ProfileControllers@postPaymentInfo' => 'paymentInfo',
 
@@ -30,43 +28,30 @@ return [
     'ProfileControllers@offers' => 'offers',
     'ProfileControllers@postOffers' => 'offers',
 
-    'ProfileControllers@updateSalla' => 'updateSalla',
-    'ProfileControllers@updateZid' => 'updateZid',
+    'ProfileControllers@extraQuotas' => 'extraQuotas',
+    'ProfileControllers@postExtraQuotas' => 'extraQuotas',
+
+    'ProfileControllers@addons' => 'addons',
+    'ProfileControllers@postAddons' => 'addons',
+
+    
 
     'ProfileControllers@subscription' => 'subscription',
+    'ProfileControllers@screenshot' => 'subscription',
+    'ProfileControllers@reconnect' => 'subscription',
+    'ProfileControllers@closeConn' => 'subscription',
+    'ProfileControllers@sync' => 'subscription',
+    'ProfileControllers@read' => 'subscription',
 
     'ProfileControllers@apiSetting' => 'apiSetting',
     'ProfileControllers@apiGuide' => 'apiGuide',
     'ProfileControllers@webhookSetting' => 'webhookSetting',
     'ProfileControllers@postWebhookSetting' => 'webhookSetting',
 
-    'SallaControllers@customers' => 'salla-customers',
-    'SallaControllers@products' => 'salla-products',
-    'SallaControllers@orders' => 'salla-orders',
-    'SallaControllers@reports' => 'salla-reports',
-    'SallaControllers@templates' => 'salla-templates',
-    'SallaControllers@templatesEdit' => 'edit-salla-template',
-    'SallaControllers@templatesUpdate' => 'edit-salla-template',
-
-    'ZidControllers@customers' => 'zid-customers',
-    'ZidControllers@products' => 'zid-products',
-    'ZidControllers@orders' => 'zid-orders',
-    'ZidControllers@reports' => 'zid-reports',
-    'ZidControllers@templates' => 'zid-templates',
-    'ZidControllers@templatesEdit' => 'edit-zid-template',
-    'ZidControllers@templatesUpdate' => 'edit-zid-template',
-    
 
     'ApiModsControllers@msgsArchive'  => 'list-messages-archive',
     'ApiModsControllers@report'  =>  'list-groupNumberRepors',
     'ApiModsControllers@index'  =>  'list-statuses',
-    
-    'GroupMsgsControllers@index' => 'list-group-messages',
-    'GroupMsgsControllers@add' => 'add-group-message' ,
-    'GroupMsgsControllers@create' => 'add-group-message',
-    'GroupMsgsControllers@view' => 'add-group-message',
-    'GroupMsgsControllers@charts' => 'charts-group-message',
-    'GroupMsgsControllers@uploadImage' => 'uploadImage-group-message',
 
     'ContactsControllers@index' => 'list-contacts',
     'ContactsControllers@edit' => 'edit-contact',
@@ -125,20 +110,6 @@ return [
     'TemplatesControllers@sort' => 'sort-template',
     'TemplatesControllers@arrange' => 'sort-template',
     'TemplatesControllers@charts' => 'charts-template',
-
-    'BotControllers@index' => 'list-bots',
-    'BotControllers@edit' => 'edit-bot',
-    'BotControllers@update' => 'edit-bot',
-    'BotControllers@fastEdit' => 'edit-bot',
-    'BotControllers@add' => 'add-bot',
-    'BotControllers@create' => 'add-bot',
-    'BotControllers@copy' => 'copy-bot',
-    'BotControllers@delete' => 'delete-bot',
-    'BotControllers@sort' => 'sort-bot',
-    'BotControllers@arrange' => 'sort-bot',
-    'BotControllers@charts' => 'charts-bot',
-    'BotControllers@uploadImage' => 'uploadImage-bot',
-    'BotControllers@deleteImage' => 'deleteImage-bot',
     
     'UsersControllers@index' => 'list-users',
     'UsersControllers@edit' => 'edit-user',
@@ -163,5 +134,73 @@ return [
     'GroupsControllers@sort' => 'sort-group',
     'GroupsControllers@arrange' => 'sort-group',
     'GroupsControllers@charts' => 'charts-group',
+
+    'TicketControllers@index' => 'list-tickets',
+    'TicketControllers@edit' => 'edit-ticket',
+    'TicketControllers@view' => 'view-ticket',
+    'TicketControllers@update' => 'edit-ticket',
+    'TicketControllers@fastEdit' => 'edit-ticket',
+    'TicketControllers@add' => 'add-ticket',
+    'TicketControllers@create' => 'add-ticket',
+    'TicketControllers@delete' => 'delete-ticket',
+    'TicketControllers@sort' => 'sort-ticket',
+    'TicketControllers@arrange' => 'sort-ticket',
+    'TicketControllers@charts' => 'charts-ticket',
+    'TicketControllers@uploadImage' => 'uploadImage-ticket',
+    'TicketControllers@deleteImage' => 'deleteImage-ticket',
+    'TicketControllers@addComment' => 'addComment-ticket',
+    'TicketControllers@updateComment' => 'updateComment-ticket',
+    'TicketControllers@deleteComment' => 'deleteComment-ticket',
+
+    'UserStorageControllers@index' => 'list-storage',
+    'UserStorageControllers@bots' => 'list-storage',
+    'UserStorageControllers@groupMsgs' => 'list-storage',
+    'UserStorageControllers@chats' => 'list-storage',
+    'UserStorageControllers@getByTypeAndId' => 'list-storage',
+    'UserStorageControllers@removeByTypeAndId' => 'delete-storage',
+    'UserStorageControllers@removeChatFile' => 'delete-storage',
+
+    // 'SallaControllers@customers' => 'salla-customers',
+    // 'SallaControllers@products' => 'salla-products',
+    // 'SallaControllers@orders' => 'salla-orders',
+    // 'SallaControllers@reports' => 'salla-reports',
+    // 'SallaControllers@templates' => 'salla-templates',
+    // 'SallaControllers@templatesEdit' => 'edit-salla-template',
+    // 'SallaControllers@templatesUpdate' => 'edit-salla-template',
+    // 'ProfileControllers@updateSalla' => 'updateSalla',
+    
+    // 'ProfileControllers@updateZid' => 'updateZid',
+    // 'ZidControllers@customers' => 'zid-customers',
+    // 'ZidControllers@products' => 'zid-products',
+    // 'ZidControllers@orders' => 'zid-orders',
+    // 'ZidControllers@reports' => 'zid-reports',
+    // 'ZidControllers@templates' => 'zid-templates',
+    // 'ZidControllers@templatesEdit' => 'edit-zid-template',
+    // 'ZidControllers@templatesUpdate' => 'edit-zid-template',
+    
+    // 'GroupMsgsControllers@index' => 'list-group-messages',
+    // 'GroupMsgsControllers@add' => 'add-group-message' ,
+    // 'GroupMsgsControllers@create' => 'add-group-message',
+    // 'GroupMsgsControllers@view' => 'add-group-message',
+    // 'GroupMsgsControllers@charts' => 'charts-group-message',
+    // 'GroupMsgsControllers@uploadImage' => 'uploadImage-group-message',
+
+    // 'BotControllers@index' => 'list-bots',
+    // 'BotControllers@edit' => 'edit-bot',
+    // 'BotControllers@update' => 'edit-bot',
+    // 'BotControllers@fastEdit' => 'edit-bot',
+    // 'BotControllers@add' => 'add-bot',
+    // 'BotControllers@create' => 'add-bot',
+    // 'BotControllers@copy' => 'copy-bot',
+    // 'BotControllers@delete' => 'delete-bot',
+    // 'BotControllers@sort' => 'sort-bot',
+    // 'BotControllers@arrange' => 'sort-bot',
+    // 'BotControllers@charts' => 'charts-bot',
+    // 'BotControllers@uploadImage' => 'uploadImage-bot',
+    // 'BotControllers@deleteImage' => 'deleteImage-bot',
+
+    // 'LiveChatControllers@index' => 'list-livechat',
+    
+
   
 ];

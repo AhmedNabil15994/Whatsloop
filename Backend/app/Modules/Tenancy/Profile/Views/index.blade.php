@@ -93,6 +93,46 @@
                             </div> <!-- end card -->
                         </div>
                         @endif
+
+                        @if(\Helper::checkRules('addons'))
+                        <div class="col-4">
+                            <div class="card myCard">
+                                <a href="{{ URL::to('/profile/addons') }}">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <i class="myicons fas fa-star badge-outline-success"></i> 
+                                            </div>
+                                            <div class="col-11 pr-3 pl-3">
+                                                <h4 class="header-title">{{ trans('main.addons') }}</h4>
+                                                <p>{{ trans('main.addons_p') }}</p>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end card body-->
+                                </a>
+                            </div> <!-- end card -->
+                        </div>
+                        @endif
+
+                        @if(\Helper::checkRules('extraQuotas'))
+                        <div class="col-4">
+                            <div class="card myCard">
+                                <a href="{{ URL::to('/profile/extraQuotas') }}">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-1">
+                                                <i class="myicons fas fa-star badge-outline-success"></i> 
+                                            </div>
+                                            <div class="col-11 pr-3 pl-3">
+                                                <h4 class="header-title">{{ trans('main.extraQuotas') }}</h4>
+                                                <p>{{ trans('main.extraQuotas_p') }}</p>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end card body-->
+                                </a>
+                            </div> <!-- end card -->
+                        </div>
+                        @endif
                     </div>    
 
                 </div> <!-- end card body-->
