@@ -248,13 +248,13 @@ class ClientControllers extends Controller {
             $updateResult = $whatsLoopObj->me();
             $result = $updateResult->json();
             // dd($result);
-            if($result['status']['status'] != 1){
-                Session::flash('error', $result['status']['message']);
-                return back()->withInput();
-            }
-         
+            // if($result['status']['status'] != 1){
+            //     Session::flash('error', $result['status']['message']);
+            //     return back()->withInput();
+            // }
+
             $data['client'] = $userObj;
-            $data['me'] = (object) $result['data'];
+            $data['me'] =  isset($result['data']) ? (object) $result['data'] : [];
             $data['status'] = UserStatus::getData(UserStatus::orderBy('id','DESC')->first());
             $data['allMessages'] = ChatMessage::count();
             $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
@@ -287,7 +287,7 @@ class ClientControllers extends Controller {
             $settingsArr = $myData;
         }else{
             $updateResult = $mainWhatsLoopObj->settings([]);
-            $settingsArr = $updateResult->json()['data'];
+            $settingsArr = isset($updateResult->json()['data']) ? $updateResult->json()['data'] : [];
         }     
 
         $data['designElems'] = $this->getData();

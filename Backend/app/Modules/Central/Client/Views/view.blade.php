@@ -542,7 +542,7 @@
                                                             </div>
                                                             <div class="col-sm-4">
                                                                 <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                    {{ trans('main.phone') }} : <b>{{ str_replace('@c.us', '', $data->me->id) }}</b>
+                                                                    {{ trans('main.phone') }} : <b>{{ @str_replace('@c.us', '', $data->me->id) }}</b>
                                                                 </a>
                                                             </div>
                                                             <div class="col-sm-4">
@@ -575,23 +575,23 @@
                                                                 <div class="row">
                                                                     <div class="col-sm-3">
                                                                         <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                            {{ trans("main.phone_battery") }} : <b>{{ $data->me->battery }}%</b>
+                                                                            {{ trans("main.phone_battery") }} : <b>{{ @$data->me->battery }}%</b>
                                                                         </a>
                                                                     </div>
 
                                                                     <div class="col-sm-3">
                                                                         <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                            {{ trans('main.phone_type') }} : <b>{{ $data->me->device['manufacturer'] }}</b>
+                                                                            {{ trans('main.phone_type') }} : <b>{{ @$data->me->device['manufacturer'] }}</b>
                                                                         </a>
                                                                     </div>
                                                                     <div class="col-sm-3">
                                                                         <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                            {{ trans('main.phone_model') }} : <b>{{ $data->me->device['model'] }}</b>
+                                                                            {{ trans('main.phone_model') }} : <b>{{ @$data->me->device['model'] }}</b>
                                                                         </a>
                                                                     </div>
                                                                     <div class="col-sm-3">
                                                                         <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                            {{ trans('main.os_ver') }} : <b>{{ $data->me->device['os_version'] }}</b>
+                                                                            {{ trans('main.os_ver') }} : <b>{{ @$data->me->device['os_version'] }}</b>
                                                                         </a>
                                                                     </div>
                                                                 </div>

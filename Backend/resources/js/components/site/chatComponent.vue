@@ -459,7 +459,7 @@
                             </li>
                             
                         </ul>
-                        <a target="_blank" :href="'http://'+domain+'.wloop.net/replies'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
+                        <a target="_blank" :href="'/replies/add'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
                     </vuescroll>
                 </div>
                 <div class="quickMsgs mobile flex" v-if="openQuick">
@@ -471,7 +471,7 @@
                         </li>
                         
                     </ul>
-                    <a :href="'http://'+domain+'.wloop.net/replies'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
+                    <a :href="'/replies/add'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
                 </div>
                 <!-- start chat input section -->
                 <form @submit.prevent class="sendMessage">
@@ -650,7 +650,7 @@ export default {
             this.getChatContent();
             this.getQuick();
            
-            var domain = "taha";
+            var domain =  window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
             this.testBroadCastingIncomingMessage2(domain);
             this.testBroadCastingBotMessage2(domain);
             this.testBroadUpdateMessageStatus2(domain);
