@@ -10,7 +10,7 @@ class HomeControllers extends Controller {
 
     use \TraitsFunc;
 
-    public function formatResponse($serverResult){
+    public function formatResponse($serverResult,$status=null){
     	if(!$serverResult->ok()){
         	$result = $serverResult->json();
             return [0,$result['error']];
@@ -20,12 +20,12 @@ class HomeControllers extends Controller {
             	return [0,$result['error']];
         	}
         	if(isset($result['result']) && $result['result'] == 'failed'){
-            	return [0,$result['message']];
+            	return [0,str_replace('@c.us', '', $result['message'])];
         	}
-            if(is_array($result)){
+            if(is_array($result) && !in_array($status, ['labelsList','showMessagesQueue','showActionsQueue','allMessages','messagesHistory'])){
                 $extraResult = array_values($result);
                 if(isset($extraResult[0]) && $extraResult[0] == false && !isset($result['sendDelay'])){
-                    return [0,@$result['message']];
+                    return [0,str_replace('@c.us', '', @$result['message'])];
                 }                
             }
 
@@ -41,11 +41,11 @@ class HomeControllers extends Controller {
 
     	// Customization For Specific Routes
     	if(isset($input['contactId']) && !empty($input['contactId']) && $status == 'sendContact' ){
-    		if(!is_array($input['contactId'])){
+    		if(!is_array(json_decode($input['contactId']))){
     			$input['contactId'] = $input['contactId'].'@c.us';
     		}else{
     			$contactIds=[];
-    			foreach ($input['contactId'] as $value) {
+    			foreach (json_decode($input['contactId']) as $value) {
     				$contactIds[]=$value.'@c.us';
     			}
     			$input['contactIds'] = $contactIds;
@@ -54,7 +54,7 @@ class HomeControllers extends Controller {
 
         if(isset($input['phones']) && !empty($input['phones']) && $status == 'group' ){
             $phones=[];
-            foreach ($input['phones'] as $value) {
+            foreach (json_decode($input['phones']) as $value) {
                 $phones[]=$value.'@c.us';
             }
             $input['chatIds'] = $phones;
@@ -105,10 +105,12 @@ class HomeControllers extends Controller {
     	$whatsLoopObj =  new \MainWhatsLoop();
         $serverResult = $whatsLoopObj->$status($input);
 
-        $formatResponeResult = $this->formatResponse($serverResult);
+        $formatResponeResult = $this->formatResponse($serverResult,$status);
         if($formatResponeResult[0] == 0){
         	return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
         }
+
+
 
         $dataList['data'] = $serverResult->json();
         // Customization For QR Code Images
@@ -126,6 +128,33 @@ class HomeControllers extends Controller {
             }
 	        $dataList['data']['image'] = URL::to($image);
         }
+
+        // Customization All Messages & Messages History
+        if(in_array($status, ['allMessages','messagesHistory'])){
+            $messagesObj = $dataList['data']['messages'];
+            $messagesArr = [];
+            foreach ($messagesObj as $key => $message) {
+                if(in_array($message['type'], ['image','ppt','video','document'])){
+                    $folder = '/uploads/messages/'.$message['id'];
+                    $url = $message['body'];
+                    $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+                    $directory = public_path().$folder;
+                    $image = $directory.'/chatFile.'.$extension;
+                    if(!file_exists($directory)){
+                        @$content = file_get_contents($url);                    
+                        mkdir($directory, 0777, true);
+                        $succ = file_put_contents($image, $content);   
+                    }
+                    $message['body'] = URL::to('/').'/public'.$folder.'/chatFile.'.$extension; 
+                }
+                $message['time'] = date('Y-m-d H:i:s',$message['time']);
+                $messagesArr[] = $message;
+            }
+            $dataList['data']['messages'] = $messagesArr;
+        }
+
+
+
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);        
     }
