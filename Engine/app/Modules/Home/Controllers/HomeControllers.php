@@ -135,7 +135,7 @@ class HomeControllers extends Controller {
             $messagesArr = [];
             foreach ($messagesObj as $key => $message) {
                 if(in_array($message['type'], ['image','ppt','video','document'])){
-                    $folder = '/uploads/messages/'.$message['id'];
+                    $folder = '/uploads/messages/'.CHANNEL_ID.'/'.$message['id'];
                     $url = $message['body'];
                     $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
                     $directory = public_path().$folder;
