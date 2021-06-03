@@ -149,6 +149,14 @@ return [
     'ClientControllers@uploadImage' => 'uploadImage-client',
     'ClientControllers@deleteImage' => 'deleteImage-client',
   
-
+    'InvoiceControllers@index' => 'list-invoices',
+    'InvoiceControllers@edit' => 'edit-invoice',
+    'InvoiceControllers@view' => 'view-invoice',
+    'InvoiceControllers@update' => 'edit-invoice',
+    'InvoiceControllers@fastEdit' => 'edit-invoice',
+    'InvoiceControllers@delete' => 'delete-invoice',
+    'InvoiceControllers@sort' => 'sort-invoice',
+    'InvoiceControllers@arrange' => 'sort-invoice',
+    'InvoiceControllers@charts' => 'charts-invoice',
 
 ];

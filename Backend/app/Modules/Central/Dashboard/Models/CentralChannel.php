@@ -45,7 +45,7 @@ class CentralChannel extends Model{
                         $query->where('name', 'LIKE', '%' . $input['name'] . '%');
                     } 
                 });
-        if(!IS_ADMIN){
+        if(\Session::has('user_id') && !IS_ADMIN){
             $source->where('id',Session::get('channel'));
         }
         $source->orderBy('end_date','DESC');

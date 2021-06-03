@@ -110,6 +110,7 @@ class RouteServiceProvider extends ServiceProvider
                     require app_path('Modules/Central/Department/routes.php');
                     require app_path('Modules/Central/Ticket/routes.php');
                     require app_path('Modules/Central/Client/routes.php');
+                    require app_path('Modules/Central/Invoice/routes.php');
             });
         }
     }

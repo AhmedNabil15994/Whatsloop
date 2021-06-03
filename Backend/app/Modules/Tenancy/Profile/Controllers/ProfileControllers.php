@@ -345,6 +345,7 @@ class ProfileControllers extends Controller {
         $userExtraQuotaObj->extra_quota_id = $extraQuota_id;
         $userExtraQuotaObj->tenant_id = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first()->tenant_id;
         $userExtraQuotaObj->global_user_id = $mainUser->global_id;
+        $userExtraQuotaObj->duration_type = 1;
         $userExtraQuotaObj->start_date = date('Y-m-d');
         $userExtraQuotaObj->end_date = date('Y-m-d', strtotime("+1 month",strtotime(date('Y-m-d'))));
         $userExtraQuotaObj->created_by = USER_ID;

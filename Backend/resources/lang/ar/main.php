@@ -271,8 +271,10 @@ return [
 	'subscriptionManage' => 'إدارة الإشتراك',
 	'subscriptionManage_p' => 'استعراض وإدارة اشتراكك في واتس لوب',
 	'extraQuotas' => 'الباقات الاضافية',
+	'extra_quota' => 'باقة اضافية',
 	'extraQuotas_p' => 'استعراض وإدارة الباقات الاضافية الخاصة بك',
 	'addons' => 'الاضافات',
+	'addon' => 'اضافة',
 	'addons_p' => 'استعراض وإدارة الاضافات الخاصة بك',
 	'financial_setting' => 'المعلومات المالية',
 	'payment_setting' => 'الاعدادات الدفع',
@@ -398,8 +400,11 @@ return [
 
 	'packages' => 'الباقات',
 	'memberships' => 'الباقات',
+	'membership' => 'باقة اساسية',
 	'features' => 'مميزات الباقات',
 
+	'price' => 'السعر',
+	'price_after_vat' => 'السعر بعد الضريبة',
 	'monthly_price' => 'العسر الشهري',
 	'annual_price' => 'العسر السنوي',
 	'monthly_after_vat' => 'العسر الشهري',
@@ -500,5 +505,30 @@ return [
 	'size' => 'حجم الملف',
 	'storages' => 'المساحة',
 	'demo' => 'مدة تجريبية (3 أيام)',
+
+	'invoices' => 'الفواتير',
+	'invoice' => 'فاتورة',
+	'invoice_status_0' => 'مسودة', 
+	'invoice_status_1' => 'مدفوعىة', 
+	'invoice_status_2' => 'غير مدفوعىة', 
+	'invoice_status_3' => 'مستحقة', 
+	'invoice_status_4' => 'تم الالغاء', 
+	'invoice_status_5' => 'تم الاسترجاع', 
+
+	'due_date' => 'تاريخ الاستحقاق',
+	'total' => 'الاجمالي',
+	'notes' => 'ملاحظات',
+	'item' => 'العنصر',
+	'invoice_items' => 'عناصر الفاتورة',
+	'order_sum' => 'ملخص الطلب',
+	'grandTotal' => 'المجموع الاجمالي',
+	'discount' => 'الخصم',
+	'estimatedTax' => 'الضريبة المقدرة',
+	'hello' => 'مرحبا',
+	'print' => 'طباعة',
+	'checkout' => 'التوجه الي الفدع',
+	'transferPayment' => 'ترحيل الدفع الي بداية الشهر',
+
+	
 
 ];

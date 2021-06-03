@@ -73,6 +73,10 @@ class CentralUser extends Model implements SyncMaster
         return $this->belongsTo('App\Models\CentralGroup','group_id');
     }
 
+    public function Membership(){
+        return $this->belongsTo('App\Models\Membership','membership_id');
+    }
+
     // public function PaymentInfo(){
     //     return $this->hasOne('App\Models\PaymentInfo','user_id');
     // }

@@ -23,22 +23,27 @@ class UserAddon extends Model{
         'global_user_id',
     ];
 
+    public function Addon(){
+        return $this->belongsTo('App\Models\Addons','addon_id');
+    }
 
     static function getOne($id) {
         return self::find($id);
     }
 
-    static function dataList($addons=null) {
+    static function dataList($addons=null,$user_id=null,$end_date=null) {
         $input = \Request::all();
         if($addons != null){
             $source = self::NotDeleted()->where('user_id',\Session::get('user_id'))->whereIn('addon_id',$addons)->whereDate('end_date','>=',date('Y-m-d'))->pluck('addon_id');
             return reset($source);
         }else{
-            $source = self::NotDeleted()->where(function ($query) use ($input) {
-                    if (isset($input['id']) && !empty($input['id'])) {
-                        $query->where('id',$input['id']);
-                    }
-                });
+            $source = self::NotDeleted();
+            if($user_id != null){
+                $source->where('user_id',$user_id);
+            }
+            if($end_date != null){
+                $source->where('end_date',$end_date);
+            }
         }
         
         $source->orderBy('id','DESC');
@@ -79,6 +84,7 @@ class UserAddon extends Model{
     static function getData($source){
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;
+        $dataObj->Addon = isset($source->Addon) ? $source->Addon : '';
         $dataObj->user_id = $source->user_id;
         $dataObj->duration_type = $source->duration_type;
         $dataObj->addon_id = $source->addon_id;

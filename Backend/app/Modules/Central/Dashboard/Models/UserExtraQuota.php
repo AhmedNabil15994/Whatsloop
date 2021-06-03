@@ -32,7 +32,7 @@ class UserExtraQuota extends Model{
         return self::find($id);
     }
 
-    static function dataList() {
+    static function dataList($user_id=null,$end_date=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -40,6 +40,12 @@ class UserExtraQuota extends Model{
                         $query->where('id',$input['id']);
                     }
                 });
+        if($user_id != null){
+            $source->where('user_id',$user_id);
+        }
+        if($end_date != null){
+            $source->where('end_date',$end_date);
+        }
         $source->orderBy('id','DESC');
         return self::getObj($source);
     }
@@ -94,11 +100,13 @@ class UserExtraQuota extends Model{
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;
         $dataObj->user_id = $source->user_id;
+        $dataObj->ExtraQuota = isset($source->ExtraQuota) ? $source->ExtraQuota : '';
         $dataObj->extra_quota_id = $source->extra_quota_id;
         $dataObj->global_user_id = $source->global_user_id;
         $dataObj->tenant_id = $source->tenant_id;
         $dataObj->start_date = $source->start_date;
         $dataObj->end_date = $source->end_date;
+        $dataObj->duration_type = $source->duration_type;
         $dataObj->days = (strtotime($source->end_date) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->usedDays = (strtotime(date('Y-m-d')) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->leftDays = $dataObj->days - $dataObj->usedDays;

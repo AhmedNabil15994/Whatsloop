@@ -57,7 +57,7 @@ class ChatMessage extends Model{
         $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
         $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
         $dataObj->author = isset($source->author) ? $source->author : '';
-        $dataObj->time = isset($source->time) ? $source->time : '';
+        $dataObj->time = isset($source->time) ? strtotime($source->time) : '';
         $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
         $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
         if(isset($source->status)){
@@ -118,7 +118,7 @@ class ChatMessage extends Model{
                 $dataObj->quotedMsgObj = self::getData(self::getOne($source->quotedMsgId));
             }
             if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image'])){
-                $dataObj->file_size = 0;//self::getPhotoSize($dataObj->body);
+                $dataObj->file_size = self::getPhotoSize($dataObj->body);
             }
             return $dataObj;
         }

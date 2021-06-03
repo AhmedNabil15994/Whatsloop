@@ -160,6 +160,12 @@ return [
     'UserStorageControllers@removeByTypeAndId' => 'delete-storage',
     'UserStorageControllers@removeChatFile' => 'delete-storage',
 
+    'TenantInvoiceControllers@index' => 'list-invoices',
+    'TenantInvoiceControllers@view' => 'view-invoice',
+    'TenantInvoiceControllers@sort' => 'sort-invoice',
+    'TenantInvoiceControllers@arrange' => 'sort-invoice',
+    'TenantInvoiceControllers@charts' => 'charts-invoice',
+
     // 'SallaControllers@customers' => 'salla-customers',
     // 'SallaControllers@products' => 'salla-products',
     // 'SallaControllers@orders' => 'salla-orders',

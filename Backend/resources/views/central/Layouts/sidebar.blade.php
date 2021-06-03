@@ -111,6 +111,25 @@
                 </li>
                 @endif
 
+                @if(\Helper::checkRules('list-invoices'))
+                <li class="{{ Active(URL::to('/invoices*'),'menuitem-active') }}">
+                    <a href="#sidebarInvoices" data-toggle="collapse">
+                        <i class="fas fa-file-invoice"></i>
+                        <span> {{ trans('main.invoices') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse {{ Active(URL::to('/invoices*'),'show') }}" id="sidebarInvoices">
+                        <ul class="nav-second-level">
+                            @if(\Helper::checkRules('list-invoices'))
+                            <li class="{{ Active(URL::to('/invoices*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/invoices') }}">{{ trans('main.invoices') }}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li>
+                @endif
+
                 @if(\Helper::checkRules('list-tickets,list-departments'))
                 <li class="{{ Active(URL::to('/tickets*'),'menuitem-active') }} {{ Active(URL::to('/departments*'),'menuitem-active') }}">
                     <a href="#sidebarSupport" data-toggle="collapse">

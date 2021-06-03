@@ -21,6 +21,7 @@ class CreateUserExtraQuotasTable extends Migration
             $table->integer('extra_quota_id');
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('duration_type');
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

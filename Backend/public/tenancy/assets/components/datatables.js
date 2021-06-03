@@ -172,7 +172,7 @@ $(function(){
 						deleteButton = '';
 					}
 
-					if((designElems.mainData.url == 'tickets' || designElems.mainData.url == 'clients') && $('input[name="data-tab"]').val() == 1){
+					if((designElems.mainData.url == 'tickets' || designElems.mainData.url == 'clients' || designElems.mainData.url == 'invoices') && $('input[name="data-tab"]').val() == 1){
 						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="mdi mdi-eye"></i> '+viewText+'</a>';
 					}
 

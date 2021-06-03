@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\InstanceStatus::class,
         \App\Console\Commands\SyncMessages::class,
         \App\Console\Commands\SyncDialogs::class,
+        \App\Console\Commands\SetInvoices::class,
     ];
 
     /**
@@ -37,7 +38,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->everyMinute();
             $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->everyMinute();
         }
-
+        $schedule->command('set:invoices')->everyDay();
         // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
         // $schedule->command('queue:restart')->hourly()->withoutOverlapping();
     }
