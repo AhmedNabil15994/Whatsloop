@@ -725,6 +725,11 @@ class ClientControllers extends Controller {
             'addons' => isset($input['addons']) && !empty($input['addons']) ? serialize($input['addons']) : null,
         ]);
 
+        \DB::connection('main')->table('tenant_users')->insert([
+            'tenant_id' => $tenant->id,
+            'global_user_id' => $centralUser->global_id,
+        ]);
+
         $addonsArr = [];
         if(isset($input['addons']) && !empty($input['addons'])){
             foreach ($input['addons'] as $key => $addonRow) {

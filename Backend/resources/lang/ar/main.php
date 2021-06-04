@@ -453,6 +453,7 @@ return [
     'closed' => 'مغلقة',
     'assignment' => 'تكليف ل',
     'subjectValidate' => 'يرجي ادخال الموضوع',
+    'companyValidate' => 'يرجي ادخال اسم الشركة',
 	'clientValidate' => 'يرجي اختيار العميل',
 	'departmentValidate' => 'يرجي اختيار القسم',
 	'descriptionValidate' => 'يرجي ادخال محتوي الرسائل',
@@ -528,7 +529,6 @@ return [
 	'print' => 'طباعة',
 	'checkout' => 'التوجه الي الفدع',
 	'transferPayment' => 'ترحيل الدفع الي بداية الشهر',
-
 	
 
 ];

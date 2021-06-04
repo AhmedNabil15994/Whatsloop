@@ -4,6 +4,7 @@ return [
 
 	/************************************** Login Page ****************************/
 	'login' => 'Login',
+	'register' => 'Register',
 	'loginToPanel' => 'Login To Panel',
 	'phone' => 'Phone Number',
 	'phonePlaceHolder' => 'Enter your phone number',
@@ -38,6 +39,7 @@ return [
 	'passwordValidation3' => "Retype your password again",
 	'passwordChanged' => "Your password had been changed",
 	'mustLogin' => 'You Must Login First!',
+	'newClient' => 'New Client ?!',
 
 
 

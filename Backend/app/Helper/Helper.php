@@ -38,12 +38,14 @@ class Helper
 
     static function getFolderSize($path){
         $file_size = 0;
-        foreach( \File::allFiles($path) as $file)
-        {
-            $file_size += $file->getSize();
+        if(file_exists($path)){
+            foreach( \File::allFiles($path) as $file)
+            {
+                $file_size += $file->getSize();
+            }
+            $file_size = $file_size/(1024 * 1024);
+            $file_size = number_format($file_size,2) . " MB ";
         }
-        $file_size = $file_size/(1024 * 1024);
-        $file_size = number_format($file_size,2) . " MB ";
         return $file_size;
     }
 

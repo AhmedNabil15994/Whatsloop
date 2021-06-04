@@ -9,8 +9,8 @@ class MainWhatsLoop {
 
     public function __construct($instanceId=null,$token=null) {
         $channelObj =  UserChannels::NotDeleted()->orderBy('id','DESC')->first();//->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
-        $this->instanceId = $instanceId == null ? $channelObj->id : $instanceId;
-        $this->token = $token == null ? $channelObj->token : $token;
+        $this->instanceId = $instanceId == null ? (isset($channelObj) ? $channelObj->id  : null) : $instanceId;
+        $this->token = $token == null ? (isset($channelObj) ? $channelObj->token : null) : $token;
         $this->baseUrl = 'http://engine.whatsloop.loc/';
         // $this->baseUrl = 'http://wloop.net/engine/';
     }

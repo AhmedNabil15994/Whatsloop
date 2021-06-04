@@ -41,9 +41,12 @@
                     <div class="mt-5">
                         <h6 class="text-uppercase mt-3">{{ trans('main.storages') }}</h6>
                         <div class="progress my-2 progress-sm">
-                            <div class="progress-bar progress-lg bg-success" role="progressbar" style="width: {{ (int) $data->totalSize / (int) $data->totalStorage }}%" aria-valuenow="{{ (int) $data->totalSize / (int) $data->totalStorage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        	@php 
+                        		$result = (int) $data->totalStorage > 0 ? (int) $data->totalSize / (int) $data->totalStorage : 0;
+                        	@endphp
+                            <div class="progress-bar progress-lg bg-success" role="progressbar" style="width: {{ $result }}%" aria-valuenow="{{ $result }}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <p class="text-muted font-12 mb-0">{{ $data->totalSize }} ({{ (int) $data->totalSize / (int) $data->totalStorage }}%) of {{ $data->totalStorage / 1024 }} {{ trans('main.gigaB') }} used</p>
+                        <p class="text-muted font-12 mb-0">{{ $data->totalSize }} ({{ $result }}%) of {{ $data->totalStorage / 1024 }} {{ trans('main.gigaB') }} used</p>
                     </div>
                 </div>
                 <!-- End Left sidebar -->

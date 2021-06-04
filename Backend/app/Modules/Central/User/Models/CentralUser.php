@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Stancl\Tenancy\Contracts\SyncMaster;
 use Stancl\Tenancy\Database\Concerns\CentralConnection;
-use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
+// use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
 
 class CentralUser extends Model implements SyncMaster
 {
     // Note that we force the central connection on this model
-    use ResourceSyncing, \TraitsFunc, CentralConnection;
+    use \ResourceSync, \TraitsFunc, CentralConnection;
 
     protected $guarded = [];
     public $timestamps = false;

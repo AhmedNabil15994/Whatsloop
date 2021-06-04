@@ -453,6 +453,7 @@ return [
     'closed' => 'Closed',
     'assignment' => 'Assignment',
     'subjectValidate' => 'Subject Field is required',
+    'companyValidate' => 'Company Field is required',
 	'clientValidate' => 'Client Field is required',
 	'departmentValidate' => 'Department Field is required',
 	'descriptionValidate' => 'Description Field is required',

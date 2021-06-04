@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Stancl\Tenancy\Contracts\Syncable;
-use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
+// use Stancl\Tenancy\Database\Concerns\ResourceSyncing;
 
 class User extends Authenticatable implements Syncable
 {
-    use HasFactory,\TraitsFunc,ResourceSyncing;
+    use HasFactory,\TraitsFunc,\ResourceSync;
     
     /**
      * The attributes that are mass assignable.
@@ -214,7 +214,7 @@ class User extends Authenticatable implements Syncable
         $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
         $data->channels = $source->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($source->channels))->get() : [];
-        $data->channelCodes = implode(',', unserialize($source->channels));
+        $data->channelCodes = !empty($data->channels) ? implode(',', unserialize($source->channels)) : '';
         $data->channelIDS = unserialize($source->channels);
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);
         return $data;

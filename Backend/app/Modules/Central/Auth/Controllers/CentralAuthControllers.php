@@ -3,6 +3,11 @@
 use App\Models\CentralUser;
 use App\Models\CentralChannel;
 use App\Models\CentralVariable;
+use App\Models\CentralWebActions;
+use App\Models\Domain;
+use App\Models\Tenant;
+use App\Models\User;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -10,6 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Validator;
 use URL;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CentralAuthControllers extends Controller {
 
@@ -21,6 +27,14 @@ class CentralAuthControllers extends Controller {
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         return view('Central.Auth.Views.login')->with('data',(object) $data);
+    }
+
+    public function register() {
+        if(Session::has('user_id')){
+            return redirect('/dashboard');
+        }
+        $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
+        return view('Central.Auth.Views.register')->with('data',(object) $data);
     }
 
     public function doLogin() {
@@ -270,6 +284,123 @@ class CentralAuthControllers extends Controller {
 
         Session::flash('success', trans('auth.passwordChanged'));
         return redirect('/dashboard');
+    }
+
+    protected function validateInsertObject($input){
+        $rules = [
+            'name' => 'required',
+            'phone' => 'required',
+            'company' => 'required',
+            'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'required',
+            'email' => 'required',
+            'domain' => 'required',
+        ];
+
+        $message = [
+            'name.required' => trans('main.nameValidate'),
+            'comapny.required' => trans('main.nameValidate'),
+            'phone.required' => trans('main.phoneValidate'),
+            'password.required' => trans('main.passwordValidate'),
+            'password.min' => trans('main.passwordValidate2'),
+            'password.confirmed' => trans('auth.passwordValidation2'),
+            'password_confirmation.required' => trans('auth.passwordValidation3'),
+            'email.required' => trans('main.emailValidate'),
+            'domain.required' => trans('main.domainValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+
+        return $validate;
+    }
+
+    public function postRegister(){
+        $input = \Request::all();
+
+        $validate = $this->validateInsertObject($input);
+        if($validate->fails()){
+            Session::flash('error', $validate->messages()->first());
+            return redirect()->back()->withInput();
+        }
+            
+        $domainObj = Domain::getOneByDomain('domain',$input['domain']);
+        if($domainObj){
+            Session::flash('error', trans('main.domainValidate2'));
+            return redirect()->back()->withInput();
+        }
+
+        $userObj = CentralUser::checkUserBy('email',$input['email']);
+        if($userObj){
+            Session::flash('error', trans('main.emailError'));
+            return redirect()->back()->withInput();
+        }
+
+        $userObj = CentralUser::checkUserBy('phone',$input['phone']);
+        if($userObj){
+            Session::flash('error', trans('main.phoneError'));
+            return redirect()->back()->withInput();
+        }
+
+        $tenant = Tenant::create([
+            'phone' => $input['phone'],
+            'title' => $input['name'],
+            'description' => '',
+        ]);
+        
+        $tenant->domains()->create([
+            'domain' => $input['domain'],
+        ]);
+
+        $centralUser = CentralUser::create([
+            'global_id' => (string) Str::orderedUuid(),
+            'name' => $input['name'],
+            'phone' => $input['phone'],
+            'email' => $input['email'],
+            'company' => $input['company'],
+            'password' => Hash::make($input['password']),
+            'notifications' => 0,
+            'offers' => 0,
+            'group_id' => 0,
+            'is_active' => 1,
+            'is_approved' => 1,
+            'status' => 1,
+        ]);
+        
+        \DB::connection('main')->table('tenant_users')->insert([
+            'tenant_id' => $tenant->id,
+            'global_user_id' => $centralUser->global_id,
+        ]);
+        
+        $user = $tenant->run(function() use(&$centralUser,$input){
+
+            $userObj = User::create([
+                'id' => $centralUser->id,
+                'global_id' => $centralUser->global_id,
+                'name' => $input['name'],
+                'phone' => $input['phone'],
+                'email' => $input['email'],
+                'company' => $input['company'],
+                'group_id' => 1,
+                'status' => 1,
+                'domain' => $input['domain'],
+                'sort' => 1,
+                'password' => Hash::make($input['password']),
+                'is_active' => 1,
+                'is_approved' => 1,
+                'notifications' => 0,
+                'offers' => 0,
+            ]);
+
+            return $userObj;
+        });
+
+        Session::flash('success', trans('main.addSuccess'));
+
+        $token = tenancy()->impersonate($tenant,$user->id,'/dashboard');
+        Session::put('check_user_id',$user->id);
+        return redirect(tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
+            'token' => $token
+        ]));
     }
 
     public function changeLang(Request $request){

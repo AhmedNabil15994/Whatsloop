@@ -24,17 +24,18 @@
                         </div>
                         <div class="user-form">
                             <input type="hidden" name="country_code" value="{{ $data->code }}">
-                            <form action="">
+                            <form action="{{ URL::to('/register') }}" method="post">
                                 @csrf
-                                <div class="form--title">{{ trans('auth.loginToPanel') }}</div>
+                                <div class="form--title">{{ trans('auth.newClient') }}</div>
+                                <input type="text" name="name" placeholder="{{ trans('main.name') }}">
+                                <input type="text" name="company" placeholder="{{ trans('main.company_name') }}">
+                                <input type="text" name="domain" placeholder="{{ trans('main.domain') }}">
+                                <input type="email" name="email" placeholder="{{ trans('main.email') }}">
                                 <input type="tel" id="telephone" name="phone" placeholder="{{ trans('auth.phonePlaceHolder') }}">
                                 <input type="password" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}">
-                                <div class="codes hidden">
-                                    <input placeholder="{{ trans('auth.codePlaceHolder') }}" type="tel" name="code">
-                                </div>
-                                <button type="button" class="loginBut">{{ trans('auth.loginButton') }}</button>
-                                <a href="{{ URL::to('/getResetPassword') }}" class="nav-link theme__dark">{{ trans('auth.forgotPassword') }}</a>
-                                <a href="{{ URL::to('/register') }}" class="nav-link theme__light">{{ trans('auth.newClient') }}</a>
+                                <input type="password" name="password_confirmation" placeholder="{{ trans('auth.passwordPlaceHolder') }}">
+                                <button type="button" class="loginBut">{{ trans('auth.register') }}</button>
+                                <a href="{{ URL::to('/login') }}" class="nav-link theme__dark">{{ trans('auth.login') }}</a>
                             </form>
                         </div>
                     </div>
@@ -56,6 +57,6 @@
         <script src="{{ asset('tenancy/assets/components/notifications.js') }}"></script>
         <script src="{{ asset('tenancy/assets/js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('tenancy/assets/js/utils.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('tenancy/assets/components/login.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('tenancy/assets/components/register.js') }}" type="text/javascript"></script>
     </body>
 </html>

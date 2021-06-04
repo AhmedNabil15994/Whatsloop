@@ -8,14 +8,14 @@ Route::group(['prefix' => '/'] , function () {
 	$authController = App\Http\Controllers\CentralAuthControllers::class;
 
 
-    Route::get('/register',function(){
-        return view('central.welcome');    
-    });
-    Route::post('register',[App\Http\Controllers\CentralController::class, 'register'])->name('central.register');
+    // Route::get('/register',function(){
+    //     return view('central.welcome');    
+    // });
+    // Route::post('register',[App\Http\Controllers\CentralController::class, 'register'])->name('central.register');
 
-    Route::post('login',[App\Http\Controllers\CentralController::class, 'login'])->name('central.login');
+    // Route::post('login',[App\Http\Controllers\CentralController::class, 'login'])->name('central.login');
 
-    Route::get('login',[App\Http\Controllers\CentralController::class, 'showLogin'])->name('central.show.login');
+    // Route::get('login',[App\Http\Controllers\CentralController::class, 'showLogin'])->name('central.show.login');
     Route::post('redirection',[App\Http\Controllers\CentralController::class, 'redirectLogin'])->name('central.redirection');
     
     
@@ -35,6 +35,9 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/changePassword', [$authController,'changePassword']);
     Route::post('/checkResetPassword', [$authController,'checkResetPassword']);
     Route::post('/completeReset', [$authController,'completeReset']);
+
+    Route::get('/register', [$authController,'register'])->name('register');
+    Route::post('/register', [$authController,'postRegister'])->name('register');
 
 	Route::post('/changeLang', [$authController,'changeLang'])->name('changeLang');
 

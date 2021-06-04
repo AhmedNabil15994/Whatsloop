@@ -95,14 +95,16 @@ class UserStorageControllers extends Controller {
     public function chats(Request $request) {
         $dataObj = [];
         $path = public_path().'/uploads/'.TENANT_ID.'/chats/';
-        foreach (File::allFiles($path) as $key => $file) {
-            $dataObj[$key] = new \stdClass();
-            $file_size = $file->getSize();
-            $file_size = $file_size/(1024 * 1024);
-            $file_size = number_format($file_size,2) . " MB ";
-            $dataObj[$key]->file_size = $file_size;
-            $dataObj[$key]->file_name = $file->getFileName();
-            $dataObj[$key]->file = \URL::to('/').'/uploads/'.TENANT_ID.'/chats/'.$file->getFileName();
+        if(file_exists($path)){
+            foreach (File::allFiles($path) as $key => $file) {
+                $dataObj[$key] = new \stdClass();
+                $file_size = $file->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2) . " MB ";
+                $dataObj[$key]->file_size = $file_size;
+                $dataObj[$key]->file_name = $file->getFileName();
+                $dataObj[$key]->file = \URL::to('/').'/uploads/'.TENANT_ID.'/chats/'.$file->getFileName();
+            }
         }
         // dd($dataObj);
         $data['data'] = $dataObj;
