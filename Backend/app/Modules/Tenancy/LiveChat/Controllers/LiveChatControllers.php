@@ -413,7 +413,7 @@ class LiveChatControllers extends Controller {
             $lastMessage['id'] = $messageId;
             $lastMessage['fromMe'] = 1;
             $lastMessage['chatId'] = $sendData['chatId'];
-            $lastMessage['time'] = time();
+            $lastMessage['time'] = date('Y-m-d H:i:s');
             $lastMessage['body'] = $bodyData;
             $lastMessage['caption'] = $caption;
             $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
@@ -429,7 +429,9 @@ class LiveChatControllers extends Controller {
                 $lastMessage['frontId'] = $input['frontId'];
             }
             $messageObj = ChatMessage::newMessage($lastMessage);
-            $dialogObj = ChatDialog::getData(ChatDialog::getOne($sendData['chatId'])); 
+            $dialog = ChatDialog::getOne($sendData['chatId']);
+            $dialog->last_time = strtotime($lastMessage['time']);
+            $dialogObj = ChatDialog::getData($dialog);
             broadcast(new SentMessage($domain , $dialogObj ));
         
             $is_admin = IS_ADMIN;

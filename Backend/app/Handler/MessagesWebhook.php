@@ -156,12 +156,17 @@ class MessagesWebhook extends ProcessWebhookJob{
 				            $lastMessage['message_type'] = $message_type;
 				            $lastMessage['body'] = $botObj->reply;
 				            $lastMessage['type'] = $whats_message_type;
-				            $lastMessage['time'] = time();
+				            $lastMessage['time'] = date('Y-m-d H:i:s');
 				            $lastMessage['sending_status'] = 1;
             				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sender)->where('chatName','!=',null)->first();
             				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
 				            $messageObj = ChatMessage::getData(ChatMessage::newMessage($lastMessage));
-	    					$dialogObj = ChatDialog::getData(ChatDialog::getOne($sender)); 
+
+
+				            $dialog = ChatDialog::getOne($sender);
+							$dialog->last_time = strtotime($lastMessage['time']);
+							$dialogObj = ChatDialog::getData($dialog); 
+	    					$dialogObj->lastMessage = $messageObj;
 				            $dialogObj->lastMessage->bot_details = $botObj;
 	    					// Fire Bot Message Event For Web Application
 				    		broadcast(new BotMessage($userObj->domain , $dialogObj));
@@ -220,9 +225,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 				$message['message_type'] = 'text';
 			}
 	        $message['sending_status'] = 1;
-	        $message['time'] = $message['time'];
+	        $message['time'] = date('Y-m-d H:i:s');
 	        $messageObj = ChatMessage::newMessage($message);
-			$dialogObj = ChatDialog::getData(ChatDialog::getOne($message['chatId'])); 
+	        $dialog = ChatDialog::getOne($message['chatId']);
+			$dialog->last_time = strtotime($message['time']);
+			$dialogObj = ChatDialog::getData($dialog); 
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
 		}
 	}

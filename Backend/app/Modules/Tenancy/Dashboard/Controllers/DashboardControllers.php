@@ -229,18 +229,20 @@ class DashboardControllers extends Controller {
         
         $userObj = User::first();
 
-        $paymentInfoObj = new PaymentInfo;
-        $paymentInfoObj->user_id = $userObj->id;
-        $paymentInfoObj->address = $input['address'];
-        $paymentInfoObj->address2 = $input['address2'];
-        $paymentInfoObj->city = $input['city'];
-        $paymentInfoObj->country = $input['country'];
-        $paymentInfoObj->region = $input['region'];
-        $paymentInfoObj->postal_code = $input['postal_code'];
-        $paymentInfoObj->tax_id = $input['tax_id'];
-        $paymentInfoObj->created_at = DATE_TIME;
-        $paymentInfoObj->created_by = $userObj->id;
-        $paymentInfoObj->save();
+        if(isset($input['address']) && !empty($input['address'])){
+            $paymentInfoObj = new PaymentInfo;
+            $paymentInfoObj->user_id = $userObj->id;
+            $paymentInfoObj->address = $input['address'];
+            $paymentInfoObj->address2 = $input['address2'];
+            $paymentInfoObj->city = $input['city'];
+            $paymentInfoObj->country = $input['country'];
+            $paymentInfoObj->region = $input['region'];
+            $paymentInfoObj->postal_code = $input['postal_code'];
+            $paymentInfoObj->tax_id = $input['tax_id'];
+            $paymentInfoObj->created_at = DATE_TIME;
+            $paymentInfoObj->created_by = $userObj->id;
+            $paymentInfoObj->save();
+        }
 
         $names = explode(' ', $userObj->name ,2);
         $invoiceData = [

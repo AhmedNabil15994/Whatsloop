@@ -102,7 +102,7 @@ class ChatDialog extends Model{
                 $dataObj->labels = Category::dataList(null,$cats)['data'];
                 $dataObj->moderators = !empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
                 $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
-                $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('time','DESC')->first());
+                $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('messageNumber','DESC')->first());
                 if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){
                     $dataObj->label = Category::dataList($dataObj->metadata['labels'])['data'];
                 }

@@ -209,6 +209,7 @@ export default {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewSentMessage')
             .listen('SentMessage', (data) => {
+            console.log(data);
               this.searchPucher(data.message);
             })
           // End socket.io listener
@@ -230,9 +231,8 @@ export default {
         // Start socket.io listener
         window.Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
-                    data.message.lastMessage.body = data.message.lastMessage.bot_details.message;
+                    //data.message.lastMessage.body = data.message.lastMessage.bot_details.message;
                     this.searchPucher(data.message);
-                
             })
           // End socket.io listener
         },

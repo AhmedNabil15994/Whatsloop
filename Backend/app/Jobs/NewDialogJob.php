@@ -190,10 +190,10 @@ class NewDialogJob implements ShouldQueue
                     $dialogObj->is_pinned = 0;
                     $dialogObj->is_read = 0;
                     $dialogObj->modsArr = '';
-                    $dialogObj->last_time = time();
+                    $dialogObj->last_time = strtotime(date('Y-m-d H:i:s'));
                     $dialogObj->save();
                 }
-
+                $dialogObj =ChatDialog::getData($dialogObj);
                 broadcast(new SentMessage($this->domain , $dialogObj ));
             
                 $is_admin = 0;

@@ -10,8 +10,8 @@ export const store = new Vuex.Store({
     currentScrollY:0,
     chatId:0,
     contact:[],
-    urlApi:"http://domain1.whatsloop.localhost/livechat/",
-    domain:"domain1"
+    urlApi:window.location.href+'/',
+    domain: window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false,
   },
   mutations: {
     

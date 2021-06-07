@@ -9,7 +9,7 @@ class GeneralAuthEngine
 
     public function handle($request, Closure $next){
 
-        if($request->segment(1) == 'uploads'){
+        if($request->segment(1) == 'uploads' || $request->segment(2) == 'uploads' ){
             return $next($request);
         }
 
