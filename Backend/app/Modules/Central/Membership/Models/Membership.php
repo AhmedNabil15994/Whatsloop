@@ -8,6 +8,7 @@ class Membership extends Model{
 
     protected $table = 'memberships';
     protected $primaryKey = 'id';
+    protected $connection = 'main';
     public $timestamps = false;
 
     static function getOne($id){
@@ -86,6 +87,7 @@ class Membership extends Model{
         $data->annual_price = $source->annual_price != 0 ? $source->annual_price : '';
         $data->features = $source->features != null ? unserialize($source->features) : [];
         $data->featruesText = $source->features != null ? str_replace(',', ' <br>', implode(',', reset($features))) : [];
+        $data->featruesArr = $source->features != null ? $features : [];
         $data->sort = $source->sort;
         $data->monthly_after_vat = $source->monthly_after_vat != null ? $source->monthly_after_vat : '';
         $data->annual_after_vat = $source->annual_after_vat != null ? $source->annual_after_vat : '';

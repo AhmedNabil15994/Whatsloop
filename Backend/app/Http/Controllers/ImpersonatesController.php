@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserAddon;
 use App\Models\UserChannels;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

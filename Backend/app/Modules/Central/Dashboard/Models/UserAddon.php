@@ -87,6 +87,7 @@ class UserAddon extends Model{
         $dataObj->Addon = isset($source->Addon) ? $source->Addon : '';
         $dataObj->user_id = $source->user_id;
         $dataObj->duration_type = $source->duration_type;
+        $dataObj->setting_pushed = $source->setting_pushed;
         $dataObj->addon_id = $source->addon_id;
         $dataObj->global_user_id = $source->global_user_id;
         $dataObj->tenant_id = $source->tenant_id;

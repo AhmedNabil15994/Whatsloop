@@ -78,9 +78,9 @@
 
                     <p class="text-muted mb-2 font-13"><strong>{{ trans('main.company_name') }} :</strong> <span class="ml-2 ">{{ $data->data->company }}</span></p>
 
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ $data->data->channels[0]->id }}</span></p>
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.subscriptionPeriod') }} :</strong> <span class="ml-2"> {{ $data->data->channels[0]->start_date }} - {{ $data->data->channels[0]->end_date }}</span></p>
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.leftDays') }} :</strong> <span class="ml-2"> {{ \App\Models\CentralChannel::getData($data->data->channels[0])->leftDays }} {{ trans('main.day') }}</span> </p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ @$data->data->channels[0]->id }}</span></p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.subscriptionPeriod') }} :</strong> <span class="ml-2"> {{ @$data->data->channels[0]->start_date }} - {{ @$data->data->channels[0]->end_date }}</span></p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.leftDays') }} :</strong> <span class="ml-2"> {{ isset($data->data->channels[0]) ? \App\Models\CentralChannel::getData($data->data->channels[0])->leftDays : 0 }} {{ trans('main.day') }}</span> </p>
                 </div>
             </div> <!-- end card-box -->
 
@@ -130,6 +130,11 @@
                     <li class="nav-item">
                         <a href="#tickets" data-toggle="tab" aria-expanded="false" class="nav-link">
                             {{ trans('main.tickets') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#invoices" data-toggle="tab" aria-expanded="false" class="nav-link">
+                            {{ trans('main.invoices') }}
                         </a>
                     </li>
                 </ul>
@@ -267,13 +272,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ trans('main.address') }} :</label>
-                                    <input class="form-control" name="address" value="{{ $data->paymentInfo->address }}" placeholder="{{ trans('main.address') }}">
+                                    <input class="form-control" name="address" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->address : '') }}" placeholder="{{ trans('main.address') }}">
                                 </div> 
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ trans('main.address') }} 2 :</label>
-                                    <input class="form-control" name="address2" value="{{ $data->paymentInfo->address2 }}" placeholder="{{ trans('main.address') }} 2">
+                                    <input class="form-control" name="address2" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->address2 : '') }}" placeholder="{{ trans('main.address') }} 2">
                                 </div> 
                             </div>    
                         </div>
@@ -281,13 +286,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ trans('main.city') }} :</label>
-                                    <input class="form-control" name="city" value="{{ $data->paymentInfo->city }}" placeholder="{{ trans('main.city') }}">
+                                    <input class="form-control" name="city" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->city : '') }}" placeholder="{{ trans('main.city') }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ trans('main.region') }} :</label>
-                                    <input class="form-control" name="region" value="{{ $data->paymentInfo->region }}" placeholder="{{ trans('main.region') }}">
+                                    <input class="form-control" name="region" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->region : '') }}" placeholder="{{ trans('main.region') }}">
                                 </div>
                             </div>
                         </div>
@@ -295,13 +300,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ trans('main.postal_code') }} :</label>
-                                    <input class="form-control" name="postal_code" value="{{ $data->paymentInfo->postal_code }}" placeholder="{{ trans('main.postal_code') }}">
+                                    <input class="form-control" name="postal_code" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->postal_code : '') }}" placeholder="{{ trans('main.postal_code') }}">
                                 </div> 
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{ trans('main.country') }} :</label>
-                                    <input class="form-control" value="{{ $data->paymentInfo->country }}" name="country" placeholder="{{ trans('main.country') }}">
+                                    <input class="form-control" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->country : '') }}" name="country" placeholder="{{ trans('main.country') }}">
                                 </div> 
                             </div>
                         </div>
@@ -311,9 +316,9 @@
                                     <label>{{ trans('main.paymentMethod') }} :</label>
                                     <select name="payment_method" class="form-control">
                                         <option value="">{{ trans('main.choose') }}</option>
-                                        <option value="1" {{ $data->paymentInfo->payment_method == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
-                                        <option value="2" {{ $data->paymentInfo->payment_method == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
-                                        <option value="3" {{ $data->paymentInfo->payment_method == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
+                                        <option value="1" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->payment_method : '') == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
+                                        <option value="2" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->payment_method : '') == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
+                                        <option value="3" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->payment_method : '') == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
                                     </select>
                                 </div> 
                             </div>
@@ -322,8 +327,8 @@
                                     <label>{{ trans('main.currency') }} :</label>
                                     <select name="currency" class="form-control">
                                         <option value="">{{ trans('main.choose') }}</option>
-                                        <option value="1" {{ $data->paymentInfo->currency == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
-                                        <option value="2" {{ $data->paymentInfo->currency == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
+                                        <option value="1" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->currency : '') == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
+                                        <option value="2" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->currency : '') == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
                                     </select>
                                 </div> 
                             </div>
@@ -332,7 +337,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label>{{ trans('main.tax_id') }} :</label>
-                                    <input class="form-control" name="tax_id" value="{{ $data->paymentInfo->tax_id }}" placeholder="{{ trans('main.tax_id') }}">
+                                    <input class="form-control" name="tax_id" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->tax_id : '') }}" placeholder="{{ trans('main.tax_id') }}">
                                 </div> 
                             </div>
                         </div>
@@ -474,6 +479,54 @@
                             <a href="{{ URL::to('/clients') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                         </div>
                     </div>
+
+                    <div class="tab-pane" id="invoices">
+                        <h5 class="mb-4 text-uppercase"><i class="fas fa-file-invoice mr-1"></i>{{ trans('main.invoices') }}</h5>
+                        
+                        @if(!empty($data->invoices))
+                        <!-- start user projects -->
+                        <table class="data table table-striped no-margin">
+                            <thead>
+                                <tr>
+                                    <th>{{ trans('main.id') }}</th>
+                                    <th>{{ trans('main.client') }}</th>
+                                    <th>{{ trans('main.due_date') }}</th>
+                                    <th>{{ trans('main.total') }}</th>
+                                    <th>{{ trans('main.status') }}</th>
+                                    <th>{{ trans('main.created_at') }}</th>
+                                    <th>{{ trans('main.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data->invoices as $key => $value)
+                                <tr>
+                                    <td width="3%">{{ $value->id }}</td>
+                                    <td>{{ $value->client }}</td>
+                                    <td>{{ $value->due_date }}</td>
+                                    <td>{{ $value->total }} {{ trans('main.sar') }}</td>
+                                    <td>{{ $value->statusText }}</td>
+                                    <td>{{ $value->created_at }}</td>
+                                    <td width="150px" align="center">
+                                        @if(\Helper::checkRules('edit-invoice'))
+                                            <a href="{{ URL::to('/invoices/edit/' . $value->id) }}" class="btn btn-success btn-xs"><i class="fa fa-pencil-alt"></i></a>
+                                        @endif
+                                        @if(\Helper::checkRules('view-invoice'))
+                                            <a href="{{ URL::to('/invoices/view/' . $value->id) }}" class="btn btn-info btn-xs"><i class="fa fa-eye"></i></a>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <!-- end user projects -->
+                        @else
+                        <div class="empty">{{ trans('main.noTickets') }}</div>
+                        @endif
+
+                        <div class="text-right">
+                            <a href="{{ URL::to('/clients') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                        </div>
+                    </div>
                 </div> <!-- end tab-content -->
             </div> <!-- end card-box-->
 
@@ -523,7 +576,7 @@
                                             <!--begin::Title-->
                                             <div class="d-flex justify-content-between flex-wrap mt-1">
                                                 <div class="d-flex mr-3">
-                                                    <a href="#" class="text-dark font-size-h5 font-weight-bold mr-3">{{ $data->channel->name }}</a>
+                                                    <a href="#" class="text-dark font-size-h5 font-weight-bold mr-3">{{ @$data->channel->name }}</a>
                                                     <a href="#">
                                                         <i class="fas fa-check-circle badge-outline-success"></i>
                                                     </a>
@@ -537,7 +590,7 @@
                                                         <div class="row">
                                                             <div class="col-sm-4">
                                                                 <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                    {{ trans('main.channel') }} : <b># {{ $data->channel->id }}</b>
+                                                                    {{ trans('main.channel') }} : <b># {{ @$data->channel->id }}</b>
                                                                 </a>
                                                             </div>
                                                             <div class="col-sm-4">
@@ -547,7 +600,7 @@
                                                             </div>
                                                             <div class="col-sm-4">
                                                                 <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                    {{ trans('main.connection_date') }}: <b style="direction: ltr;display: inline-block;">{{ $data->status->created_at }}</b>
+                                                                    {{ trans('main.connection_date') }}: <b style="direction: ltr;display: inline-block;">{{ @$data->status->created_at }}</b>
                                                                 </a>
                                                             </div>
                                                             <div class="col-sm-12">
@@ -555,7 +608,7 @@
                                                                 <div class="row">
                                                                     <div class="col-sm-4">
                                                                         <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                            {{ trans('main.phone_status') }} : <b><div class="badge badge-lg badge-success badge-inline">{{ $data->status->statusText }}</div></b>
+                                                                            {{ trans('main.phone_status') }} : <b><div class="badge badge-lg badge-success badge-inline">{{ @$data->status->statusText }}</div></b>
                                                                         </a>
                                                                     </div>
                                                                     <div class="col-sm-4">
@@ -602,9 +655,9 @@
                                                 <div class="d-flex align-items-center w-25 flex-fill float-right mt-lg-12 mt-8">
                                                     <span class="font-weight-bold text-dark-75">{{ trans('main.leftDays') }}</span>
                                                     <div class="progress progress-xs mx-3 w-100">
-                                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ $data->channel->rate }}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="80"></div>
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ @$data->channel->rate }}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="80"></div>
                                                     </div>
-                                                    <span class="font-weight-bolder text-dark">{{ $data->channel->leftDays }} {{ trans('main.day') }}</span>
+                                                    <span class="font-weight-bolder text-dark">{{ @$data->channel->leftDays }} {{ trans('main.day') }}</span>
                                                 </div>
                                             </div>
                                             <!--end::Content-->

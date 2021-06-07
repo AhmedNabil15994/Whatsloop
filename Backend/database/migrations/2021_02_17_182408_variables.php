@@ -33,6 +33,10 @@ class Variables extends Migration
             'var_key' => 'INSTANCES_URL',
             'var_value' => 'https://us-central1-app-chat-api-com.cloudfunctions.net/',
         ]);
+        \DB::table('variables')->insert([
+            'var_key' => 'SECRET_KEY',
+            'var_value' => 'b46fa9ebae2f7f049e8b4db88e9cfd64',
+        ]);
     }
 
     /**

@@ -215,13 +215,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{ trans('main.address') }} :</label>
-                                        <input class="form-control" name="address" value="{{ $data->paymentInfo->address }}" placeholder="{{ trans('main.address') }}">
+                                        <input class="form-control" name="address" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->address : '') }}" placeholder="{{ trans('main.address') }}">
                                     </div> 
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{ trans('main.address') }} 2 :</label>
-                                        <input class="form-control" name="address2" value="{{ $data->paymentInfo->address2 }}" placeholder="{{ trans('main.address') }} 2">
+                                        <input class="form-control" name="address2" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->address2 : '') }}" placeholder="{{ trans('main.address') }} 2">
                                     </div> 
                                 </div>    
                             </div>
@@ -229,13 +229,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{ trans('main.city') }} :</label>
-                                        <input class="form-control" name="city" value="{{ $data->paymentInfo->city }}" placeholder="{{ trans('main.city') }}">
+                                        <input class="form-control" name="city" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->city : '') }}" placeholder="{{ trans('main.city') }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{ trans('main.region') }} :</label>
-                                        <input class="form-control" name="region" value="{{ $data->paymentInfo->region }}" placeholder="{{ trans('main.region') }}">
+                                        <input class="form-control" name="region" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->region : '') }}" placeholder="{{ trans('main.region') }}">
                                     </div>
                                 </div>
                             </div>
@@ -243,13 +243,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{ trans('main.postal_code') }} :</label>
-                                        <input class="form-control" name="postal_code" value="{{ $data->paymentInfo->postal_code }}" placeholder="{{ trans('main.postal_code') }}">
+                                        <input class="form-control" name="postal_code" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->postal_code : '') }}" placeholder="{{ trans('main.postal_code') }}">
                                     </div> 
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>{{ trans('main.country') }} :</label>
-                                        <input class="form-control" value="{{ $data->paymentInfo->country }}" name="country" placeholder="{{ trans('main.country') }}">
+                                        <input class="form-control" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->country : '') }}" name="country" placeholder="{{ trans('main.country') }}">
                                     </div> 
                                 </div>
                             </div>
@@ -259,9 +259,9 @@
                                         <label>{{ trans('main.paymentMethod') }} :</label>
                                         <select name="payment_method" class="form-control">
                                             <option value="">{{ trans('main.choose') }}</option>
-                                            <option value="1" {{ $data->paymentInfo->payment_method == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
-                                            <option value="2" {{ $data->paymentInfo->payment_method == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
-                                            <option value="3" {{ $data->paymentInfo->payment_method == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
+                                            <option value="1" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->payment_method : '') == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
+                                            <option value="2" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->payment_method : '') == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
+                                            <option value="3" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->payment_method : '') == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
                                         </select>
                                     </div> 
                                 </div>
@@ -270,8 +270,8 @@
                                         <label>{{ trans('main.currency') }} :</label>
                                         <select name="currency" class="form-control">
                                             <option value="">{{ trans('main.choose') }}</option>
-                                            <option value="1" {{ $data->paymentInfo->currency == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
-                                            <option value="2" {{ $data->paymentInfo->currency == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
+                                            <option value="1" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->currency : '') == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
+                                            <option value="2" {{ (!empty($data->paymentInfo) ? $data->paymentInfo->currency : '') == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
                                         </select>
                                     </div> 
                                 </div>
@@ -280,7 +280,7 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>{{ trans('main.tax_id') }} :</label>
-                                        <input class="form-control" name="tax_id" value="{{ $data->paymentInfo->tax_id }}" placeholder="{{ trans('main.tax_id') }}">
+                                        <input class="form-control" name="tax_id" value="{{ (!empty($data->paymentInfo) ? $data->paymentInfo->tax_id : '') }}" placeholder="{{ trans('main.tax_id') }}">
                                     </div> 
                                 </div>
                             </div>

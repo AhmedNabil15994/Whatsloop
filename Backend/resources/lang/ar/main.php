@@ -523,12 +523,15 @@ return [
 	'invoice_items' => 'عناصر الفاتورة',
 	'order_sum' => 'ملخص الطلب',
 	'grandTotal' => 'المجموع الاجمالي',
+	'subTotal' => 'المبلغ الاجمالي',
 	'discount' => 'الخصم',
 	'estimatedTax' => 'الضريبة المقدرة',
 	'hello' => 'مرحبا',
 	'print' => 'طباعة',
-	'checkout' => 'التوجه الي الفدع',
+	'checkout' => 'التوجه الي الدفع',
 	'transferPayment' => 'ترحيل الدفع الي بداية الشهر',
-	
+	'month' => 'شهر',
+	'year' => 'سنة',
+	'subscribe' => 'اشترك الان',
 
 ];

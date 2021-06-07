@@ -172,7 +172,7 @@
                                         <td>0</td>
                                     </tr>
                                     <tr>
-                                        <td>{{ trans('main.estimatesTax') }} : </td>
+                                        <td>{{ trans('main.estimatedTax') }} : </td>
                                         <td>{{ $data->data->total - $mainPrices }} {{ trans('main.sar') }}</td>
                                     </tr>
                                     <tr>

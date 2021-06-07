@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->boolean('is_active')->default(0);
             $table->boolean('is_approved')->default(0);
+            $table->boolean('setting_pushed')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->integer('notifications')->default(0);

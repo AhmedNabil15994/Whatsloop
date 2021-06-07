@@ -7,6 +7,7 @@ class Feature extends Model{
     use \TraitsFunc;
 
     protected $table = 'membership_features';
+    protected $connection = 'main';
     protected $primaryKey = 'id';
     public $timestamps = false;
 

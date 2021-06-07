@@ -9,6 +9,7 @@ class CentralChannel extends Model{
 
     protected $table = 'channels';
     protected $primaryKey = 'id';
+    protected $connection = 'main';
     public $timestamps = false;
 
     protected $fillable = [

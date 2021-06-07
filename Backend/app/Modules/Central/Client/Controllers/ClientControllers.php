@@ -17,6 +17,7 @@ use App\Models\CentralWebActions;
 use App\Models\CentralTicket;
 use App\Models\UserStatus;
 use App\Models\Contact;
+use App\Models\Invoice;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -243,23 +244,20 @@ class ClientControllers extends Controller {
             $data['paymentInfo'] = PaymentInfo::where('user_id',$id)->first();
             $data['messages'] = ChatMessage::generateObj(ChatMessage::where('fromMe',1)->orderBy('time','DESC')->take(10))['data'];
             $channelObj = UserChannels::first();
-
-            $whatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            $updateResult = $whatsLoopObj->me();
-            $result = $updateResult->json();
-            // dd($result);
-            // if($result['status']['status'] != 1){
-            //     Session::flash('error', $result['status']['message']);
-            //     return back()->withInput();
-            // }
+            if($channelObj){
+                $whatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+                $updateResult = $whatsLoopObj->me();
+                $result = $updateResult->json();
+            }
+            $lastStatus = UserStatus::orderBy('id','DESC')->first();
 
             $data['client'] = $userObj;
-            $data['me'] =  isset($result['data']) ? (object) $result['data'] : [];
-            $data['status'] = UserStatus::getData(UserStatus::orderBy('id','DESC')->first());
+            $data['me'] =  isset($result) && isset($result['data']) ? (object) $result['data'] : [];
+            $data['status'] = $lastStatus ? UserStatus::getData($lastStatus) : [];
             $data['allMessages'] = ChatMessage::count();
             $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
             $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
-            $data['channel'] = UserChannels::getData($channelObj);
+            $data['channel'] = $channelObj ? UserChannels::getData($channelObj) : [];
             $data['contactsCount'] = Contact::NotDeleted()->count();
 
         tenancy()->end($tenant);
@@ -278,26 +276,29 @@ class ClientControllers extends Controller {
             'parallelHooks' => 1,
         ];
 
-        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-        if($userObj->setting_pushed == 0){
-            $updateResult = $mainWhatsLoopObj->postSettings($myData);
-            $result = $updateResult->json();
-            $userObj->setting_pushed = 1;
-            $userObj->save();
-            $settingsArr = $myData;
-        }else{
-            $updateResult = $mainWhatsLoopObj->settings([]);
-            $settingsArr = isset($updateResult->json()['data']) ? $updateResult->json()['data'] : [];
-        }     
+        if($channelObj){
+            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+            if($userObj->setting_pushed == 0){
+                $updateResult = $mainWhatsLoopObj->postSettings($myData);
+                $result = $updateResult->json();
+                $userObj->setting_pushed = 1;
+                $userObj->save();
+                $settingsArr = $myData;
+            }else{
+                $updateResult = $mainWhatsLoopObj->settings([]);
+                $settingsArr = isset($updateResult->json()['data']) ? $updateResult->json()['data'] : [];
+            }     
+        }
 
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.clients') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['memberships'] = Membership::dataList(1)['data'];
         $data['tickets'] = CentralTicket::dataList(null,$id)['data'];
+        $data['invoices'] = Invoice::dataList(null,$id)['data']; 
         $data['addons'] = Addons::dataList(1)['data'];
         $data['userAddons'] = UserAddon::getDataForUser($id);
-        $data['settings'] = $settingsArr;
+        $data['settings'] = isset($settingsArr) ? $settingsArr : [];
         return view('Central.Client.Views.view')->with('data', (object) $data);      
     }
 
@@ -448,13 +449,11 @@ class ClientControllers extends Controller {
 
 
         $duration = strtotime('+1 month');
-        $days = 30;
+        $days = 3;
         if($input['duration_type'] == 2){
             $duration = strtotime('+1 year');
-            $days = 365;
         }else if($input['duration_type'] == 3){
             $duration = strtotime('+3 days');
-            $days = 3;
         }
 
         $domainObj = Domain::where('domain',$dataObj->domain)->first();
@@ -462,14 +461,17 @@ class ClientControllers extends Controller {
         $centraChannelObj = CentralChannel::where('tenant_id',$domainObj->tenant_id)->first();
         // tenancy()->initialize($tenant);
         // tenancy()->end($tenant);
+        $channel = [];
+        if($input['duration_type'] != $oldDuration){
+            $channel = [
+                'id' => $centraChannelObj->id,
+                'token' => $centraChannelObj['token'],
+                'name' => 'Channel #'.$centraChannelObj['id'],
+                'start_date' => date('Y-m-d'),
+                'end_date' => date('Y-m-d',$duration),
+            ];
+        }
 
-        $channel = [
-            'id' => $centraChannelObj->id,
-            'token' => $centraChannelObj['token'],
-            'name' => 'Channel #'.$centraChannelObj['id'],
-            'start_date' => date('Y-m-d'),
-            'end_date' => date('Y-m-d',$duration),
-        ];
         Tenant::where('id',$domainObj->tenant_id)->update([
             'phone' => $input['phone'],
             'title' => $input['name'],
@@ -518,7 +520,7 @@ class ClientControllers extends Controller {
             'is_approved' => $input['status'],
             'status' => $input['status'],
             'membership_id' => $input['membership_id'],
-            'channels' => serialize([$channel['id']]),
+            'channels' => !empty($channel) ? serialize([$channel['id']]) : null,
             'addons' => isset($input['addons']) && !empty($input['addons']) ? serialize($input['addons']) : null,
         ]);
 
@@ -560,14 +562,17 @@ class ClientControllers extends Controller {
             CentralUser::where('id',$centralUser->id)->update(['addons' => !empty($addonsArr) ?  serialize($addonsArr) : null  ]);
         }
 
-        $extraChannelData = $channel;
-        $extraChannelData['tenant_id'] = $tenant->id;
-        $extraChannelData['global_user_id'] = $centralUser->global_id;
+        if($input['duration_type'] != $oldDuration){
+            $extraChannelData = $channel;
+            $extraChannelData['tenant_id'] = $tenant->id;
+            $extraChannelData['global_user_id'] = $centralUser->global_id;
+            CentralChannel::where('id',$centraChannelObj->id)->update($extraChannelData);
+        }
 
-        CentralChannel::where('id',$centraChannelObj->id)->update($extraChannelData);
-
-        $user = $tenant->run(function() use(&$centralUser,$channel,$input,$centraChannelObj,$addonsArr){
-            UserChannels::where('id',$centraChannelObj->id)->update($channel);
+        $user = $tenant->run(function() use(&$centralUser,$channel,$input,$centraChannelObj,$addonsArr,$oldDuration){
+            if($input['duration_type'] != $oldDuration){
+                UserChannels::where('id',$centraChannelObj->id)->update($channel);
+            }
 
             User::where('id',$centralUser->id)->update([
                 'id' => $centralUser->id,
@@ -580,7 +585,7 @@ class ClientControllers extends Controller {
                 'status' => $input['status'],
                 'domain' => $input['domain'],
                 'sort' => 1,
-                'channels' => serialize([$channel['id']]),
+                'channels' => !empty($channel) ? serialize([$channel['id']]) : null,
                 'is_active' => $input['status'],
                 'is_approved' => $input['status'],
                 'notifications' => isset($input['notifications']) && !empty($input['notifications']) && $input['notifications'] == 'on' ? 1:0,
@@ -594,19 +599,21 @@ class ClientControllers extends Controller {
             ]);
 
             $paymentInfoObj = PaymentInfo::where('user_id',$centralUser->id)->first();
-            $paymentInfoObj->user_id = $centralUser->id;
-            $paymentInfoObj->address = $input['address'];
-            $paymentInfoObj->address2 = $input['address2'];
-            $paymentInfoObj->city = $input['city'];
-            $paymentInfoObj->country = $input['country'];
-            $paymentInfoObj->region = $input['region'];
-            $paymentInfoObj->postal_code = $input['postal_code'];
-            $paymentInfoObj->tax_id = $input['tax_id'];
-            $paymentInfoObj->payment_method = $input['payment_method'];
-            $paymentInfoObj->currency = $input['currency'];
-            $paymentInfoObj->created_at = DATE_TIME;
-            $paymentInfoObj->created_by = USER_ID;
-            $paymentInfoObj->save();
+            if($paymentInfoObj){
+                $paymentInfoObj->user_id = $centralUser->id;
+                $paymentInfoObj->address = $input['address'];
+                $paymentInfoObj->address2 = $input['address2'];
+                $paymentInfoObj->city = $input['city'];
+                $paymentInfoObj->country = $input['country'];
+                $paymentInfoObj->region = $input['region'];
+                $paymentInfoObj->postal_code = $input['postal_code'];
+                $paymentInfoObj->tax_id = $input['tax_id'];
+                $paymentInfoObj->payment_method = $input['payment_method'];
+                $paymentInfoObj->currency = $input['currency'];
+                $paymentInfoObj->created_at = DATE_TIME;
+                $paymentInfoObj->created_by = USER_ID;
+                $paymentInfoObj->save();
+            }
 
             return true;
         });
@@ -615,11 +622,11 @@ class ClientControllers extends Controller {
             $transferDaysData = [
                 'receiver' => $channel['id'],
                 'days' => $days,
-                'source' => $centraChannelObj->id,
+                'source' => CentralChannel::first()->id,
             ];
 
-            // $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-            // $result = $updateResult->json();
+            $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+            $result = $updateResult->json();
         }
 
         Session::forget('photos');
@@ -665,13 +672,11 @@ class ClientControllers extends Controller {
         }
 
         $duration = strtotime('+1 month');
-        $days = 30;
+        $days = 3;
         if($input['duration_type'] == 2){
             $duration = strtotime('+1 year');
-            $days = 365;
         }else if($input['duration_type'] == 3){
             $duration = strtotime('+3 days');
-            $days = 3;
         }
 
         $channelObj = CentralChannel::first();

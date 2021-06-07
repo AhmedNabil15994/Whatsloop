@@ -141,7 +141,7 @@
                                             <td>{{ $key+1 }}</td>
                                             <td>
                                                 <p class="m-0 d-inline-block align-middle font-16">
-                                                    <a href="ecommerce-product-detail.html" class="text-reset font-family-secondary">{{ $item['data']['title_'.LANGUAGE_PREF] }}</a><br>
+                                                    <a href="#" class="text-reset font-family-secondary">{{ $item['data']['title_'.LANGUAGE_PREF] }}</a><br>
                                                     <small class="mr-2"><b>{{ trans('main.type') }}:</b> {{ trans('main.'.$item['type']) }} </small>
                                                 </p>
                                             </td>

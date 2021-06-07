@@ -9,6 +9,7 @@ class  CentralVariable extends Model{
 
     protected $table = 'variables';
     protected $primaryKey = 'id';
+    protected $connection = 'main';
     public $timestamps = false;
 
     protected $fillable = [

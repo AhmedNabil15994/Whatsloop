@@ -16,6 +16,13 @@ return [
     'ProfileControllers@postChangePassword' => 'general',
     'ProfileControllers@services' => 'general',
 
+    'DashboardControllers@checkout' => 'general',
+    'DashboardControllers@postCheckout' => 'general',
+    'DashboardControllers@completeOrder' => 'general',
+    'DashboardControllers@pushInvoice' => 'general',
+
+
+
     'ProfileControllers@paymentInfo' => 'paymentInfo',
     'ProfileControllers@postPaymentInfo' => 'paymentInfo',
 

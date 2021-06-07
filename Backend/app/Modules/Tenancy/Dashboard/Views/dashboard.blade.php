@@ -1,5 +1,5 @@
 @extends('tenant.Layouts.master')
-@section('title','الصفحة الرئيسية')
+@section('title',trans('main.dashboard'))
 @section('styles')
 
 @endsection
@@ -16,11 +16,10 @@
             <div class="page-title-box">
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">UBold</a></li>
-                        <li class="breadcrumb-item active">Dashboard 3</li>
+                        <li class="breadcrumb-item active">{{ trans('main.dashboard') }}</li>
                     </ol>
                 </div>
-                <h4 class="page-title">Dashboard 3</h4>
+                <h4 class="page-title">{{ trans('main.dashboard') }}</h4>
             </div>
         </div>
     </div>     
