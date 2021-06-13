@@ -127,7 +127,7 @@
                     </div>
                     @endif
                     <!--begin: Datatable-->
-                    <table class="table table-striped dt-responsive nowrap w-100 table-hover table-bordered table-head-custom table-foot-custom" id="kt_datatable">
+                    <table class="table dt-responsive nowrap w-100" id="kt_datatable">
                         <thead>
                             <tr>
                                 @foreach($data->designElems['tableData'] as $one)

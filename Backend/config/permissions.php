@@ -172,6 +172,9 @@ return [
     'TenantInvoiceControllers@sort' => 'sort-invoice',
     'TenantInvoiceControllers@arrange' => 'sort-invoice',
     'TenantInvoiceControllers@charts' => 'charts-invoice',
+    'TenantInvoiceControllers@checkout' => 'pay-invoice',
+    'TenantInvoiceControllers@pushInvoice' => 'pay-invoice',
+
 
     // 'SallaControllers@customers' => 'salla-customers',
     // 'SallaControllers@products' => 'salla-products',

@@ -8,6 +8,7 @@ use App\Models\ChatMessage;
 use App\Models\ChatDialog;
 use App\Events\IncomingMessage;
 use App\Models\UserExtraQuota;
+use App\Models\UserAddon;
 use App\Events\BotMessage;
 use App\Events\MessageStatus;
 use \Spatie\WebhookClient\ProcessWebhookJob;
@@ -24,6 +25,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$tenantUser->global_id)->first();
 		$userObj = \DB::connection('main')->table('domains')->where('tenant_id',$tenantObj->tenant_id)->first();
 
+		$disabled = UserAddon::getDeactivated($tenantUser->id);
+        $dis = 0;
+        if(in_array(1,$disabled)){
+            $dis = 1;
+        }
 
 		$startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
@@ -91,7 +97,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 	    			$sendData['chatId'] = $sender;
 
-	    			if($botObj){
+	    			if($botObj && !$dis){
 	    				$botObj = Bot::getData($botObj);
 	    				$reply = $botObj->reply;
 	    				$myMessage = $reply;
@@ -188,7 +194,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    }
 
 	    // If Chat Status Changed
-	    if(!empty($actions)){
+	    if(!empty($actions) && $dis){
 	    	$this->handleUpdates($userObj->domain,$actions);
 	    }
 	}

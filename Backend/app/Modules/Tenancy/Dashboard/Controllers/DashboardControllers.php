@@ -163,6 +163,9 @@ class DashboardControllers extends Controller {
 
     public function checkout(){
         $input = \Request::all();
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
         
         if(!isset($input['membership_id']) || empty($input['membership_id'])){
             Session::flash('error',trans('main.membershipValidate'));
@@ -183,7 +186,10 @@ class DashboardControllers extends Controller {
 
     public function postCheckout(){
         $input = \Request::all();
-        // dd($input);
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
+
         $myData   = json_decode($input['data']);
         $testData = [];
         $total = 0;
@@ -208,7 +214,7 @@ class DashboardControllers extends Controller {
         $input['totals'] = json_decode($input['totals']);
         $input['totals'][3] = $total;
         $data['totals'] = $input['totals'];
-
+        $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         Session::put('data',$testData);
         Session::put('totals',$data['totals']);
         return view('Tenancy.Dashboard.Views.dashboard4')->with('data',(object) $data);
@@ -216,6 +222,10 @@ class DashboardControllers extends Controller {
 
     public function completeOrder(){
         $input = \Request::all();
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
+
         $totals = Session::get('totals')[3];
         $cartData = Session::get('data');
 
@@ -339,6 +349,7 @@ class DashboardControllers extends Controller {
                     'global_user_id' => $userObj->global_id,
                     'user_id' => $userObj->id,
                     'addon_id' => $one[0],
+                    'status' => 1,
                     'duration_type' => $one[3],
                     'start_date' => date('Y-m-d'),
                     'end_date' => $one[3] == 1 ? date('Y-m-d',strtotime('+1 month')) : date('Y-m-d',strtotime('+1 year')), 
@@ -352,6 +363,7 @@ class DashboardControllers extends Controller {
                     'user_id' => $userObj->id,
                     'extra_quota_id' => $one[0],
                     'duration_type' => $one[3],
+                    'status' => 1,
                     'start_date' => date('Y-m-d'),
                     'end_date' => $one[3] == 1 ? date('Y-m-d',strtotime('+1 month')) : date('Y-m-d',strtotime('+1 year')), 
                 ];
@@ -402,32 +414,53 @@ class DashboardControllers extends Controller {
         UserAddon::insert($addonData);
         UserExtraQuota::insert($extraQuotaData);
 
-
+        $mainUserChannel = UserChannels::first();
         $channelObj = CentralChannel::first();
-        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-        $updateResult = $mainWhatsLoopObj->createChannel();
-        $result = $updateResult->json();
+        if(!$mainUserChannel){
+            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+            $updateResult = $mainWhatsLoopObj->createChannel();
+            $result = $updateResult->json();
 
-    
-        if($result['status']['status'] != 1){
-            \Session::flash('error', $result['status']['message']);
-            return back()->withInput();
+        
+            if($result['status']['status'] != 1){
+                \Session::flash('error', $result['status']['message']);
+                return back()->withInput();
+            }
+
+            $channel = [
+                'id' => $result['data']['channel']['id'],
+                'token' => $result['data']['channel']['token'],
+                'name' => 'Channel #'.$result['data']['channel']['id'],
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ];
+
+            $extraChannelData = $channel;
+            $extraChannelData['tenant_id'] = $tenant_id;
+            $extraChannelData['global_user_id'] = $userObj->global_id;
+
+            CentralChannel::create($extraChannelData);
+            UserChannels::create($channel);
+        }else{
+
+            $mainUserChannel->start_date = $start_date;
+            $mainUserChannel->end_date = $end_date;
+            $mainUserChannel->save();
+
+            CentralChannel::where('id',$mainUserChannel->id)->update([
+                'start_date' => $start_date,
+                'end_date' => $end_date
+            ]);
+
+            $channel = [
+                'id' => $mainUserChannel->id,
+                'token' => $mainUserChannel->token,
+                'name' => 'Channel #'.$mainUserChannel->id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ];
         }
-
-        $channel = [
-            'id' => $result['data']['channel']['id'],
-            'token' => $result['data']['channel']['token'],
-            'name' => 'Channel #'.$result['data']['channel']['id'],
-            'start_date' => $start_date,
-            'end_date' => $end_date,
-        ];
-
-        $extraChannelData = $channel;
-        $extraChannelData['tenant_id'] = $tenant_id;
-        $extraChannelData['global_user_id'] = $userObj->global_id;
-
-        CentralChannel::create($extraChannelData);
-        UserChannels::create($channel);
+        
 
         $transferDaysData = [
             'receiver' => $channel['id'],
@@ -447,21 +480,27 @@ class DashboardControllers extends Controller {
         ]);
 
         if(in_array(4,$addon)){
-            Variable::insert([
-                [
-                    'var_key' => 'ZidURL',
-                    'var_value' => 'https://api.zid.sa/v1',
-                ],
-            ]);
+            $varObj = Variable::where('var_key','ZidURL')->first();
+            if(!$varObj){
+                Variable::insert([
+                    [
+                        'var_key' => 'ZidURL',
+                        'var_value' => 'https://api.zid.sa/v1',
+                    ],
+                ]);
+            }
         }
 
         if(in_array(5,$addon)){
-            Variable::insert([
-                [
-                    'var_key' => 'SallaURL',
-                    'var_value' => 'https://api.salla.dev/admin/v2',
-                ],
-            ]);
+            $varObj = Variable::where('var_key','SallaURL')->first();
+            if(!$varObj){
+                Variable::insert([
+                    [
+                        'var_key' => 'SallaURL',
+                        'var_value' => 'https://api.salla.dev/admin/v2',
+                    ],
+                ]);
+            }
         }
 
 
@@ -485,8 +524,6 @@ class DashboardControllers extends Controller {
         //     return back()->withInput();
         // }
 
-
-        // dd($cartObj);
         Session::forget('user_id');
         return redirect()->to('/dashboard');
     }

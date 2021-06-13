@@ -45,10 +45,12 @@
                             <a href="#" class="btn ml-1 btn-outline-danger search-mode m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.advancedSearchTip') }}">
                                 <i class="fa fa-question"></i>
                             </a>
+                            @if($data->dis != 1)
                             <a href="{{ URL::current().'?refresh=refresh' }}" class="btn mr-2 ml-2 btn-md btn-rounded btn-outline-dark" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.refresh') }}">
                                 <i class=" fas fa-database"></i>
                                 {{ trans('main.refresh') }}
                             </a>
+                            @endif
                             <div class="btn-group ml-1 dropleft">
                                 <button type="button" style="border-radius: 25px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ trans('main.actions') }} <i class="mdi mdi-chevron-down"></i></button>
                                 <div class="dropdown-menu" style="">

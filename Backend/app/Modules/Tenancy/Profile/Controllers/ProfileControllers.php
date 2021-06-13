@@ -344,6 +344,7 @@ class ProfileControllers extends Controller {
         $userExtraQuotaObj->user_id = USER_ID;
         $userExtraQuotaObj->extra_quota_id = $extraQuota_id;
         $userExtraQuotaObj->tenant_id = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first()->tenant_id;
+        $userExtraQuotaObj->status = 1;
         $userExtraQuotaObj->global_user_id = $mainUser->global_id;
         $userExtraQuotaObj->duration_type = 1;
         $userExtraQuotaObj->start_date = date('Y-m-d');
@@ -393,6 +394,7 @@ class ProfileControllers extends Controller {
 
         $userExtraQuotaObj->user_id = USER_ID;
         $userExtraQuotaObj->addon_id = $addon_id;
+        $userExtraQuotaObj->status = 1;
         $userExtraQuotaObj->tenant_id = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first()->tenant_id;
         $userExtraQuotaObj->global_user_id = $userObj->global_id;
         $userExtraQuotaObj->duration_type = isset($input['addons'][$addon_id][2]) ? 2 : 1;
@@ -540,6 +542,12 @@ class ProfileControllers extends Controller {
         $updateResult = $mainWhatsLoopObj->me();
         $result = $updateResult->json();
         // dd($result);
+
+        if($result == null){
+            Session::flash('error', trans('main.loading'));
+            return back()->withInput();
+        }
+
         if($result['status']['status'] != 1){
             Session::flash('error', $result['status']['message']);
             return back()->withInput();

@@ -39,6 +39,7 @@ class VerifyCsrfToken extends Middleware
         '/clients/edit/*/editImage',
 
         '/pushInvoice',
+        '/invoices/*/pushInvoice',
 
     ];
 }

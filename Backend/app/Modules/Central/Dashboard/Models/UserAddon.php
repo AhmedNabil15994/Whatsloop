@@ -32,13 +32,22 @@ class UserAddon extends Model{
         return self::find($id);
     }
 
+    static function getDeactivated($user_id){
+        $source = self::NotDeleted()->where('user_id',$user_id)->where('status',2)->pluck('addon_id');
+        return reset($source);
+    }
+
     static function dataList($addons=null,$user_id=null,$end_date=null) {
         $input = \Request::all();
         if($addons != null){
-            $source = self::NotDeleted()->where('status',1)->where('user_id',\Session::get('user_id'))->whereIn('addon_id',$addons)->whereDate('end_date','>=',date('Y-m-d'))->pluck('addon_id');
-            return reset($source);
+            $data = [];
+            $allData = self::NotDeleted()->whereIn('status',[1,2])->pluck('addon_id');
+            $dataId = self::NotDeleted()->where('status',2)->pluck('addon_id');
+            $data[0] = reset($allData);
+            $data[1] = reset($dataId);
+            return $data;
         }else{
-            $source = self::NotDeleted()->where('status',1);
+            $source = self::NotDeleted()->where('status',$statusArr);
             if($user_id != null){
                 $source->where('user_id',$user_id);
             }

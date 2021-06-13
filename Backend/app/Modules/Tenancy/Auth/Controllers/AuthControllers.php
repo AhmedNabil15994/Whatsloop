@@ -100,11 +100,15 @@ class AuthControllers extends Controller {
         session(['membership' => $userObj->membership_id]);
         if($isAdmin){
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-            session(['addons' => $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons)) : []]);
+            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons)) : [];
+            session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
+            session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-            session(['addons' => $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons)) : []]);
+            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons)) : [];
+            session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
+            session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         }
         session(['tenant_id' => $tenantObj->tenant_id]);
 

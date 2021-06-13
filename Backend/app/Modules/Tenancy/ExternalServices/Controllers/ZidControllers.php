@@ -17,6 +17,15 @@ class ZidControllers extends Controller {
     use \TraitsFunc;
     public $service = 'zid';
 
+    public function checkPerm(){
+        $disabled = Session::get('deactivatedAddons');
+        $dis = 0;
+        if(in_array(4,$disabled)){
+            $dis = 1;
+        }
+        return $dis;
+    }
+
     public function customers(){
         $input = \Request::all();
         $modelName = 'customers';
@@ -49,7 +58,7 @@ class ZidControllers extends Controller {
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
-        if (!Schema::hasTable($tableName) || $refresh == 'refresh') {
+        if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
             $externalHelperObj->startFuncs();
         }
 
@@ -92,7 +101,7 @@ class ZidControllers extends Controller {
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
-        if (!Schema::hasTable($tableName) || $refresh == 'refresh') {
+        if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
             $externalHelperObj->startFuncs();
         }
 
@@ -135,7 +144,7 @@ class ZidControllers extends Controller {
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
-        if (!Schema::hasTable($tableName) || $refresh == 'refresh') {
+        if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
             $externalHelperObj->startFuncs();
         }
 
@@ -338,6 +347,7 @@ class ZidControllers extends Controller {
 
         $mainData['designElems'] = $data;
         $mainData['data'] = $formattedData;
+        $mainData['dis'] = $this->checkPerm();
         if(!empty($formattedData)){
             $mainData['pagination'] = \Helper::GeneratePagination($modelData);
         }

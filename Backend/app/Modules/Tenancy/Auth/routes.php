@@ -9,7 +9,10 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/', function(){dd('landingPage');});
 
     Route::get('/login', [$authController,'login'])->name('login');
+
     Route::post('/pushInvoice', [App\Http\Controllers\DashboardControllers::class,'pushInvoice']);
+    Route::post('/invoices/{id}/pushInvoice', [\App\Http\Controllers\TenantInvoiceControllers::class,'pushInvoice']);
+    
     Route::get('/loginByCode', [$authController,'loginByCode'])->name('loginByCode');
     Route::post('/login', [$authController,'doLogin'])->name('doLogin');
     Route::post('/checkByCode', [$authController,'checkByCode']);

@@ -21,6 +21,15 @@ class GroupMsgsControllers extends Controller {
 
     use \TraitsFunc;
 
+    public function checkPerm(){
+        $disabled = Session::get('deactivatedAddons');
+        $dis = 0;
+        if(in_array(3,$disabled)){
+            $dis = 1;
+        }
+        return $dis;
+    }
+
     public function getData(){
         $userObj = User::getData(User::getOne(USER_ID));
         $groups = GroupNumber::dataList(1)['data'];
@@ -229,6 +238,12 @@ class GroupMsgsControllers extends Controller {
     }
 
     public function add() {
+
+        if($this->checkPerm()){
+            Session::flash('error','Please Re-activate Group Messages Addon');
+            return redirect()->back();
+        }
+
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
         $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();

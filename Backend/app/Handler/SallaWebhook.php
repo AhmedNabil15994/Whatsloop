@@ -8,6 +8,7 @@ use Session;
 use App\Models\ModTemplate;
 use App\Models\ChatMessage;
 use App\Models\UserExtraQuota;
+use App\Models\UserAddon;
 
 class SallaWebhook extends ProcessWebhookJob{
 	public function handle(){
@@ -31,10 +32,16 @@ class SallaWebhook extends ProcessWebhookJob{
             return 1;
         }
 
+        $disabled = UserAddon::getDeactivated($tenantUser->id);
+        $dis = 0;
+        if(in_array(5,$disabled)){
+            $dis = 1;
+        }
+
 	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    // If New Webhook
-	    if(!empty($mainData)){
+	    if(!empty($mainData) && !$dis){
 	  		// IF Customer Data
 	    	if(isset($mainData['gender']) && isset($mainData['urls'])){
 	    		// Customer (Create / Update)

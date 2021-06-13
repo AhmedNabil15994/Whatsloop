@@ -2,6 +2,16 @@
 
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\CentralUser;
+use App\Models\Membership;
+use App\Models\Addons;
+use App\Models\ExtraQuota;
+use App\Models\UserAddon;
+use App\Models\UserExtraQuota;
+use App\Models\UserChannels;
+use App\Models\CentralChannel;
+use App\Models\Variable;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -182,6 +192,204 @@ class TenantInvoiceControllers extends Controller {
         return \Redirect::back()->withInput();
     }
 
+    public function checkout($id){
+        $id = (int) $id;
+
+        $invoiceObj = Invoice::NotDeleted()->find($id);
+        $userObj = User::first();
+        if($invoiceObj == null || $invoiceObj->client_id != $userObj->id) {
+            return Redirect('404');
+        } 
+
+        $names = explode(' ', $userObj->name ,2);
+        $invoiceData = [
+            'title' => $userObj->name,
+            'cc_first_name' => $names[0],
+            'cc_last_name' => isset($names[1]) ? $names[1] : '',
+            'email' => $userObj->email,
+            'cc_phone_number' => '',
+            'phone_number' => $userObj->phone,
+            'products_per_title' => 'New Membership',
+            'reference_no' => 'whatsloop-'.$userObj->id,
+            'unit_price' => $invoiceObj->total,
+            'quantity' => 1,
+            'amount' => $invoiceObj->total,
+            'other_charges' => 'VAT',
+            'discount' => '',
+            'payment_type' => 'mastercard',
+            'OrderID' => 'whatsloop-'.$userObj->id,
+            'SiteReturnURL' => \URL::to('/invoices/'.$id.'/pushInvoice'),
+        ];
+
+        $paymentObj = new \PaymentHelper();        
+        return $paymentObj->RedirectWithPostForm($invoiceData);
+    }
+
+    public function pushInvoice($id){
+        $input = \Request::all();
+        return $this->activate($id);
+        
+        // dd($input);
+        if (isset($input['cartId']) && !empty($input['cartId'])) {
+            $postData['OrderID'] = $input['cartId'];
+            $paymentObj = new \PaymentHelper();        
+            $createPayment = $paymentObj->OpenURLWithPost($postData);
+            $CreateaPage = json_decode($createPayment, TRUE);
+        
+            if ($CreateaPage['Code'] == "1001") {
+                if ($CreateaPage['Data']['Status'] == "Success") {
+                    $this->activate($id);
+                }
+                $UpdateOrder = [];
+                if ($CreateaPage['Data']['Status'] == "Rejected") {
+                    $UpdateOrder['Status'] = "تم رفض العملية";
+                }
+                if ($CreateaPage['Data']['Status'] == "Canceled") {
+                    $UpdateOrder['Status'] = "تم الالغاء";
+                }
+                if ($CreateaPage['Data']['Status'] == "Expired Card") {
+                    $UpdateOrder['Status'] = "البطاقة المستخدمة منتهية";
+                }
+                \Session::flash('error',$UpdateOrder['Status']);
+                return redirect()->to('/');
+            }else{
+                \Session::flash('error','حدثت مشكلة في عملية الدفع');
+                return redirect()->to('/dashboard');
+            }
+        }
+    }
+
+    public function activate($id){
+        $id = (int) $id;
+
+        $invoiceObj = Invoice::NotDeleted()->find($id);
+        if($invoiceObj == null) {
+            return Redirect('404');
+        }
+
+        $cartObj = unserialize($invoiceObj->items);
+
+        $userObj = User::first();
+        $centralUser = CentralUser::find($userObj->id);
+        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+        $tenant_id = $tenantObj->tenant_id;
+
+        $addons = [];
+        $start_date = date('Y-m-d');
+
+        foreach($cartObj as $key => $one){
+            $end_date =  $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month')) : date('Y-m-d',strtotime('+1 year'));
+            if($one['type'] == 'membership'){
+                $dataObj = Membership::getOne($one['data']['id']);
+                $userObj->update([
+                    'membership_id' => $one['data']['id'],
+                    'duration_type' => $one['data']['duration_type'],
+                ]);
+
+                $centralUser->update([
+                    'membership_id' => $one['data']['id'],
+                    'duration_type' => $one['data']['duration_type'],
+                ]);
+
+                $tenantChannel = UserChannels::first();
+                $tenantChannel->start_date = date('Y-m-d');
+                $tenantChannel->end_date = $end_date;
+                $tenantChannel->save();
+
+                $centralUserChannel = CentralChannel::where('id',$tenantChannel->id)->first();
+                $centralUserChannel->start_date = $tenantChannel->start_date;
+                $centralUserChannel->end_date = $tenantChannel->end_date;
+                $centralUserChannel->save();
+
+            }else if($one['type'] == 'addon'){
+                $addons[] = $one['data']['id'];
+                UserAddon::create([
+                    'tenant_id' => $tenant_id,
+                    'global_user_id' => $userObj->global_id,
+                    'user_id' => $userObj->id,
+                    'addon_id' => $one['data']['id'],
+                    'status' => 1,
+                    'duration_type' => $one['data']['duration_type'],
+                    'start_date' => date('Y-m-d'),
+                    'end_date' => $end_date, 
+                ]);
+
+            }else if($one['type'] == 'extra_quota'){
+                UserExtraQuota::create([
+                    'tenant_id' => $tenant_id,
+                    'global_user_id' => $userObj->global_id,
+                    'user_id' => $userObj->id,
+                    'extra_quota_id' => $one['data']['id'],
+                    'duration_type' => $one['data']['duration_type'],
+                    'status' => 1,
+                    'start_date' => date('Y-m-d'),
+                    'end_date' => $end_date, 
+                ]);
+            }
+        }
+
+        if(!empty($addon)){
+            $userObj->update([
+                'addons' =>  serialize($addon),
+            ]);
+
+            $centralUser->update([
+                'addons' =>  serialize($addon),
+            ]);
+        }
+
+        $invoiceObj->status = 1;
+        $invoiceObj->save();
+
+        $mainUserChannel = UserChannels::first();
+        $channelObj = CentralChannel::first();
+  
+        
+
+        $transferDaysData = [
+            'receiver' => $mainUserChannel->id,
+            'days' => 3,
+            'source' => $channelObj->id,
+        ];
+
+        $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+        $result = $updateResult->json();
+
+        $userObj->update([
+            'channels' => serialize([$mainUserChannel->id]),
+        ]);
+
+        $centralUser->update([
+            'channels' => serialize([$mainUserChannel->id]),
+        ]);
+
+        if(in_array(4,$addons)){
+            $varObj = Variable::where('var_key','ZidURL')->first();
+            if(!$varObj){
+                Variable::insert([
+                    [
+                        'var_key' => 'ZidURL',
+                        'var_value' => 'https://api.zid.sa/v1',
+                    ],
+                ]);
+            }
+        }
+
+        if(in_array(5,$addons)){
+            $varObj = Variable::where('var_key','SallaURL')->first();
+            if(!$varObj){
+                Variable::insert([
+                    [
+                        'var_key' => 'SallaURL',
+                        'var_value' => 'https://api.salla.dev/admin/v2',
+                    ],
+                ]);
+            }
+        }
+
+        Session::forget('user_id');
+        return redirect()->to('/dashboard');
+    }
 
     public function delete($id) {
         $id = (int) $id;

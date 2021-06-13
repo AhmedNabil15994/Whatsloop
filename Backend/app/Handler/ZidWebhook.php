@@ -8,6 +8,7 @@ use Session;
 use App\Models\ModTemplate;
 use App\Models\ChatMessage;
 use App\Models\UserExtraQuota;
+use App\Models\UserAddon;
 
 class ZidWebhook extends ProcessWebhookJob{
 	public function handle(){
@@ -31,10 +32,16 @@ class ZidWebhook extends ProcessWebhookJob{
             return 1;
         }
 
+        $disabled = UserAddon::getDeactivated($tenantUser->id);
+        $dis = 0;
+        if(in_array(5,$disabled)){
+            $dis = 1;
+        }
+
 	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    // If New Webhook
-	    if(!empty($mainData)){
+	    if(!empty($mainData) && !$dis){
 	    	// Project (Delete)
 	    	if(isset($mainData['product_id']) && isset($mainData['deleted_at'])){
 	    		return \DB::table('zid_products')->where('id',$mainData['product_id'])->delete();

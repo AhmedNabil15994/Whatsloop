@@ -23,6 +23,15 @@ class LiveChatControllers extends Controller {
 
     use \TraitsFunc;
 
+    public function checkPerm(){
+        $disabled = Session::get('deactivatedAddons');
+        $dis = 0;
+        if(in_array(2,$disabled)){
+            $dis = 1;
+        }
+        return $dis;
+    }
+
     public function index(){
         return view('Tenancy.LiveChat.Views.index');
     }
@@ -44,6 +53,11 @@ class LiveChatControllers extends Controller {
 
     public function pinChat(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -71,6 +85,11 @@ class LiveChatControllers extends Controller {
 
     public function unpinChat(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -118,6 +137,11 @@ class LiveChatControllers extends Controller {
 
     public function readChat(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -147,6 +171,11 @@ class LiveChatControllers extends Controller {
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->unreadChat($data);
@@ -170,6 +199,10 @@ class LiveChatControllers extends Controller {
    
     public function sendMessage(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
@@ -474,6 +507,11 @@ class LiveChatControllers extends Controller {
 
     public function labelChat(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -513,6 +551,11 @@ class LiveChatControllers extends Controller {
 
     public function unlabelChat(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -571,6 +614,11 @@ class LiveChatControllers extends Controller {
 
     public function updateContact(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -625,6 +673,11 @@ class LiveChatControllers extends Controller {
 
     public function assignMod(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -656,6 +709,11 @@ class LiveChatControllers extends Controller {
 
     public function removeMod(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }

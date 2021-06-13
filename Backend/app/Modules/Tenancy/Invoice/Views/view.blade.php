@@ -48,8 +48,10 @@
                             <h4 class="header-title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
                         </div>
                         <div class="col-6 text-right">
-                            <button class="btn btn-success"><i class="fas fa-credit-card"></i> {{ trans('main.checkout') }}</button>
-                            <button class="btn btn-info"><i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</button>
+                            @if(IS_ADMIN)
+                            <a href="{{ URL::current().'/checkout' }}" class="btn btn-success"><i class="fas fa-credit-card"></i> {{ trans('main.checkout') }}</a>
+                            <a href="#" class="btn btn-info"><i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a>
+                            @endif
                         </div>
                     </div>
                     <hr>

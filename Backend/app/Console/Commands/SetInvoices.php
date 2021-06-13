@@ -9,6 +9,9 @@ use App\Models\UserAddon;
 use App\Models\UserExtraQuota;
 use App\Models\ExtraQuota;
 use App\Models\CentralChannel;
+use App\Models\Domain;
+use App\Models\Tenant;
+use App\Models\User;
 
 class SetInvoices extends Command
 {
@@ -49,33 +52,35 @@ class SetInvoices extends Command
         foreach ($channels as $value) {
             if($value->leftDays <= 7){
                 $userObj = CentralUser::where('global_id',$value->global_user_id)->first();
-                $membershipObj = $userObj->Membership; 
-                $invoiceItems['id'] = $membershipObj->id;
-                $invoiceItems['title_ar'] = $membershipObj->title_ar;
-                $invoiceItems['title_en'] = $membershipObj->title_en;
-                if(in_array($userObj->duration_type,[1,2])){
-                    if($userObj->duration_type == 1){
-                        $invoiceItems['price'] = $membershipObj->monthly_price;
-                        $total = $membershipObj->monthly_after_vat;
-                        $invoiceItems['price_after_vat'] = $total;
-                        $dueDate = strtotime('+1 day',strtotime($value->end_date) );
-                    }else if($userObj->duration_type == 2){
-                        $invoiceItems['price'] = $membershipObj->annual_price;
-                        $total = $membershipObj->annual_after_vat;
-                        $invoiceItems['price_after_vat'] = $total;
-                        $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                if($userObj->membership_id != null){
+                    $membershipObj = $userObj->Membership; 
+                    $invoiceItems['id'] = $membershipObj->id;
+                    $invoiceItems['title_ar'] = $membershipObj->title_ar;
+                    $invoiceItems['title_en'] = $membershipObj->title_en;
+                    if(in_array($userObj->duration_type,[1,2])){
+                        if($userObj->duration_type == 1){
+                            $invoiceItems['price'] = $membershipObj->monthly_price;
+                            $total = $membershipObj->monthly_after_vat;
+                            $invoiceItems['price_after_vat'] = $total;
+                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                        }else if($userObj->duration_type == 2){
+                            $invoiceItems['price'] = $membershipObj->annual_price;
+                            $total = $membershipObj->annual_after_vat;
+                            $invoiceItems['price_after_vat'] = $total;
+                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                        }
+                        $invoiceItems['duration_type'] = $userObj->duration_type;
+                        $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
+                            'data' => [
+                                'total' => $total,
+                                'leftDays' => $value->leftDays,
+                                'items' => [[
+                                    'type' => 'membership',
+                                    'data' => $invoiceItems,
+                                ]],
+                            ]
+                        ];
                     }
-                    $invoiceItems['duration_type'] = $userObj->duration_type;
-                    $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
-                        'data' => [
-                            'total' => $total,
-                            'leftDays' => $value->leftDays,
-                            'items' => [[
-                                'type' => 'membership',
-                                'data' => $invoiceItems,
-                            ]],
-                        ]
-                    ];
                 }
             }
         }
@@ -249,28 +254,54 @@ class SetInvoices extends Command
 
                     }else if($oneItem['data']['leftDays'] < 0){
                         // Suspend 
-                        if($invoiceObj->status == 2 /* && (int) date('H') == 9 */){
+                        if($invoiceObj->status == 2  && (int) date('H') == 9 ){
                             $subscriptions = '( ';
                             $userObj = $invoiceObj->Client;
+                            $domainObj = Domain::where('domain',CentralUser::getDomain($userObj))->first();
+                            $tenant = Tenant::find($domainObj->tenant_id);
+                            
                             foreach($oneItem['data']['items'] as $itemKey => $anItem){
                                 $subscriptions.= $anItem['type'] .': '.$anItem['data']['title_en'].',';
 
                                 if($anItem['type'] == 'membership'){
                                     // dd($userObj->id);
-                                    // $userObj->update(['membership_id' => null]);
-                                    $userObj->membership_id = null;
-                                    // $userObj->save();
-                                    
-                                    dd('here');
 
+                                    $userObj->membership_id = null;
+                                    $userObj->save();
+                                    
+                                    tenancy()->initialize($tenant);
+
+                                    $tenantUserObj = User::first();
+                                    $tenantUserObj->membership_id = null;
+                                    $tenantUserObj->save();
+                                    
+                                    tenancy()->end($tenant);
                                 }
 
                                 if($anItem['type'] == 'addon'){
-                                    dd('here2');
+                                    $userAddonsArr = unserialize($userObj->addons);
+                                    $userAddonsArr = array_diff( $userAddonsArr, [$anItem['data']['id']] );
+
+                                    $userObj->addons = !empty($userAddonsArr) ? serialize($userAddonsArr) : null;
+                                    $userObj->save();
+
+                                    tenancy()->initialize($tenant);
+
+                                    $tenantUserObj = User::first();
+                                    $tenantUserObj->addons = !empty($userAddonsArr) ? serialize($userAddonsArr) : null;
+                                    $tenantUserObj->save();
+                                    
+                                    tenancy()->end($tenant);
+
+                                    $addonObj = UserAddon::where('user_id',$userObj->id)->where('addon_id',$anItem['data']['id'])->orderBy('id','DESC')->first();
+                                    $addonObj->status = 2;
+                                    $addonObj->save();
                                 }
 
                                 if($anItem['type'] == 'extra_quota'){
-                                    dd('here3');
+                                    $addonObj = UserExtraQuota::where('user_id',$userObj->id)->where('extra_quota_id',$anItem['data']['id'])->orderBy('id','DESC')->first();
+                                    $addonObj->status = 2;
+                                    $addonObj->save();
                                 }
 
 
