@@ -22,6 +22,7 @@ class CreateUserExtraQuotasTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('duration_type');
+            $table->integer('status')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

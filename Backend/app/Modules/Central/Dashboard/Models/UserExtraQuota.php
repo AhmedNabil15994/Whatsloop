@@ -19,6 +19,7 @@ class UserExtraQuota extends Model{
         'start_date',
         'duration_type',
         'end_date',
+        'status',
         'tenant_id',
         'global_user_id',
     ];
@@ -75,7 +76,7 @@ class UserExtraQuota extends Model{
     static function getOneForUserByType($user_id,$type){
         $dataObj = self::where('global_user_id',$user_id)->whereHas('ExtraQuota',function($extraQuotaQuery) use($type) {
             $extraQuotaQuery->where('extra_type',$type);
-        })->first();
+        })->where('status',1)->first();
 
         if(!$dataObj){
             return 0;
@@ -100,6 +101,7 @@ class UserExtraQuota extends Model{
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;
         $dataObj->user_id = $source->user_id;
+        $dataObj->status = $source->status;
         $dataObj->ExtraQuota = isset($source->ExtraQuota) ? $source->ExtraQuota : '';
         $dataObj->extra_quota_id = $source->extra_quota_id;
         $dataObj->global_user_id = $source->global_user_id;

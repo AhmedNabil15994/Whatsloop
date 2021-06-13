@@ -23,6 +23,7 @@ class CreateUserAddonsTable extends Migration
             $table->integer('setting_pushed');
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('status')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

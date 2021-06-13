@@ -18,6 +18,7 @@ class UserAddon extends Model{
         'addon_id',
         'start_date',
         'duration_type',
+        'status',
         'end_date',
         'tenant_id',
         'global_user_id',
@@ -34,10 +35,10 @@ class UserAddon extends Model{
     static function dataList($addons=null,$user_id=null,$end_date=null) {
         $input = \Request::all();
         if($addons != null){
-            $source = self::NotDeleted()->where('user_id',\Session::get('user_id'))->whereIn('addon_id',$addons)->whereDate('end_date','>=',date('Y-m-d'))->pluck('addon_id');
+            $source = self::NotDeleted()->where('status',1)->where('user_id',\Session::get('user_id'))->whereIn('addon_id',$addons)->whereDate('end_date','>=',date('Y-m-d'))->pluck('addon_id');
             return reset($source);
         }else{
-            $source = self::NotDeleted();
+            $source = self::NotDeleted()->where('status',1);
             if($user_id != null){
                 $source->where('user_id',$user_id);
             }
@@ -86,6 +87,7 @@ class UserAddon extends Model{
         $dataObj->id = $source->id;
         $dataObj->Addon = isset($source->Addon) ? $source->Addon : '';
         $dataObj->user_id = $source->user_id;
+        $dataObj->status = $source->status;
         $dataObj->duration_type = $source->duration_type;
         $dataObj->setting_pushed = $source->setting_pushed;
         $dataObj->addon_id = $source->addon_id;

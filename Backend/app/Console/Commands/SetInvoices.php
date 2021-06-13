@@ -47,7 +47,7 @@ class SetInvoices extends Command
         $channels = CentralChannel::dataList()['data'];
         $invoices = [];
         foreach ($channels as $value) {
-            if($value->leftDays <= 3){
+            if($value->leftDays <= 7){
                 $userObj = CentralUser::where('global_id',$value->global_user_id)->first();
                 $membershipObj = $userObj->Membership; 
                 $invoiceItems['id'] = $membershipObj->id;
@@ -69,6 +69,7 @@ class SetInvoices extends Command
                     $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
                         'data' => [
                             'total' => $total,
+                            'leftDays' => $value->leftDays,
                             'items' => [[
                                 'type' => 'membership',
                                 'data' => $invoiceItems,
@@ -88,7 +89,7 @@ class SetInvoices extends Command
                 $userObj = CentralUser::find($addon->user_id);
 
                 foreach ($userAddon as $value) {
-                    if($value->leftDays <= 3){
+                    if($value->leftDays <= 7){
 
                         $membershipObj = $value->Addon; 
                         $oneObj = [];
@@ -118,6 +119,7 @@ class SetInvoices extends Command
                             }else{
                                 $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
                                     'total' => $total,
+                                    'leftDays' => $value->leftDays,
                                     'items' => [[
                                         'type' => 'addon',
                                         'data' => $oneObj,
@@ -128,6 +130,7 @@ class SetInvoices extends Command
                             $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
                                 'data' => [
                                     'total' => $oneObj['price_after_vat'],
+                                    'leftDays' => $value->leftDays,
                                     'items' => [[
                                         'type' => 'addon',
                                         'data' => $oneObj,
@@ -147,7 +150,7 @@ class SetInvoices extends Command
                 $userObj = CentralUser::find($userExtraQuota->user_id);
 
                 foreach ($userExtra as $value) {
-                    if($value->leftDays <= 3){
+                    if($value->leftDays <= 7){
 
                         $membershipObj = ExtraQuota::getData($value->ExtraQuota);
                         $oneObj = [];
@@ -177,6 +180,7 @@ class SetInvoices extends Command
                             }else{
                                 $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
                                     'total' => $total,
+                                    'leftDays' => $value->leftDays,
                                     'items' => [[
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,
@@ -187,6 +191,7 @@ class SetInvoices extends Command
                             $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
                                 'data' => [
                                     'total' => $oneObj['price_after_vat'],
+                                    'leftDays' => $value->leftDays,
                                     'items' => [[
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,
@@ -199,8 +204,11 @@ class SetInvoices extends Command
               
             }
 
+            $channelObj = \DB::connection('main')->table('channels')->first();
+
             foreach($invoices as $invoiceKey  =>  $invoice){
                 foreach ($invoice as $invoiceDate => $oneItem) {
+
                     $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('items',serialize($oneItem['data']['items']))->where('due_date',$invoiceDate)->first();
 
                     if(!$invoiceObj){
@@ -215,11 +223,64 @@ class SetInvoices extends Command
                         $invoiceObj->created_by = 1;
                         $invoiceObj->save();
                     }else{
-                        if($invoiceObj->status == 3 && $invoiceObj->due_date >= date('Y-m-d')){
+                        if($invoiceObj->status == 3 && $invoiceObj->due_date <= date('Y-m-d')){
                             $invoiceObj->status = 2;
                             $invoiceObj->save();
                         }
                     }
+
+                    $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
+                    $data['phone'] = str_replace('+','',$invoiceObj->Client->phone);
+                    
+                    if($oneItem['data']['leftDays'] == 7 && (int) date('H') == 12){
+                        // Invoice Created;
+                        $data['body'] = 'Invoice #'.$invoiceObj->id. ' For '.date('M').' has been created';
+                        $test = $whatsLoopObj->sendMessage($data);
+
+                    }else if($oneItem['data']['leftDays'] == 3){
+                        // First Reminder
+                        $data['body'] = 'First Reminder for Invoice #'.$invoiceObj->id;
+                        $test = $whatsLoopObj->sendMessage($data);
+
+                    }else if($oneItem['data']['leftDays'] == 1){
+                        // Second Reminder
+                        $data['body'] = 'Second Reminder for Invoice #'.$invoiceObj->id;
+                        $test = $whatsLoopObj->sendMessage($data);
+
+                    }else if($oneItem['data']['leftDays'] < 0){
+                        // Suspend 
+                        if($invoiceObj->status == 2 /* && (int) date('H') == 9 */){
+                            $subscriptions = '( ';
+                            $userObj = $invoiceObj->Client;
+                            foreach($oneItem['data']['items'] as $itemKey => $anItem){
+                                $subscriptions.= $anItem['type'] .': '.$anItem['data']['title_en'].',';
+
+                                if($anItem['type'] == 'membership'){
+                                    // dd($userObj->id);
+                                    // $userObj->update(['membership_id' => null]);
+                                    $userObj->membership_id = null;
+                                    // $userObj->save();
+                                    
+                                    dd('here');
+
+                                }
+
+                                if($anItem['type'] == 'addon'){
+                                    dd('here2');
+                                }
+
+                                if($anItem['type'] == 'extra_quota'){
+                                    dd('here3');
+                                }
+
+
+                            }
+                            $subscriptions = substr($subscriptions, 0, -1). ' )';
+                            $data['body'] = 'Subscription of '.$subscriptions. ' For '.date('M').' has been ended due to unpaid invoice #'.$invoiceObj->id;
+                            $test = $whatsLoopObj->sendMessage($data);
+                        }   
+                    }
+
                 }
             }
         }

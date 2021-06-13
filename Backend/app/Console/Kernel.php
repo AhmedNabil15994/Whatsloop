@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->everyMinute();
             $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->everyMinute();
         }
-        $schedule->command('set:invoices')->daily();
+        $schedule->command('set:invoices')->cron('0 9,12 * * *');
         // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
         // $schedule->command('queue:restart')->hourly()->withoutOverlapping();
     }

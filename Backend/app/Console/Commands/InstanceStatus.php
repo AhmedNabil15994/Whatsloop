@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\UserStatus;
+use App\Models\User;
 
 class InstanceStatus extends Command
 {
@@ -42,6 +43,9 @@ class InstanceStatus extends Command
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $result = $mainWhatsLoopObj->status();
         $result = $result->json();
+
+        $statusInt = 4;
+
         if(isset($result['data']) && !empty($result['data'])){
             $status = $result['data']['accountStatus'];
             if($status == 'authenticated'){
@@ -64,6 +68,25 @@ class InstanceStatus extends Command
                 $userStatusObj->save();
             }
         }
+
+        $oldStatusObj = UserStatus::orderBy('id','DESC')->take(2)->get();
+        $check = 0;
+        if($oldStatusObj[0]->status == 4 && $oldStatusObj[1]->status == 4){
+            $check = 1;
+        }
         
+        if($statusInt == 4 && $check  == 0){
+            $channelObj = \DB::connection('main')->table('channels')->first();
+            $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
+            $data['phone'] = str_replace('+','',User::first()->emergency_number);
+            $data['body'] = 'Connection Closed and you got a new QR Code , please go and scan it!';
+            $test = $whatsLoopObj->sendMessage($data);
+            if(!isset($result['status']) || $result['status']['status'] != 1){
+                $userStatusObj = new UserStatus;
+                $userStatusObj->status = $statusInt;
+                $userStatusObj->created_at = date('Y-m-d H:i:s');
+                $userStatusObj->save();
+            }
+        }
     }
 }

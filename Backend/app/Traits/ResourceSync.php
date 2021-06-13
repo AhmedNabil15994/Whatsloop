@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+
 use Stancl\Tenancy\Contracts\Syncable;
 use Stancl\Tenancy\Contracts\UniqueIdentifierGenerator;
 use Stancl\Tenancy\Events\SyncedResourceSaved;
 
 trait ResourceSync
 {
+
     public static function bootResourceSyncing()
     {
         static::saved(function (Syncable $model) {
