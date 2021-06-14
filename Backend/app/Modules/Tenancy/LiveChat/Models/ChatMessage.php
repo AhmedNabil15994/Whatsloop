@@ -118,7 +118,7 @@ class ChatMessage extends Model{
                 $dataObj->quotedMsgObj = self::getData(self::getOne($source->quotedMsgId));
             }
             if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image'])){
-                $dataObj->file_size = 0;//self::getPhotoSize($dataObj->body);
+                $dataObj->file_size = self::getPhotoSize($dataObj->body);
             }
             return $dataObj;
         }

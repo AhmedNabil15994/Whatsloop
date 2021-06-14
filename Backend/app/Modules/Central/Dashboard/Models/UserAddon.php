@@ -28,6 +28,10 @@ class UserAddon extends Model{
         return $this->belongsTo('App\Models\Addons','addon_id');
     }
 
+    public function Client(){
+        return $this->belongsTo('App\Models\CentralUser','user_id');
+    }
+
     static function getOne($id) {
         return self::find($id);
     }

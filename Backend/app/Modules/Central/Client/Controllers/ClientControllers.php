@@ -830,32 +830,12 @@ class ClientControllers extends Controller {
 
         $transferDaysData = [
             'receiver' => $channel['id'],
-            'days' => $days,
+            'days' => 3,
             'source' => $channelObj->id,
         ];
 
         $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
         $result = $updateResult->json();
-
-        // // Update User With Settings For Whatsapp Based On His Domain
-        // $myData = [
-        //     'sendDelay' => '0',
-        //     'webhookUrl' => str_replace('://', '://'.$input['domain'].'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
-        //     'instanceStatuses' => 1,
-        //     'webhookStatuses' => 1,
-        //     'statusNotificationsOn' => 1,
-        //     'ackNotificationsOn' => 1,
-        //     'chatUpdateOn' => 1,
-        //     'videoUploadOn' => 1,
-        //     'guaranteedHooks' => 1,
-        //     'parallelHooks' => 1,
-        // ];
-        // $updateResult = $mainWhatsLoopObj->setSettings($channel['id'],$channel['token'],$myData);
-        // $result = $updateResult->json();
-        // if($result['status']['status'] != 1){
-        //     \Session::flash('error', $result['status']['message']);
-        //     return back()->withInput();
-        // }
 
         Session::forget('photos');
         CentralWebActions::newType(1,$this->getData()['mainData']['modelName']);

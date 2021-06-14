@@ -242,12 +242,12 @@ class SetInvoices extends Command
                         $data['body'] = 'Invoice #'.$invoiceObj->id. ' For '.date('M').' has been created';
                         $test = $whatsLoopObj->sendMessage($data);
 
-                    }else if($oneItem['data']['leftDays'] == 3){
+                    }else if($oneItem['data']['leftDays'] == 3 && (int) date('H') == 12){
                         // First Reminder
                         $data['body'] = 'First Reminder for Invoice #'.$invoiceObj->id;
                         $test = $whatsLoopObj->sendMessage($data);
 
-                    }else if($oneItem['data']['leftDays'] == 1){
+                    }else if($oneItem['data']['leftDays'] == 1 && (int) date('H') == 12){
                         // Second Reminder
                         $data['body'] = 'Second Reminder for Invoice #'.$invoiceObj->id;
                         $test = $whatsLoopObj->sendMessage($data);

@@ -20,6 +20,9 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\SyncMessages::class,
         \App\Console\Commands\SyncDialogs::class,
         \App\Console\Commands\SetInvoices::class,
+        \App\Console\Commands\PushChannelSetting::class,
+        \App\Console\Commands\PushAddonSetting::class,
+        \App\Console\Commands\TransferDays::class,
     ];
 
     /**
@@ -39,6 +42,9 @@ class Kernel extends ConsoleKernel
             $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->everyMinute();
         }
         $schedule->command('set:invoices')->cron('0 9,12 * * *');
+        $schedule->command('push:channelSetting')->everyMinute();
+        $schedule->command('push:addonSetting')->daily();
+        $schedule->command('transfer:days')->cron('0 0 */3 * *');
         // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
         // $schedule->command('queue:restart')->hourly()->withoutOverlapping();
     }
