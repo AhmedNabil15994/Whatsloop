@@ -14,8 +14,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-    // 'BASE_URL' => 'http://whatsloop.localhost',
-    'BASE_URL' => 'http://wloop.net',
+    'BASE_URL' => 'http://whatsloop.localhost',
+    // 'BASE_URL' => 'http://wloop.net',
     /*
     |--------------------------------------------------------------------------
     | Application Environment

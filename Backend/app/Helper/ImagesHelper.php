@@ -68,6 +68,10 @@ class ImagesHelper {
             if(\Session::has('user_id')){
                 $tenant = TENANT_ID;
             }
+        }else{
+            if($default != ''){
+                $default = str_replace('tenancy/assets/','',$default);
+            }
         }
 
         if($strAction == 'users'){

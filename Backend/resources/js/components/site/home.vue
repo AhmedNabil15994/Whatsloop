@@ -7,7 +7,7 @@
                 
                 <div  class="logo" v-if="UserData === null">
                     <span class="logo-sm">
-                        <img src="images/logo.svg" alt="" height="30">
+                        <img src="public/images/logo.svg" alt="" height="30">
                     </span>
                 </div>
             </div>
@@ -58,7 +58,7 @@
             :InstanceNumber="InstanceNumber"
             ></list-chats>
         <div class="startChat w-100 flex-lg-column overflow-hidden " v-if="chatId === 0">
-            <img v-if="chatId === 0" src="images/logo.svg"/>
+            <img v-if="chatId === 0" src="public/images/logo.svg"/>
         </div>
         <!-- end chat-leftsidebar -->
         <transition name="slide">

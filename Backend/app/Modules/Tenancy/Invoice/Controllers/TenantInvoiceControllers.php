@@ -227,7 +227,7 @@ class TenantInvoiceControllers extends Controller {
 
     public function pushInvoice($id){
         $input = \Request::all();
-        return $this->activate($id);
+        // return $this->activate($id);
         
         // dd($input);
         if (isset($input['cartId']) && !empty($input['cartId'])) {
@@ -238,7 +238,7 @@ class TenantInvoiceControllers extends Controller {
         
             if ($CreateaPage['Code'] == "1001") {
                 if ($CreateaPage['Data']['Status'] == "Success") {
-                    $this->activate($id);
+                    return $this->activate($id);
                 }
                 $UpdateOrder = [];
                 if ($CreateaPage['Data']['Status'] == "Rejected") {

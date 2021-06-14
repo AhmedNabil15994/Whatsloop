@@ -147,7 +147,7 @@ class CentralUser extends Model implements SyncMaster
         if($source->image != null){
             return self::getPhotoPath($source->id, $source->image);
         }else{
-            return asset('tenancy/assets/images/not-available.jpg');
+            return asset('images/not-available.jpg');
         }
     }
 // $tenant = Tenant::create([

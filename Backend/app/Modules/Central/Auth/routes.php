@@ -23,7 +23,7 @@ Route::group(['prefix' => '/'] , function () {
 
 
     
-    Route::get('/', function(){dd('landingPage');});
+    Route::get('/', function(){ return redirect()->to('/login'); });
 
     Route::get('/login', [$authController,'login'])->name('login');
     Route::post('/login', [$authController,'doLogin'])->name('doLogin');

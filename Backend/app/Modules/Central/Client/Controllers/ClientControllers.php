@@ -520,7 +520,6 @@ class ClientControllers extends Controller {
             'is_approved' => $input['status'],
             'status' => $input['status'],
             'membership_id' => $input['membership_id'],
-            'channels' => !empty($channel) ? serialize([$channel['id']]) : null,
             'addons' => isset($input['addons']) && !empty($input['addons']) ? serialize($input['addons']) : null,
         ]);
 
@@ -551,6 +550,7 @@ class ClientControllers extends Controller {
                         'addon_id' => $key,
                         'duration_type' => $addonDurationType,
                         'global_user_id' =>$centralUser->global_id,
+                        'status' => 1,
                         'tenant_id' => $tenant->id,
                         'start_date' => date('Y-m-d'),
                         'end_date' => date('Y-m-d',$addonDuration),
@@ -585,7 +585,6 @@ class ClientControllers extends Controller {
                 'status' => $input['status'],
                 'domain' => $input['domain'],
                 'sort' => 1,
-                'channels' => !empty($channel) ? serialize([$channel['id']]) : null,
                 'is_active' => $input['status'],
                 'is_approved' => $input['status'],
                 'notifications' => isset($input['notifications']) && !empty($input['notifications']) && $input['notifications'] == 'on' ? 1:0,
@@ -621,7 +620,7 @@ class ClientControllers extends Controller {
         if($input['duration_type'] != $oldDuration){
             $transferDaysData = [
                 'receiver' => $channel['id'],
-                'days' => $days,
+                'days' => 3,
                 'source' => CentralChannel::first()->id,
             ];
 
@@ -756,6 +755,7 @@ class ClientControllers extends Controller {
                     'addon_id' => $key,
                     'duration_type' => $addonDurationType,
                     'global_user_id' =>$centralUser->global_id,
+                    'status' => 1,
                     'tenant_id' => $tenant->id,
                     'start_date' => $channel['start_date'],
                     'end_date' => date('Y-m-d',$addonDuration),

@@ -44,6 +44,7 @@ class DashboardControllers extends Controller {
                     $succ = file_put_contents($destinationPath, $qrCode);   
                     // $data['qrImage'] = \URL::to('/public'.$image);
                     $data['qrImage'] = \URL::to('/').$image;
+                    // $data['qrImage'] = \URL::to('/').'/engine/public'.$image;
                 }
             }
         }
@@ -280,7 +281,7 @@ class DashboardControllers extends Controller {
 
     public function pushInvoice(){
         $input = \Request::all();
-        return $this->activate();
+        // return $this->activate();
         
         // dd($input);
         if (isset($input['cartId']) && !empty($input['cartId'])) {
@@ -291,7 +292,7 @@ class DashboardControllers extends Controller {
         
             if ($CreateaPage['Code'] == "1001") {
                 if ($CreateaPage['Data']['Status'] == "Success") {
-                    $this->activate();
+                    return $this->activate();
                 }
                 $UpdateOrder = [];
                 if ($CreateaPage['Data']['Status'] == "Rejected") {

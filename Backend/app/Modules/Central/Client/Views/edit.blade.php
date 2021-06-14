@@ -181,7 +181,7 @@
                                                 <label class="col-5 col-form-label">{{ trans('monthly') }} :</label>
                                                 <div class="col-7" style="margin-top: -8px;">
                                                     <div class="checkbox checkbox-success">
-                                                        <input id="monthly{{ $addon->id }}" class="monthly old" {{ $found == 1 ? 'checked' : '' }} type="checkbox" name="addons[{{ $addon->id }}][1]">
+                                                        <input id="monthly{{ $addon->id }}" class="monthly old" {{ $found == 1 || $found == 3 ?  "checked=true" : '' }} type="checkbox" name="addons[{{ $addon->id }}][1]">
                                                         <label for="monthly{{ $addon->id }}"></label>
                                                     </div>
                                                 </div>
@@ -190,7 +190,7 @@
                                                 <label class="col-5 col-form-label">{{ trans('yearly') }} :</label>
                                                 <div class="col-7" style="margin-top: -8px;">
                                                     <div class="checkbox checkbox-success">
-                                                        <input id="yearly{{ $addon->id }}" class="yearly old" {{ $found == 2 ? 'checked' : '' }} type="checkbox" name="addons[{{ $addon->id }}][2]">
+                                                        <input id="yearly{{ $addon->id }}" class="yearly old" {{ $found == 2 || $found == 3 ?  "checked=true" : '' }} type="checkbox" name="addons[{{ $addon->id }}][2]">
                                                         <label for="yearly{{ $addon->id }}"></label>
                                                     </div>
                                                 </div>
