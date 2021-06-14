@@ -56,7 +56,7 @@ class TransferDays extends Command
         $balanceDays = $allChannels[0]['paymentsCount'];
         if($balanceDays < ( (3 * count($allChannels) )  + 2 ) ){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            $data['body'] = "You Have To recharge at least ". (  ( (3 * count($allChannels) )  + 2 ) - $balanceDays )  ." To Complete Transfering Days for all channels";
+            $data['body'] = "You Have To recharge at least ". (  ( (3 * count($allChannels) )  + 2 ) - $balanceDays )  ." day To Complete Transfering Days for all channels";
             $data['phone'] = str_replace('+','',CentralUser::first()->phone);
             $mainWhatsLoopObj->sendMessage($data);
             return 1;

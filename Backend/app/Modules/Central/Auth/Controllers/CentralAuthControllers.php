@@ -364,6 +364,7 @@ class CentralAuthControllers extends Controller {
             'is_active' => 1,
             'is_approved' => 1,
             'status' => 1,
+            'two_auth' => 0,
         ]);
         
         \DB::connection('main')->table('tenant_users')->insert([
@@ -383,6 +384,7 @@ class CentralAuthControllers extends Controller {
                 'group_id' => 1,
                 'status' => 1,
                 'domain' => $input['domain'],
+                'two_auth' => 0,
                 'sort' => 1,
                 'password' => Hash::make($input['password']),
                 'is_active' => 1,

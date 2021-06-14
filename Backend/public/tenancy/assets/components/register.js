@@ -23,6 +23,7 @@ $(function(){
         }
 
         if(phone && errors == 1){
+            $('input[name="phone"]').val(phone);
             $(this).parent('form').submit();
         }
 
