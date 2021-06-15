@@ -47,37 +47,39 @@ class PushChannelSetting extends Command
         foreach($users as $user){
             $domain = CentralUser::getDomain($user);
             $channelObj = CentralChannel::where('global_user_id',$user->global_id)->first();
-            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            $myData = [
-                'sendDelay' => '0',
-                'webhookUrl' => str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/messages-webhook',
-                'instanceStatuses' => 1,
-                'webhookStatuses' => 1,
-                'statusNotificationsOn' => 1,
-                'ackNotificationsOn' => 1,
-                'chatUpdateOn' => 1,
-                'videoUploadOn' => 1,
-                'guaranteedHooks' => 1,
-                'parallelHooks' => 1,
-            ];
-            
-            $updateResult = $mainWhatsLoopObj->postSettings($myData);
-            $result = $updateResult->json();
+            if($channelObj){
+                $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+                $myData = [
+                    'sendDelay' => '0',
+                    'webhookUrl' => str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/messages-webhook',
+                    'instanceStatuses' => 1,
+                    'webhookStatuses' => 1,
+                    'statusNotificationsOn' => 1,
+                    'ackNotificationsOn' => 1,
+                    'chatUpdateOn' => 1,
+                    'videoUploadOn' => 1,
+                    'guaranteedHooks' => 1,
+                    'parallelHooks' => 1,
+                ];
+                
+                $updateResult = $mainWhatsLoopObj->postSettings($myData);
+                $result = $updateResult->json();
 
-            if($result['status']['status'] == 1){
-                $user->setting_pushed = 1;
-                $user->save();
-                
-                $domainObj = Domain::where('domain',$domain)->first();
-                $tenant = Tenant::find($domainObj->tenant_id);
-                
-                tenancy()->initialize($tenant);
+                if($result['status']['status'] == 1){
+                    $user->setting_pushed = 1;
+                    $user->save();
+                    
+                    $domainObj = Domain::where('domain',$domain)->first();
+                    $tenant = Tenant::find($domainObj->tenant_id);
+                    
+                    tenancy()->initialize($tenant);
 
-                $tenantUserObj = User::first();
-                $tenantUserObj->setting_pushed = 1;
-                $tenantUserObj->save();
-                
-                tenancy()->end($tenant);
+                    $tenantUserObj = User::first();
+                    $tenantUserObj->setting_pushed = 1;
+                    $tenantUserObj->save();
+                    
+                    tenancy()->end($tenant);
+                }
             }
         }
     }

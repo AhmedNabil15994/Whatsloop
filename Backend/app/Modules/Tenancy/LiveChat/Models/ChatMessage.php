@@ -45,7 +45,7 @@ class ChatMessage extends Model{
         return $data;
     }
 
-    static function newMessage($source){
+    static function newMessage($source,$addHours=null){
         $source = (object) $source;
         $dataObj = self::where('id',$source->id)->first();
         if($dataObj == null){
@@ -57,7 +57,7 @@ class ChatMessage extends Model{
         $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
         $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
         $dataObj->author = isset($source->author) ? $source->author : '';
-        $dataObj->time = isset($source->time) ? strtotime($source->time) : '';
+        $dataObj->time = isset($source->time) ? $addHours ? strtotime($source->time)+7200 : strtotime($source->time)  : '';
         $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
         $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
         if(isset($source->status)){

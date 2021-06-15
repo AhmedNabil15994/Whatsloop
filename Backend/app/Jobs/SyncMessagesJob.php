@@ -34,7 +34,7 @@ class SyncMessagesJob implements ShouldQueue
     {
         if(!empty($this->messages)){
             foreach ($this->messages as $message) {
-                ChatMessage::newMessage($message);
+                ChatMessage::newMessage($message,1);
             }
         }
     }

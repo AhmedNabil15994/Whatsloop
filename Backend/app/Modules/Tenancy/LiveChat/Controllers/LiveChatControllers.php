@@ -305,7 +305,7 @@ class LiveChatControllers extends Controller {
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $bodyData = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
+                $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $sendData['filename'] = $fileName;
                 $sendData['body'] = $bodyData;
                 if($message_type == 'photo'){
@@ -335,7 +335,7 @@ class LiveChatControllers extends Controller {
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $bodyData = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
+                $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $message_type = "video";
                 $sendData['filename'] = $fileName;
                 $sendData['body'] = $bodyData;
@@ -360,7 +360,7 @@ class LiveChatControllers extends Controller {
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $bodyData = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
+                $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $message_type = "sound";
                 $whats_message_type = 'ppt';
                 $sendData['audio'] = $bodyData;
@@ -423,7 +423,7 @@ class LiveChatControllers extends Controller {
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
-                $fullUrl = config('app.BASE_URL').'/uploads/'.TENANT_ID.'/chats/'.$fileName;
+                $fullUrl = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
             }
 
             $message_type = 'link';
