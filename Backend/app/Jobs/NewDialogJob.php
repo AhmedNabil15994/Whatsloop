@@ -171,7 +171,7 @@ class NewDialogJob implements ShouldQueue
                 $lastMessage['id'] = $messageId;
                 $lastMessage['fromMe'] = 1;
                 $lastMessage['chatId'] = $sendData['chatId'];
-                $lastMessage['time'] = time();
+                $lastMessage['time'] = date('Y-m-d H:i:s');
                 $lastMessage['body'] = $bodyData;
                 $lastMessage['caption'] = $caption;
                 $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
@@ -190,9 +190,10 @@ class NewDialogJob implements ShouldQueue
                     $dialogObj->is_pinned = 0;
                     $dialogObj->is_read = 0;
                     $dialogObj->modsArr = '';
-                    $dialogObj->last_time = strtotime(date('Y-m-d H:i:s'));
+                    $dialogObj->last_time = strtotime($lastMessage['time']);
                     $dialogObj->save();
                 }
+                $dialogObj->last_time = strtotime($lastMessage['time']);
                 $dialogObj =ChatDialog::getData($dialogObj);
                 broadcast(new SentMessage($this->domain , $dialogObj ));
             
