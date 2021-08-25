@@ -15,6 +15,8 @@ class  Channel extends Model{
         'id',
         'name',
         'token',
+        'instanceId',
+        'instanceToken',
         'start_date',
         'end_date',
         'tenant_id',
@@ -28,8 +30,8 @@ class  Channel extends Model{
 
     static function getUserChannel($id,$token) {
         return self::NotDeleted()->where([
-            ['id',$id],
-            ['token',$token],
+            ['instanceId',$id],
+            ['instanceToken',$token],
         ])->orderBy('end_date','DESC')->first();
     }
 
@@ -74,6 +76,8 @@ class  Channel extends Model{
         $dataObj->global_user_id = $source->global_user_id;
         $dataObj->name = $source->name;
         $dataObj->token = $source->token;
+        $dataObj->instanceId = $source->instanceId;
+        $dataObj->instanceToken = $source->instanceToken;
         $dataObj->start_date = $source->start_date;
         $dataObj->end_date = $source->end_date;
         return $dataObj;

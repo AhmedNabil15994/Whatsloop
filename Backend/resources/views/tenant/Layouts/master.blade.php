@@ -10,30 +10,29 @@
 		@include('tenant.Layouts.head')
 	</head>
 	<!--end::Head-->
-	<!--begin::Body-->
-	@php $themeObj = App\Models\UserTheme::getUserTheme(USER_ID); @endphp
-	{{-- {{ dd($themeObj) }} --}}
-	<body class="loading" data-layout='{ "mode": "{{ $themeObj!=null ? $themeObj->theme : 'light' }}","width": "{{ $themeObj!=null ? $themeObj->width : 'fluid' }}","topbar": {"color": "{{ $themeObj!=null ? $themeObj->top_bar : 'dark' }}"},"menuPosition": "{{ $themeObj!=null ? $themeObj->menus_position : 'fixed' }}", "sidebar": {"size": "{{ $themeObj!=null ? $themeObj->sidebar_size : 'light' }}","showuser" : "{{ $themeObj!=null ? $themeObj->user_info : 'false' }}"}}'>
+	
+	<body class="main-body tena light-theme app sidebar-mini active leftmenu-color">
 		<!-- Begin page -->
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
-        <div id="wrapper">
+		@include('tenant.Layouts.sidebar')
+		
+		<!-- main-content -->
+		<div class="main-content app-content">
 			@include('tenant.Layouts.header')
-			@include('tenant.Layouts.sidebar')
-			
-			<div class="content-page">
-                <div class="content">
-					@yield('content')
-				</div>
-				@include('tenant.Layouts.footer')
+			<!-- container -->
+			<div class="container-fluid mg-t-20">
+				@include('tenant.Layouts.breadcrumb')
+				@yield('content')
 			</div>
-
-			@include('tenant.Layouts.rightSideBar')
-			
-			@yield('modals')
-
-			@include('tenant.Layouts.scripts')
-	        @include('tenant.Partials.notf_messages')
 		</div>
+
+		@include('tenant.Layouts.rightSideBar')
+		
+		@yield('modals')
+
+		@include('tenant.Layouts.footer')
+		@include('tenant.Layouts.scripts')
+        @include('tenant.Partials.notf_messages')
 	</body>
 	<!--end::Body-->
 </html>

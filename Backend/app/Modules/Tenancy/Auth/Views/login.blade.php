@@ -13,11 +13,16 @@
         <link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
         <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="{{ asset('css/login-style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/touches.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">
         <section class="main--page">
             <div class="container-fluid">
                 <div class="row login-page">
+                    <div class="col-lg-12 col-xl-6 slogan-side">
+                        <div class="overlay"></div>
+                        <img src="{{ asset('images/whatsapp-chat.png') }}" alt="">
+                    </div>
                     <div class="col-lg-12 col-xl-6 control-side">
                         <div class="logo">
                             <img src="{{ asset('images/logo.png') }}" alt="Whatsapp-loop">
@@ -37,10 +42,6 @@
                                 {{-- <a href="#" class="nav-link theme__light">إنساء حساب جديد</a> --}}
                             </form>
                         </div>
-                    </div>
-                    <div class="col-lg-12 col-xl-6 slogan-side">
-                        <div class="overlay"></div>
-                        <img src="{{ asset('images/whatsapp-chat.png') }}" alt="">
                     </div>
                 </div>
             </div>

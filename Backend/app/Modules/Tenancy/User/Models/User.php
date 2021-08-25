@@ -117,6 +117,10 @@ class User extends Authenticatable implements Syncable
         return $this->belongsTo('App\Models\Group','group_id');
     }
 
+    public function Membership(){
+        return $this->belongsTo('App\Models\Membership','membership_id');
+    }
+
     public function PaymentInfo(){
         return $this->hasOne('App\Models\PaymentInfo','user_id');
     }
@@ -183,7 +187,7 @@ class User extends Authenticatable implements Syncable
         if($source->image != null){
             return self::getPhotoPath($source->id, $source->image);
         }else{
-            return asset('images/not-available.jpg');
+            return asset('images/def_user.svg');
         }
     }
 
@@ -210,6 +214,7 @@ class User extends Authenticatable implements Syncable
         $data->emergency_number = $source->emergency_number;
         $data->two_auth = $source->two_auth;
         $data->membership_id = $source->membership_id;
+        $data->membership = $source->membership_id != null ? $source->Membership->{'title_'.LANGUAGE_PREF} : '';
         $data->addons = $source->addons;
         $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];

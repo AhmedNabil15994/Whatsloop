@@ -1,0 +1,184 @@
+.accordion {
+	>.card {
+		overflow: hidden;
+		&:not(:first-of-type) {
+			.card-header:first-child {
+				border-radius: 0;
+			}
+			&:not(:last-of-type) {
+				border-bottom: 0;
+				border-radius: 0;
+			}
+		}
+		&:first-of-type {
+			border-bottom: 0;
+			border-bottom-right-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+		&:last-of-type {
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+		}
+		.card-header {
+			margin-bottom: -1px;
+			border: 0;
+		}
+	}
+	.card {
+		border-width: 0;
+		+.card {
+			margin-top: 1px;
+		}
+	}
+	.card-header {
+		padding: 0;
+		background-color: transparent;
+		font-weight: 500;
+		a {
+			display: block;
+			padding: 14px 20px;
+			position: relative;
+			font-weight: 500;
+			font-size: 14px;
+			background-color: $gray-100;
+			&.collapsed {
+				background-color: $gray-100;
+				border-bottom-color: transparent;
+				&:hover, &:focus {
+					background-color: $gray-100;
+				}
+			}
+		}
+	}
+	.card-body {
+		padding: 0 20px 20px;
+		background-color: $gray-100;
+		transition: none;
+	}
+}
+.card .card {
+	box-shadow: none !important;
+}
+.accordion>.card {
+	border: 0 !important;
+}
+/* ###### 3.1 Accordion ###### */
+
+.accordion-indigo {
+	.card {
+		border-color: $indigo;
+	}
+	.card-header a {
+		color: $indigo;
+		&:hover, &:focus {
+			color: $indigo;
+		}
+		&.collapsed {
+			background-color: $indigo;
+			color: $white;
+			font-weight: 500;
+			letter-spacing: -.1px;
+			&:hover, &:focus {
+				background-color: #452efa;
+				color: $white;
+			}
+		}
+	}
+}
+.accordion-primary {
+	.card-header a {
+		&.collapsed {
+			font-weight: 500;
+			letter-spacing: -.1px;
+		}
+	}
+}
+.accordion-dark {
+	.card {
+		border-color: $gray-900;
+	}
+	.card-header a {
+		color: $gray-900;
+		&:hover, &:focus {
+			color: $gray-900;
+		}
+		&.collapsed {
+			background-color: $gray-900;
+			color: $white !important;
+			font-weight: 500;
+			letter-spacing: -.1px;
+			&:hover, &:focus {
+				background-color: $gray-900;
+				color: $white;
+			}
+		}
+	}
+}
+.accordion-gray {
+	.card {
+		border-color: $gray-300;
+	}
+	.card-header a {
+		color: $default-color;
+		&:hover, &:focus {
+			color: $default-color;
+		}
+		&.collapsed {
+			background-color: $gray-300;			
+			font-weight: 500;
+			letter-spacing: -.1px;
+		}
+	}
+}
+/* ############### CUSTOM ELEMENT STYLES ############### */
+
+.main-accordion {
+	.accordion-item {
+		background-color: $gray-100;
+		border: 1px solid #dee2ef;
+		position: relative;
+		transition: all 0.2s ease-in-out;
+		&:hover, &:focus {
+			cursor: pointer;
+			background-color: #f1f2f6;
+			border-color: #bcc4de;
+			z-index: 4;
+		}
+		&.active {
+			background-color: $white;
+			z-index: 5;
+			border-color: #bcc4de;			
+			.accordion-body {
+				display: block;
+			}
+		}
+		+.accordion-item {
+			margin-top: -1px;
+		}
+	}
+	.accordion-header {
+		display: flex;
+		align-items: center;
+		padding: 15px 20px;
+	}
+	.accordion-title {
+		font-weight: 700;
+		color: $default-color;
+		margin: 0;
+		transition: all 0.2s ease-in-out;
+	}
+	.accordion-body {
+		display: none;
+		padding: 0 20px 20px;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.main-accordion .accordion-item {
+		transition: none;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.main-accordion .accordion-title {
+		transition: none;
+	}
+}

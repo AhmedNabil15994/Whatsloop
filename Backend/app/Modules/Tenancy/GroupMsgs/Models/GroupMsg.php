@@ -96,7 +96,7 @@ class GroupMsg extends Model{
         $data->group = $source->Group != null ? $source->Group->name_ar : '';
         $data->message_type = $source->message_type;
         $data->message_type_text = self::getMessageType($source->message_type);
-        $data->message = self::getMessage($source);
+        $data->message = self::getMessage($source) != null ? self::getMessage($source) : '';
         $data->file_name = $source->file_name;
         $data->https_url = $source->https_url;
         $data->url_title = $source->url_title;

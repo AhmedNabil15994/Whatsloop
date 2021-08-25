@@ -1,0 +1,45 @@
+ul.jq-input-dropdown {
+	top: 62px !important;
+	margin: 0.75rem auto;
+	padding: 0.75rem;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+	overflow: hidden !important;
+	position: fixed !important;
+	li {
+		border: 0;
+		outline: 0;
+		font-size: 100%;
+		vertical-align: baseline;
+		background: transparent;
+		&:hover {
+			cursor: pointer;
+			background-color: $gray-100;
+			cursor: pointer;
+		}
+		padding:0.5rem 1rem;
+		font-size: 100%;
+		vertical-align: baseline;
+		background: transparent;
+		border-radius:5px;
+	}
+	border: 1px solid $border;
+	list-style: none;
+	display: none;
+	z-index: 100;
+	min-width: 300px;
+	padding: 10px;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+	border: 1px solid $border;
+	list-style: none;
+	display: none;
+	z-index: 999;
+	border-radius:10px;
+}

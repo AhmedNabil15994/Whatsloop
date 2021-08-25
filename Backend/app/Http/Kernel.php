@@ -83,6 +83,26 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\LanguageMiddleware::class,
         ],
 
+        'apiGeneral' => [
+            \Illuminate\Session\Middleware\StartSession::class,
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ApiGeneralAuthEngine::class,
+            \App\Http\Middleware\ApiLanguageMiddleware::class,
+        ],
+
+        'apiWithAuth' => [
+            \Illuminate\Session\Middleware\StartSession::class,
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ApiAuthEngine::class,
+            \App\Http\Middleware\ApiLanguageMiddleware::class,
+        ],
+
         // 'api' => [
         //     'throttle:api',
         //     \Illuminate\Routing\Middleware\SubstituteBindings::class,

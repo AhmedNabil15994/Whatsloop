@@ -325,7 +325,8 @@ class ProfileControllers extends Controller {
         $data['extraQuotas'] = ExtraQuota::dataList()['data'];
         $userQuotas = UserExtraQuota::getForUser($userObj->global_id);
         $data['userQuotas'] = reset($userQuotas[0]);
-        $data['userQuotas2'] = $userQuotas[1];
+        $data['userQuotas2'] = array_unique($data['userQuotas']);
+        // dd($data['userQuotas2']);
         return view('Tenancy.Profile.Views.extraQuotas')->with('data', (object) $data);
     }
 
@@ -425,7 +426,7 @@ class ProfileControllers extends Controller {
         return view('Tenancy.Profile.Views.services')->with('data', (object) $data);
     }
 
-    public function updateSalla(){
+    public function updateSalla(Request $request){
         $input = \Request::all();
         $rules = [
             'store_token' => 'required',
@@ -435,10 +436,14 @@ class ProfileControllers extends Controller {
             'store_token.required' => trans('main.storeTokenValidation'),
         ];
 
-        $validate = Validator::make($input, $rules, $message);
+         $validate = Validator::make($input, $rules, $message);
         if($validate->fails()){
-            Session::flash('error', $validate->messages()->first());
-            return back()->withInput();
+            if($request->ajax()){
+                return \TraitsFunc::ErrorMessage($validate->messages()->first());
+            }else{
+                Session::flash('error', $validate->messages()->first());
+                return back()->withInput();
+            }
         }
 
         $sallaObj = Variable::NotDeleted()->where('var_key','SallaStoreToken')->first();
@@ -456,11 +461,15 @@ class ProfileControllers extends Controller {
             $sallaObj->save();
         }
 
-        Session::flash('success', trans('main.editSuccess'));
-        return \Redirect::back()->withInput();
+        if($request->ajax()){
+            return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+        }else{
+            Session::flash('success', trans('main.editSuccess'));
+            return \Redirect::back()->withInput();
+        }
     }
 
-    public function updateZid(){
+    public function updateZid(Request $request){
         $input = \Request::all();
 
         $rules = [
@@ -477,8 +486,12 @@ class ProfileControllers extends Controller {
 
         $validate = Validator::make($input, $rules, $message);
         if($validate->fails()){
-            Session::flash('error', $validate->messages()->first());
-            return back()->withInput();
+            if($request->ajax()){
+                return \TraitsFunc::ErrorMessage($validate->messages()->first());
+            }else{
+                Session::flash('error', $validate->messages()->first());
+                return back()->withInput();
+            }
         }
 
         $zidStoreToken = Variable::NotDeleted()->where('var_key','ZidStoreToken')->first();
@@ -526,8 +539,12 @@ class ProfileControllers extends Controller {
             $zidMerchantToken->save();
         }
 
-        Session::flash('success', trans('main.editSuccess'));
-        return \Redirect::back()->withInput();
+        if($request->ajax()){
+            return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+        }else{
+            Session::flash('success', trans('main.editSuccess'));
+            return \Redirect::back()->withInput();
+        }
     }
 
     public function subscription(){

@@ -26,7 +26,7 @@ class ZidControllers extends Controller {
         return $dis;
     }
 
-    public function customers(){
+    public function customers(Request $request){
         $input = \Request::all();
         $modelName = 'customers';
         $service = $this->service;
@@ -65,11 +65,12 @@ class ZidControllers extends Controller {
         if($refresh == 'refresh'){
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
-
-        return $this->runModuleService($modelName,$tableName);
+        
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
-    public function products(){
+    public function products(Request $request){
         $input = \Request::all();
         $modelName = 'products';
         $service = $this->service;
@@ -109,10 +110,11 @@ class ZidControllers extends Controller {
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
-        return $this->runModuleService($modelName,$tableName);
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
-    public function orders(){
+    public function orders(Request $request){
         $input = \Request::all();
         $modelName = 'orders';
         $service = $this->service;
@@ -152,13 +154,14 @@ class ZidControllers extends Controller {
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
-        return $this->runModuleService($modelName,$tableName);
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
-    public function runModuleService($model,$tableName){
+    public function runModuleService($model,$tableName,$ajaxCheck=0){
         $input = \Request::all();
         $service = $this->service;
-        $paginationNo = 12;
+        $paginationNo = 15;
 
         if (Schema::hasTable($tableName)) {
             $source = DB::table($tableName);
@@ -184,8 +187,17 @@ class ZidControllers extends Controller {
                 $source->where('city','LIKE','%'.$input['address'].'%');
             }
 
+            if($ajaxCheck){
+                if(isset($input['recordNumber']) && !empty($input['recordNumber'])){
+                    $paginationNo = $input['recordNumber'];
+                }
+            }
 
-            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            if(isset($input['keyword']) && !empty($input['keyword'])){
+                $source->where('name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
+            }
+
+            $modelData = $source == [] ?  [] : ($paginationNo != 'all' ? $source->paginate($paginationNo) : $source->paginate($source->count()));
             $formattedData = $this->formatData($modelData,$model);
             
             $data['mainData'] = [
@@ -346,11 +358,19 @@ class ZidControllers extends Controller {
         }
 
         $mainData['designElems'] = $data;
+        $mainData['type'] = $model;
         $mainData['data'] = $formattedData;
         $mainData['dis'] = $this->checkPerm();
+
         if(!empty($formattedData)){
             $mainData['pagination'] = \Helper::GeneratePagination($modelData);
         }
+
+        if($ajaxCheck){
+            $returnHTML = view('Tenancy.ExternalServices.Views.ajaxData')->with('data', (object) $mainData)->render();
+            return response()->json( array('success' => true, 'html'=>$returnHTML) );
+        }
+
         return view('Tenancy.ExternalServices.Views.'.$model)->with('data', (object) $mainData);
     }
 
@@ -401,7 +421,8 @@ class ZidControllers extends Controller {
             }elseif($table == 'orders'){
                 $status = unserialize($value->order_status);
                 $dataObj->created_at = date('Y-m-d H:i:s', strtotime($value->created_at));
-                $dataObj->id = $value->code;
+                $dataObj->id = $value->id;
+                $dataObj->order_url = $value->order_url;
                 $dataObj->total = $value->order_total_string;
                 $dataObj->status = $status['name'];
                 $dataObj->statusID = $status['code'];

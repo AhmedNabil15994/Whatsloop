@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\Changelog;
+use App\Models\CentralCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
@@ -24,7 +25,7 @@ class ChangeLogControllers extends Controller {
             'icon' => 'dripicons-blog',
             'sortName' => 'title_'.LANGUAGE_PREF,
         ];
-
+        $categories = CentralCategory::dataList(1)['data'];
         $data['searchData'] = [
             'id' => [
                 'type' => 'text',
@@ -43,6 +44,13 @@ class ChangeLogControllers extends Controller {
                 'class' => 'form-control m-input',
                 'index' => '2',
                 'label' => trans('main.name_en'),
+            ],
+            'category_id' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'index' => '3',
+                'options' => $categories,
+                'label' => trans('main.category'),
             ],
             'from' => [
                 'type' => 'text',
@@ -82,6 +90,13 @@ class ChangeLogControllers extends Controller {
                 'data-col' => 'title_en',
                 'anchor-class' => 'editable',
             ],
+            'category' => [
+                'label' => trans('main.category'),
+                'type' => '',
+                'className' => 'edits selects',
+                'data-col' => 'category_id',
+                'anchor-class' => 'editable',
+            ],
             'created_at' => [
                 'label' => trans('main.date'),
                 'type' => '',
@@ -105,11 +120,13 @@ class ChangeLogControllers extends Controller {
         $rules = [
             'title_ar' => 'required',
             'title_en' => 'required',
+            'category_id' => 'required',
         ];
 
         $message = [
             'title_ar.required' => trans('main.titleArValidate'),
             'title_en.required' => trans('main.titleEnValidate'),
+            'category_id.required' => trans('main.categoryValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -138,7 +155,7 @@ class ChangeLogControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.changeLogs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        $data['permissions'] = \Helper::getPermissions(true);
+        $data['categories'] = CentralCategory::dataList(1)['data'];
         $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Central.Changelog.Views.edit')->with('data', (object) $data);      
     }
@@ -162,6 +179,9 @@ class ChangeLogControllers extends Controller {
 
         $dataObj->title_ar = $input['title_ar'];
         $dataObj->title_en = $input['title_en'];
+        $dataObj->description_ar = $input['description_ar'];
+        $dataObj->description_en = $input['description_en'];
+        $dataObj->category_id = $input['category_id'];
         $dataObj->updated_at = DATE_TIME;
         $dataObj->updated_by = USER_ID;
         $dataObj->save();
@@ -191,7 +211,7 @@ class ChangeLogControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.changeLogs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        $data['permissions'] = \Helper::getPermissions(true);
+        $data['categories'] = CentralCategory::dataList(1)['data'];
         return view('Central.Changelog.Views.add')->with('data', (object) $data);
     }
 
@@ -207,6 +227,9 @@ class ChangeLogControllers extends Controller {
         $dataObj = new Changelog;
         $dataObj->title_ar = $input['title_ar'];
         $dataObj->title_en = $input['title_en'];
+        $dataObj->description_ar = $input['description_ar'];
+        $dataObj->description_en = $input['description_en'];
+        $dataObj->category_id = $input['category_id'];
         $dataObj->sort = Changelog::newSortIndex();
         $dataObj->status = $input['status'];
         $dataObj->created_at = DATE_TIME;

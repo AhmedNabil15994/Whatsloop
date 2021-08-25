@@ -2,7 +2,9 @@
 @section('title',trans('main.checkout'))
 @section('styles')
 <style type="text/css" media="screen">
-    
+    .border.rounded .float-right img{
+        width: 80px;
+    }
 </style>
 @endsection
 
@@ -116,13 +118,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.address') }} :</label>
-                                                    <input class="form-control" name="address" value="" placeholder="{{ trans('main.address') }}">
+                                                    <input class="form-control" name="address" value="{{ $data->payment->address }}" placeholder="{{ trans('main.address') }}">
                                                 </div> 
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.address') }} 2 :</label>
-                                                    <input class="form-control" name="address2" value="" placeholder="{{ trans('main.address') }} 2">
+                                                    <input class="form-control" name="address2" value="{{ $data->payment->address2 }}" placeholder="{{ trans('main.address') }} 2">
                                                 </div> 
                                             </div>    
                                         </div>
@@ -130,13 +132,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.city') }} :</label>
-                                                    <input class="form-control" name="city" value="" placeholder="{{ trans('main.city') }}">
+                                                    <input class="form-control" name="city" value="{{ $data->payment->city }}" placeholder="{{ trans('main.city') }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.region') }} :</label>
-                                                    <input class="form-control" name="region" value="" placeholder="{{ trans('main.region') }}">
+                                                    <input class="form-control" name="region" value="{{ $data->payment->region }}" placeholder="{{ trans('main.region') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -144,13 +146,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.postal_code') }} :</label>
-                                                    <input class="form-control" name="postal_code" value="" placeholder="{{ trans('main.postal_code') }}">
+                                                    <input class="form-control" name="postal_code" value="{{ $data->payment->postal_code }}" placeholder="{{ trans('main.postal_code') }}">
                                                 </div> 
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.country') }} :</label>
-                                                    <input class="form-control" value="" name="country" placeholder="{{ trans('main.country') }}">
+                                                    <input class="form-control" value="{{ $data->payment->country }}" name="country" placeholder="{{ trans('main.country') }}">
                                                 </div> 
                                             </div>
                                         </div>
@@ -158,7 +160,7 @@
                                             <div class="col">
                                                 <div class="form-group">
                                                     <label>{{ trans('main.tax_id') }} :</label>
-                                                    <input class="form-control" name="tax_id" value="" placeholder="{{ trans('main.tax_id') }}">
+                                                    <input class="form-control" name="tax_id" value="{{ $data->payment->tax_id }}" placeholder="{{ trans('main.tax_id') }}">
                                                 </div> 
                                             </div>
                                         </div>
@@ -168,14 +170,14 @@
                                             <h4 class="header-title">{{ trans('main.payment_setting') }}</h4>
 
                                             <p class="sub-header">{{ trans('main.payment_setting_p') }}</p>
-
+                                            <input type="hidden" name="payType" value="3">
                                             <!-- Pay with Paypal box-->
                                             <div class="border p-3 mb-3 rounded">
                                                 <div class="float-right">
                                                     <i class="fab fa-cc-paypal font-24 text-primary"></i>
                                                 </div>
                                                 <div class="custom-control custom-radio custom-control-inline">
-                                                    <input type="radio" id="BillingOptRadio2" name="billingOptions" class="custom-control-input">
+                                                    <input type="radio" id="BillingOptRadio2" name="billingOptions" data-area="1" class="custom-control-input">
                                                     <label class="custom-control-label font-16 font-weight-bold" for="BillingOptRadio2">{{ trans('main.bankTransfer') }}</label>
                                                 </div>
                                                 <p class="mb-0 pl-3 pt-1">You will be Asked to attach transfer image.</p>
@@ -185,15 +187,34 @@
                                             <!-- Credit/Debit Card box-->
                                             <div class="border p-3 mb-3 rounded">
                                                 <div class="float-right">
-                                                    <i class="far fa-credit-card font-24 text-primary"></i>
+                                                    <img src="{{ asset('/images/paytabs.svg') }}" alt="">
                                                 </div>
                                                 <div class="custom-control custom-radio custom-control-inline">
-                                                    <input type="radio" id="BillingOptRadio1" name="billingOptions" class="custom-control-input" checked>
-                                                    <label class="custom-control-label font-16 font-weight-bold" for="BillingOptRadio1">Credit / Debit Card</label>
+                                                    <input type="radio" id="BillingOptRadio1" name="billingOptions" data-area="2" class="custom-control-input" checked>
+                                                    <label class="custom-control-label font-16 font-weight-bold" for="BillingOptRadio1"> Pay Via Paytabs</label>
                                                 </div>
-                                                <p class="mb-0 pl-3 pt-1">Safe money transfer using your bank account. We support Mastercard, Visa, Discover and Stripe.</p>
-                                                
-                                                <div class="row mt-4">
+                                                <p class="mb-0 pl-3 pt-1"></p>
+                                            </div>  
+                                            <div class="border p-3 mb-3 rounded">
+                                                <div class="float-right">
+                                                    <img src="{{ asset('/images/noon.svg') }}" alt="">
+                                                </div>
+                                                <div class="custom-control custom-radio custom-control">
+                                                    <input type="radio" id="BillingOptRadio3" name="billingOptions" data-area="3" class="custom-control-input" checked>
+                                                    <label class="custom-control-label font-16 font-weight-bold" for="BillingOptRadio3"> Pay Via Noon</label>
+                                                    <br>
+                                                    <br>
+                                                    <div class="custom-control custom-radio custom-control">
+                                                        <input type="radio" id="BillingOptRadio5" name="billingOpt" data-area="4" class="custom-control-input">
+                                                        <label class="custom-control-label font-16 font-weight-bold" for="BillingOptRadio5"> Set As Subscription</label>
+                                                    </div>
+                                                    <div class="custom-control custom-radio custom-control">
+                                                        <input type="radio" id="BillingOptRadio6" name="billingOpt" data-area="3" class="custom-control-input" checked>
+                                                        <label class="custom-control-label font-16 font-weight-bold" for="BillingOptRadio6"> Single Payment</label>
+                                                    </div>
+                                                </div>
+                                                <p class="mb-0 pl-3 pt-1"></p>
+                                                {{-- <div class="row mt-4">
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label for="card-number">Card Number</label>
@@ -220,7 +241,7 @@
                                                             <input type="text" id="card-cvv" class="form-control" data-toggle="input-mask" data-mask-format="000" placeholder="012">
                                                         </div>
                                                     </div>
-                                                </div> <!-- end row -->
+                                                </div> <!-- end row --> --}}
                                             </div>
                                             <!-- end Credit/Debit Card box-->
 

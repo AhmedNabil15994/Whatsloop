@@ -241,6 +241,107 @@ class ImagesHelper {
         return false;
     }
 
+    static function UploadFiles($strAction, $fieldInput, $id, $fileType = '') {
+
+        if ($fieldInput == '') {
+            return false;
+        }
+
+        if (is_object($fieldInput)) {
+            $fileObj = $fieldInput;
+        } else {
+            $fileObj = Storage::url($fieldInput);
+        }
+
+        if (Storage::size($fieldInput) >= 10000000) {
+            return false;
+        }
+        $oldExtension = explode('.', explode('/', $fieldInput)[1])[1];
+        // dd($oldExtension);
+        $extensionExplode = explode('/' , Storage::mimeType($fieldInput)); // getting image extension
+        unset($extensionExplode[0]);
+        $extensionExplode = array_values($extensionExplode);
+        $extension = $extensionExplode[0];
+
+        $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml','3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv','x-m4v'];
+
+        if (!in_array($extension, $appliedExtensions)) {
+            return false;
+        }
+
+        
+        $rand = rand() . date("YmdhisA");
+        $fileName = 'whatsloop' . '-' . $rand;
+        $directory = '';
+
+        $tenant = '';
+        if(!\Session::has('central')){
+            $tenant = TENANT_ID;
+        }
+
+        if($strAction == 'users'){
+            $userObj = CentralUser::getOne($id);
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+            if($userObj->group_id == 0){
+                $tenant = $tenantObj->tenant_id;
+            }
+        }
+
+        $path = public_path() . '/uploads/'.$tenant.'/';
+
+        if ($strAction == 'users') {
+            $directory = $path . 'users/' . $id;
+        }
+
+        if ($strAction == 'bots') {
+            $directory = $path . 'bots/' . $id;
+        }
+
+        if ($strAction == 'chats') {
+            $directory = $path . 'chats/';
+        }
+
+        if ($strAction == 'groupMessages') {
+            $directory = $path . 'groupMessages/' . $id;
+        }
+
+
+
+        if ($strAction == 'faqs') {
+            $directory = $path . 'faqs/' . $id;
+        }
+
+        if ($strAction == 'tickets') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'tickets/' . $id;
+        }
+
+        if ($strAction == 'changeLogs') {
+            $directory = $path . 'changeLogs/' . $id;
+        }
+
+        if ($strAction == 'central_users') {
+            $directory = $path . 'central_users/' . $id;
+        }
+
+        $fileName_full = $fileName . '.' . $oldExtension;
+
+        if ($directory == '') {
+            return false;
+        }
+
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
+        $filePath = str_replace('/storage', '', Storage::url($fieldInput));
+        if (File::move(storage_path().'/app'.$filePath, $directory.'/'.$fileName_full)){
+            return $fileName_full;
+        }
+
+        return false;
+    }
+
     static function uploadFileFromRequest($strAction, $fieldInput, $fileType = '') {
 
         if ($fieldInput == '') {

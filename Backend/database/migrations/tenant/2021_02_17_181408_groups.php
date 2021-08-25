@@ -30,8 +30,8 @@ class Groups extends Migration
 
         \DB::table('groups')->insert([
             [
-                'name_ar' => 'المشرف العام',
-                'name_en' => 'Admin',
+                'name_ar' => 'مالك الحساب',
+                'name_en' => 'Account Owner',
                 'status' => 1,
                 'sort' => 1,
             ],

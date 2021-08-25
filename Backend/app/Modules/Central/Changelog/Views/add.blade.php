@@ -64,6 +64,29 @@
                                 <input type="hidden" name="status">
                             </div>
                         </div>
+                        <div class="form-group row mb-3">
+                            <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.descriptionAr') }} :</label>
+                            <div class="col-9">
+                                <textarea class="form-control" name="description_ar" placeholder="{{ trans('main.descriptionAr') }}">{{ old('description_ar') }}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.descriptionEn') }} :</label>
+                            <div class="col-9">
+                                <textarea class="form-control" name="description_en" placeholder="{{ trans('main.descriptionEn') }}">{{ old('description_en') }}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.category') }} :</label>
+                            <div class="col-9">
+                                <select class="form-control" data-toggle="select2" name="category_id">
+                                    <option value="">{{ trans('main.choose') }}</option>
+                                    @foreach($data->categories as $category)
+                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         @if(\Helper::checkRules('uploadImage-'.$data->designElems['mainData']['nameOne']))
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.photo') }} :</label>

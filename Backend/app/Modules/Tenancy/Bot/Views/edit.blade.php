@@ -56,7 +56,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="channel">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="channel">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($data->channels as $group)
                                     <option value="{{ $group->id }}" {{ str_replace(trans('main.channel'). ' #', '', $data->data->channel) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
@@ -67,7 +67,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.messageType') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="message_type">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="message_type">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ $data->data->message_type == 1 ? 'selected' : '' }}>{{ trans('main.equal') }}</option>
                                     <option value="2" {{ $data->data->message_type == 2 ? 'selected' : '' }}>{{ trans('main.part') }}</option>
@@ -83,7 +83,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.replyType') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="reply_type">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="reply_type">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ $data->data->reply_type == 1 ? 'selected' : '' }}>{{ trans('main.text') }}</option>
                                     <option value="2" {{ $data->data->reply_type == 2 ? 'selected' : '' }}>{{ trans('main.photoOrFile') }}</option>
@@ -99,7 +99,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-md-3 col-form-label" for="lang"> {{ trans('main.lang') }}</label>
                             <div class="col-md-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="lang">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="lang">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="0" {{ $data->data->lang == 0 ? 'selected' : '' }}>{{ trans('main.arabic') }}</option>
                                     <option value="1" {{ $data->data->lang == 1 ? 'selected' : '' }}>{{ trans('main.english') }}</option>

@@ -1,0 +1,59 @@
+/*-- rating--*/
+
+.rating-stars {
+	width: 100%;
+	.rating-stars-container {
+		font-size: 0px;
+		.rating-star {
+			display: inline-block;
+			font-size: 26px;
+			cursor: pointer;
+			padding: 4px 8px;
+			color: #e1e6f1;
+			&.is--active .fa-heart, &.is--hover .fa-heart {
+				color: #fb0d00;
+			}
+			&.sm {
+				display: inline-block;
+				font-size: 14px;
+				color: #eaedf1;
+				cursor: pointer;
+				padding: 5px;
+			}
+			&.is--active, &.is--hover {
+				color: #f1c40f;
+			}
+			&.is--no-hover, .fa-heart .is--no-hover {
+				color: $border;
+			}
+			&.is--active, &.is--hover {
+				color: #f1c40f;
+			}
+		}
+	}
+}
+
+/*-----Br Themes-----*/
+
+.rating-stars input {
+	display: block;
+	padding: 0.375rem 0.75rem;
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: #495057;
+	background-color: $white;
+	background-clip: padding-box;
+	border: 1px solid #eaedf1;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.rating-table {
+	&.table {
+		th, td {
+			padding: 7px 6px !important;
+			line-height: 1.462;
+		}
+	}
+	tr {
+		padding: 10px 0;
+	}
+}

@@ -245,7 +245,7 @@ class ClientControllers extends Controller {
             $data['messages'] = ChatMessage::generateObj(ChatMessage::where('fromMe',1)->orderBy('time','DESC')->take(10))['data'];
             $channelObj = UserChannels::first();
             if($channelObj){
-                $whatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+                $whatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
                 $updateResult = $whatsLoopObj->me();
                 $result = $updateResult->json();
             }
@@ -277,7 +277,7 @@ class ClientControllers extends Controller {
         ];
 
         if($channelObj){
-            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
             if($userObj->setting_pushed == 0){
                 $updateResult = $mainWhatsLoopObj->postSettings($myData);
                 $result = $updateResult->json();
@@ -325,7 +325,7 @@ class ClientControllers extends Controller {
         $channelObj = UserChannels::first();
         tenancy()->end($tenant);
 
-        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
         $settings = $mainWhatsLoopObj->postSettings($myArr);       
         $result = $settings->json();
         if($result['status']['status'] != 1){
@@ -707,6 +707,7 @@ class ClientControllers extends Controller {
             'domain' => $input['domain'],
         ]);
 
+
         $centralUser = CentralUser::create([
             'global_id' => (string) Str::orderedUuid(),
             'name' => $input['name'],
@@ -769,7 +770,9 @@ class ClientControllers extends Controller {
         $extraChannelData = $channel;
         $extraChannelData['tenant_id'] = $tenant->id;
         $extraChannelData['global_user_id'] = $centralUser->global_id;
-
+        $generatedData = CentralChannel::generateNewKey($result['data']['channel']['id']); // [ generated Key , generated Token]
+        $extraChannelData['instanceId'] = $generatedData[0];
+        $extraChannelData['instanceToken'] = $generatedData[0];
         CentralChannel::create($extraChannelData);
 
         $user = $tenant->run(function() use(&$centralUser,$channel,$addonsArr,$input){

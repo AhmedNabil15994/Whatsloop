@@ -1,108 +1,350 @@
-<!-- Right Sidebar -->
-<div class="right-bar">
-    @php $themeObj = App\Models\UserTheme::getUserTheme(USER_ID); @endphp
-    <div data-simplebar class="h-100">
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs nav-bordered nav-justified" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link py-2" data-toggle="tab" href="#chat-tab" role="tab">
-                    <i class="mdi mdi-message-text d-block font-22 my-1"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link py-2" data-toggle="tab" href="#tasks-tab" role="tab">
-                    <i class="mdi mdi-format-list-checkbox d-block font-22 my-1"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link py-2 active" data-toggle="tab" href="#settings-tab" role="tab">
-                    <i class="mdi mdi-cog-outline d-block font-22 my-1"></i>
-                </a>
-            </li>
-        </ul>
-        <!-- Tab panes -->
-        <div class="tab-content pt-0">
-            <div class="tab-pane active" id="settings-tab" role="tabpanel">
-                <h6 class="font-weight-medium px-3 m-0 py-2 font-13 text-uppercase bg-light">
-                    <span class="d-block py-1">{{ trans('main.themeSettings') }}</span>
-                </h6>
-                <div class="p-3 theme">
-                    <div class="alert alert-warning" role="alert">
-                        <strong>{{ trans('main.customize') }} </strong> {{ trans('main.customizeP') }}
+<!-- Sidebar-right-->
+<div class="sidebar sidebar-{{ DIRECTION == 'ltr' ? 'right' : 'left' }} sidebar-animate">
+    <div class="panel panel-primary card mb-0 box-shadow">
+        <div class="tab-menu-heading border-0 p-3">
+            <div class="card-title mb-0">Control Center</div>
+            <div class="card-options ml-auto">
+                <a href="#" class="sidebar-remove"><i class="fe fe-x"></i></a>
+            </div>
+        </div>
+        <div class="panel-body tabs-menu-body latest-tasks p-0 border-0">
+            <div class="tabs-menu border-bottom">
+                <!-- Tabs -->
+                <ul class="nav panel-tabs">
+                    <li class=""><a href="#side1" class="active" data-toggle="tab"><i class="fe fe-user mr-1"></i> Notifications</a></li>
+                    <li><a href="#side2" data-toggle="tab"><i class="fe fe-users mr-1"></i> Moderators</a></li>
+                    <li><a href="#side3" data-toggle="tab"><i class="fe fe-settings mr-1"></i> Theme Settings</a></li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane active" id="side1">
+                    <div class="card-body text-center">
+                        <div class="dropdown user-pro-body">
+                            <div class="">
+                                <img alt="user-img" class="avatar avatar-xl brround mx-auto text-center" src="{{ asset('img/faces/6.jpg') }}"><span class="avatar-status profile-status bg-green"></span>
+                            </div>
+                            <div class="user-info mg-t-20">
+                                <h6 class="font-weight-semibold  mt-2 mb-0">Mintrona Pechon</h6>
+                                <span class="mb-0 text-muted">Premium Member</span>
+                            </div>
+                        </div>
                     </div>
-                    <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.colorScheme') }}</h6>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" name="theme" value="light"
-                            id="light-mode-check" {{ $themeObj == null ? 'checked' : ($themeObj->theme == "light" ? 'checked' : '') }}/>
-                        <label class="custom-control-label" for="light-mode-check">{{ trans('main.lightMode') }}</label>
+                    <a class="dropdown-item d-flex pd-y-15 border-bottom border-top" href="#">
+                        <div class="d-flex"><i class="far fa-user mr-3 tx-20 mg-t-5 text-muted"></i>
+                            <div>
+                                <h6 class="mb-0">My Profile</h6>
+                                <p class="tx-12 mb-0 text-muted">Profile Personal information</p>
+                            </div>
+                        </div>
+                        <div class="ml-auto mg-t-8"><i class="fe fe-chevron-right"></i></div>
+                    </a>
+                    <a class="dropdown-item d-flex pd-y-15 border-bottom" href="#">
+                        <div class="d-flex"><i class="far fa-edit mr-3 tx-20 mg-t-5 text-muted"></i>
+                            <div>
+                                <h6 class="mb-0">Edit Profile</h6>
+                                <p class="tx-12 mb-0 text-muted">Profile Edit information</p>
+                            </div>
+                        </div>
+                        <div class="ml-auto mg-t-8"><i class="fe fe-chevron-right"></i></div>
+                    </a>
+                    <a class="dropdown-item d-flex pd-y-15 border-bottom" href="#">
+                        <div class="d-flex"><i class="far fa-clock mr-3 tx-20 mg-t-5 text-muted"></i>
+                            <div>
+                                <h6 class="mb-0">Activity Logs</h6>
+                                <p class="tx-12 mb-0 text-muted">Activity information</p>
+                            </div>
+                        </div>
+                        <div class="ml-auto mg-t-8"><i class="fe fe-chevron-right"></i></div>
+                    </a>
+                    <a class="dropdown-item d-flex pd-y-15 border-bottom" href="#">
+                        <div class="d-flex"><i class="fas fa-sliders-h mr-3 tx-20 mg-t-5 text-muted"></i>
+                            <div>
+                                <h6 class="mb-0">Account Settings</h6>
+                                <p class="tx-12 mb-0 text-muted">Settings Information</p>
+                            </div>
+                        </div>
+                        <div class="ml-auto mg-t-8"><i class="fe fe-chevron-right"></i></div>
+                    </a>
+                    <a class="dropdown-item d-flex pd-y-15 border-bottom" href="signin.html">
+                        <div class="d-flex"><i class="fas fa-sign-out-alt mr-3 tx-20 mg-t-5 text-muted"></i>
+                            <div>
+                                <h6 class="mb-0">Sign Out</h6>
+                                <p class="tx-12 mb-0 text-muted">Account Signout</p>
+                            </div>
+                        </div>
+                        <div class="ml-auto mg-t-8"><i class="fe fe-chevron-right"></i></div>
+                    </a>
+                </div>
+                <div class="tab-pane" id="side2">
+                    <div class="list-group list-group-flush ">
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/9.jpg') }}"><span class="avatar-status bg-success"></span></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Mozelle Belt</div>
+                                <p class="mb-0 tx-12 text-muted">mozellebelt@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/11.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Florinda Carasco</div>
+                                <p class="mb-0 tx-12 text-muted">florindacarasco@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel" ><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/10.jpg') }}"><span class="avatar-status bg-success"></span></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Alina Bernier</div>
+                                <p class="mb-0 tx-12 text-muted">alinaaernier@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/2.jpg') }}"><span class="avatar-status bg-success"></span></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Zula Mclaughin</div>
+                                <p class="mb-0 tx-12 text-muted">zulamclaughin@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/13.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Isidro Heide</div>
+                                <p class="mb-0 tx-12 text-muted">isidroheide@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/12.jpg') }}"><span class="avatar-status bg-success"></span></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Mozelle Belt</div>
+                                <p class="mb-0 tx-12 text-muted">mozellebelt@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" ><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/4.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Florinda Carasco</div>
+                                <p class="mb-0 tx-12 text-muted">florindacarasco@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/7.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Alina Bernier</div>
+                                <p class="mb-0 tx-12 text-muted">alinabernier@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" ><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/2.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Zula Mclaughin</div>
+                                <p class="mb-0 tx-12 text-muted">zulamclaughin@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel" ><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/14.jpg') }}"><span class="avatar-status bg-success"></span></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Isidro Heide</div>
+                                <p class="mb-0 tx-12 text-muted">isidroheide@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" ><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/11.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Florinda Carasco</div>
+                                <p class="mb-0 tx-12 text-muted">florindacarasco@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/9.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Alina Bernier</div>
+                                <p class="mb-0 tx-12 text-muted">alinabernier@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/15.jpg') }}"><span class="avatar-status bg-success"></span></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Zula Mclaughin</div>
+                                <p class="mb-0 tx-12 text-muted">zulamclaughin@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex  align-items-center">
+                            <div class="mr-2">
+                                <span class="avatar avatar-md brround cover-image" data-image-src="{{ asset('img/faces/4.jpg') }}"></span>
+                            </div>
+                            <div class="">
+                                <div class="font-weight-semibold" data-toggle="modal" data-target="#chatmodel">Isidro Heide</div>
+                                <p class="mb-0 tx-12 text-muted">isidroheide@gmail.com</p>
+                            </div>
+                            <div class="ml-auto">
+                                <a href="#" class="btn btn-sm btn-light" data-toggle="modal" data-target="#chatmodel"><i class="fab fa-facebook-messenger"></i></a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" name="theme" value="dark"
-                            id="dark-mode-check" {{ $themeObj != null && $themeObj->theme == "dark" ? 'checked' : '' }} />
-                        <label class="custom-control-label" for="dark-mode-check">{{ trans('main.darkMode') }}</label>
+                </div>
+                <div class="tab-pane" id="side3">
+                    <a class="dropdown-item bg-gray-100 pd-y-10" href="#">
+                        Account Settings
+                    </a>
+                    <div class="card-body">
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-dark" class="custom-switch-input">
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Enable Dark Theme</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked>
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Updates Automatically</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input">
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Allow Location Map</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked>
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Show Contacts</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked>
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Show Notication</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input">
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Show Tasks Statistics</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked>
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Show Email Notification</span>
+                            </label>
+                        </div>
                     </div>
-                    <!-- Width -->
-                    <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.width') }}</h6>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj == null ? 'checked' : ($themeObj->width == "fluid" ? 'checked' : '') }} name="width" value="fluid" id="fluid-check" checked />
-                        <label class="custom-control-label" for="fluid-check">{{ trans('main.fluid') }}</label>
-                    </div>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj != null && $themeObj->width == "boxed" ? 'checked' : '' }} name="width" value="boxed" id="boxed-check" />
-                        <label class="custom-control-label" for="boxed-check">{{ trans('main.boxed') }}</label>
-                    </div>
-                    <!-- Menu positions -->
-                    <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.menus') }}</h6>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj == null ? 'checked' : ($themeObj->menus_position == "fixed" ? 'checked' : '') }} name="menus_position" value="fixed" id="fixed-check"
-                            checked />
-                        <label class="custom-control-label" for="fixed-check">{{ trans('main.fixed') }}</label>
-                    </div>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj != null && $themeObj->menus_position == "scrollable" ? 'checked' : '' }} name="menus_position" value="scrollable"
-                            id="scrollable-check" />
-                        <label class="custom-control-label" for="scrollable-check">{{ trans('main.scrollable') }}</label>
-                    </div>
-                    <!-- size -->
-                    <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.leftSize') }}</h6>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj == null ? 'checked' : ($themeObj->sidebar_size == "default" ? 'checked' : '') }} name="sidebar_size" value="default"
-                            id="default-size-check" checked />
-                        <label class="custom-control-label" for="default-size-check">{{ trans('main.default') }}</label>
-                    </div>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj != null && $themeObj->sidebar_size == "condensed" ? 'checked' : '' }} name="sidebar_size" value="condensed"
-                            id="condensed-check" />
-                        <label class="custom-control-label" for="condensed-check">{{ trans('main.condensed') }} <small>{{ trans('main.extraSmall') }}</small></label>
-                    </div>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj != null && $themeObj->sidebar_size == "compact" ? 'checked' : '' }} name="sidebar_size" value="compact"
-                            id="compact-check" />
-                        <label class="custom-control-label" for="compact-check">{{ trans('main.compact') }} <small>{{ trans('main.smallSize') }}</small></label>
-                    </div>
-                    <!-- User info -->
-                    <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.sidebarInfo') }}</h6>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="checkbox" class="custom-control-input" {{ $themeObj != null && $themeObj->user_info == "true" ? 'checked' : '' }} name="user_info" value="{{ $themeObj != null && $themeObj->user_info == 'true' ? 'false' : 'true' }}" id="sidebaruser-check" />
-                        <label class="custom-control-label" for="sidebaruser-check">{{ trans('main.enable') }}</label>
-                    </div>
-                    <!-- Topbar -->
-                    <h6 class="font-weight-medium font-14 mt-4 mb-2 pb-1">{{ trans('main.topbar') }}</h6>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj == null ? 'checked' : ($themeObj->top_bar == "dark" ? 'checked' : '') }} name="top_bar" value="dark" id="darktopbar-check"
-                            checked />
-                        <label class="custom-control-label" for="darktopbar-check">{{ trans('main.dark') }}</label>
-                    </div>
-                    <div class="custom-control custom-switch mb-1">
-                        <input type="radio" class="custom-control-input" {{ $themeObj != null && $themeObj->top_bar == "light" ? 'checked' : '' }} name="top_bar" value="light" id="lighttopbar-check" />
-                        <label class="custom-control-label" for="lighttopbar-check">{{ trans('main.light') }}</label>
-                    </div>
-                    <button class="btn btn-primary btn-block mt-4" id="resetBtn">{{ trans('main.resetDef') }}</button>
+                    {{-- <a class="dropdown-item bg-gray-100 pd-y-10" href="#">
+                        General Settings
+                    </a>
+                    <div class="card-body">
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked>
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Show User Online</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input">
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Website Notication</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input">
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Show Recent activity</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input">
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Logout Automatically</span>
+                            </label>
+                        </div>
+                        <div class="form-group mg-b-10">
+                            <label class="custom-switch pl-0">
+                                <input type="checkbox" name="custom-switch-checkbox" class="custom-switch-input" checked>
+                                <span class="custom-switch-indicator"></span>
+                                <span class="custom-switch-description mg-l-10">Aloow All Notifications</span>
+                            </label>
+                        </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
-    </div> <!-- end slimscroll-menu-->
+    </div>
 </div>
-<!-- /Right-bar -->
-<!-- Right bar overlay-->
-<div class="rightbar-overlay"></div>
+<!--/Sidebar-right-->

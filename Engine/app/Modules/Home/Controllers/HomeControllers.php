@@ -13,7 +13,7 @@ class HomeControllers extends Controller {
     public function formatResponse($serverResult,$status=null){
     	if(!$serverResult->ok()){
         	$result = $serverResult->json();
-            return [0,$result['error']];
+            return [0,@$result['error']];
         }else{
         	$result = $serverResult->json();
         	if(isset($result['error']) && !empty($result['error'])){

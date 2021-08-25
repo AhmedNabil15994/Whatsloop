@@ -65,6 +65,9 @@ class Contact extends Model{
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
+                    if (isset($input['id']) && !empty($input['id'])) {
+                        $query->where('id', $input['id']);
+                    } 
                     if (isset($input['name']) && !empty($input['name'])) {
                         $query->where('name', 'LIKE', '%' . $input['name'] . '%');
                     } 
@@ -80,8 +83,8 @@ class Contact extends Model{
                     if (isset($input['group_id']) && !empty($input['group_id'])) {
                         $query->where('group_id', $input['group_id']);
                     } 
-                    if (isset($input['phone']) && !empty($input['phone'])) {
-                        $query->where('phone', $input['phone']);
+                    if (isset($input['whats']) && !empty($input['whats'])) {
+                        $query->where('phone', 'LIKE', '%' . $input['whats'] . '%');
                     } 
                     if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
@@ -103,6 +106,70 @@ class Contact extends Model{
         }
         $source->orderBy('sort','ASC');
         return self::generateObj($source,$withMessageStatus);
+    }
+
+    static function dataList2() {
+        $input = \Request::all();
+        $pageNo = 15;
+        $source = self::NotDeleted()->where(function ($query) use ($input) {
+                    if (isset($input['name']) && !empty($input['name'])) {
+                        $query->where('name', 'LIKE', '%' . $input['name'] . '%');
+                    } 
+                    if (isset($input['email']) && !empty($input['email'])) {
+                        $query->where('email', 'LIKE', '%' . $input['email'] . '%');
+                    } 
+                    if (isset($input['city']) && !empty($input['city'])) {
+                        $query->where('city', 'LIKE', '%' . $input['city'] . '%');
+                    } 
+                    if (isset($input['country']) && !empty($input['country'])) {
+                        $query->where('country', 'LIKE', '%' . $input['country'] . '%');
+                    } 
+                    if (isset($input['id']) && !empty($input['id'])) {
+                        $query->where('id', $input['id']);
+                    } 
+                    if (isset($input['group_id']) && !empty($input['group_id'])) {
+                        $query->where('group_id', $input['group_id']);
+                    } 
+                    if (isset($input['whats']) && !empty($input['whats'])) {
+                        $query->where('phone', 'LIKE', '%' . $input['whats'] . '%');
+                    } 
+                    if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+                        $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
+                    }
+
+                    if(isset($input['recordNumber']) && !empty($input['recordNumber'])){
+                        $pageNo = $input['recordNumber'];
+                    }
+
+                    if(isset($input['keyword']) && !empty($input['keyword'])){
+                        $query->where('name', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('email', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('city', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('country', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('phone', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('created_at', 'LIKE', '%' . $input['keyword'] . '%');
+                    }
+
+                });
+                
+        if(Session::has('channel')){
+            $source->whereHas('Group',function($groupQuery){
+                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+            });
+        }
+
+        $source->orderBy('sort','ASC');
+        return self::generateObj2($source,$pageNo);
+    }
+
+    static function generateObj2($source,$pageNo){
+        $sourceArr =  $pageNo != 'all' ? $source->paginate($pageNo) : $source->paginate($source->count()) ;
+
+        $list = [];
+        foreach($sourceArr as $key => $value) {
+            $list[$key] = new \stdClass();
+            $list[$key] = self::getData($value);
+        }
+
+        $data['pagination'] = \Helper::GeneratePagination($sourceArr);
+        $data['data'] = $list;
+
+        return $data;
     }
 
     static function getFullContactsInfo($group_id,$group_message_id){

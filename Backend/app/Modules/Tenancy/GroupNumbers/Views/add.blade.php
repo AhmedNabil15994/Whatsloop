@@ -37,7 +37,7 @@
                             <div class="form-group row mb-3">
                                 <label class="col-3 col-form-label">{{ trans('main.group') }} :</label>
                                 <div class="col-9">
-                                    <select class="selectpicker" data-style="btn-outline-myPR" name="group_id">
+                                    <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="group_id">
                                         <option value="">{{ trans('main.choose') }}</option>
                                         @foreach($data->groups as $group)
                                         <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>{{ $group->channel .' - '.$group->title }}</option>
@@ -52,7 +52,7 @@
                                 <div class="form-group row mb-3">
                                     <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
                                     <div class="col-9">
-                                        <select class="selectpicker channel" data-style="btn-outline-myPR">
+                                        <select class="form-control channel" data-toggle="select2" data-style="btn-outline-myPR">
                                             <option value="">{{ trans('main.channel') }}</option>
                                             @foreach($data->channels as $channel)
                                                 <option value="{{ $channel->id }}" {{ old('channel') == $channel->name || (Session::has('channel') && Session::get('channel') == $channel->id) ? 'selected' : '' }}>{{ $channel->name }}</option>

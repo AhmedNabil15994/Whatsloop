@@ -158,7 +158,7 @@ class CentralAuthControllers extends Controller {
         session()->flush();
         $lang = Session::put('locale',$lang);
         Session::flash('success', trans('auth.seeYou'));
-        return redirect('/login');
+        return redirect()->to(route('login'));
     }
 
     public function getResetPassword(){

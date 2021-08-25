@@ -1,8 +1,8 @@
 $(function(){
-	$('.dropdown-item.lang-item').on('click',function(e){
+	$('.lang-item').on('click',function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		var locale = $(this).is(':last-child') ? 'ar' : 'en';
+		var locale = $(this).data('next-area');
 		var _token = $('meta[name="csrf-token"]').attr('content');
 
 		$.ajax({

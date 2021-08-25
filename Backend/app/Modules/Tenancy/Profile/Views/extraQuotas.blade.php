@@ -68,9 +68,9 @@
                             <a href="{{ in_array($one->id, $data->userQuotas) ? '#' : URL::to('/profile/extraQuotas/'.$one->id) }}" title="">
                                 <div class="card myCard {{ in_array($one->id, $data->userQuotas) ? 'checked' : '' }}" data-toggle=".first">
                                     <div class="card-body">
-                                        @if(in_array($one->id, $data->userQuotas))
+                                        @if(in_array($one->id, $data->userQuotas2))
                                         <span class="selected badge badge-dark">{{ trans('main.selected') }}</span>
-                                        <span class="selected selected2 badge badge-dark"> {{ trans('main.end_date') }}: {{ $data->userQuotas2[$one->id]->end_date }}</span>
+                                        <span class="selected selected2 badge badge-dark"> {{ trans('main.end_date') }}: {{ @$data->userQuotas2[$one->id]->end_date }}</span>
                                         @endif
                                         <h3 class="card-title">{{ $one->extraTypeText }}</h3>
                                         <p>{{ $one->extra_count . ' '.$one->extraTypeText . ' ' . ($one->extra_type == 1 ? trans('main.msgPerDay') : '')}}</p>

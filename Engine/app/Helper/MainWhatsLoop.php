@@ -207,7 +207,7 @@ class MainWhatsLoop {
         return $result;
     }
 
-    // ['pushname' => new Name]
+    // ['name' => new Name]
     public function updateName($data){
         $mainURL = $this->baseUrl.$this->instanceId.'/';
         $fullURL = $mainURL.'setName?token='.$this->token;

@@ -12,46 +12,7 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-{{ !isset($data->dis) || $data->dis != true ? '11' : '12' }}">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-        @if(!isset($data->dis) || $data->dis != true)
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
-                        @if($data->designElems['mainData']['url'] == 'groupMsgs')
-                        <i class="mdi mdi-send"></i> {{ trans('main.send') }}
-                        @else
-                        <i class="fa fa-plus"></i> {{ trans('main.add') }}
-                        @endif
-                    </a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>     
+
     <!-- end page title --> 
     @if(!isset($data->dis) || $data->dis != true)
     <input type="hidden" name="data-area" value="{{ \Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) }}">
@@ -74,21 +35,69 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body">
-                    <div class="row">
+                <div class="card-header pb-0 pd-t-25"> 
+                    <div class="row"> 
                         <div class="col-6">
-                            <h4 class="header-title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
+                            <h3 class="card-title mb-0"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h3> 
                         </div>
+                        <div class="col-6 text-right">
+                            @if(!isset($data->dis) || $data->dis != true)
+                            <div class="card-options ml-auto"> 
+                                {{-- <div class="btn-group ml-5 mb-0"> 
+                                    <a class="btn-link option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+                                        <i class="fe fe-more-vertical tx-gray-500"></i>
+                                    </a> 
+                                    <div class="dropdown-menu shadow" style=""> 
+                                        @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
+                                        <a class="dropdown-item text-left" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
+                                            @if($data->designElems['mainData']['url'] == 'groupMsgs')
+                                            <i class="fa fa-send mr-2 ml-2"></i> {{ trans('main.send') }}
+                                            @else
+                                            <i class="fe fe-plus mr-2 ml-2"></i> {{ trans('main.add') }}
+                                            @endif
+                                        </a>
+                                        @endif
+
+                                        @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
+                                            <a href="#" class="dropdown-item text-left quickEdit">
+                                                <i class="fe fe-edit mr-2 ml-2"></i> {{ trans('main.fastEdit') }}
+                                            </a>
+                                        @endif
+
+                                        <a href="#" class="dropdown-item text-left search-mode">
+                                            <i class="fa fa-question mr-2 ml-2"></i> {{ trans('main.advancedSearchTip') }}
+                                        </a>
+                                    </div> 
+                                </div>  --}}
+                                @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
+                                <a class="btn btn-primary btn-icon" data-toggle="tooltip" data-original-title=" {{ $data->designElems['mainData']['url'] == 'groupMsgs' ? trans('main.send') : trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
+                                    @if($data->designElems['mainData']['url'] == 'groupMsgs')
+                                    <i class="typcn typcn-location-arrow"></i>
+                                    @else
+                                    <i class="typcn typcn-document-add"></i>
+                                    @endif
+                                </a>
+                                @endif
+
+                                @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
+                                    <a href="#" class="btn btn-success btn-icon quickEdit" data-toggle="tooltip" data-original-title="{{ trans('main.fastEdit') }}">
+                                        <i class="typcn typcn-edit"></i>
+                                    </a>
+                                @endif
+
+                                <a href="#" class="btn btn-info btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
+                                    <i class="typcn typcn-info-large-outline"></i>
+                                </a>
+                            </div> 
+                            @endif
+                        </div>
+                    </div> 
+                </div>
+                <div class="card-body">
+                    {{-- <div class="row">
                         @if(!isset($data->dis) || $data->dis != true)
                         <div class="col-6 text-right">
-                            @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
-                            <a href="#" class="btn btn-outline-success quickEdit m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.fastEdit') }}">
-                                <i class="fa fa-pencil-alt"></i>
-                            </a>
-                            @endif
-                            <a href="#" class="btn ml-1 btn-outline-danger search-mode m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.advancedSearchTip') }}">
-                                <i class="fa fa-question"></i>
-                            </a>
+
                             <div class="btn-group ml-1 dropleft">
                                 <button type="button" style="border-radius: 25px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ trans('main.actions') }} <i class="mdi mdi-chevron-down"></i></button>
                                 <div class="dropdown-menu" style="">
@@ -103,7 +112,7 @@
                         </div>
                         @endif
                     </div>
-                    <hr>
+                    <hr> --}}
                     @if(!empty($data->designElems['searchData']))
                     <div class="accordion custom-accordion" id="custom-accordion-one">
                         <div class="card mb-3">
@@ -112,24 +121,24 @@
                                     <a class="custom-accordion-title text-reset collapsed d-block" data-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                         <i class="fa fa-search"></i>
                                         {{ trans('main.advancedSearch') }} 
-                                        <i class="mdi mdi-chevron-down accordion-arrow"></i>
+                                        <i class="mdi mdi-chevron-down accordion-arrow float-right"></i>
                                     </a>
                                 </h5>
                             </div>
                             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#custom-accordion-one">
-                                <div class="card-body m-form--fit">
-                                    <div class="row">
+                                <form class="card-body m-form--fit" method="get" action="{{ URL::current() }}">
+                                    <div class="row pt-2">
                                         @foreach($data->designElems['searchData'] as $searchKey => $searchItem)
                                         @if(in_array($searchItem['type'],['email','text','number','password']))
                                         @if($searchKey == 'from' || $searchKey == 'to')
                                         <div class="col">
                                             <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" name="{{ $searchKey }}" data-col-index="{{ $searchItem['index'] }}" id="{{ $searchItem['id'] }}" placeholder="{{ $searchItem['label'] }}">
+                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" value="{{ Request::get($searchKey) }}" name="{{ $searchKey }}" id="{{ $searchItem['id'] }}" placeholder="{{ $searchItem['label'] }}">
                                         </div>
                                         @else
                                         <div class="col-lg-3 col-md-4 col-sm-6">
                                             <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" placeholder="{{ $searchItem['label'] }}" name="{{ $searchKey }}" data-col-index="{{ $searchItem['index'] }}">
+                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" value="{{ Request::get($searchKey) }}" placeholder="{{ $searchItem['label'] }}" name="{{ $searchKey }}">
                                             <br>
                                         </div>
                                         @endif
@@ -137,7 +146,7 @@
                                         @if($searchItem['type'] == 'select')
                                         <div class="col-lg-3 col-md-4 col-sm-6">
                                             <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                            <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $searchKey }}">
+                                            <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $searchKey }}">
                                                 <option value=" ">{{ trans('main.choose') }}</option>
                                                 @foreach($searchItem['options'] as $group)
                                                 @php $group = (object) $group; @endphp
@@ -150,30 +159,28 @@
                                         @endforeach
                                     </div>
                                     <div class="m-separator"></div>
-                                    <div class="row">
-                                        <div class="col-lg-12 text-right">
-                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-outline-secondary" id="m_reset">
+                                    <div class="row mt-4">
+                                        <div class="col-lg-12 text-left">
+                                            <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
+                                                <span class="ladda-spinner"></span>
+                                                <div class="ladda-progress" style="width: 75px;"></div>
+                                            </button>
+                                            <a href="{{ URL::current() }}" class="btn btn-light" id="m_reset">
                                                 <span>
                                                     <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
-                                            <div class="mb-0 text-center" style="display: inline-block;">
-                                                <button class="ladda-button btn btn-info btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
-                                                    <span class="ladda-spinner"></span>
-                                                    <div class="ladda-progress" style="width: 75px;"></div>
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                     @endif
                     <!--begin: Datatable-->
-                    <table class="table dt-responsive nowrap w-100" id="kt_datatable">
+                    <table class="table table-striped  dt-responsive nowrap w-100" id="kt_datatable">
                         <thead>
                             <tr>
                                 @foreach($data->designElems['tableData'] as $one)

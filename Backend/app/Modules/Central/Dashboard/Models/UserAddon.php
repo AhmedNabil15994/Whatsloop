@@ -45,8 +45,8 @@ class UserAddon extends Model{
         $input = \Request::all();
         if($addons != null){
             $data = [];
-            $allData = self::NotDeleted()->whereIn('status',[1,2])->pluck('addon_id');
-            $dataId = self::NotDeleted()->where('status',2)->pluck('addon_id');
+            $allData = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[1,2])->pluck('addon_id');
+            $dataId = self::NotDeleted()->where('user_id',$user_id)->where('status',2)->pluck('addon_id');
             $data[0] = reset($allData);
             $data[1] = reset($dataId);
             return $data;

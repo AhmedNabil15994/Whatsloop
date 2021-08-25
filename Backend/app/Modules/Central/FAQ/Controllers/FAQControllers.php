@@ -348,7 +348,7 @@ class FAQControllers extends Controller {
     }
 
     public function addImage($images,$nextID=false){
-        $fileName = \ImagesHelper::UploadFile($this->getData()['mainData']['name'], $images, $nextID);
+        $fileName = \ImagesHelper::UploadFiles($this->getData()['mainData']['name'], $images, $nextID);
         if($fileName == false){
             return false;
         }

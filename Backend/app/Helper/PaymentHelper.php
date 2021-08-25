@@ -87,5 +87,34 @@ class PaymentHelper {
         return [1,''];
     }
 
+
+    public function hostedPayment($data,$urlSegment,$extraHeaders){
+        $curl = curl_init();
+        $mainURL = "http://payment.whatsloop.loc";
+
+        $headers = array(
+            'Content-Type: application/json',
+        );
+
+        $allHeaders = array_merge($headers,$extraHeaders);
+
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $allHeaders);
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $mainURL.$urlSegment,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($data),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
+    }   
+
 }
 

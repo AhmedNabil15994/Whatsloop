@@ -31,8 +31,8 @@ class GeneralAuthEngine
                 return \TraitsFunc::ErrorMessage("Invalid Channel, Please Check Your Credentials", 401);
             }
 
-            define('CHANNEL_ID', $channelId);
-            define('CHANNEL_TOKEN', $channelToken);
+            define('CHANNEL_ID', $checkChannel->id);
+            define('CHANNEL_TOKEN', $checkChannel->token);
         }
 
         return $next($request);

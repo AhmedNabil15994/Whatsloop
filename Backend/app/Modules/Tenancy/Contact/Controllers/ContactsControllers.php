@@ -96,6 +96,7 @@ class ContactsControllers extends Controller {
         $data['tableData'] = [
             'id' => [
                 'label' => trans('main.id'),
+                'index' => '0',
                 'type' => '',
                 'className' => '',
                 'data-col' => '',
@@ -103,6 +104,7 @@ class ContactsControllers extends Controller {
             ],
             'group' => [
                 'label' => trans('main.group'),
+                'index' => '1',
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'group_id',
@@ -110,6 +112,7 @@ class ContactsControllers extends Controller {
             ],
             'name' => [
                 'label' => trans('main.name'),
+                'index' => '2',
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'name',
@@ -117,6 +120,7 @@ class ContactsControllers extends Controller {
             ],
             'email' => [
                 'label' => trans('main.email'),
+                'index' => '3',
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'email',
@@ -124,6 +128,7 @@ class ContactsControllers extends Controller {
             ],
             'country' => [
                 'label' => trans('main.country'),
+                'index' => '4',
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'country',
@@ -131,6 +136,7 @@ class ContactsControllers extends Controller {
             ],
             'city' => [
                 'label' => trans('main.city'),
+                'index' => '5',
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'city',
@@ -138,6 +144,7 @@ class ContactsControllers extends Controller {
             ],
             'phone2' => [
                 'label' => trans('main.whats'),
+                'index' => '6',
                 'type' => '',
                 'className' => 'edits',
                 'data-col' => 'phone',
@@ -145,6 +152,7 @@ class ContactsControllers extends Controller {
             ],
             'created_at' => [
                 'label' => trans('main.date'),
+                'index' => '7',
                 'type' => 'date',
                 'className' => 'edits dates',
                 'data-col' => 'created_at',
@@ -152,6 +160,7 @@ class ContactsControllers extends Controller {
             ],
             'actions' => [
                 'label' => trans('main.actions'),
+                'index' => '8',
                 'type' => '',
                 'className' => '',
                 'data-col' => '',
@@ -169,13 +178,22 @@ class ContactsControllers extends Controller {
     }
 
     public function index(Request $request) {
+        $input = \Request::all();
         if($request->ajax()){
-            $data = Contact::dataList();
-            return Datatables::of($data['data'])->make(true);
+            if(!isset($input['recordNumber'])){
+                $data = Contact::dataList();
+                return Datatables::of($data['data'])->make(true);
+            }else{
+                $data = Contact::dataList2();
+                $data['designElems'] = $this->getData();
+                $data['type'] = 'customers';
+                $returnHTML = view('Tenancy.ExternalServices.Views.ajaxData')->with('data', (object) $data)->render();
+                return response()->json( array('success' => true, 'html'=>$returnHTML) );
+            }
         }
+        $data = Contact::dataList2();
         $data['designElems'] = $this->getData();
-        $data['data'] = Contact::dataList()['data'];
-        return view('Tenancy.User.Views.index')->with('data', (object) $data);
+        return view('Tenancy.Contact.Views.index')->with('data', (object) $data);
     }
 
     public function edit($id) {

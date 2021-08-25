@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\UserChannels;
+use App\Models\CentralChannel;
 
 class MainWhatsLoop {
     use \TraitsFunc;
@@ -9,8 +10,20 @@ class MainWhatsLoop {
 
     public function __construct($instanceId=null,$token=null) {
         $channelObj = UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
-        $this->instanceId = $instanceId == null ? (isset($channelObj) ? $channelObj->id  : null) : $instanceId;
-        $this->token = $token == null ? (isset($channelObj) ? $channelObj->token : null) : $token;
+
+        $myInstanceId = '';
+        $myInstanceToken = '';
+        if($instanceId != null && $token != null){
+            $myInstanceToken = $token;
+            $myInstanceId = $instanceId;
+        }else{
+            $channelObj = CentralChannel::NotDeleted()->where('id',$channelObj->id)->first();
+            $myInstanceToken =  $channelObj->instanceToken;
+            $myInstanceId = $channelObj->instanceId;
+        }
+
+        $this->instanceId = $myInstanceId;
+        $this->token = $myInstanceToken;
         $this->baseUrl = 'http://engine.whatsloop.loc/';
         // $this->baseUrl = 'http://wloop.net/engine/';
     }
@@ -219,7 +232,7 @@ class MainWhatsLoop {
         ])->post($mainURL);
     }
 
-    // ['pushname' => new Name]
+    // ['name' => new Name]
     public function setName($data){
         $mainURL = $this->baseUrl.'instances/updateName';
         return Http::withHeaders([

@@ -59,24 +59,6 @@
                         <div class="col-6">
                             <h4 class="header-title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
                         </div>
-                        @if(!isset($data->dis) || $data->dis != true)
-                        <div class="col-6 text-right">
-                            <a href="#" class="btn ml-1 btn-outline-danger search-mode m-btn m-btn--icon m-btn--icon-only m-btn--custom m-btn--pill " data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.advancedSearchTip') }}">
-                                <i class="fa fa-question"></i>
-                            </a>
-                            <div class="btn-group ml-1 dropleft">
-                                <button type="button" style="border-radius: 25px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ trans('main.actions') }} <i class="mdi mdi-chevron-down"></i></button>
-                                <div class="dropdown-menu" style="">
-                                    <h6 class="dropdown-header">{{ trans('main.exportOpts') }}</h6>
-                                    <a class="dropdown-item print-but" href="#">Print</a>
-                                    <a class="dropdown-item copy-but" href="#">Copy</a>
-                                    <a class="dropdown-item excel-but" href="#">Excel</a>
-                                    <a class="dropdown-item csv-but" href="#">CSV</a>
-                                    <a class="dropdown-item pdf-but" href="#">PDF</a>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
                     </div>
                     <hr>
                     @if(!empty($data->designElems['searchData']))
@@ -112,7 +94,7 @@
                                         @if($searchItem['type'] == 'select')
                                         <div class="col-lg-3 col-md-4 col-sm-6">
                                             <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                            <select class="selectpicker" data-style="btn-outline-myPR" name="{{ $searchKey }}">
+                                            <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $searchKey }}">
                                                 <option value=" ">{{ trans('main.choose') }}</option>
                                                 @foreach($searchItem['options'] as $group)
                                                 @php $group = (object) $group; @endphp

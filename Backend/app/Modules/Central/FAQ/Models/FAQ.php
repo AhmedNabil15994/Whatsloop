@@ -8,6 +8,7 @@ class FAQ extends Model{
 
     protected $table = 'faqs';
     protected $primaryKey = 'id';
+    protected $connection = 'main';
     public $timestamps = false;
 
     static function getPhotoPath($id, $photo) {
@@ -63,9 +64,11 @@ class FAQ extends Model{
         $data->description_ar = $source->description_ar;
         $data->description_en = $source->description_en;
         $data->title = $source->{'title_'.LANGUAGE_PREF};
+        $data->description = $source->{'description_'.LANGUAGE_PREF};
         $data->photo = self::getPhotoPath($source->id, $source->image);
         $data->photo_name = $source->image;
         $data->photo_size = $data->photo != '' ? \ImagesHelper::getPhotoSize($data->photo) : '';
+        $data->type = $data->photo != '' ? \ImagesHelper::checkFileExtension($data->photo) : '';
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);

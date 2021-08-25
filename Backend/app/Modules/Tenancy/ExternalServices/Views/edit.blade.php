@@ -45,7 +45,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" readonly name="channel">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" readonly name="channel">
                                     <option value="{{ $data->data->channel }}" selected>{{ $data->data->channel }}</option>
                                 </select>
                             </div>
@@ -53,7 +53,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.status') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" readonly name="statusText">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" readonly name="statusText">
                                     <option value="{{ $data->data->statusText }}" selected>{{ $data->data->statusText }}</option>
                                 </select>
                             </div>
@@ -73,7 +73,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.type') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" readonly name="status">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" readonly name="status">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="0" {{ $data->data->status == 0 ? 'selected' : '' }}>{{ trans('main.notActive') }}</option>
                                     <option value="1" {{ $data->data->status == 1 ? 'selected' : '' }}>{{ trans('main.active') }}</option>

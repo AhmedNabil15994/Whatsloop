@@ -1,7 +1,7 @@
 $(function(){
 	var lang = $('html').attr('lang');
 	var table = $('#kt_datatable');
-	var designElems = JSON.parse($('input[name="designElems"]').val());
+	var designElems = $('input[name="designElems"]').length ?  JSON.parse($('input[name="designElems"]').val()) : [];
 	var tableData = designElems.tableData;
 	var columnsDef = [];
 	var columnsVar = [];
@@ -37,7 +37,7 @@ $(function(){
 		var showCols = "Show Columns <i class='fa fas fa-angle-down'></i>";
 		var direction = 'ltr';
 		var search = ' Search ';
-		var info = 'showing items from  _START_ to _END_ (total _TOTAL_ )';
+		var info = 'Showing items from  _START_ to _END_ (total _TOTAL_ )';
 		var lengthMenu = 'Showing _MENU_ items';
 		var emptyTable = "No records found";
 		var processing = "Processing";
@@ -57,11 +57,11 @@ $(function(){
 		var actionsVar = 'Actions';
 		var detailsText = 'Details';
 	}else{
-		var showCols = "<i class='fa fas fa-angle-down'></i> عرض الأعمدة";
+		var showCols = " عرض الأعمدة <i class='fa fas fa-angle-down'></i>";
 		var direction = 'rtl';
 		var search = ' البحث: ';
 		var viewText = 'عرض';
-		var info = 'يتم العرض من  _START_ الي _END_ (العدد الكلي للسجلات _TOTAL_ )';
+		var info = 'يتم العرض من  _START_ إلى _END_ (العدد الكلي للسجلات _TOTAL_ )';
 		var lengthMenu = 'عرض _MENU_ سجلات';
 		var emptyTable = "لا يوجد نتائج مسجلة";
 		var processing = "جاري التحميل";
@@ -148,44 +148,44 @@ $(function(){
 					var exportButton = '';
 					var deleteButton = '';
 					if($('input[name="data-area"]').val() == 1){
-						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon dropdown-item btn btn-xs text-success btn-soft-success"> <i class="mdi mdi-square-edit-outline"></i> '+editText+'</a>';
+                            // <a class="dropdown-item" href="#"><i class="fe fe-plus mr-2"></i> Add</a>
+
+						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-block btn-outline-success"> <i class="fe fe-edit mr-2"></i> '+editText+'</a>';
 					}
 
 					if($('input[name="data-tabs"]').length && $('input[name="data-tabs"]').val() == 1){
-						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="fas fa-copy"></i> '+copyText+'</a>';
+						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-copy"></i> '+copyText+'</a>';
 					}
 
 					if(designElems.mainData.url == 'groupNumbers'){
-						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-xs btn-soft-info"> <i class="mdi mdi-eye"></i> '+showText+'</a>';
+						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-eye"></i> '+showText+'</a>';
 						if($('input[name="data-tests"]').length && $('input[name="data-tests"]').val() == 1){
-							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon dropdown-item btn btn-xs text-secondary btn-soft-secondary"> <i class="mdi mdi-microsoft-excel"></i> '+exportText+'</a>';
+							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon btn btn-block btn-outline-secondary"> <i class="las la-file-csv"></i> '+exportText+'</a>';
 						}
 					}
 
 					if($('input[name="data-cols"]').val() == 1){
-						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon dropdown-item btn btn-xs text-danger btn-soft-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
+						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-block btn-outline-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
 					}
 
 					if(designElems.mainData.url == 'groupMsgs' && $('input[name="data-tab"]').val() == 1){
-						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="mdi mdi-eye"></i> '+detailsText+'</a>';
+						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-eye"></i> '+detailsText+'</a>';
 						editButton = '';
 						deleteButton = '';
 					}
 
 					if((designElems.mainData.url == 'tickets' || designElems.mainData.url == 'clients' || designElems.mainData.url == 'invoices') && $('input[name="data-tab"]').val() == 1){
-						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon dropdown-item btn btn-xs text-info btn-soft-info"> <i class="mdi mdi-eye"></i> '+viewText+'</a>';
+						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-eye"></i> '+viewText+'</a>';
 					}
 
-
-					
-					return '<div class="dropdown">'+
-		                        '<button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown">'+
-	 								'<i class="icon-options"></i>'+
-                                '</button>'+
-		                        '<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">'+
-		                            editButton + copyButton + showButton + exportButton + deleteButton+
-		                        '</div>'+
-		                    '</div>'; 
+					return '<div class="btn-group mt-4 ml-3">'+ 
+                        '<a class="btn-link option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#">'+
+                            '<i class="fe fe-more-horizontal tx-gray-500"></i>'+
+                        '</a>'+ 
+                        '<div class="dropdown-menu">'+ 
+                        	editButton + copyButton + showButton + exportButton + deleteButton+
+                        '</div>'+ 
+                    '</div>';
 				},
 			});
 		}
@@ -200,7 +200,7 @@ $(function(){
 		// DOM Layout settings
 		dom:'Bfrtip',
 		dom:
-			"<'row'<'col-xs-12 col-sm-6 col-md-6'l><'col-xs-12 col-sm-6 col-md-6 text-right'B>>" +
+			"<'row'<'col-xs-12 col-sm-6 col-md-6'l><'col-xs-12 col-sm-6 col-md-6 text-right'Bf>>" +
 			"<'row'<'col-sm-12 'tr>>" +
 			"<'row'<'col-xs-6 col-sm-6 col-md-6 'i><'col-xs-6 col-sm-6 col-md-6 'p>>", // read more: https://datatables.net/examples/basic_init/dom.html
         buttons: [

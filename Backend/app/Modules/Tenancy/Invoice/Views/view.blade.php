@@ -5,40 +5,7 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
 
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>     
-    <!-- end page title --> 
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -58,18 +25,12 @@
                     
                 </div> <!-- end card body-->
 
-                <div class="card-box" id="main">
+                <div class="card-body" id="main">
                     <!-- Logo & title -->
                     <div class="clearfix">
                         <div class="float-left">
                             <div class="auth-logo">
                                 <div class="logo logo-dark">
-                                    <span class="logo-lg">
-                                        <img src="{{ asset('images/full_logo.svg') }}" alt="" height="32">
-                                    </span>
-                                </div>
-            
-                                <div class="logo logo-light">
                                     <span class="logo-lg">
                                         <img src="{{ asset('images/full_logo.svg') }}" alt="" height="32">
                                     </span>

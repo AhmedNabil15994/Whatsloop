@@ -81,7 +81,7 @@
                         <div class="form-group row">
                             <label class="col-3 col-form-label">{{ trans('main.paymentMethod') }} :</label>
                             <div class="col-9">
-                                <select name="payment_method" class="form-control">
+                                <select name="payment_method" data-toggle="select2" class="form-control">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ $data->paymentInfo->payment_method == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
                                     <option value="2" {{ $data->paymentInfo->payment_method == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
@@ -92,7 +92,7 @@
                         <div class="form-group row">
                             <label class="col-3 col-form-label">{{ trans('main.currency') }} :</label>
                             <div class="col-9">
-                                <select name="currency" class="form-control">
+                                <select name="currency" data-toggle="select2" class="form-control">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ $data->paymentInfo->currency == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
                                     <option value="2" {{ $data->paymentInfo->currency == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>

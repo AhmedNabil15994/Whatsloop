@@ -5,6 +5,7 @@ use App\Models\Central\Channel;
 use App\Models\Variable;
 use App\Models\UserChannels;
 use App\Models\UserAddon;
+use App\Models\CentralUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -100,13 +101,13 @@ class AuthControllers extends Controller {
         session(['membership' => $userObj->membership_id]);
         if($isAdmin){
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons)) : [];
+            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons)) : [];
+            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         }
@@ -137,9 +138,21 @@ class AuthControllers extends Controller {
             return \TraitsFunc::ErrorMessage(trans('auth.codeError'));
         }
         $this->setSessions($userObj);
-
+        $this->genNewPinCode($userObj->id);
         Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
         return \TraitsFunc::SuccessResponse(trans('auth.welcome') . $userObj->name_ar);
+    }
+
+    public function genNewPinCode($user_id){
+        $newCode = rand(1,10000);
+        $userObj = User::getOne($user_id);
+        $userObj->pin_code = $newCode;
+        $userObj->save();
+
+        $userObj = CentralUser::getOne($user_id);
+        $userObj->pin_code = $newCode;
+        $userObj->save();
+        return $newCode;
     }
 
     public function logout() {

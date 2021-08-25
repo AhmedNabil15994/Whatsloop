@@ -27,11 +27,15 @@ if(lang == 'en'){
     var langPref = 'ar_AR';
     var rtlMode = true;
 }
-$('.datepicker').datepicker({
-    format: 'yyyy-mm-dd',
-    language: langPref,
-    rtl: rtlMode
-});
+
+if($('.datepicker').length){
+    $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        language: langPref,
+        rtl: rtlMode
+    });  
+}
+
 function deleteItem($id) {
     Swal.fire({
         title: title,
@@ -217,7 +221,7 @@ $('#kt_dropzone_1').dropzone({
             }
         }
     },
-});
+});  
 
 // $('#kt_dropzone_100').dropzone({
 //     url: myURL + "/uploadImage", // Set the url for your upload script location
@@ -384,13 +388,18 @@ function initUploadFiles(id) {
     var uploadUrl = myURL + "/editImage";
     if(id != '#kt_dropzone_5'){
         previewNode.remove();
-        uploadUrl = myURL + "/uploadImage";
+        var checkURL = $('#kt_dropzone_4').data('url');
+        if(checkURL){
+            uploadUrl = checkURL + "/uploadImage";
+        }else{
+            uploadUrl = myURL + "/uploadImage";
+        }
     }
 
     var myDropzone5 = new Dropzone(id, { // Make the whole body a dropzone
         url: uploadUrl, // Set the url for your upload script location
         parallelUploads: 20,
-        maxFilesize: 1, // Max filesize in MB
+        maxFilesize: 10, // Max filesize in MB
         previewTemplate: previewTemplate,
         previewsContainer: id + " .dropzone-items", // Define the container to display the previews
         clickable: id + " .dropzone-select", // Define the element that should be used as click trigger to select files.
@@ -488,3 +497,101 @@ $('.dropzone-item.edited .DeleteFiles').on('click',function(e){
         },
     });
 });
+
+gsap.set("#moon, .star", {opacity: 0});
+gsap.set("#sun, #cloud, #moon", {x: 15});
+gsap.set(".star", {x: 35, y: -5});
+
+$("#day").click(function(){
+  gsap.to("#sun", 1, {x: -157, opacity: 0, ease: Power1.easeInOut});
+  gsap.to("#cloud", .5, {opacity: 0, ease: Power1.easeInOut});
+  gsap.to("#moon", 1, {x: -157, rotate: -360, transformOrigin: "center", opacity: 1, ease: Power1.easeInOut});
+  gsap.to(".star", .5, {opacity: 1, ease: Power1.easeInOut});
+  gsap.to("#night", 1, {background: "#224f6d", borderColor: "#cad4d8", ease: Power1.easeInOut});
+  gsap.to("#background", 1, {background: "#0d1f2b", ease: Power1.easeInOut});
+  $(this).css({"pointer-events": "none"});
+  $('body').addClass('dark-theme'); 
+  
+  setTimeout(function(){
+    $("#night").css({"pointer-events": "all"})
+  }, 1000);
+});
+
+$("#night").click(function(){
+  gsap.to("#sun", 1, {x: 15, opacity: 1, ease: Power1.easeInOut});
+  gsap.to("#cloud", 1, {opacity: 1, ease: Power1.easeInOut});
+  gsap.to("#moon", 1, {opacity: 0, x: 35, rotate: 360, transformOrigin: "center", ease: Power1.easeInOut});
+  gsap.to(".star", 1, {opacity: 0, ease: Power1.easeInOut});
+  gsap.to("#night", 1, {background: "#9cd6ef", borderColor: "#65c0e7", ease: Power1.easeInOut});
+  gsap.to("#background", 1, {background: "#d3edf8", ease: Power1.easeInOut});
+  $(this).css({"pointer-events": "none"});
+  $('body').removeClass('dark-theme'); 
+  
+  setTimeout(function(){
+    $("#day").css({"pointer-events": "all"})
+  }, 1000);
+});
+
+
+$('.ckbox input[type="checkbox"]').on('change',function(){
+    if($(this).is(":checked")){
+        $(this).parent('label').parent('.col').siblings('.col').find('input[type="checkbox"]').prop('checked', false);
+        window.location.href = myURL.split(/[?#]/)[0]+"?category_id="+ $(this).data('area');
+    }
+});
+
+$('.emoji-img').on('click',function(){
+    $(this).siblings().removeClass('selected');
+    $('input[name="rate"]').val($(this).data('area'));
+    $(this).toggleClass('selected');
+});
+
+$('.addRate').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var id = $(this).data('area');
+    var rate = $(this).siblings('input[name="rate"]').val();
+    var comment = $(this).siblings('textarea').val();
+    var elem = $(this);
+    if(rate && comment){
+        $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+        $.ajax({
+            type: 'POST',
+            url: myURL+'/addRate',
+            data:{
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'id': id,
+                'rate': rate,
+                'comment': comment,
+            },
+            success:function(data){
+                if(data.status.status == 1){
+                    successNotification(data.status.message);
+                    elem.siblings('.imgs').children('.emoji-img.selected').removeClass('selected');
+                    elem.siblings('input[name="rate"]').val(' ');
+                    elem.siblings('textarea').val(' ');
+                }else{
+                    errorNotification(data.status.message);
+                }
+            },
+        });
+    }
+});
+
+if($('.changeDesign').length){
+    $('.changeDesign').on('click',function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $('.sa.d-none').removeClass('d-none').siblings('.sa').addClass('d-none');
+    });
+}
+
+if($('.buttons-colviss').length){
+    $('.buttons-colviss').on('click',function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).siblings('.dt-collection.d-hidden').toggleClass('d-hidden');
+    });
+}
+
+

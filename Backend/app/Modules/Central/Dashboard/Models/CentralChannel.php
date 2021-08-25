@@ -16,6 +16,8 @@ class CentralChannel extends Model{
         'id',
         'name',
         'token',
+        'instanceId',
+        'instanceToken',
         'start_date',
         'end_date',
         'tenant_id',
@@ -66,6 +68,16 @@ class CentralChannel extends Model{
         return $data;
     }
 
+    static function generateNewKey($token){
+        $dataObj = self::NotDeleted()->orderBy('id','DESC')->first();
+        if($dataObj == null || $dataObj->instanceId == null ){
+            $newKey = 10001;
+        }
+        $newKey = (int) $dataObj->instanceId + 1;
+        $hashedToken = md5($token);
+        return [$newKey , $hashedToken];
+    }
+
     static function getData($source){
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;
@@ -76,6 +88,8 @@ class CentralChannel extends Model{
         $dataObj->tenant_id = $source->tenant_id;
         $dataObj->start_date = $source->start_date;
         $dataObj->end_date = $source->end_date;
+        $dataObj->instanceId = $source->instanceId;
+        $dataObj->instanceToken = $source->instanceToken;
         $dataObj->days = (strtotime($source->end_date) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->usedDays = (strtotime(date('Y-m-d')) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->leftDays = $dataObj->days - $dataObj->usedDays;

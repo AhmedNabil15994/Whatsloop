@@ -26,7 +26,7 @@ class SallaControllers extends Controller {
         return $dis;
     }
 
-    public function customers(){
+    public function customers(Request $request){
         $input = \Request::all();
         $modelName = 'customers';
         $service = $this->service;
@@ -54,10 +54,11 @@ class SallaControllers extends Controller {
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
-        return $this->runModuleService($modelName,$tableName);
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
-    public function products(){
+    public function products(Request $request){
         $input = \Request::all();
         $modelName = 'products';
         $service = $this->service;
@@ -86,10 +87,11 @@ class SallaControllers extends Controller {
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
-        return $this->runModuleService($modelName,$tableName);
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
-    public function orders(){
+    public function orders(Request $request){
         $input = \Request::all();
         $modelName = 'orders';
         $service = $this->service;
@@ -127,13 +129,14 @@ class SallaControllers extends Controller {
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
-        return $this->runModuleService($modelName,$tableName);
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
-    public function runModuleService($model,$tableName){
+    public function runModuleService($model,$tableName,$ajaxCheck=0){
         $input = \Request::all();
         $service = $this->service;
-        $paginationNo = 12;
+        $paginationNo = 15;
 
         if (Schema::hasTable($tableName)) {
             $source = DB::table($tableName);
@@ -159,7 +162,17 @@ class SallaControllers extends Controller {
                 $source->where('country','LIKE','%'.$input['address'].'%')->orWhere('city','LIKE','%'.$input['address'].'%');
             }
 
-            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            if($ajaxCheck){
+                if(isset($input['recordNumber']) && !empty($input['recordNumber'])){
+                    $paginationNo = $input['recordNumber'];
+                }
+            }
+
+            if(isset($input['keyword']) && !empty($input['keyword'])){
+                $source->where('first_name','LIKE','%'.$input['keyword'].'%')->orWhere('last_name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('country','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
+            }
+
+            $modelData = $source == [] ?  [] : ($paginationNo != 'all' ? $source->paginate($paginationNo) : $source->paginate($source->count()));
             $formattedData = $this->formatData($modelData,$model);
             
             $data['mainData'] = [
@@ -310,9 +323,17 @@ class SallaControllers extends Controller {
         $mainData['designElems'] = $data;
         $mainData['data'] = $formattedData;
         $mainData['dis'] = $this->checkPerm();
+        $mainData['type'] = $model;
+
         if(!empty($formattedData)){
             $mainData['pagination'] = \Helper::GeneratePagination($modelData);
         }
+
+        if($ajaxCheck){
+            $returnHTML = view('Tenancy.ExternalServices.Views.ajaxData')->with('data', (object) $mainData)->render();
+            return response()->json( array('success' => true, 'html'=>$returnHTML) );
+        }
+
         return view('Tenancy.ExternalServices.Views.'.$model)->with('data', (object) $mainData);
     }
 
@@ -332,7 +353,7 @@ class SallaControllers extends Controller {
                 $status = $value->is_available;
                 $withTax = $value->with_tax;
                 $created_at = $value->pinned_date;
-                $require_shipping = $value->require_shipping;
+            $require_shipping = $value->require_shipping;
             $categories = unserialize($value->categories);
                 $categories_ar = [];
                 $categories_en = [];

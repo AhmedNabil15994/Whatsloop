@@ -178,6 +178,30 @@
                 </li>
                 @endif
 
+                @if(\Helper::checkRules('list-changeLogs,list-categories'))
+                <li class="{{ Active(URL::to('/changeLogs*'),'menuitem-active') }} {{ Active(URL::to('/categories*'),'menuitem-active') }}">
+                    <a href="#sidebarMembsz" data-toggle="collapse">
+                        <i class="dripicons-blog"></i>
+                        <span> {{ trans('main.changeLogs') }} </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse {{ Active(URL::to('/changeLogs*'),'show') }} {{ Active(URL::to('/categories*'),'show') }}" id="sidebarMembsz">
+                        <ul class="nav-second-level">
+                            @if(\Helper::checkRules('list-memberships'))
+                            <li class="{{ Active(URL::to('/changeLogs*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/changeLogs') }}">{{ trans('main.changeLogs') }}</a>
+                            </li>
+                            @endif
+                            @if(\Helper::checkRules('list-categories'))
+                            <li class="{{ Active(URL::to('/categories*'),'menuitem-active') }}">
+                                <a href="{{ URL::to('/categories') }}">{{ trans('main.categorys') }}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li>
+                @endif
+
                 @if(\Helper::checkRules('list-faqs'))
                 <li class="{{ Active(URL::to('/faqs*'),'menuitem-active') }}">
                     <a href="{{ URL::to('/faqs') }}">
@@ -186,15 +210,7 @@
                     </a>
                 </li>
                 @endif
-                
-                @if(\Helper::checkRules('list-changeLogs'))
-                <li class="{{ Active(URL::to('/changeLogs*'),'menuitem-active') }}">
-                    <a href="{{ URL::to('/changeLogs') }}">
-                        <i class=" dripicons-blog"></i>
-                        <span> {{ trans('main.changeLogs') }} </span>
-                    </a>
-                </li>
-                @endif
+
             </ul>
 
         </div>

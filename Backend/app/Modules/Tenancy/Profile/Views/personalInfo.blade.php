@@ -87,7 +87,7 @@
                         <div class="form-group row">
                             <label class="col-3 col-form-label">{{ trans('main.twoAuthFactor') }} :</label>
                             <div class="col-9">
-                                <select name="two_auth" class="form-control">
+                                <select name="two_auth" data-toggle="select2" class="form-control">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="0" {{ $data->data->two_auth == 0 ? 'selected' : '' }}>{{ trans('main.no') }}</option>
                                     <option value="1" {{ $data->data->two_auth == 1 ? 'selected' : '' }}>{{ trans('main.yes') }}</option>

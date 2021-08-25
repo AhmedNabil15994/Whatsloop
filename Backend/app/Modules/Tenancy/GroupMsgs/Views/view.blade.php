@@ -21,108 +21,52 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
+ 
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 col-lg-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="feature widget-2 text-center mt-0 mb-3">
+                        <i class="fas fa-comments project bg-primary-transparent mx-auto text-primary "></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.msgs_no') }}</h6>
+                        <h2 class="mb-2">{{ $data->data->messages_count * $data->data->contacts_count }}</h2>
+                    </div>
                 </div>
             </div>
         </div>
-    </div> 
-
-    <div class="row">
-        <div class="col-md-6 col-xl-3">
-            <div class="widget-rounded-circle card-box">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="avatar-lg rounded-circle bg-light">
-                            <i class="fe-list font-26 avatar-title text-primary"></i>
-                        </div>
+        <div class="col-xl-3 col-md-6 col-lg-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="feature widget-2 text-center mt-0 mb-3">
+                        <i class="fas fa-address-book project bg-warning-transparent mx-auto text-warning "></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.contacts_count') }}</h6>
+                        <h2 class="mb-2">{{ $data->data->contacts_count }}</h2>
                     </div>
-                    <div class="col-6">
-                        <div class="text-right">
-                            <h3 class="text-dark mt-1"><span data-plugin="counterup">{{ $data->data->messages_count * $data->data->contacts_count }}</span></h3>
-                            <p class="text-muted mb-1 text-truncate">{{ trans('main.msgs_no') }}</p>
-                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-lg-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="feature widget-2 text-center mt-0 mb-3">
+                        <i class="fe fe-user-check project bg-success-transparent mx-auto text-success "></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.sent_msgs') }}</h6>
+                        <h2 class="mb-2">{{ $data->data->sent_msgs }}</h2>
                     </div>
-                </div> <!-- end row-->
-            </div> <!-- end widget-rounded-circle-->
-        </div> <!-- end col-->
-
-        <div class="col-md-6 col-xl-3">
-            <div class="widget-rounded-circle card-box">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="avatar-lg rounded-circle bg-light">
-                            <i class="fe-users font-26 avatar-title text-warning"></i>
-                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 col-lg-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="feature widget-2 text-center mt-0 mb-3">
+                        <i class="fe fe-user-x  project bg-danger-transparent mx-auto text-danger"></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.unsent_msgs') }}</h6>
+                        <h2 class="mb-2">{{ $data->data->unsent_msgs }}</h2>
                     </div>
-                    <div class="col-6">
-                        <div class="text-right">
-                            <h3 class="text-dark mt-1"><span data-plugin="counterup">{{ $data->data->contacts_count }}</span></h3>
-                            <p class="text-muted mb-1 text-truncate">{{ trans('main.contacts_count') }}</p>
-                        </div>
-                    </div>
-                </div> <!-- end row-->
-            </div> <!-- end widget-rounded-circle-->
-        </div> <!-- end col-->
-       
-        <div class="col-md-6 col-xl-3">
-            <div class="widget-rounded-circle card-box">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="avatar-lg rounded-circle bg-light">
-                            <i class="fe-check-square font-26 avatar-title text-success"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-right">
-                            <h3 class="text-dark mt-1"><span data-plugin="counterup">{{ $data->data->sent_msgs }}</span></h3>
-                            <p class="text-muted mb-1 text-truncate">{{ trans('main.sent_msgs') }}</p>
-                        </div>
-                    </div>
-                </div> <!-- end row-->
-            </div> <!-- end widget-rounded-circle-->
-        </div> <!-- end col-->
-
-        <div class="col-md-6 col-xl-3">
-            <div class="widget-rounded-circle card-box">
-                <div class="row">
-                    <div class="col-6">
-                        <div class="avatar-lg rounded-circle bg-light">
-                            <i class="fe-x font-26 avatar-title text-danger"></i>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="text-right">
-                            <h3 class="text-dark mt-1"><span data-plugin="counterup">{{ $data->data->unsent_msgs }}</span></h3>
-                            <p class="text-muted mb-1 text-truncate">{{ trans('main.unsent_msgs') }}</p>
-                        </div>
-                    </div>
-                </div> <!-- end row-->
-            </div> <!-- end widget-rounded-circle-->
-        </div> <!-- end col-->
+                </div>
+            </div>
+        </div>
     </div>   
     <!-- end page title --> 
 
@@ -171,7 +115,7 @@
                             <div class="card mb-1">
                                 <div class="card-body cont-card">
                                     <div class="row">
-                                        <div class="col-8">{{ $contact->phone }}</div>
+                                        <div class="col-8" dir="ltr">{{ $contact->phone }}</div>
                                         <div class="col-4"><span class="badge badge-{{ $contact->reportStatus[0] }}">{{ $contact->reportStatus[1] }}</span></div>
                                     </div>
                                 </div>

@@ -17,7 +17,10 @@ class ChangeLogs extends Migration
             $table->id();
             $table->string('title_ar');
             $table->string('title_en');
-            $table->text('image');
+            $table->text('description_ar')->nullable();
+            $table->text('description_en')->nullable();
+            $table->integer('category_id');
+            $table->text('image')->nullable();
             $table->integer('status');
             $table->integer('sort');
             $table->integer('created_by')->nullable();

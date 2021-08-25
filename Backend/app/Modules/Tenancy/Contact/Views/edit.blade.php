@@ -38,7 +38,7 @@
                                     <div class="form-group row mb-3">
                                         <label class="col-3 col-form-label">{{ trans('main.group') }} :</label>
                                         <div class="col-9">
-                                            <select class="selectpicker" data-style="btn-outline-myPR" name="group_id">
+                                            <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="group_id">
                                                 <option value="">{{ trans('main.choose') }}</option>
                                                 @foreach($data->groups as $group)
                                                 <option value="{{ $group->id }}" {{ $data->data->group_id == $group->id ? 'selected' : '' }}>{{ $group->channel . ' - ' .$group->title }}</option>
@@ -81,7 +81,7 @@
                                     <div class="form-group row mb-3">
                                         <label class="col-md-3 col-form-label" for="lang"> {{ trans('main.lang') }}</label>
                                         <div class="col-md-9">
-                                            <select class="selectpicker" data-style="btn-outline-myPR" name="lang">
+                                            <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="lang">
                                                 <option value="">{{ trans('main.choose') }}</option>
                                                 <option value="0" {{ $data->data->lang == 0 ? 'selected' : '' }}>{{ trans('main.arabic') }}</option>
                                                 <option value="1" {{ $data->data->lang == 1 ? 'selected' : '' }}>{{ trans('main.english') }}</option>

@@ -19,6 +19,13 @@ use App\Models\CentralUser;
 use App\Models\CentralChannel;
 use App\Models\PaymentInfo;
 use App\Models\UserChannels;
+use App\Models\FAQ;
+use App\Models\CentralVariable;
+use App\Models\Changelog;
+use App\Models\CentralCategory;
+use App\Models\Department;
+use App\Models\Rate;
+use App\Models\ModTemplate;
 
 class DashboardControllers extends Controller {
 
@@ -240,8 +247,11 @@ class DashboardControllers extends Controller {
         
         $userObj = User::first();
 
-        if(isset($input['address']) && !empty($input['address'])){
+        $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
+        if(!$paymentInfoObj){
             $paymentInfoObj = new PaymentInfo;
+        }
+        if(isset($input['address']) && !empty($input['address'])){
             $paymentInfoObj->user_id = $userObj->id;
             $paymentInfoObj->address = $input['address'];
             $paymentInfoObj->address2 = $input['address2'];
@@ -256,61 +266,138 @@ class DashboardControllers extends Controller {
         }
 
         $names = explode(' ', $userObj->name ,2);
-        $invoiceData = [
-            'title' => $userObj->name,
-            'cc_first_name' => $names[0],
-            'cc_last_name' => isset($names[1]) ? $names[1] : '',
-            'email' => $userObj->email,
-            'cc_phone_number' => '',
-            'phone_number' => $userObj->phone,
-            'products_per_title' => 'New Membership',
-            'reference_no' => 'whatsloop-'.$userObj->id,
-            'unit_price' => $totals,
-            'quantity' => 1,
-            'amount' => $totals,
-            'other_charges' => 'VAT',
-            'discount' => '',
-            'payment_type' => 'mastercard',
-            'OrderID' => 'whatsloop-'.$userObj->id,
-            'SiteReturnURL' => \URL::to('/pushInvoice'),
-        ];
+        if($input['payType'] == 2){ // Paytabs Integration
+            $profileId = '49334';
+            $serverKey = 'SWJNLRLRKG-JBZZRMGMMM-GZKTBBLMNW';
 
-        $paymentObj = new \PaymentHelper();        
-        return $paymentObj->RedirectWithPostForm($invoiceData);
+            $dataArr = [
+                'returnURL' => \URL::to('/pushInvoice'),
+                'cart_id' => 'whatsloop-'.$userObj->id,
+                'cart_amount' => $totals,
+                'cart_description' => 'New',
+                'paypage_lang' => LANGUAGE_PREF,
+                'name' => $userObj->name,
+                'email' => $userObj->email,
+                'phone' => $userObj->phone,
+                'street' => $paymentInfoObj->address,
+                'city' => $paymentInfoObj->city,
+                'state' => $paymentInfoObj->region,
+                'country' => $paymentInfoObj->country,
+                'postal_code' => $paymentInfoObj->postal_code,
+            ];
+
+            $extraHeaders = [
+                'PROFILEID: '.$profileId,
+                'SERVERKEY: '.$serverKey,
+            ];
+
+            $paymentObj = new \PaymentHelper();        
+            $result = $paymentObj->hostedPayment($dataArr,'/paytabs',$extraHeaders);
+            $result = json_decode($result);
+
+            return redirect()->away($result->data->redirect_url);
+
+        }elseif($input['payType'] == 3 || $input['payType'] == 4){// Noon Integration
+            $businessId = 'digital_servers';
+            $appName = 'whatsloop';
+            // $appKey = '085f038ec4214c88a507341ac05ad432'; //For Test
+            $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
+            // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDowODVmMDM4ZWM0MjE0Yzg4YTUwNzM0MWFjMDVhZDQzMg=='; // For Test
+            $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDphOTFmY2YyYzZhZGY0ZWRkYWNlM2YxNWE0MTcwNTc0Mw==';
+            $dataArr = [
+                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice')),
+                'cart_id' => 'whatsloop-'.$userObj->id,
+                'cart_amount' => $totals,
+                'cart_description' => 'New Membership',
+                'paypage_lang' => LANGUAGE_PREF,
+            ];
+
+            $extraHeaders = [
+                'BUSINESSID: '.$businessId,
+                'APPNAME: '.$appName,
+                'APPKEY: '.$appKey,
+                'AUTHKEY: '.$authKey,
+            ];
+            $urlSecondSegment = '/noon';
+            if($input['payType'] == 4){ // Noon Subscription Integration
+                $urlSecondSegment = '/noon/subscription';
+                $dataArr = array_merge($dataArr,[
+                    'subs_name' => 'Whatsloop New Membership',
+                    'subs_valid_till' => date('Y-m-d H:i:s',strtotime()),
+                    'subs_type' => 1,
+                ]);
+            }   
+            $paymentObj = new \PaymentHelper();        
+            $result = $paymentObj->hostedPayment($dataArr,$urlSecondSegment,$extraHeaders);
+            $result = json_decode($result);
+            return redirect()->away($result->data->result->redirect_url);
+        }
+        
+        // dd($input['payType']);
+        // $invoiceData = [
+        //     'title' => $userObj->name,
+        //     'cc_first_name' => $names[0],
+        //     'cc_last_name' => isset($names[1]) ? $names[1] : '',
+        //     'email' => $userObj->email,
+        //     'cc_phone_number' => '',
+        //     'phone_number' => $userObj->phone,
+        //     'products_per_title' => 'New Membership',
+        //     'reference_no' => 'whatsloop-'.$userObj->id,
+        //     'unit_price' => $totals,
+        //     'quantity' => 1,
+        //     'amount' => $totals,
+        //     'other_charges' => 'VAT',
+        //     'discount' => '',
+        //     'payment_type' => 'mastercard',
+        //     'OrderID' => 'whatsloop-'.$userObj->id,
+        //     'SiteReturnURL' => \URL::to('/pushInvoice'),
+        // ];
+
+        // $paymentObj = new \PaymentHelper();        
+        // return $paymentObj->RedirectWithPostForm($invoiceData);
     }
 
     public function pushInvoice(){
         $input = \Request::all();
-        // return $this->activate();
-        
-        // dd($input);
-        if (isset($input['cartId']) && !empty($input['cartId'])) {
-            $postData['OrderID'] = $input['cartId'];
-            $paymentObj = new \PaymentHelper();        
-            $createPayment = $paymentObj->OpenURLWithPost($postData);
-            $CreateaPage = json_decode($createPayment, TRUE);
-        
-            if ($CreateaPage['Code'] == "1001") {
-                if ($CreateaPage['Data']['Status'] == "Success") {
-                    return $this->activate();
-                }
-                $UpdateOrder = [];
-                if ($CreateaPage['Data']['Status'] == "Rejected") {
-                    $UpdateOrder['Status'] = "تم رفض العملية";
-                }
-                if ($CreateaPage['Data']['Status'] == "Canceled") {
-                    $UpdateOrder['Status'] = "تم الالغاء";
-                }
-                if ($CreateaPage['Data']['Status'] == "Expired Card") {
-                    $UpdateOrder['Status'] = "البطاقة المستخدمة منتهية";
-                }
-                \Session::flash('error',$UpdateOrder['Status']);
-                return redirect()->to('/');
-            }else{
-                \Session::flash('error','حدثت مشكلة في عملية الدفع');
-                return redirect()->to('/dashboard');
-            }
+        $data['data'] = json_decode($input['data']);
+        $data['status'] = json_decode($input['status']);
+        // dd($data);
+
+        if($data['status']->status == 1){
+            return $this->activate();
+        }else{
+            \Session::flash('error',$data['status']->message);
+            return redirect()->to('/');
         }
+        
+        // dd($data);
+        // if (isset($input['cartId']) && !empty($input['cartId'])) {
+        //     $postData['OrderID'] = $input['cartId'];
+        //     $paymentObj = new \PaymentHelper();        
+        //     $createPayment = $paymentObj->OpenURLWithPost($postData);
+        //     $CreateaPage = json_decode($createPayment, TRUE);
+        
+        //     if ($CreateaPage['Code'] == "1001") {
+        //         if ($CreateaPage['Data']['Status'] == "Success") {
+        //             return $this->activate();
+        //         }
+        //         $UpdateOrder = [];
+        //         if ($CreateaPage['Data']['Status'] == "Rejected") {
+        //             $UpdateOrder['Status'] = "تم رفض العملية";
+        //         }
+        //         if ($CreateaPage['Data']['Status'] == "Canceled") {
+        //             $UpdateOrder['Status'] = "تم الالغاء";
+        //         }
+        //         if ($CreateaPage['Data']['Status'] == "Expired Card") {
+        //             $UpdateOrder['Status'] = "البطاقة المستخدمة منتهية";
+        //         }
+        //         \Session::flash('error',$UpdateOrder['Status']);
+        //         return redirect()->to('/');
+        //     }else{
+        //         \Session::flash('error','حدثت مشكلة في عملية الدفع');
+        //         return redirect()->to('/dashboard');
+        //     }
+        // }
     }
 
     public function activate(){
@@ -321,6 +408,7 @@ class DashboardControllers extends Controller {
         $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
         $tenant_id = $tenantObj->tenant_id;
         // dd($tenantObj);
+
         $items = [];
         $addons = [];
         $addonData = [];
@@ -439,6 +527,9 @@ class DashboardControllers extends Controller {
             $extraChannelData = $channel;
             $extraChannelData['tenant_id'] = $tenant_id;
             $extraChannelData['global_user_id'] = $userObj->global_id;
+            $generatedData = CentralChannel::generateNewKey($result['data']['channel']['id']); // [ generated Key , generated Token]
+            $extraChannelData['instanceId'] = $generatedData[0];
+            $extraChannelData['instanceToken'] = $generatedData[1];
 
             CentralChannel::create($extraChannelData);
             UserChannels::create($channel);
@@ -463,14 +554,14 @@ class DashboardControllers extends Controller {
         }
         
 
-        $transferDaysData = [
-            'receiver' => $channel['id'],
-            'days' => 3,
-            'source' => $channelObj->id,
-        ];
+        // $transferDaysData = [
+        //     'receiver' => $channel['id'],
+        //     'days' => 3,
+        //     'source' => $channelObj->id,
+        // ];
 
-        $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-        $result = $updateResult->json();
+        // $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+        // $result = $updateResult->json();
 
         $userObj->update([
             'channels' => serialize([$channel['id']]),
@@ -508,4 +599,174 @@ class DashboardControllers extends Controller {
         return redirect()->to('/dashboard');
     }
 
+    public function faqs(){   
+        $data = FAQ::dataList(1)['data'];
+        return view('Tenancy.Dashboard.Views.faqs')->with('data',(object) $data);
+    }
+
+    public function helpCenter(){   
+        $data = FAQ::dataList(1);
+        $data['changeLogs'] = Changelog::dataList(1)['data'];
+        $data['categories'] = CentralCategory::dataList(1)['data'];
+        $data['email'] = CentralVariable::getVar('TECH_EMAIL');
+        $data['phone'] = CentralVariable::getVar('TECH_PHONE');
+        $data['pin_code'] = $this->genNewPinCode(USER_ID);
+        $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
+        $data['departments'] = Department::dataList(1)['data'];
+        return view('Tenancy.Dashboard.Views.helpCenter')->with('data',(object) $data);
+    }
+
+    public function genNewPinCode($user_id){
+        $newCode = rand(1,10000);
+        $userObj = User::getOne($user_id);
+        $userObj->pin_code = $newCode;
+        $userObj->save();
+
+        $userObj = CentralUser::getOne($user_id);
+        $userObj->pin_code = $newCode;
+        $userObj->save();
+        return $newCode;
+    }
+
+    public function addRate(){
+        $input = \Request::all();
+        $rateObj = new Rate();
+        $rateObj->user_id = USER_ID;
+        $rateObj->tenant_id = TENANT_ID;
+        $rateObj->changelog_id = (int) $input['id'];
+        $rateObj->comment = (string) $input['comment'];
+        $rateObj->rate = (int) $input['rate'];
+        $rateObj->created_by = USER_ID;
+        $rateObj->created_at = DATE_TIME;
+        $rateObj->save();
+
+        WebActions::newType(1,'Rate');
+        return \TraitsFunc::SuccessResponse(trans('main.addSuccess'));
+    }
+
+    public function qrIndex(){
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $result = $mainWhatsLoopObj->status();
+        $result = $result->json();
+        if(isset($result['data'])){
+            if($result['data']['accountStatus'] == 'got qr code'){
+                if(isset($result['data']['qrCode'])){
+                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $destinationPath = public_path() . $image;
+                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
+                    $succ = file_put_contents($destinationPath, $qrCode);   
+                    $data['qrImage'] = \URL::to('/').$image;
+                }
+            }
+        }
+
+        if(!isset($data['qrImage']) || $data['qrImage'] == null){
+            return redirect('dashboard');
+        }
+        $userAddonsTutorial = [];
+        $userAddons = array_unique(Session::get('addons'));
+        $addonsTutorial = [1,2,4,5];
+        for ($i = 0; $i < count($addonsTutorial) ; $i++) {
+            if(in_array($addonsTutorial[$i],$userAddons)){
+                $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
+                if($checkData == ''){
+                    $varObj = new Variable;
+                    $varObj->var_key = 'MODULE_'.$addonsTutorial[$i];
+                    $varObj->var_value = 0;
+                    $varObj->save();
+                    $userAddonsTutorial[] = $addonsTutorial[$i];
+                }elseif($checkData == 0){
+                    $userAddonsTutorial[] = $addonsTutorial[$i];
+                }
+            }
+        }
+
+        $data['data'] = array_values($userAddonsTutorial);
+        $names = Addons::NotDeleted()->whereIn('id',$data['data'])->pluck('title_'.LANGUAGE_PREF);
+        $data['dataNames'] = reset($names);
+        $data['channelName'] = UserChannels::first()->name;
+        $data['dis'] = 0;
+        if(count($data['data']) > 0){
+            $data['templates'] = ModTemplate::dataList(null, ($data['data'][0] == 5 ? 1 : 2 )  )['data'];
+        }else{
+            $data['dis'] = 1;
+        }
+        return view('Tenancy.Dashboard.Views.qrData')->with('data',(object) $data);
+    }
+
+    public function updateName(){
+        $input = \Request::all();
+        if(!isset($input['name']) || empty($input['name'])){
+            return \TraitsFunc::ErrorMessage(trans('main.channelNameValidate'));
+        }
+
+        // $mainWhatsLoopObj = new \MainWhatsLoop();
+        // $result = $mainWhatsLoopObj->setName(['name' => $input['name']]);
+        // $result = $result->json();
+
+        // if($result['status']['status'] != 1){
+        //     return \TraitsFunc::ErrorMessage($result['status']['message']);
+        // }
+
+        $channelObj =  UserChannels::first();
+        $channelObj->name = $input['name'];
+        $channelObj->save();
+        CentralChannel::where('id',$channelObj->id)->update(['name' => $input['name']]);
+        
+        return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+    }
+
+    public function getQR(){
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $result = $mainWhatsLoopObj->status();
+        $result = $result->json();
+        if(isset($result['data'])){
+            if($result['data']['accountStatus'] == 'got qr code'){
+                if(isset($result['data']['qrCode'])){
+                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $destinationPath = public_path() . $image;
+                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
+                    $succ = file_put_contents($destinationPath, $qrCode);   
+                    // $data['qrImage'] = \URL::to('/public'.$image);
+                    $statusObj['data']['qrImage'] = \URL::to('/').$image;
+                    $statusObj['status'] = \TraitsFunc::SuccessMessage();
+                    return \Response::json((object) $statusObj);
+                }
+            }
+        }
+        
+    }
+
+    public function editTemplate(){
+        $input = \Request::all();
+        $rules = [
+            'id' => 'required',
+            'status' => 'required',
+        ];
+
+        $message = [
+            'id.required' => '',
+            'status.required' => '',
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+        if($validate->fails()){
+            return \TraitsFunc::ErrorMessage($validate->messages()->first());
+        }
+
+        $id = (int) $input['id'];
+        $status = (int) $input['status'];
+
+        $templateObj = ModTemplate::getOne($id);
+        $templateObj->status = $status;
+        $templateObj->save();
+        
+        return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+    }
+
+    public function finishModID($modID){
+        $modID = (int) $modID;
+        Variable::where('var_key','MODULE_'.$modID)->update(['var_value'=> 1]);
+        return redirect()->to('/QR');
+    }
 }

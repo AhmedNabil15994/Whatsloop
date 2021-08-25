@@ -19,6 +19,8 @@ class CreateChannelsTable extends Migration
             $table->string('global_user_id')->nullable();
             $table->string('name');
             $table->string('token');
+            $table->string('instanceId');
+            $table->string('instanceToken');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('created_by')->nullable();

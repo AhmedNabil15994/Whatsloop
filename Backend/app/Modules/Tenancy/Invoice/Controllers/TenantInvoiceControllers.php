@@ -132,7 +132,20 @@ class TenantInvoiceControllers extends Controller {
             return Datatables::of($data['data'])->make(true);
         }
         $data['designElems'] = $this->getData();
-        return view('Tenancy.User.Views.index')->with('data', (object) $data);
+
+        // Fetch Subscription Data
+        $membershipObj = Membership::getData(Membership::getOne(Session::get('membership')));
+        $channelObj = UserChannels::getData(UserChannels::getOne(Session::get('channel')));
+        $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
+
+        $data['subscription'] = (object) [
+            'package_name' => $membershipObj->title,
+            'channelStatus' => $channelStatus,
+            'start_date' => $channelObj->start_date,
+            'end_date' => $channelObj->end_date,
+            'leftDays' => $channelObj->leftDays,
+        ];
+        return view('Tenancy.Invoice.Views.index')->with('data', (object) $data);
     }
 
     public function edit($id) {

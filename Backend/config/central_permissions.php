@@ -159,4 +159,15 @@ return [
     'InvoiceControllers@arrange' => 'sort-invoice',
     'InvoiceControllers@charts' => 'charts-invoice',
 
+    'CentralCategoryControllers@index' => 'list-categorys',
+    'CentralCategoryControllers@edit' => 'edit-category',
+    'CentralCategoryControllers@update' => 'edit-category',
+    'CentralCategoryControllers@fastEdit' => 'edit-category',
+    'CentralCategoryControllers@add' => 'add-category',
+    'CentralCategoryControllers@create' => 'add-category',
+    'CentralCategoryControllers@delete' => 'delete-category',
+    'CentralCategoryControllers@sort' => 'sort-category',
+    'CentralCategoryControllers@arrange' => 'sort-category',
+    'CentralCategoryControllers@charts' => 'charts-category',
+
 ];

@@ -60,7 +60,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.group') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="group_id">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="group_id">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     @foreach($data->groups as $group)
                                     <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>{{ $group->channel . ' - '.$group->title }}</option>
@@ -90,7 +90,7 @@
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.message_type') }} :</label>
                             <div class="col-9">
-                                <select class="selectpicker" data-style="btn-outline-myPR" name="message_type">
+                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="message_type">
                                     <option value="">{{ trans('main.choose') }}</option>
                                     <option value="1" {{ !Request::has('message_type') || old('message_type') == 1 ? 'selected' : '' }}>{{ trans('main.text') }}</option>
                                     <option value="2" {{ old('message_type') == 2 ? 'selected' : '' }}>{{ trans('main.photoOrFile') }}</option>

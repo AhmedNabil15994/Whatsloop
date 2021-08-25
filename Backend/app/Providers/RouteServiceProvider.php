@@ -41,6 +41,9 @@ class RouteServiceProvider extends ServiceProvider
         // $this->mapApiRoutes();
         $this->mapGuestRoutes();
         $this->mapModuleRoutes();
+        $this->mapApiGuestRoutes();
+        $this->mapApiModuleRoutes();
+
         // $this->configureRateLimiting();
 
         // $this->routes(function () {
@@ -111,6 +114,35 @@ class RouteServiceProvider extends ServiceProvider
                     require app_path('Modules/Central/Ticket/routes.php');
                     require app_path('Modules/Central/Client/routes.php');
                     require app_path('Modules/Central/Invoice/routes.php');
+                    require app_path('Modules/Central/Category/routes.php');
+            });
+        }
+    }
+
+    protected function mapApiGuestRoutes()
+    {
+        @define('DATE_TIME', date("Y-m-d H:i:s"));
+        foreach ($this->centralDomains() as $domain) {
+            Route::middleware('apiGeneral')
+                ->domain($domain)
+                ->prefix('api')
+                ->namespace($this->namespace)
+                ->group(function () {
+                    require app_path('Modules/Mobile/Auth/routes.php');
+            });
+        }
+    }
+
+    protected function mapApiModuleRoutes()
+    {
+        @define('DATE_TIME', date("Y-m-d H:i:s"));
+        foreach ($this->centralDomains() as $domain) {        
+            Route::middleware('apiWithAuth')
+                ->domain($domain)
+                ->prefix('api')
+                ->namespace($this->namespace)
+                ->group(function (){
+                    require app_path('Modules/Mobile/LiveChat/routes.php');
             });
         }
     }

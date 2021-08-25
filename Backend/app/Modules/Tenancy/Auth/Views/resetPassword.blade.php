@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
         <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="{{ asset('css/login-style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/touches.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">
         <section class="main--page">

@@ -76,6 +76,8 @@ class ExtraQuota extends Model{
         $data->extraTypeText = self::getTypeText($source->extra_type);
         $data->monthly_price = $source->monthly_price != 0 ? $source->monthly_price : '';
         $data->monthly_after_vat = $source->monthly_after_vat != null ? $source->monthly_after_vat : '';
+        $data->annual_price = $source->monthly_price != 0 ? $source->monthly_price * 10 : '';
+        $data->annual_after_vat = $source->monthly_after_vat != null ? $source->monthly_after_vat * 10 : '';
         $data->sort = $source->sort;
         $data->status = $source->status;
         $data->statusText = $source->status == 0 ? 'مسودة' : 'مفعلة';
