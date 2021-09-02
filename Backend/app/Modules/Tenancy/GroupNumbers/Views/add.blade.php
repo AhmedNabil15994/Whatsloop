@@ -5,21 +5,6 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-    </div>
-    <!-- end page title -->
     <input type="hidden" name="modelProps" value="{{ json_encode($data->modelProps) }}">
     <form class="form-horizontal" method="POST" action="{{ URL::to('/addGroupNumbers/create') }}">
         <div class="row">
@@ -37,7 +22,7 @@
                             <div class="form-group row mb-3">
                                 <label class="col-3 col-form-label">{{ trans('main.group') }} :</label>
                                 <div class="col-9">
-                                    <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="group_id">
+                                    <select class="form-control" data-toggle="select2" name="group_id">
                                         <option value="">{{ trans('main.choose') }}</option>
                                         @foreach($data->groups as $group)
                                         <option value="{{ $group->id }}" {{ old('group_id') == $group->id ? 'selected' : '' }}>{{ $group->channel .' - '.$group->title }}</option>
@@ -46,7 +31,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="new hidden">
+                            <div class="new d-hidden">
                                 <hr>
                                 <p><i class="fa fa-plus"></i> {{ trans('main.add').' '.trans('main.group') }}</p>
                                 <div class="form-group row mb-3">
@@ -85,7 +70,7 @@
                                             <input name="file" type="file" />
                                         </div>
                                         <div class="dz-message needsclick">
-                                            <i class="h1 text-muted dripicons-cloud-upload"></i>
+                                            <i class="h1 si si-cloud-upload"></i>
                                             <h3>{{ trans('main.dropzoneP') }}</h3>
                                         </div>
                                     </div>

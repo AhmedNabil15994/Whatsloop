@@ -365,6 +365,29 @@
             </li>
             @endif
 
+            @if(\Helper::checkRules('apiSetting,apiGuide,webhookSetting'))
+            <li class="slide">
+                <a class="side-menu__item" data-toggle="slide" href="#">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('images/setting.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.website_setting') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
+                </a>
+                <ul class="slide-menu">
+                    @if(\Helper::checkRules('apiSetting'))
+                    <li><a class="slide-item" href="{{ URL::to('/profile/apiSetting') }}">{{ trans('main.api_setting') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('apiGuide'))
+                    <li><a class="slide-item" href="{{ URL::to('/profile/apiGuide') }}">{{ trans('main.api_guide') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('webhookSetting'))
+                    <li><a class="slide-item" href="{{ URL::to('/profile/webhookSetting') }}">{{ trans('main.webhook_setting') }}</a></li>
+                    @endif
+                </ul>
+            </li>
+            @endif
+
         </ul>
 
         <div class="app-sidefooter">

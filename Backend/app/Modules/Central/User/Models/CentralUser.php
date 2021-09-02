@@ -145,9 +145,10 @@ class CentralUser extends Model implements SyncMaster
     
     static function selectImage($source){
         if($source->image != null){
-            return self::getPhotoPath($source->id, $source->image);
+            $data = self::getPhotoPath($source->id, $source->image);
+            return ($data == "" ? asset('tenancy/assets/images/def_user.svg') : $data);
         }else{
-            return asset('images/not-available.jpg');
+            return asset('tenancy/assets/images/def_user.svg');
         }
     }
 // $tenant = Tenant::create([

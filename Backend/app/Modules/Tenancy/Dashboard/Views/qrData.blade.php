@@ -113,6 +113,12 @@
                                         </select>
                                     </div>
                                     <div class="col-1">
+                                        <div class="form-group">
+                                            <label class="custom-switch pl-0">
+                                                <input type="checkbox" name="custom-switch-checkbox{{ $template->id }}" class="custom-switch-input" {{ $template->status == 1 ? 'checked' : '' }} data-area="{{ $template->id }}">
+                                                <span class="custom-switch-indicator"></span>
+                                            </label>
+                                        </div>
                                         <div class="main-toggle-group-demo">
                                             <div class="main-toggle {{ $template->status == 1 ? 'on' : '' }}" data-area="{{ $template->id }}">
                                                 <span></span>

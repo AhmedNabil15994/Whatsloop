@@ -5,26 +5,11 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-    </div>
-    <!-- end page title -->
     <input type="hidden" name="modelProps" value="{{ json_encode($data->modelProps) }}">
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             <div class="card">
-                <div class="card-body" style="padding-top: 0">
+                <div class="card-body pd-0" style="padding-top: 0">
                     <form class="form-horizontal" method="POST" action="{{ URL::to('/contacts/create') }}">
                         @csrf
                         <div id="basicwizard">
@@ -55,7 +40,7 @@
                                 </li>
                             </ul>
 
-                            <div class="tab-content b-0 mb-0 pt-0">
+                            <div class="tab-content mb-0" style="padding: 20px;">
                                 <div class="tab-pane active" id="basictab1">
                                     <div class="row">
                                         <div class="col-12">
@@ -71,7 +56,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="new hidden">
+                                            <div class="new d-hidden">
                                                 <hr>
                                                 <p><i class="fa fa-plus"></i> {{ trans('main.add').' '.trans('main.group') }}</p>
                                                 <div class="form-group row mb-3">
@@ -186,7 +171,7 @@
                                                             <input name="file" type="file" />
                                                         </div>
                                                         <div class="dz-message needsclick">
-                                                            <i class="h1 text-muted dripicons-cloud-upload"></i>
+                                                            <i class="h1 si si-cloud-upload"></i>
                                                             <h3>{{ trans('main.dropzoneP') }}</h3>
                                                         </div>
                                                     </div>
@@ -209,40 +194,13 @@
                         <input type="hidden" name="vType">
                         <hr>
                         <div class="form-group mb-0 justify-content-end row">
-                            <div class="col-9">
+                            <div class="col-9 mb-3">
                                 <button type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                                 <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
                     </form>
                     <!--end: Datatable-->
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-        <div class="col-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <h4 class="header-title"><i class="fas fa-align-center"></i> {{ trans('main.lastActions') }}</h4>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="timeline" dir="ltr">
-                        @foreach($data->timelines as $key => $timeline)
-                        <article class="timeline-item {{ $key%2 == 1 ? 'timeline-item-left' : '' }}">
-                            <div class="timeline-desk">
-                                <div class="timeline-box">
-                                    <span class="arrow"></span>
-                                    <span class="timeline-icon"><i class="mdi mdi-adjust"></i></span>
-                                    <h4 class="mt-0 font-16">{{ $timeline->typeText }}</h4>
-                                    <p class="text-muted mb-1"><i class="fa fa-clock"></i> <small>{{ $timeline->created_at2 }}</small></p>
-                                    <p class="mb-0"><i class="fa fa-user-tie"></i> {{ $timeline->username }}</p>
-                                </div>
-                            </div>
-                        </article>
-                        @endforeach
-                    </div>
                 </div> <!-- end card body-->
             </div> <!-- end card -->
         </div><!-- end col-->

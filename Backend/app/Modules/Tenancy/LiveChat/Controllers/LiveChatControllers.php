@@ -209,7 +209,7 @@ class LiveChatControllers extends Controller {
         $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
         $dailyCount = Session::get('dailyMessageCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount <= $messagesCount + $extraQuotas){
+        if($dailyCount + $extraQuotas <= $messagesCount){
             return \TraitsFunc::ErrorMessage('Messages Quota Per Day Exceeded!!!');
         }
 

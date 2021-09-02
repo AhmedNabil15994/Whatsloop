@@ -246,6 +246,20 @@
         </div>
     </div>
     @endif
+    @if(\Helper::checkRules('apiSetting,apiGuide,webhookSetting'))
+    <div class="col-xl-3 col-lg-6 col-sm-6 col-md-6">
+        <div class="card text-center">
+            <a href="{{ URL::to('/profile/apiSetting') }}" title="">
+                <div class="card-body ">
+                    <div class="feature widget-2 text-center mt-0 mb-3">
+                        <img src="{{ asset('images/setting.svg') }}" alt="">
+                    </div>
+                    <h6 class="mb-1 text-muted">{{ trans('main.api_setting') }}</h6>
+                </div>
+            </a>
+        </div>
+    </div>
+    @endif
     <div class="col-xl-3 col-lg-6 col-sm-6 col-md-6">
         <div class="card text-center">
             <a href="{{ URL::to('/faq') }}" title="">

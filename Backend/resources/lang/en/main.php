@@ -244,6 +244,7 @@ return [
 	'chat' => 'Start Conversation',
 	'customers' => 'Customers',
 	'products' => 'Products',
+	'product' => 'Product',
 	'orders' => 'Orders',
 	'noCountryCode' => ' Without Country Code',
 	'order' => 'Order No',
@@ -373,8 +374,8 @@ return [
 	'send_location_p2' => 'The coordinates are placed: 21.5982195,39.1586724',
 	'send_location_p3' => 'The address is written: 6081 Quraysh, Al Bawadi, Jeddah 23531, Saudi Arabia',
 
-	'send_contact' => 'Send Contact',
-	'send_contact_p1' => 'You can send a contact you must type the sender phone number (966xxxxxxxxx)',
+	'send_link' => 'Send Link',
+	'send_link_p1' => 'You can send a link you must type the sender phone number (966xxxxxxxxx)',
 
 	'edit_contact' => 'Edit Contact',
 	'edit_contact_p1' => 'You can send a contact',
@@ -591,4 +592,18 @@ return [
 	'apply' => 'Apply',
 	'addToCart' => 'Add To Cart',
 	'addedToCart' => 'Added To Cart',
+
+	'ePayment' => 'E-Payment',
+	'transferImage' => 'Transfer Image',
+	'payViaPayTabs' => 'Pay Via Paytabs',
+	'payViaNoon' => 'Pay Via Noon',
+	'singlePayment' => 'Single Payment',
+	'subscription1' => 'Monthly Annual Subscription',
+	'subscription2' => 'Annual Subscription Paid Yearly',
+
+	'renew' => 'Renew',
+	'disable' => 'Deactivate',
+	'enable' => 'Activate',
+	'suspended' => 'Suspended',
+	'deactivated' => "Deactivated",
 ];

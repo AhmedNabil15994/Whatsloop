@@ -21,50 +21,49 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
     <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/profile') }}">{{ trans('main.myAccount') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
+        <div class="col-md-6 col-xl-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="plan-card text-center">
+                        <i class="fas fa-comments plan-icon text-primary"></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.messages') }}</h6>
+                        <h2 class="mb-2">{{ $data->allMessages }}</h2>
+                    </div>
                 </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-    </div>     
-
-
-    <div class="row">
-        <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fab fa-rocketchat text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.messages') }}"></i>
-                <h4 class="mt-0 font-16">{{ trans('main.messages') }}</h4>
-                <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->allMessages }}</span></h2>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fas fa-reply text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.sentMessages') }}"></i>
-                <h4 class="mt-0 font-16">{{ trans('main.sentMessages') }}</h4>
-                <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->sentMessages }}</span></h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="plan-card text-center">
+                        <i class="fas fa-share plan-icon text-primary"></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.sentMessages') }}</h6>
+                        <h2 class="mb-2">{{ $data->sentMessages }}</h2>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fas fa-redo text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.incomeMessages') }}"></i>
-                <h4 class="mt-0 font-16">{{ trans('main.incomeMessages') }}</h4>
-                <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->incomingMessages }}</span></h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="plan-card text-center">
+                        <i class="fas fa-envelope plan-icon text-primary"></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.incomeMessages') }}</h6>
+                        <h2 class="mb-2">{{ $data->incomingMessages }}</h2>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fas fa-users text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.contacts') }}"></i>
-                <h4 class="mt-0 font-16">{{ trans('main.contacts') }}</h4>
-                <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->contactsCount }}</span></h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="plan-card text-center">
+                        <i class="fas fa-address-book plan-icon text-primary"></i>
+                        <h6 class="text-drak text-uppercase mt-2">{{ trans('main.contacts') }}</h6>
+                        <h2 class="mb-2">{{ $data->contactsCount }}</h2>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -117,6 +116,163 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="mainCol mb-4">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h3 class="card-title "> {{ trans('main.currentPackage') }}</h3> 
+                                    </div>
+                                    @if(IS_ADMIN)
+                                    <div class="col-4 text-right">
+                                        <a href="{{ URL::to('/updateSubscription?type=membership') }}" class="btn btn-dark"> <i class="fa fa-pencil-alt"></i> {{ trans('main.edit') }}</a> 
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 text-left text-gray">{{ trans('main.packageName') }}</div>
+                                    <div class="col-6 text-right text-gray">{{ trans('main.substatus') }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 text-left">
+                                        <span class="btn btn-outline-primary">{{ $data->subscription->package_name }}</span> 
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <span class="btn btn-{{ $data->subscription->channelStatus == 1 ? 'success' : 'danger' }}">{{ $data->subscription->channelStatus == 1 ? trans('main.active') : trans('main.notActive') }}</span> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="mainCol">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h3 class="card-title mb-2"> {{ trans('main.nextMillestone') }}</h3> 
+                                    </div>
+                                    @if(!in_array(date('d',strtotime($data->subscription->end_date)) , [1,28,29,30,31]) && IS_ADMIN)
+                                    <div class="col-6 text-right">
+                                        <a href="#" class="btn btn-dark"> <i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a> 
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-4 info">
+                                        <span class="text-gray">{{ $data->subscription->end_date }}</span>
+                                    </div>
+                                    <div class="col-3 noPadd">
+                                        <span class="btn btn-outline-primary">{{ $data->subscription->leftDays }} {{ trans('main.leftDays') }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 info">
+                                        <span class="text-gray">{{ trans('main.substartDate') }}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <span class="btn btn-primary">{{ $data->subscription->start_date }}</span>
+                                    </div>
+                                    <div class="col-4 info">
+                                        <span class="text-gray">{{ trans('main.subendDate') }}</span>
+                                    </div>
+                                    <div class="col-2">
+                                        <span class="btn btn-primary">{{ $data->subscription->end_date }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="mainCol">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h3 class="card-title mb-7"> {{ trans('main.addons') }}</h3> 
+                                    </div>
+                                    @if(IS_ADMIN)
+                                    <div class="col-4 text-right">
+                                        <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="btn btn-dark"> <i class="fa fa-pencil-alt"></i> {{ trans('main.edit') }}</a> 
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="row">
+                                    @foreach($data->subscription->addons as $addon)
+                                    <div class="col-sm-12 col-lg-4 addons">
+                                        <div class="card custom-card">
+                                            <div class="card-body text-center">
+                                                <div class="user-lock text-center">
+                                                    <div class="dropdown text-right">
+                                                        <a href="#" class="option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            <i class="fe fe-more-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-right shadow" x-placement="bottom-end">
+                                                            @if($addon->status == 2)
+                                                            <a class="dropdown-item" href="{{ URL::to('/updateAddonStatus/'.$addon->id.'/4') }}"><i class="fe fe-refresh-ccw mr-2"></i> {{ trans('main.renew') }}</a>
+                                                            @elseif($addon->status == 1)
+                                                            <a class="dropdown-item" href="{{ URL::to('/updateAddonStatus/'.$addon->id.'/3') }}"><i class="la la-close mr-2"></i> {{ trans('main.disable') }}</a>
+                                                            @elseif($addon->status == 3)
+                                                            <a class="dropdown-item" href="{{ URL::to('/updateAddonStatus/'.$addon->id.'/1') }}"><i class="la la-check mr-2"></i> {{ trans('main.enable') }}</a>
+                                                            @endif
+                                                            <a class="dropdown-item" href="{{ URL::to('/updateAddonStatus/'.$addon->id.'/5') }}"><i class="fe fe-trash-2 mr-2"></i> {{ trans('main.delete') }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <h5 class="mb-1 mt-3  card-title">{{ $addon->Addon->title }}</h5>
+                                                <p class="mb-2 mt-1 btn btn-{{ $addon->status == 1 ? 'success' : 'danger' }}">{{ $addon->statusText }}</p>
+                                                <p class="text-muted text-center mt-1">{{ $addon->start_date . ' -- ' . $addon->end_date }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="mainCol">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <h3 class="card-title mb-7"> {{ trans('main.extraQuotas') }}</h3> 
+                                    </div>
+                                    @if(IS_ADMIN)
+                                    <div class="col-4 text-right">
+                                        <a href="{{ URL::to('/updateSubscription?type=extra_quota') }}" class="btn btn-dark"> <i class="fa fa-pencil-alt"></i> {{ trans('main.edit') }}</a> 
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="row">
+                                    @foreach($data->subscription->extra_quotas as $extra_quota)
+                                    <div class="col-sm-12 col-lg-4 extra_quota">
+                                        <div class="card custom-card">
+                                            <div class="card-body text-center">
+                                                <div class="user-lock text-center">
+                                                    <div class="dropdown text-right">
+                                                        <a href="#" class="option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            <i class="fe fe-more-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-right shadow" x-placement="bottom-end">
+                                                            @if($extra_quota->status == 2)
+                                                            <a class="dropdown-item" href="{{ URL::to('/updateQuotaStatus/'.$extra_quota->id.'/4') }}"><i class="fe fe-refresh-ccw mr-2"></i> {{ trans('main.renew') }}</a>
+                                                            @endif
+                                                            <a class="dropdown-item" href="{{ URL::to('/updateQuotaStatus/'.$extra_quota->id.'/5') }}"><i class="fe fe-trash-2 mr-2"></i> {{ trans('main.delete') }}</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <h5 class="mb-1 mt-3  card-title">{{ $extra_quota->ExtraQuota->extra_count . ' '.$extra_quota->ExtraQuota->extraTypeText . ' ' . ($extra_quota->ExtraQuota->extra_type == 1 ? trans('main.msgPerDay') : '')}}</h5>
+                                                <p class="mb-2 mt-1 btn btn-{{ $extra_quota->status == 1 ? 'success' : 'danger' }}">{{ $extra_quota->statusText }}</p>
+                                                <p class="text-muted text-center mt-1">{{ $extra_quota->start_date . ' -- ' . $extra_quota->end_date }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
                         <div class="col-2">
                             <img src="{{ asset('images/logoOnly.jpg') }}" width="100%" alt="">
                         </div>
@@ -139,7 +295,7 @@
                                             <div class="row">
                                                 <div class="col-sm-4">
                                                     <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                        {{ trans('main.channel') }} : <b># {{ $data->channel->id }}</b>
+                                                        {{ trans('main.channel') }} : <b># {{ $data->channel->instanceId }}</b>
                                                     </a>
                                                 </div>
                                                 <div class="col-sm-4">
@@ -217,7 +373,7 @@
             </div> <!-- end card -->
         </div><!-- end col-->
     </div>
-    
+
 </div> <!-- container -->
 @endsection
 

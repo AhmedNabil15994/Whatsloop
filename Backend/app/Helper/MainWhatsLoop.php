@@ -9,17 +9,22 @@ class MainWhatsLoop {
     protected $instanceId = "", $token = "",$baseUrl = "";
 
     public function __construct($instanceId=null,$token=null) {
-        $channelObj = UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
 
         $myInstanceId = '';
         $myInstanceToken = '';
         if($instanceId != null && $token != null){
-            $myInstanceToken = $token;
-            $myInstanceId = $instanceId;
+            $channelObj = CentralChannel::where('id',$instanceId)->orWhere('instanceId',$instanceId)->first();
+            if($channelObj){
+                $myInstanceToken =  $channelObj->instanceToken;
+                $myInstanceId = $channelObj->instanceId;
+            }
         }else{
-            $channelObj = CentralChannel::NotDeleted()->where('id',$channelObj->id)->first();
-            $myInstanceToken =  $channelObj->instanceToken;
-            $myInstanceId = $channelObj->instanceId;
+            $channelObj = UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
+            if($channelObj){
+                $channelObj = CentralChannel::NotDeleted()->where('id',$channelObj->id)->first();
+                $myInstanceToken =  $channelObj->instanceToken;
+                $myInstanceId = $channelObj->instanceId;
+            }
         }
 
         $this->instanceId = $myInstanceId;

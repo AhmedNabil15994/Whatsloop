@@ -18,46 +18,12 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <form method="POST" action="{{ URL::to('/'.$data->designElems['mainData']['url'].'/update/'.$data->data->id) }}">
             @csrf
             <div class="col-lg col-xl">
-                <div class="card-box">
-                    <ul class="nav nav-pills navtab-bg nav-justified">
+                <div class="card">
+                    <ul class="nav nav-pills navtab-bg nav-justified" style="padding: 25px;">
                         <li class="nav-item">
                             <a href="#settings" data-toggle="tab" aria-expanded="true" class="nav-link active">
                                 {{ trans('main.personalInfo') }}
@@ -79,7 +45,7 @@
                             </a>
                         </li>
                     </ul>
-                    <div class="tab-content">
+                    <div class="tab-content" style="padding: 25px;">
                         <div class="tab-pane show active" id="settings">
                             <h5 class="mb-4 text-uppercase"><i class="mdi mdi-account-circle mr-1"></i> {{ trans('main.personalInfo') }}</h5>
                             <div class="row">
@@ -179,7 +145,7 @@
                                         <div class="col-9 row mainCol">
                                             <div class="col-6">
                                                 <label class="col-5 col-form-label">{{ trans('monthly') }} :</label>
-                                                <div class="col-7" style="margin-top: -8px;">
+                                                <div class="col-7" style="margin-top: 5px;">
                                                     <div class="checkbox checkbox-success">
                                                         <input id="monthly{{ $addon->id }}" class="monthly old" {{ $found == 1 || $found == 3 ?  "checked=true" : '' }} type="checkbox" name="addons[{{ $addon->id }}][1]">
                                                         <label for="monthly{{ $addon->id }}"></label>
@@ -188,7 +154,7 @@
                                             </div>
                                             <div class="col-6">
                                                 <label class="col-5 col-form-label">{{ trans('yearly') }} :</label>
-                                                <div class="col-7" style="margin-top: -8px;">
+                                                <div class="col-7" style="margin-top: 5px;">
                                                     <div class="checkbox checkbox-success">
                                                         <input id="yearly{{ $addon->id }}" class="yearly old" {{ $found == 2 || $found == 3 ?  "checked=true" : '' }} type="checkbox" name="addons[{{ $addon->id }}][2]">
                                                         <label for="yearly{{ $addon->id }}"></label>
@@ -335,7 +301,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group row">
                                         <label class="col-3 col-form-label">{{ trans('main.offers') }} :</label>
-                                        <div class="col-9" style="margin-top: -8px;">
+                                        <div class="col-9" style="margin-top: 5px">
                                             <div class="checkbox checkbox-success">
                                                 <input id="checkbox3" type="checkbox" name="offers" {{ $data->data->offers == 1 ? 'checked' : '' }} >
                                                 <label for="checkbox3"></label>
@@ -346,7 +312,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group row">
                                         <label class="col-3 col-form-label">{{ trans('main.notifications') }} :</label>
-                                        <div class="col-9" style="margin-top: -8px;">
+                                        <div class="col-9" style="margin-top: 5px">
                                             <div class="checkbox checkbox-success">
                                                 <input id="checkbox4" type="checkbox" name="notifications" {{ $data->data->notifications == 1 ? 'checked' : '' }} >
                                                 <label for="checkbox4"></label>

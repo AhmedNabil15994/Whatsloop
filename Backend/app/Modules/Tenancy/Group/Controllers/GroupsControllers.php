@@ -135,7 +135,6 @@ class GroupsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.groups') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['permissions'] = \Helper::getPermissions(true);
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Tenancy.Group.Views.edit')->with('data', (object) $data);      
     }
 
@@ -182,7 +181,6 @@ class GroupsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groups') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['permissions'] = \Helper::getPermissions(true);
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Tenancy.Group.Views.add')->with('data', (object) $data);
     }
 

@@ -17,7 +17,7 @@ class ExtraQuota extends Model{
             ->first();
     }
 
-    static function dataList($status=null,$ids=null) {
+    static function dataList($status=null,$ids=null,$notId=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted();
@@ -46,6 +46,9 @@ class ExtraQuota extends Model{
         }
         if($ids != null){
             $source->whereIn('id',$ids);
+        } 
+        if($notId != null){
+            $source->whereNotIn('id',$notId);
         }    
 
         $source->orderBy('sort','ASC');

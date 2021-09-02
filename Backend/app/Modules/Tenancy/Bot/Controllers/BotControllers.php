@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
+use App\Models\UserAddon;
 use DataTables;
 use Storage;
 use Redirect;
@@ -16,6 +17,7 @@ use Redirect;
 class BotControllers extends Controller {
 
     use \TraitsFunc;
+    public $addonId = '1';
 
     public function getData(){
         $userObj = User::getData(User::getOne(USER_ID));
@@ -174,9 +176,9 @@ class BotControllers extends Controller {
 
     public function edit($id) {
         $id = (int) $id;
-
+        $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
         $dataObj = Bot::NotDeleted()->find($id);
-        if($dataObj == null) {
+        if($dataObj == null || !$checkAvail) {
             return Redirect('404');
         }
 
@@ -203,7 +205,8 @@ class BotControllers extends Controller {
         $id = (int) $id;
 
         $dataObj = Bot::NotDeleted()->find($id);
-        if($dataObj == null) {
+        $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
+        if($dataObj == null || !$checkAvail) {
             return Redirect('404');
         }
 
@@ -301,6 +304,10 @@ class BotControllers extends Controller {
     }
 
     public function add() {
+        $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
+        if(!$checkAvail){
+            return redirect(404);
+        }
         $userObj = User::getData(User::getOne(USER_ID));
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
@@ -409,6 +416,11 @@ class BotControllers extends Controller {
 
     public function delete($id) {
         $id = (int) $id;
+        $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
+        if(!$checkAvail){
+            return \TraitsFunc::SuccessResponse(trans('main.unAvail'));
+        }
+
         $dataObj = Bot::getOne($id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/'.$this->getData()['mainData']['name'].'/'.$id);
@@ -417,6 +429,11 @@ class BotControllers extends Controller {
 
     public function fastEdit() {
         $input = \Request::all();
+        $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
+        if(!$checkAvail){
+            return \TraitsFunc::SuccessResponse(trans('main.unAvail'));
+        }
+        
         foreach ($input['data'] as $item) {
             $col = $item[1];
             $dataObj = Bot::find($item[0]);

@@ -34,7 +34,7 @@ class CentralChannel extends Model{
         return self::getObj($data);
     }
 
-    static function dataList() {
+    static function dataList($id=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -50,6 +50,9 @@ class CentralChannel extends Model{
                 });
         if(\Session::has('user_id') && !IS_ADMIN){
             $source->where('id',Session::get('channel'));
+        }
+        if($id != null){
+            $source->where('id',$id);
         }
         $source->orderBy('end_date','DESC');
         return self::getObj($source);

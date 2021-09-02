@@ -59,7 +59,8 @@
 <script src="{{ asset('switcher/js/switcher-rtl.js') }}"></script>
 @endif
 <script src="{{ asset('plugins/sidebar/sidebar-custom.js') }}"></script>
-
+<script src="{{ asset('plugins/sweet-alert/sweetalert.min.js') }}"></script>
+<script src="{{ asset('plugins/sweet-alert/jquery.sweet-alert.js') }}"></script>
 <!-- Sticky js -->
 <script src="{{ asset('js/sticky.js') }}"></script>
 <script src="{{ asset('js/modal-popup.js') }}"></script>

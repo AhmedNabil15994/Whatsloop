@@ -178,10 +178,10 @@ function newjobs(){
     });
 };
 
-$(document).on('click','.main-toggle',function(){
+$(document).on('change','.custom-switch-input',function(){
     var templateID = $(this).data('area');
     var status = 0;
-    if($(this).hasClass('on')){
+    if($(this).is(':checked')){
         status = 1;
     }
 

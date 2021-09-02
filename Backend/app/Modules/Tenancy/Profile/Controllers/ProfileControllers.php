@@ -14,8 +14,10 @@ use App\Models\Variable;
 use App\Models\UserChannels;
 use App\Models\ChatMessage;
 use App\Models\PaymentInfo;
+use App\Models\CentralChannel;
 use App\Models\UserStatus;
 use App\Models\ExtraQuota;
+use App\Models\Membership;
 use App\Models\UserExtraQuota;
 use Storage;
 use DataTables;
@@ -42,6 +44,7 @@ class ProfileControllers extends Controller {
             'icon' => 'fa fa-user',
         ];
         $data['data'] = $userObj;
+        $data['paymentInfo'] = $userObj->paymentInfo ;
         return view('Tenancy.Profile.Views.personalInfo')->with('data', (object) $data);
     }
 
@@ -98,8 +101,6 @@ class ProfileControllers extends Controller {
 
         }
 
-
-
         if(isset($input['company']) && !empty($input['company'])){
             $mainUserObj->company = $input['company'];
         }
@@ -131,16 +132,6 @@ class ProfileControllers extends Controller {
         WebActions::newType(2,'User');
         Session::flash('success', trans('main.editSuccess'));
         return \Redirect::back()->withInput();
-    }
-
-    public function changePassword(){
-        $userObj = User::authenticatedUser();
-        $data['designElems']['mainData'] = [
-            'title' => trans('main.changePassword'),
-            'icon' => 'fas fa-user-lock',
-        ];
-        $data['data'] = $userObj;
-        return view('Tenancy.Profile.Views.changePassword')->with('data', (object) $data);
     }
 
     public function postChangePassword(){
@@ -175,17 +166,6 @@ class ProfileControllers extends Controller {
         WebActions::newType(2,'User');
         Session::flash('success', trans('auth.passwordChanged'));
         return \Redirect::back()->withInput();
-    }
-
-    public function paymentInfo(){
-        $userObj = User::authenticatedUser();
-        $data['designElems']['mainData'] = [
-            'title' => trans('main.payment_setting'),
-            'icon' => 'mdi mdi-credit-card',
-        ];
-        $data['data'] = $userObj;
-        $data['paymentInfo'] = $userObj->paymentInfo ;
-        return view('Tenancy.Profile.Views.paymentInfo')->with('data', (object) $data);
     }
 
     public function postPaymentInfo(){
@@ -225,62 +205,12 @@ class ProfileControllers extends Controller {
         $paymentInfoObj->region = $input['region'];
         $paymentInfoObj->country = $input['country'];
         $paymentInfoObj->postal_code = $input['postal_code'];
+        $paymentInfoObj->tax_id = $input['tax_id'];
         $paymentInfoObj->save();
 
         WebActions::newType($type,'PaymentInfo');
         Session::flash('success', trans('main.editSuccess'));
         return \Redirect::back()->withInput();
-    }
-
-    public function taxInfo(){
-        $userObj = User::authenticatedUser();
-        $data['designElems']['mainData'] = [
-            'title' => trans('main.tax_setting'),
-            'icon' => 'mdi mdi-percent',
-        ];
-        $data['data'] = $userObj;
-        $data['paymentInfo'] = $userObj->paymentInfo ;
-        return view('Tenancy.Profile.Views.taxInfo')->with('data', (object) $data);
-    }
-
-    public function postTaxInfo(){
-        $input = \Request::all();
-        $userObj = User::getOne(USER_ID);
-        if($userObj->PaymentInfo){
-            $paymentInfoObj = $userObj->paymentInfo;
-            $paymentInfoObj->updated_at = DATE_TIME;
-            $paymentInfoObj->updated_by = USER_ID;
-            $type = 2;
-        }else{
-            $paymentInfoObj = new PaymentInfo();
-            $paymentInfoObj->created_at = DATE_TIME;
-            $paymentInfoObj->created_by = USER_ID;
-            $type = 1;
-        }
-
-        if(isset($input['company']) && !empty($input['company']) && $userObj->company != $input['company']){
-            $userObj->company = $input['company'];
-            $userObj->save();
-        }
-
-        if(isset($input['tax_id']) && !empty($input['tax_id']) && $paymentInfoObj->tax_id != $input['tax_id']){
-            $paymentInfoObj->tax_id = $input['tax_id'];
-            $paymentInfoObj->save();
-        }
-
-        WebActions::newType($type,'PaymentInfo');
-        Session::flash('success', trans('main.editSuccess'));
-        return \Redirect::back()->withInput();
-    }
-
-    public function notifications(){
-        $userObj = User::authenticatedUser();
-        $data['designElems']['mainData'] = [
-            'title' => trans('main.notifications'),
-            'icon' => 'mdi mdi-alert-octagram-outline',
-        ];
-        $data['data'] = $userObj;
-        return view('Tenancy.Profile.Views.notifications')->with('data', (object) $data);
     }
 
     public function postNotifications(){
@@ -292,16 +222,6 @@ class ProfileControllers extends Controller {
         WebActions::newType(2,'User');
         Session::flash('success', trans('main.editSuccess'));
         return \Redirect::back()->withInput();
-    }
-
-    public function offers(){
-        $userObj = User::authenticatedUser();
-        $data['designElems']['mainData'] = [
-            'title' => trans('main.offers'),
-            'icon' => 'mdi mdi-offer',
-        ];
-        $data['data'] = $userObj;
-        return view('Tenancy.Profile.Views.offers')->with('data', (object) $data);
     }
 
     public function postOffers(){
@@ -565,18 +485,34 @@ class ProfileControllers extends Controller {
             return back()->withInput();
         }
 
-        if($result['status']['status'] != 1){
-            Session::flash('error', $result['status']['message']);
-            return back()->withInput();
-        }
+        // if($result['status']['status'] != 1){
+        //     Session::flash('error', $result['status']['message']);
+        //     return back()->withInput();
+        // }
+
+        // Fetch Subscription Data
+        $membershipObj = Membership::getData(Membership::getOne(Session::get('membership')));
+        $channelObj = CentralChannel::getData(CentralChannel::getOne(Session::get('channel')));
+        $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
+
+        $data['subscription'] = (object) [
+            'package_id' => $membershipObj->id,
+            'package_name' => $membershipObj->title,
+            'channelStatus' => $channelStatus,
+            'start_date' => $channelObj->start_date,
+            'end_date' => $channelObj->end_date,
+            'leftDays' => $channelObj->leftDays,
+            'addons' => UserAddon::dataList(null,USER_ID,null,[1,2,3])['data'],
+            'extra_quotas' => UserExtraQuota::getForUser(GLOBAL_ID)[1],
+        ];
      
         $data['data'] = $userObj;
-        $data['me'] = (object) $result['data'];
+        $data['me'] = (object) ($result != null && isset($result['data']) ? $result['data'] : []);
         $data['status'] = UserStatus::getData(UserStatus::orderBy('id','DESC')->first());
         $data['allMessages'] = ChatMessage::count();
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
-        $data['channel'] = UserChannels::getData(UserChannels::getOne(Session::get('channel')));
+        $data['channel'] = CentralChannel::getData(CentralChannel::getOne(Session::get('channel')));
         $data['contactsCount'] = Contact::NotDeleted()->count();
         
         return view('Tenancy.Profile.Views.subscription')->with('data', (object) $data);
@@ -716,7 +652,7 @@ class ProfileControllers extends Controller {
         ];
 
         $data['designElems']['tableData'] = [
-            'id' => [
+            'instanceId' => [
                 'label' => trans('main.id'),
                 'type' => '',
                 'className' => '',
@@ -730,7 +666,7 @@ class ProfileControllers extends Controller {
                 'data-col' => 'name',
                 'anchor-class' => '',
             ],
-            'token' => [
+            'instanceToken' => [
                 'label' => trans('main.token'),
                 'type' => '',
                 'className' => '',
@@ -754,7 +690,7 @@ class ProfileControllers extends Controller {
         ];
 
         if($request->ajax()){
-            $data = UserChannels::dataList();
+            $data = CentralChannel::dataList(Session::get('channel'));
             return Datatables::of($data['data'])->make(true);
         }
         $data['dis'] = true;

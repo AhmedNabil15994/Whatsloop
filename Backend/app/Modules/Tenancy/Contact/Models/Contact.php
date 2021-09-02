@@ -40,6 +40,7 @@ class Contact extends Model{
 
     static function newPhone($phone){
         $phone = '+'.str_replace('@c.us', '', $phone);
+        $phone = str_replace('@g.us', '', $phone);
         $contactObj = self::where('phone',$phone)->first();
         if($contactObj == null){
             $contactObj = new self;
@@ -259,8 +260,9 @@ class Contact extends Model{
         $data->created_at = \Helper::formatDate($source->created_at);
         if($withMessageStatus != null){
             $status = [];
-            $groupMsgObj = GroupMsg::getData(GroupMsg::getOne($group_message_id));
-            if($groupMsgObj->sent_type == trans('main.publishSoon')){
+            $groupMsgObj = GroupMsg::getOne($group_message_id);
+            $groupMsgObj = $groupMsgObj ? GroupMsg::getData($groupMsgObj) : [];
+            if($groupMsgObj && $groupMsgObj->sent_type == trans('main.publishSoon')){
                 $status= ['dark',trans('main.publishSoon')];
                 $data->reportStatus = $status;
                 return $data;

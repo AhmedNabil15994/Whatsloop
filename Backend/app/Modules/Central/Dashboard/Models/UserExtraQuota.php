@@ -33,7 +33,7 @@ class UserExtraQuota extends Model{
         return self::find($id);
     }
 
-    static function dataList($user_id=null,$end_date=null) {
+    static function dataList($user_id=null,$end_date=null,$statusArr=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -41,6 +41,10 @@ class UserExtraQuota extends Model{
                         $query->where('id',$input['id']);
                     }
                 });
+
+        if($statusArr != null){
+            $source->whereIn('status',$statusArr);
+        }
         if($user_id != null){
             $source->where('user_id',$user_id);
         }
@@ -97,12 +101,17 @@ class UserExtraQuota extends Model{
         return [$dataObj->pluck('extra_quota_id'),$list];
     }
 
+    // Status == 1 => Active
+    // Status == 0 => Not Active
+    // Status == 2 ==> Deactivated
+    // Status == 3 ==> Disabled
     static function getData($source){
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;
         $dataObj->user_id = $source->user_id;
         $dataObj->status = $source->status;
-        $dataObj->ExtraQuota = isset($source->ExtraQuota) ? $source->ExtraQuota : '';
+        $dataObj->statusText = self::getStatus($source->status);
+        $dataObj->ExtraQuota = isset($source->ExtraQuota) ? ExtraQuota::getData($source->ExtraQuota) : '';
         $dataObj->extra_quota_id = $source->extra_quota_id;
         $dataObj->global_user_id = $source->global_user_id;
         $dataObj->tenant_id = $source->tenant_id;
@@ -114,6 +123,20 @@ class UserExtraQuota extends Model{
         $dataObj->leftDays = $dataObj->days - $dataObj->usedDays;
         $dataObj->rate = ($dataObj->leftDays / $dataObj->days) * 100;
         return $dataObj;
+    }
+
+    static function getStatus($status){
+        $text = '';
+        if($status == 0){
+            $text = trans('main.notActive');
+        }elseif($status == 1){
+            $text = trans('main.active');
+        }elseif($status == 2){
+            $text = trans('main.suspended');
+        }elseif($status == 3){
+            $text = trans('main.deactivated');
+        }
+        return $text;
     }
 
 }

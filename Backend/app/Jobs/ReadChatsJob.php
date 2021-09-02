@@ -37,6 +37,7 @@ class ReadChatsJob implements ShouldQueue
             $status = $this->status;
             $mainWhatsLoopObj = new \MainWhatsLoop();
             $data['chatId'] = str_replace('@c.us', '', $message);
+            $data['chatId'] = str_replace('@g.us', '', $message);
             if($status == 1){
                 $updateResult = $mainWhatsLoopObj->readChat($data);
             }else{

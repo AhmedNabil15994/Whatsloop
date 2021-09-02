@@ -176,7 +176,6 @@ class GroupNumbersControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.groupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Tenancy.User.Views.edit')->with('data', (object) $data);
     }
 
@@ -214,7 +213,6 @@ class GroupNumbersControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Tenancy.User.Views.add')->with('data', (object) $data);
     }
 
@@ -329,12 +327,18 @@ class GroupNumbersControllers extends Controller {
         unset($userInputs['group_id']);
         unset($userInputs['_token']);
 
+        // dd($userInputs);
         $storeData = [];
         foreach ($userInputs as $key=> $userInput) {
-            if(!in_array($key, $modelProps)){
+            if(!in_array(strtolower($key), $modelProps)){
                 Session::flash('error', trans('main.invalidColumn').' '.$key);
                 return redirect()->back();
             }
+            $userInputs[strtolower($key)] = $userInputs[$key];
+            unset($userInputs[$key]);            
+        }
+        
+        foreach ($userInputs as $key=> $userInput) {
             for ($i = 0; $i < count($userInputs['phone']); $i++) {
                 if(!isset($storeData[$i])){
                     $storeData[$i] = [];

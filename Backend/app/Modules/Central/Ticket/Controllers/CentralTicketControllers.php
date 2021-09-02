@@ -272,7 +272,6 @@ class CentralTicketControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('group_id',0)->get();
         $data['departments'] = CentralDepartment::dataList(1)['data'];
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         Session::forget('photos');
         return view('Central.Ticket.Views.add')->with('data', (object) $data);
     }

@@ -41,17 +41,17 @@ class UserAddon extends Model{
         return reset($source);
     }
 
-    static function dataList($addons=null,$user_id=null,$end_date=null) {
+    static function dataList($addons=null,$user_id=null,$end_date=null,$statusArr=null) {
         $input = \Request::all();
         if($addons != null){
             $data = [];
-            $allData = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[1,2])->pluck('addon_id');
+            $allData = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[1,2,3])->pluck('addon_id');
             $dataId = self::NotDeleted()->where('user_id',$user_id)->where('status',2)->pluck('addon_id');
             $data[0] = reset($allData);
             $data[1] = reset($dataId);
             return $data;
         }else{
-            $source = self::NotDeleted()->where('status',$statusArr);
+            $source = self::NotDeleted()->whereIn('status',$statusArr);
             if($user_id != null){
                 $source->where('user_id',$user_id);
             }
@@ -95,12 +95,17 @@ class UserAddon extends Model{
         return $data;
     }
 
+    // Status == 1 => Active
+    // Status == 0 => Not Active
+    // Status == 2 ==> Deactivated
+    // Status == 3 ==> Disabled
     static function getData($source){
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;
-        $dataObj->Addon = isset($source->Addon) ? $source->Addon : '';
+        $dataObj->Addon = isset($source->Addon) ? Addons::getData($source->Addon) : '';
         $dataObj->user_id = $source->user_id;
         $dataObj->status = $source->status;
+        $dataObj->statusText = self::getStatus($source->status);
         $dataObj->duration_type = $source->duration_type;
         $dataObj->setting_pushed = $source->setting_pushed;
         $dataObj->addon_id = $source->addon_id;
@@ -115,4 +120,21 @@ class UserAddon extends Model{
         return $dataObj;
     }
 
+    static function getStatus($status){
+        $text = '';
+        if($status == 0){
+            $text = trans('main.notActive');
+        }elseif($status == 1){
+            $text = trans('main.active');
+        }elseif($status == 2){
+            $text = trans('main.suspended');
+        }elseif($status == 3){
+            $text = trans('main.deactivated');
+        }
+        return $text;
+    }
+
+    static function checkUserAvailability($userId,$addonId){
+        return self::where('user_id',$userId)->where('addon_id',$addonId)->where('status',1)->first();
+    }
 }

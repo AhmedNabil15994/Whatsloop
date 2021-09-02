@@ -22,15 +22,25 @@ $(function(){
         reader.onload = function (e) {
             var data = e.target.result;
             var result;
-            var workbook = XLSX.read(data, { type: 'binary' });
+            var workbook = XLSX.read(data, { type: 'binary'});
 
             var sheet_name_list = workbook.SheetNames;
             sheet_name_list.forEach(function (y) { /* iterate through sheets */
                 //Convert the cell value to Json
-                var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
-                if (roa.length > 0) {
-                    result = roa;
-                }
+                var sheet = workbook.Sheets[y];
+                delete sheet.A2.w;
+                sheet.A2.z = '0';
+                Object.keys(sheet).forEach(function(s) {
+                    if(sheet[s].w) {
+                        delete sheet[s].w;
+                        sheet[s].z = '0';
+                    }
+                    var roa = XLSX.utils.sheet_to_json(sheet);
+                    if (roa.length > 0) {
+                        result = roa;
+                    }
+
+                });
             });
            //Get the result
            	$('#colData').empty();
@@ -39,7 +49,7 @@ $(function(){
             $.each(oneItem,function(index,item){
             	if(index != '__rowNum__'){
             		cols.push(index);
-            		var selectProps =   '<select class="selectpicker" data-style="btn-outline-myPR">'+options+'</select>';
+            		var selectProps =   '<select class="form-control" data-style="btn-outline-myPR">'+options+'</select>';
 					selectProps =   '<div class="form-group row mb-2">'+
 										'<label class="col-3 col-form-label">'+storeAs+' :</label>'+
 										'<div class="col-9">'+selectProps+'</div>'+
@@ -57,7 +67,7 @@ $(function(){
             							'</li>'+
             					  	'</div>';
             		$('#colData').append(colName);
-            		$('#colData select').selectpicker();
+            		// $('#colData select').selectpicker();
             	}
             });
             $.each(result, function(index,item){
@@ -130,7 +140,8 @@ $(function(){
                     errorNotification(data.status.message);
                 }else{
                     $("select[name='group_id'] option:last").before('<option value="'+data.id+'" selected>'+data.name_en+'</option>');
-                    $("select[name='group_id']").selectpicker('refresh');
+                    $("select[name='group_id']").select2('destroy');
+                    $("select[name='group_id']").select2();
                     $('.new input').val('');
                     $('.new').slideUp(250);
                 }

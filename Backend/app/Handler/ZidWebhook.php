@@ -28,7 +28,7 @@ class ZidWebhook extends ProcessWebhookJob{
         $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
         $dailyCount = @(int) $features[0];
         $extraQuotas = UserExtraQuota::getOneForUserByType($tenantUser->global_id,1);
-        if($dailyCount <= $messagesCount + $extraQuotas){
+        if($dailyCount + $extraQuotas <= $messagesCount ){
             return 1;
         }
 

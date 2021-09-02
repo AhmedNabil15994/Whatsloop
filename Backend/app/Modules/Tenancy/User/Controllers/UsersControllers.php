@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\UserExtraQuota;
 use App\Models\WebActions;
+use App\Models\CentralUser;
 use DataTables;
 use Storage;
 
@@ -331,6 +332,14 @@ class UsersControllers extends Controller {
                 }
                 $dataObj->image = $images;
                 $dataObj->save();  
+                CentralUser::where('id',$dataObj->id)->update([
+                    'name' => $dataObj->name,
+                    'email' => $dataObj->email,
+                    'extra_rules' => $dataObj->extra_rules,
+                    'updated_at' => $dataObj->updated_at,
+                    'updated_by' => $dataObj->updated_by,
+                    'image' => $dataObj->image,
+                ]);
             }
         }
 
@@ -341,10 +350,10 @@ class UsersControllers extends Controller {
     }
 
     public function add() {
-        $empsCount = User::NotDeleted()->count();
+        $empsCount = User::NotDeleted()->where('group_id','!=',1)->count();
         $dailyCount = Session::get('employessCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,2);
-        if($dailyCount <= $empsCount + $extraQuotas){
+        if($dailyCount + $extraQuotas <= $empsCount){
             Session::flash('error', trans('main.empQuotaError'));
             return redirect()->back()->withInput();
         }
@@ -359,10 +368,10 @@ class UsersControllers extends Controller {
     public function create() {
         $input = \Request::all();
 
-        $empsCount = User::NotDeleted()->count();
+        $empsCount = User::NotDeleted()->where('group_id','!=',1)->count();
         $dailyCount = Session::get('employessCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,2);
-        if($dailyCount <= $empsCount + $extraQuotas){
+        if($dailyCount + $extraQuotas <= $empsCount){
             Session::flash('error', trans('main.empQuotaError'));
             return redirect()->back()->withInput();
         }
@@ -425,6 +434,14 @@ class UsersControllers extends Controller {
                 }
                 $dataObj->image = $images;
                 $dataObj->save();  
+                CentralUser::where('id',$dataObj->id)->update([
+                    'name' => $dataObj->name,
+                    'email' => $dataObj->email,
+                    'extra_rules' => $dataObj->extra_rules,
+                    'updated_at' => $dataObj->updated_at,
+                    'updated_by' => $dataObj->updated_by,
+                    'image' => $dataObj->image,
+                ]);
             }
         }
 

@@ -13,21 +13,6 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-    </div>     
-    <!-- end page title --> 
     <div class="row">
         <div class="col-1"></div>
         <div class="col-10">
@@ -35,7 +20,7 @@
                 <div class="card-body">
                     <div class="row mb-2">
                         <div class="col-12">
-                            <h4 class="header-title"><i class="badge-outline-success fa fa-user"></i> {{ trans('main.account_setting') }}</h4>
+                            <h4 class="header-title"><i class="badge-outline-success fa fa-cogs"></i> {{ trans('main.website_setting') }}</h4>
                             <hr>
                         </div>
                     </div>
@@ -51,23 +36,6 @@
                                             <div class="col-11 pr-3 pl-3">
                                                 <h4 class="header-title">{{ trans('main.account_setting') }}</h4>
                                                 <p>{{ trans('main.account_setting_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/changePassword') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons fas fa-user-lock badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title"> {{ trans('main.changePassword') }}</h4>
-                                                <p> {{ trans('main.changePassword_p') }}</p>
                                             </div>
                                         </div>
                                     </div> <!-- end card body-->
@@ -94,7 +62,7 @@
                         </div>
                         @endif
 
-                        @if(\Helper::checkRules('addons'))
+                       {{--  @if(\Helper::checkRules('addons'))
                         <div class="col-4">
                             <div class="card myCard">
                                 <a href="{{ URL::to('/profile/addons') }}">
@@ -132,203 +100,8 @@
                                 </a>
                             </div> <!-- end card -->
                         </div>
-                        @endif
-                    </div>    
-
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-    </div>
-
-    <!-- end row-->
-    @if(\Helper::checkRules('apiSetting,apiGuide,webhookSetting'))
-    <div class="row">
-        <div class="col-1"></div>
-        <div class="col-10">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <h4 class="header-title"><i class="badge-outline-success  fas fa-handshake"></i> {{ trans('main.api_setting') }}</h4>
-                            <hr>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @if(\Helper::checkRules('apiSetting'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/apiSetting') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons fas fa-handshake badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title">{{ trans('main.api_setting') }}</h4>
-                                                <p>{{ trans('main.api_setting_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
-                        @if(\Helper::checkRules('apiGuide'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/apiGuide') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons fas fa-code badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title"> {{ trans('main.api_guide') }}</h4>
-                                                <p> {{ trans('main.api_guide_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
-                        @if(\Helper::checkRules('webhookSetting'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/webhookSetting') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons mdi mdi-webhook badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title"> {{ trans('main.webhook_setting') }}</h4>
-                                                <p> {{ trans('main.webhook_setting_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
-                    </div>    
-                                    
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-    </div>
-    @endif
-
-    <!-- end row-->
-    @if(\Helper::checkRules('paymentInfo,taxInfo'))
-    <div class="row">
-        <div class="col-1"></div>
-        <div class="col-10">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <h4 class="header-title"><i class="badge-outline-success mdi mdi-finance"></i> {{ trans('main.financial_setting') }}</h4>
-                            <hr>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @if(\Helper::checkRules('paymentInfo'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/paymentInfo') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons mdi mdi-credit-card badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title">{{ trans('main.payment_setting') }}</h4>
-                                                <p>{{ trans('main.payment_setting_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
-                        @if(\Helper::checkRules('taxInfo'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/taxInfo') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons mdi mdi-percent badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title"> {{ trans('main.tax_setting') }}</h4>
-                                                <p> {{ trans('main.tax_setting_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
-                    </div>    
-                                    
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-    </div>
-    @endif
-
-    <div class="row">
-        <div class="col-1"></div>
-        <div class="col-10">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <h4 class="header-title"><i class="badge-outline-success fa fa-cogs"></i> {{ trans('main.website_setting') }}</h4>
-                            <hr>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @if(\Helper::checkRules('notifications'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/notifications') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons mdi mdi-alert-octagram-outline badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title">{{ trans('main.notifications') }}</h4>
-                                                <p>{{ trans('main.notifications_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
-                        @if(\Helper::checkRules('offers'))
-                        <div class="col-4">
-                            <div class="card myCard">
-                                <a href="{{ URL::to('/profile/offers') }}">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-1">
-                                                <i class="myicons mdi mdi-offer badge-outline-success"></i> 
-                                            </div>
-                                            <div class="col-11 pr-3 pl-3">
-                                                <h4 class="header-title">{{ trans('main.offers') }}</h4>
-                                                <p>{{ trans('main.offers_p') }}</p>
-                                            </div>
-                                        </div>
-                                    </div> <!-- end card body-->
-                                </a>
-                            </div> <!-- end card -->
-                        </div>
-                        @endif
+                        @endif --}}
+                        
                         <div class="col-4">
                             <div class="card myCard">
                                 <a href="{{ URL::to('/profile/services') }}">

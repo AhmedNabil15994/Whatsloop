@@ -16,18 +16,25 @@ return [
     'ProfileControllers@postChangePassword' => 'general',
     'ProfileControllers@services' => 'general',
 
-    'DashboardControllers@checkout' => 'general',
     'DashboardControllers@faqs' => 'general',
     'DashboardControllers@helpCenter' => 'general',
     'DashboardControllers@addRate' => 'general',
-    'DashboardControllers@postCheckout' => 'general',
-    'DashboardControllers@completeOrder' => 'general',
-    'DashboardControllers@pushInvoice' => 'general',
-    'DashboardControllers@qrIndex' => 'general',
-    'DashboardControllers@updateName' => 'general',
-    'DashboardControllers@getQR' => 'general',
-    'DashboardControllers@finishModID' => 'general',
-    'DashboardControllers@editTemplate' => 'general',
+
+    'SubscriptionControllers@packages' => 'general',
+    'SubscriptionControllers@updateSubscription' => 'general',
+    'SubscriptionControllers@postUpdateSubscription' => 'general',
+    'SubscriptionControllers@updateAddonStatus' => 'general',
+    'SubscriptionControllers@updateQuotaStatus' => 'general',
+    
+    'SubscriptionControllers@checkout' => 'general',
+    'SubscriptionControllers@postCheckout' => 'general',
+    'SubscriptionControllers@completeOrder' => 'general',
+    'SubscriptionControllers@pushInvoice' => 'general',
+    'SubscriptionControllers@qrIndex' => 'general',
+    'SubscriptionControllers@updateName' => 'general',
+    'SubscriptionControllers@getQR' => 'general',
+    'SubscriptionControllers@finishModID' => 'general',
+    'SubscriptionControllers@editTemplate' => 'general',
 
 
 

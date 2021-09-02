@@ -32,9 +32,11 @@ class ImpersonatesController extends Controller
         $userObj = User::getOne($token->user_id);
         $isAdmin = in_array($userObj->group_id, [1,]);
         session(['group_id' => $userObj->group_id]);
+        session(['global_id' => $userObj->global_id]);
         session(['user_id' => $userObj->id]);
         session(['email' => $userObj->email]);
         session(['name' => $userObj->name]);
+        session(['domain' => $userObj->domain]);
         session(['is_admin' => $isAdmin]);
         session(['group_name' => $userObj->Group->name_ar]);
         // $channels = User::getData($userObj)->channels;
@@ -43,19 +45,19 @@ class ImpersonatesController extends Controller
         session(['membership' => $userObj->membership_id]);
         if($isAdmin){
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons)) : [];
+            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons)) : [];
+            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         }
         session(['tenant_id' => $tenantObj->tenant_id]);
 
-
+        // Get Membership and Extra Quotas Features
         if(!empty($userObj->membership_id)){
             $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',Session::get('membership'))->first()->features;
             $featuresId = unserialize($membershipFeatures);
@@ -66,9 +68,7 @@ class ImpersonatesController extends Controller
             session(['dailyMessageCount' => $dailyMessageCount]);
             session(['employessCount' => $employessCount]);
             session(['storageSize' => $storageSize]);
-        }
-        
-        // Auth::guard($token->auth_guard)->loginUsingId($token->user_id);
+        }       
 
         $token->delete();
 

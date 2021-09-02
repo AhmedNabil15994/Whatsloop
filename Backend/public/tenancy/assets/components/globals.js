@@ -37,20 +37,21 @@ if($('.datepicker').length){
 }
 
 function deleteItem($id) {
-    Swal.fire({
+    swal({
         title: title,
         text: deleteText,
         type: "warning",
-        showCancelButton: true,
+        sshowCancelButton: true,
         confirmButtonText: confirmButton,
         confirmButtonClass: 'btn btn-success mt-2',
         cancelButtonText: cancelButton,
         cancelButtonClass: 'btn btn-danger ml-2 mt-2',
         closeOnConfirm: false,
         buttonsStyling:!1
-    }).then(function(result){
-        if (result.value) {
-            Swal.fire(success1, success2, "success");
+    },
+    function(isConfirm) {
+        if (isConfirm) {
+            swal(success1, success2, "success");
             $.get(myURL+'/delete/' + $id,function(data) {
                 if (data.status.original.status.status == 1) {
                     successNotification(data.status.original.status.message);
@@ -61,12 +62,13 @@ function deleteItem($id) {
                     errorNotification(data.status.original.status.message);
                 }
             });
-        } else if (result.dismiss === "cancel") {
-            Swal.fire(
+        } else {
+            swal(
                 cancel1,
                 cancel2,
                 "error"
             )
+            swal("Cancelled", "Your imaginary file is safe :)", "error");
         }
     });
 }

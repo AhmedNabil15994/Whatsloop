@@ -209,7 +209,6 @@ class ContactsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.contacts') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Tenancy.Contact.Views.edit')->with('data', (object) $data);
     }
 
@@ -269,7 +268,6 @@ class ContactsControllers extends Controller {
         $data['channels'] = $data['designElems']['userObj']->channels;
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
         $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Tenancy.Contact.Views.add')->with('data', (object) $data);
     }
 

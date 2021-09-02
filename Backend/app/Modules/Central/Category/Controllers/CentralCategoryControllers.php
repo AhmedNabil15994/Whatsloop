@@ -134,7 +134,6 @@ class CentralCategoryControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.categorys') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Central.Category.Views.edit')->with('data', (object) $data);      
     }
 
@@ -171,7 +170,6 @@ class CentralCategoryControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.categorys') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Central.Category.Views.add')->with('data', (object) $data);
     }
 

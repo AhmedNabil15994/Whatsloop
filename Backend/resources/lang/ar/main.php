@@ -245,6 +245,7 @@ return [
 	'chat' => 'بدء المحادثة',
 	'customers' => 'العملاء',
 	'products' => 'المنتجات',
+	'product' => 'المنتج',
 	'orders' => 'الطلبات',
 	'noCountryCode' => ' بدون كود الدولة',
 	'order' => 'طلب رقم',
@@ -373,8 +374,8 @@ return [
 	'send_location_p2' => 'يتم وضع الاحداثيات : 21.5982195,39.1586724',
 	'send_location_p3' => 'ويتم كتابه العنوان : 6081 Quraysh, Al Bawadi, Jeddah 23531, Saudi Arabia',
 
-	'send_contact' => 'ارسال جهة اتصال',
-	'send_contact_p1' => 'يمكنك ارسال جهه اتصال يجب كتابة رقم الهاتف المرسل (966xxxxxxxxx)',
+	'send_link' => 'ارسال رابط',
+	'send_link_p1' => 'يمكنك ارسال الرابط يجب كتابة رقم الهاتف المرسل (966xxxxxxxxx)',
 		
 	'edit_contact' => 'تعديل جهة اتصال',
 	'edit_contact_p1' => 'يمكنك ارسال جهه اتصال',
@@ -590,6 +591,18 @@ return [
 	'apply' => 'استخدام',
 	'addToCart' => 'أضف إلى السلة',
 	'addedToCart' => 'تمت الإضافة إلى السلة',
+	'ePayment' => 'دفع إلكتروني',
+	'transferImage' => 'صورة التحويل',
+	'payViaPayTabs' => 'الدفع من خلال PayTabs',
+	'payViaNoon' => 'الدفع من خلال نون',
+	'singlePayment' => 'اشتراك شهري',
+	'subscription1' => 'اشتراك سنوي دفع شهري',
+	'subscription2' => 'اشتراك سنوي دفع سنوي',
 
+	'renew' => 'تجديد',
+	'disable' => 'تعطيل',
+	'enable' => 'اعادة التفعيل',
+	'suspended' => 'معلقة',
+	'deactivated' => "معطلة",
 
 ];

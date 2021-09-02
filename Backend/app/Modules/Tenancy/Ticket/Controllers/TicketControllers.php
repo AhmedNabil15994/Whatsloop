@@ -238,7 +238,6 @@ class TicketControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
         $data['departments'] = Department::dataList(1)['data'];
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         Session::forget('photos');
         return view('Tenancy.Ticket.Views.add')->with('data', (object) $data);
     }

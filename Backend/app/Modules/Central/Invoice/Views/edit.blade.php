@@ -5,40 +5,6 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>     
-    <!-- end page title --> 
     <div class="row">
         <div class="col-lg-8">
             <div class="card">
@@ -54,11 +20,8 @@
                         <div class="form-group row mb-3">
                             <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.client') }} :</label>
                             <div class="col-9">
-                                <select name="client_id" class="form-control" data-toggle="select2">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($data->clients as $client)
-                                    <option value="{{ $client->id }}" {{ $client->id == $data->data->client_id ? 'selected' : '' }}>{{ $client->name }}</option>
-                                    @endforeach
+                                <select name="client_id" class="form-control">
+                                    <option value="{{ $data->data->client_id }}" selected>{{ $data->data->client }}</option>
                                 </select>
                             </div>
                         </div>

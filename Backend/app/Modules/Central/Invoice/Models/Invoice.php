@@ -43,7 +43,7 @@ class Invoice extends Model{
                     if($client_id != null){
                         $query->where('client_id',$client_id);
                     }
-                })->orderBy('sort','ASC');
+                })->orderBy('id','DESC');
 
         return self::generateObj($source);
     }

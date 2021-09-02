@@ -23,32 +23,6 @@
     <div class="row">
         <div class="col-11">
             <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ trans('main.ticket') }} #{{ $data->data->id }}</h3>
-            </div>
-        </div>
-
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
             </div>
         </div>
     </div>     
@@ -57,6 +31,10 @@
         <div class="col-xl-8 col-lg-7">
             <!-- project card -->
             <div class="card d-block">
+                <div class="card-header">
+                    <h3 class="header-title"><i class="ti-receipt"></i> {{ trans('main.ticket') }} #{{ $data->data->id }}</h3>
+                    <hr>
+                </div>
                 <div class="card-body">
                     <div class="float-right">
                         <div class="form-row">
@@ -108,8 +86,8 @@
                             $assignedUser = \App\Models\CentralUser::getOne($user);
                             $assignedUser = \App\Models\CentralUser::getData($assignedUser);
                             @endphp
-                            <div class="media">
-                                <img src="{{ $assignedUser->photo }}" alt="Arya S"
+                            <div class="media mb-2">
+                                <img src="{{ $assignedUser->photo }}" alt="{{ $assignedUser->id }}"
                                     class="rounded-circle mr-2" height="24" />
                                 <div class="media-body">
                                     <p> {{ $assignedUser->name }} </p>
@@ -127,7 +105,7 @@
                             <label class="mt-2 mb-1">{{ trans('main.status') }} :</label>
                             <div class="form-row">
                                 <div class="col-auto">
-                                    <select class="selectpicker" data-style="btn-sm btn-light">
+                                    <select class="form-control" data-style="btn-sm btn-light">
                                         <option selected="">{{ $data->data->statusText }}</option>
                                     </select>
                                 </div>
@@ -140,7 +118,7 @@
                             <label class="mt-2 mb-1">{{ trans('main.priority') }} :</label>
                             <div class="form-row">
                                 <div class="col-auto">
-                                    <select class="selectpicker" data-style="btn-sm btn-light">
+                                    <select class="form-control" data-style="btn-sm btn-light">
                                         <option selected="">{{ $data->data->priority }}</option>
                                     </select>
                                 </div>

@@ -135,7 +135,7 @@ class TenantInvoiceControllers extends Controller {
 
         // Fetch Subscription Data
         $membershipObj = Membership::getData(Membership::getOne(Session::get('membership')));
-        $channelObj = UserChannels::getData(UserChannels::getOne(Session::get('channel')));
+        $channelObj = CentralChannel::getData(CentralChannel::getOne(Session::get('channel')));
         $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
 
         $data['subscription'] = (object) [

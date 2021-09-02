@@ -249,7 +249,7 @@ class GroupMsgsControllers extends Controller {
         $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
         $dailyCount = Session::get('dailyMessageCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount <= $messagesCount + $extraQuotas){
+        if($dailyCount + $extraQuotas <= $messagesCount){
             Session::flash('error', trans('main.messageQuotaError'));
             return redirect()->back()->withInput();
         }
@@ -358,7 +358,7 @@ class GroupMsgsControllers extends Controller {
         $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
         $dailyCount = Session::get('dailyMessageCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount <= $messagesCount + $extraQuotas + (count($messagesArr) * $contactsCount )){
+        if($dailyCount + $extraQuotas <= $messagesCount + (count($messagesArr) * $contactsCount )){
             Session::flash('error', trans('main.messageQuotaError'));
             return redirect()->back()->withInput();
         }

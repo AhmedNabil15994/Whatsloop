@@ -26,10 +26,20 @@ $(function(){
             var sheet_name_list = workbook.SheetNames;
             sheet_name_list.forEach(function (y) { /* iterate through sheets */
                 //Convert the cell value to Json
-                var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
-                if (roa.length > 0) {
-                    result = roa;
-                }
+                var sheet = workbook.Sheets[y];
+                delete sheet.A2.w;
+                sheet.A2.z = '0';
+                Object.keys(sheet).forEach(function(s) {
+                    if(sheet[s].w) {
+                        delete sheet[s].w;
+                        sheet[s].z = '0';
+                    }
+                    var roa = XLSX.utils.sheet_to_json(sheet);
+                    if (roa.length > 0) {
+                        result = roa;
+                    }
+
+                });
             });
            //Get the result
            	$('#colData').empty();
@@ -38,12 +48,12 @@ $(function(){
             $.each(oneItem,function(index,item){
             	if(index != '__rowNum__'){
             		cols.push(index);
-            		var selectProps =   '<select class="selectpicker" data-style="btn-outline-primary">'+options+'</select>';
+            		var selectProps =   '<select class="form-control">'+options+'</select>';
 					selectProps =   '<div class="form-group row mb-2">'+
 										'<label class="col-3 col-form-label">'+storeAs+' :</label>'+
 										'<div class="col-9">'+selectProps+'</div>'+
 									'</div>';
-            		var colName = 	'<div class="col-xs-12 col-md-6 border-0 mb-3">'+
+            		var colName = 	'<div class="col-xs-12 col-lg-3 col-md-6 border-0 mb-3">'+
             							'<li data-cols="'+index+'">'+
             								selectProps+
             								'<div class="checkbox checkbox-blue checkbox-single float-left">'+
@@ -56,7 +66,7 @@ $(function(){
             							'</li>'+
             					  	'</div>';
             		$('#colData').append(colName);
-            		$('#colData select').selectpicker();
+            		// $('#colData select').selectpicker();
             	}
             });
             $.each(result, function(index,item){
@@ -76,7 +86,7 @@ $(function(){
         reader.readAsArrayBuffer(f);
     }
 
-    $(document).on('change','#colData .selectpicker',function(){
+    $(document).on('change','#colData select.form-control',function(){
     	var value = $(this).val();
     	$(this).parents('.form-group.row').siblings('.checkbox.vars').find('input[type="checkbox"]').attr('name',value+'[]');
     });
@@ -137,7 +147,8 @@ $(function(){
                     errorNotification(data.status.message);
                 }else{
                 	$("select[name='group_id'] option:last").before('<option value="'+data.id+'" selected>'+data.name_en+'</option>');
-                	$("select[name='group_id']").selectpicker('refresh');
+                	$("select[name='group_id']").select2('destroy');
+                	$("select[name='group_id']").select2();
                 	$('.new input').val('');
 					$('.new').slideUp(250);
                 }

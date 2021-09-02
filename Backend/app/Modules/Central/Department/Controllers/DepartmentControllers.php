@@ -118,7 +118,6 @@ class DepartmentControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.departments') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         $data['emps'] = CentralUser::NotDeleted()->where('status',1)->whereNotIn('group_id',[0,1])->get();
         return view('Central.Department.Views.edit')->with('data', (object) $data);      
     }
@@ -159,7 +158,6 @@ class DepartmentControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.departments') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['emps'] = CentralUser::NotDeleted()->where('status',1)->whereNotIn('group_id',[0,1])->get();
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Central.Department.Views.add')->with('data', (object) $data);
     }
 

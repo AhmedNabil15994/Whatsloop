@@ -10,7 +10,7 @@
 
 <!--  Owl-carousel css-->
 {{-- <link href="{{ asset('plugins/owl-carousel/owl.carousel.css') }}" rel="stylesheet" /> --}}
-
+<link rel="stylesheet" type="text/css" href="{{ asset('plugins/sweet-alert/sweetalert.css') }}">
 <!--  Right-sidemenu css -->
 <link href="{{ asset('plugins/sidebar/sidebar.css') }}" rel="stylesheet">
 

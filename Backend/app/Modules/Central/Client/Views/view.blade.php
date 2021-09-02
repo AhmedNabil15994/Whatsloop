@@ -25,47 +25,13 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-lg-4 col-xl-4">
-            <div class="card-box text-center">
+            <div class="card text-center" style="padding: 20px;">
                 <img src="{{ $data->data->photo }}" class="rounded-circle avatar-lg img-thumbnail"
                     alt="profile-image">
 
-                <h4 class="mb-1">{{ $data->data->name }}</h4>
+                <h4 class="mb-3">{{ $data->data->name }}</h4>
                 <a href="{{ URL::to('/clients/invLogin/'.$data->data->id) }}" target="_blank" class="btn btn-success btn-md waves-effect mb-2 waves-light"><i class="fas fa-sign-in-alt"></i> {{ trans('main.invLogin') }}</a>
                 <a class="btn btn-md btn-primary shareDays waves-effect mb-2 waves-light" data-toggle="modal" data-target="#transferDaysModal"> <i class="fa fa-share"></i> {{ trans('main.add_days') }}</a>
                 <a href="{{ URL::to('/clients/pinCodeLogin/'.$data->data->id) }}" target="_blank" class="btn btn-info btn-md waves-effect mb-2 waves-light"><i class="fas fa-sign-in-alt"></i> {{ trans('main.pinCodeLogin') }}</a>
@@ -84,18 +50,22 @@
                 </div>
             </div> <!-- end card-box -->
 
-            <div class="card-box">
-                <h4 class="header-title mb-3">{{ trans('main.last') . trans('main.messages') }}</h4>
+            <div class="card">
+                <h4 class="header-title mb-3" style="padding: 20px;">{{ trans('main.last') . trans('main.messages') }}</h4>
 
                 <div class="inbox-widget" data-simplebar style="max-height: 350px;">
                     @foreach($data->messages as $message)
-                    <div class="inbox-item">
-                        <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/logoOnly.jpg') }}" class="rounded-circle" alt=""></div>
-                        <p class="inbox-item-author">{{ str_replace('@c.us', '', $message->chatId) }}</p>
-                        <p class="inbox-item-text">{!! $message->body !!}</p>
-                        <p class="inbox-item-date">
-                            <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> {{ \App\Models\ChatDialog::reformDate($message->time) }} </a>
-                        </p>
+                    <div class="main-mail-item">
+                        <div class="main-img-user"><img alt="" src="{{ asset('tenancy/assets/images/logoOnly.jpg') }}"></div>
+                        <div class="main-mail-body">
+                            <div class="main-mail-subject">
+                                <strong>{{ str_replace('@c.us', '', $message->chatId) }}</strong> 
+                                <span>{!! $message->body !!}</span>
+                            </div>
+                        </div>
+                        <div class="main-mail-date">
+                            {{ \App\Models\ChatDialog::reformDate($message->time) }}
+                        </div>
                     </div>
                     @endforeach
                 </div> <!-- end inbox-widget -->
@@ -105,8 +75,8 @@
         </div>
 
         <div class="col-lg-8 col-xl-8">
-            <div class="card-box">
-                <ul class="nav nav-pills navtab-bg nav-justified">
+            <div class="card">
+                <ul class="nav nav-pills navtab-bg nav-justified" style="padding: 20px;">
                     <li class="nav-item">
                         <a href="#settings" data-toggle="tab" aria-expanded="true" class="nav-link active">
                             {{ trans('main.personalInfo') }}
@@ -138,7 +108,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="tab-content">
+                <div class="tab-content"  style="padding: 20px;">
                     <div class="tab-pane show active" id="settings">
                         <h5 class="mb-4 text-uppercase"><i class="mdi mdi-account-circle mr-1"></i> {{ trans('main.personalInfo') }}</h5>
                         <div class="row">
@@ -236,8 +206,8 @@
                                         @endphp
                                         <div class="col-9 row mainCol">
                                             <div class="col-6">
-                                                <label class="col-5 col-form-label">{{ trans('monthly') }} :</label>
-                                                <div class="col-7" style="margin-top: -8px;">
+                                                <label class="col-8 col-form-label">{{ trans('monthly') }} :</label>
+                                                <div class="col-4" style="margin-top: 5px;">
                                                     <div class="checkbox checkbox-success">
                                                         <input id="monthly{{ $addon->id }}" class="monthly old" {{ $found == 1 || $found == 3 ?  "checked=true" : '' }} type="checkbox" name="addons[{{ $addon->id }}][1]">
                                                         <label for="monthly{{ $addon->id }}"></label>
@@ -245,8 +215,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-6">
-                                                <label class="col-5 col-form-label">{{ trans('yearly') }} :</label>
-                                                <div class="col-7" style="margin-top: -8px;">
+                                                <label class="col-8 col-form-label">{{ trans('yearly') }} :</label>
+                                                <div class="col-4" style="margin-top: 5px;">
                                                     <div class="checkbox checkbox-success">
                                                         <input id="yearly{{ $addon->id }}" class="yearly old" {{ $found == 2 || $found == 3 ?  "checked=true" : '' }} type="checkbox" name="addons[{{ $addon->id }}][2]">
                                                         <label for="yearly{{ $addon->id }}"></label>
@@ -391,7 +361,7 @@
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-3 col-form-label">{{ trans('main.offers') }} :</label>
-                                    <div class="col-9" style="margin-top: -8px;">
+                                    <div class="col-9" style="margin-top: 5px;">
                                         <div class="checkbox checkbox-success">
                                             <input id="checkbox3" type="checkbox" name="offers" {{ $data->data->offers == 1 ? 'checked' : '' }} >
                                             <label for="checkbox3"></label>
@@ -402,7 +372,7 @@
                             <div class="col-md-6">
                                 <div class="form-group row">
                                     <label class="col-3 col-form-label">{{ trans('main.notifications') }} :</label>
-                                    <div class="col-9" style="margin-top: -8px;">
+                                    <div class="col-9" style="margin-top: 5px;">
                                         <div class="checkbox checkbox-success">
                                             <input id="checkbox4" type="checkbox" name="notifications" {{ $data->data->notifications == 1 ? 'checked' : '' }} >
                                             <label for="checkbox4"></label>
@@ -530,39 +500,54 @@
                 </div> <!-- end tab-content -->
             </div> <!-- end card-box-->
 
-            <div class="card-box">
-                <div class="row">
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card-box">
-                            <i class="fab fa-rocketchat text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.messages') }}"></i>
-                            <h4 class="mt-0 font-16">{{ trans('main.messages') }}</h4>
-                            <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->allMessages }}</span></h2>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card-box">
-                            <i class="fas fa-reply text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.sentMessages') }}"></i>
-                            <h4 class="mt-0 font-16">{{ trans('main.sentMessages') }}</h4>
-                            <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->sentMessages }}</span></h2>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card-box">
-                            <i class="fas fa-redo text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.incomeMessages') }}"></i>
-                            <h4 class="mt-0 font-16">{{ trans('main.incomeMessages') }}</h4>
-                            <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->incomingMessages }}</span></h2>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card-box">
-                            <i class="fas fa-users text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ trans('main.contacts') }}"></i>
-                            <h4 class="mt-0 font-16">{{ trans('main.contacts') }}</h4>
-                            <h2 class="text-success my-3 text-center"><span data-plugin="counterup">{{ $data->contactsCount }}</span></h2>
+            <div class="row">
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-comments plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.messages') }}</h6>
+                                <h2 class="mb-2">{{ $data->allMessages }}</h2>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- end row -->
-                
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-share plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.sentMessages') }}</h6>
+                                <h2 class="mb-2">{{ $data->sentMessages }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-envelope plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.incomeMessages') }}</h6>
+                                <h2 class="mb-2">{{ $data->incomingMessages }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-address-book plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.contacts') }}</h6>
+                                <h2 class="mb-2">{{ $data->contactsCount }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px;"> 
                 <div class="row">
                     <div class="col">
                         <div class="card">
@@ -608,7 +593,7 @@
                                                                 <div class="row">
                                                                     <div class="col-sm-4">
                                                                         <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                            {{ trans('main.phone_status') }} : <b><div class="badge badge-lg badge-success badge-inline">{{ @$data->status->statusText }}</div></b>
+                                                                            {{ trans('main.phone_status') }} : <b><div class="badge badge-lg badge-success badge-inline" style="margin-top: 10px">{{ @$data->status->statusText }}</div></b>
                                                                         </a>
                                                                     </div>
                                                                     <div class="col-sm-4">

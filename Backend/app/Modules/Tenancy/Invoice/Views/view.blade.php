@@ -15,7 +15,7 @@
                             <h4 class="header-title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
                         </div>
                         <div class="col-6 text-right">
-                            @if(IS_ADMIN)
+                            @if(IS_ADMIN && $data->data->status == 3)
                             <a href="{{ URL::current().'/checkout' }}" class="btn btn-success"><i class="fas fa-credit-card"></i> {{ trans('main.checkout') }}</a>
                             <a href="#" class="btn btn-info"><i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a>
                             @endif
@@ -99,7 +99,7 @@
                                     <tbody>
                                         @php $mainPrices = 0; @endphp
                                         @foreach($data->data->items as $key => $item)
-                                        @php $mainPrices+=$item['data']['price'] @endphp
+                                        @php $mainPrices+=$item['data']['price'] * $item['data']['quantity'] @endphp
                                         <tr class="mainRow">
                                             <td>{{ $key+1 }}</td>
                                             <td>
@@ -108,10 +108,10 @@
                                                     <small class="mr-2"><b>{{ trans('main.type') }}:</b> {{ trans('main.'.$item['type']) }} </small>
                                                 </p>
                                             </td>
-                                            <td>1</td>
+                                            <td>{{ $item['data']['quantity'] }}</td>
                                             <td>{{ $data->data->due_date }}</td>
                                             <td>{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date))) }}</td>
-                                            <td class="text-right">{{ $item['data']['price_after_vat'] }}</td>
+                                            <td class="text-right">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>

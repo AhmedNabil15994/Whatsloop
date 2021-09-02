@@ -5,40 +5,6 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}"><i class="fa fa-plus"></i> {{ trans('main.add') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('sort-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/arrange') }}"><i class="fa fa-sort-numeric-up"></i> {{ trans('main.sort') }}</a>
-                    @endif
-                    @if(\Helper::checkRules('charts-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/charts') }}"><i class="fas fa-chart-bar"></i> {{ trans('main.charts') }}</a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>     
-    <!-- end page title --> 
     <div class="row">
         <div class="col-8">
             <div class="card">
@@ -122,43 +88,6 @@
                                 <textarea class="form-control summernote" name="description" placeholder="{{ trans('main.messageContent') }}">{{ $data->data->description }}</textarea>
                             </div>
                         </div>
-                        @if(\Helper::checkRules('uploadImage-'.$data->designElems['mainData']['nameOne']))
-                        <div class="form-group row mb-2">
-                            <label class="label label-danger label-pill label-inline mr-2" style="margin-bottom: 20px;">{{ trans('main.files') }}:</label>
-                            <div class="col-lg-12">
-                                <div class="dropzone dropzone-multi" id="kt_dropzone_5">
-                                <div class="dropzone-panel mb-lg-0 mb-2">
-                                    <a class="dropzone-select btn btn-primary font-weight-bold btn-sm">{{ trans('main.attachFiles') }}</a>
-                                    {{-- <a class="dropzone-upload btn btn-success font-weight-bold btn-sm">{{ trans('main.uploadAll') }}</a> --}}
-                                </div>
-                                <div class="dropzone-items">
-                                    @foreach($data->data->files as $oneFile)
-                                    <div class="dropzone-item edited">
-                                        <div class="dropzone-file">
-                                            <div class="dropzone-filename" title="{{ $oneFile->photo_name }}">
-                                                <span data-dz-name=""><a href="{{ $oneFile->photo }}" target="_blank">{{ $oneFile->photo_name }}</a></span>
-                                                <strong>(<span data-dz-size="">{{ $oneFile->photo_size }}</span>)</strong>
-                                            </div>
-                                            <div class="dropzone-error" data-dz-errormessage=""></div>
-                                        </div>
-                                        <div class="dropzone-progress">
-                                            <div class="progress">
-                                                <div class="progress-bar bg-primary" role="progressbar" style="width: 100%;" aria-valuemin="100" aria-valuemax="100" aria-valuenow="100" data-dz-uploadprogress=""></div>
-                                            </div>
-                                        </div>
-                                        <div class="dropzone-toolbar">
-                                            <span class="dropzone-delete DeleteFiles" data-dz-remove="" data-area="{{ $data->data->id }}" data-name="{{ $oneFile->photo_name }}">
-                                                <i class="fa fa-times"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <span class="form-text text-muted">{{ trans('main.maxFiles') }}</span>
-                            </div>
-                        </div>
-                        @endif
                         <div class="form-group mb-0 justify-content-end row">
                             <div class="col-9">
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
@@ -170,6 +99,49 @@
                 </div> <!-- end card body-->
             </div> <!-- end card -->
         </div><!-- end col-->
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    @if(\Helper::checkRules('uploadImage-'.$data->designElems['mainData']['nameOne']))
+                    <div class="form-group row mb-2">
+                        <label class="label label-danger label-pill label-inline mr-2" style="margin-bottom: 20px;">{{ trans('main.files') }}:</label>
+                        <div class="col-lg-12">
+                            <div class="dropzone dropzone-multi" id="kt_dropzone_5">
+                            <div class="dropzone-panel mb-lg-0 mb-2">
+                                <a class="dropzone-select btn btn-primary font-weight-bold btn-sm">{{ trans('main.attachFiles') }}</a>
+                                {{-- <a class="dropzone-upload btn btn-success font-weight-bold btn-sm">{{ trans('main.uploadAll') }}</a> --}}
+                            </div>
+                            <div class="dropzone-items">
+                                @foreach($data->data->files as $oneFile)
+                                <div class="dropzone-item edited">
+                                    <div class="dropzone-file">
+                                        <div class="dropzone-filename" title="{{ $oneFile->photo_name }}">
+                                            <span data-dz-name=""><a href="{{ $oneFile->photo }}" target="_blank">{{ $oneFile->photo_name }}</a></span>
+                                            <strong>(<span data-dz-size="">{{ $oneFile->photo_size }}</span>)</strong>
+                                        </div>
+                                        <div class="dropzone-error" data-dz-errormessage=""></div>
+                                    </div>
+                                    <div class="dropzone-progress">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 100%;" aria-valuemin="100" aria-valuemax="100" aria-valuenow="100" data-dz-uploadprogress=""></div>
+                                        </div>
+                                    </div>
+                                    <div class="dropzone-toolbar">
+                                        <span class="dropzone-delete DeleteFiles" data-dz-remove="" data-area="{{ $data->data->id }}" data-name="{{ $oneFile->photo_name }}">
+                                            <i class="fa fa-times"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <span class="form-text text-muted">{{ trans('main.maxFiles') }}</span>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
     <!-- end row-->
 </div> <!-- container -->

@@ -81,9 +81,8 @@ a.reply{
   padding-top: 7px;
   border: 1px solid #ced4da;
 }
-.select2-container--default .select2-selection--single .select2-selection__rendered,
 .select2-container--default .select2-selection--multiple .select2-selection__rendered li{
-  color: #6c757d;
+  color: #fff;
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow{
   top: 6px;
@@ -756,12 +755,18 @@ body[data-sidebar-color="dark"] .card-box{
 .card-body .col.text-right.mt-5{
   z-index: 2;
 }
-.col.code .tab-content .tab-pane{
-  padding: 10px;
+  
+.code .tab-pane{
   white-space: break-spaces;
-  margin-left: -100px;
-  direction: ltr;
-  text-align: left;
+}
+.card-widgets{
+  float: right;
+}
+.card-widgets + .card-title{
+  margin-top: 5px;
+}
+.card-header.bg-dark.text-white{
+  cursor: pointer;
 }
 body[data-layout-width="boxed"] .content-page .content .container-fluid .row:nth-of-type(2) .col-8{
   width: 100%;
@@ -820,19 +825,19 @@ html[dir="ltr"] #sidebar-menu ul#side-menu > li.menuitem-active {
 table.dataTable{
   border-bottom: 1px solid #e0e6ed;
 }
-.table , .table *{
+.table:not(.mb-0) , .table:not(.mb-0) *{
   border: 0;
 }
-.table > thead {
+.table:not(.mb-0) > thead {
   border-top: none;
   border-bottom: none;
   /*background: #D7E1EB;*/
 }
-.table > thead > tr > th {
+.table:not(.mb-0) > thead > tr > th {
     text-transform: initial;
     font-weight: 600;
     border-top: none;
-    /*background: rgb(186 231 255 / 34%);*/
+    background: rgb(186 231 255 / 34%);
     border-right: none;
     border-left: none;
     padding-top: 0;
@@ -880,14 +885,14 @@ table.dataTable thead .sorting_asc:after,
 table.dataTable thead .sorting_desc:after{
   right: 1em !important;
 }
-.table > tbody > tr > td {
+.table:not(.mb-0) > tbody > tr > td {
     padding: 0;
     padding: 10px 21px 10px 21px;
     color: #515365;
     letter-spacing: normal;
     white-space: nowrap;
 }
-.table > tbody tr {
+.table:not(.mb-0) > tbody tr {
     border-radius: 4px;
     -moz-transition: all 0.1s ease;
     -o-transition: all 0.1s ease;
@@ -895,7 +900,7 @@ table.dataTable thead .sorting_desc:after{
     transition: all 0.1s ease;
     border-bottom: 1px solid #e0e6ed;
 }
-.table > tbody > tr > td a.editable {
+.table:not(.mb-0) > tbody > tr > td a.editable {
   color: #515365;
   font-size: 14px;
   /*font-weight: 600;*/
@@ -1180,6 +1185,12 @@ html[dir="ltr"] #night{
   padding-bottom: 2px;
   height: unset;
 }
+.addons .btn.btn-outline-primary{
+  min-width: 130px;
+}
+.extra_quota .btn.btn-outline-primary{
+  min-width: 165px;
+}
 .mainCol .row .col-4.info{
   padding-top: 5px;
 }
@@ -1323,4 +1334,81 @@ a.dropzone-select.btn-primary{
 }
 .media .fe{
   cursor: pointer;
+}
+#wizard1-p-4 .row .col-6 .rounded{
+  cursor: pointer;
+  transition: all ease-in-out .25s;
+  -webkit-transition: all ease-in-out .25s;
+  -moz-transition: all ease-in-out .25s;
+  -o-transition: all ease-in-out .25s;
+}
+#wizard1-p-4 .row .col-6 .rounded:hover,
+#wizard1-p-4 .row .col-6 .rounded:active,
+#wizard1-p-4 .row .col-6 .rounded:focus,
+#wizard1-p-4 .row .col-6 .rounded.active{
+  background-color: rgba(34, 42, 91, 0.2) !important;  
+}
+#wizard1-p-4 .row .col-6 .rounded .font-weight-bold{
+  margin-bottom: 0 !important;
+}
+#wizard1-p-4 .row .col-6 .rounded .custom-control{
+  min-height: auto !important;
+}
+.side-menu{
+  padding-bottom: 150px;
+}
+.dropzone{
+  border: 3px dashed #ddd;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.dropzone .dz-message.needsclick{
+  text-align: center;
+}
+.dropzone i.h1{
+  display: block;
+  font-family: 'simple-line-icons' !important;
+  margin-bottom: 20px;
+}
+#colData li,
+.tasklist li{
+  border: 1px solid #eee !important;
+  border-radius: 5px;
+  background: #FFF;
+  padding: 15px;
+}
+#colData li,
+.tasklist li{
+  display: block !important;
+}
+#colData .checkbox-single.float-left{
+  margin-right: 10px;
+}
+html[dir="rtl"] #colData .checkbox-single.float-left{
+  margin-left: 10px;
+}
+.clearfix{
+  clear: both;
+}
+.inbox-leftbar .card,
+.inbox-rightbar .card{
+  padding: 25px;
+}
+.rounded-circle.img-thumbnail{
+  display: block;
+  margin: auto;
+}
+.inbox-widget{
+  overflow-y: scroll;
+}
+.addons .card.custom-card,
+.extra_quota .card.custom-card{
+  border-width: 1px !important;
+}
+.extra_quota .mb-1.mt-3.card-title{
+  min-height: 42px;
+}
+html[dir="rtl"] .dropdown-menu.dropdown-menu-right.show{
+  text-align: right;
 }

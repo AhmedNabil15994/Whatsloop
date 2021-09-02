@@ -13,19 +13,19 @@ class HomeControllers extends Controller {
     public function formatResponse($serverResult,$status=null){
     	if(!$serverResult->ok()){
         	$result = $serverResult->json();
-            return [0,@$result['error']];
+            return [0,str_replace('app.chat-api.com','wloop.net',@$result['error'])];
         }else{
         	$result = $serverResult->json();
         	if(isset($result['error']) && !empty($result['error'])){
-            	return [0,$result['error']];
+            	return [0,str_replace('app.chat-api.com','wloop.net',$result['error'])];
         	}
         	if(isset($result['result']) && $result['result'] == 'failed'){
-            	return [0,str_replace('@c.us', '', $result['message'])];
+            	return [0,str_replace('@c.us', '', str_replace('app.chat-api.com','wloop.net',$result['message']))];
         	}
             if(is_array($result) && !in_array($status, ['labelsList','showMessagesQueue','showActionsQueue','allMessages','messagesHistory'])){
                 $extraResult = array_values($result);
                 if(isset($extraResult[0]) && $extraResult[0] == false && !isset($result['sendDelay'])){
-                    return [0,str_replace('@c.us', '', @$result['message'])];
+                    return [0,str_replace('@c.us', '', str_replace('app.chat-api.com','wloop.net',@$result['message']))];
                 }                
             }
 

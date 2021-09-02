@@ -238,7 +238,6 @@ class CentralUsersControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.users') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['permissions'] = \Helper::getPermissions(true);
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         return view('Central.User.Views.edit')->with('data', (object) $data);      
     }
 
@@ -338,7 +337,6 @@ class CentralUsersControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.users') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $data['timelines'] = CentralWebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
         $data['permissions'] = \Helper::getPermissions(true);
         return view('Central.User.Views.add')->with('data', (object) $data);
     }
