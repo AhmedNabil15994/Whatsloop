@@ -18,7 +18,7 @@
                 </div>
                 <div aria-multiselectable="true" class="accordion" id="accordion" role="tablist">
                     @foreach($data as $key => $one)
-                    <div class="card mb-0">
+                    <div class="card mb-0 faq">
                         <div class="card-header" id="headingOne{{ $key }}" role="tab">
                             <a aria-controls="collapseOne{{ $key }}" aria-expanded="true" data-toggle="collapse" href="#collapseOne{{ $key }}">{{ $one->title }}</a>
                         </div>

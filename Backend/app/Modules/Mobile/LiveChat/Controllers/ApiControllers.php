@@ -245,7 +245,7 @@ class ApiControllers extends Controller {
         }
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        if(!isset($input['messageType']) && $input['messageType'] != 'new'){
+        if(!isset($input['messageType']) || $input['messageType'] != 'new'){
             $sendData['chatId'] = $input['chatId'];
             $caption = '';
             $checkData['phone'] = str_replace('@c.us', '', $input['chatId']);
@@ -340,7 +340,11 @@ class ApiControllers extends Controller {
                 }            
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $sendData['filename'] = $fileName;
-                $sendData['body'] = $bodyData;
+                $type = pathinfo($bodyData, PATHINFO_EXTENSION);
+                $data = file_get_contents($bodyData);
+                $base64 ='data: '.mime_content_type(public_path().'/uploads/'.TENANT_ID.'/chats/'.$fileName) . $type . ';base64,' . base64_encode($data);
+                $sendData['body'] = $base64;    
+                
                 if($message_type == 'photo'){
                     if(isset($input['caption']) && !empty($input['caption']) ){
                         $sendData['caption'] = $input['caption'];
@@ -371,7 +375,10 @@ class ApiControllers extends Controller {
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $message_type = "video";
                 $sendData['filename'] = $fileName;
-                $sendData['body'] = $bodyData;
+                $type = pathinfo($bodyData, PATHINFO_EXTENSION);
+                $data = file_get_contents($bodyData);
+                $base64 ='data: '.mime_content_type(public_path().'/uploads/'.TENANT_ID.'/chats/'.$fileName) . $type . ';base64,' . base64_encode($data);
+                $sendData['body'] = $base64;    
                 $whats_message_type = 'video';
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }
@@ -396,7 +403,10 @@ class ApiControllers extends Controller {
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $message_type = "sound";
                 $whats_message_type = 'ppt';
-                $sendData['audio'] = $bodyData;
+                $type = pathinfo($bodyData, PATHINFO_EXTENSION);
+                $data = file_get_contents($bodyData);
+                $base64 ='data: '.mime_content_type(public_path().'/uploads/'.TENANT_ID.'/chats/'.$fileName) . $type . ';base64,' . base64_encode($data);
+                $sendData['audio'] = $base64;    
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }
             $result = $mainWhatsLoopObj->sendPTT($sendData);

@@ -103,10 +103,10 @@
                             </div>
                         </div>
                         @endif
-                        <div class="form-group mb-0 justify-content-end row">
-                            <div class="col-9">
+                        <div class="form-group justify-content-end row">
+                            <div class="col-9 text-right">
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
-                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
                     </form>

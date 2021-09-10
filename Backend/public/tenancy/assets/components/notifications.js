@@ -14,7 +14,7 @@ function successNotification(message) {
         "onclick": null,
         "showDuration": "400",
         "hideDuration": "1000",
-        "timeOut": "2000",
+        "timeOut": "4000",
         // "extendedTimeOut": "1000",
         "showEasing": "swing",
         "hideEasing": "linear",
@@ -22,7 +22,7 @@ function successNotification(message) {
         "hideMethod": "fadeOut",
         "icon" : false,
     };
-    toastr.success('واتس لووب | Whats Loop', message);
+    toastr.success('', message);
 }
 
 function errorNotification(message) {
@@ -36,7 +36,7 @@ function errorNotification(message) {
         "onclick": null,
         "showDuration": "400",
         "hideDuration": "1000",
-        "timeOut": "2000",
+        "timeOut": "4000",
         // "extendedTimeOut": "1000",
         "showEasing": "swing",
         "hideEasing": "linear",
@@ -44,5 +44,5 @@ function errorNotification(message) {
         "hideMethod": "fadeOut",
         "icon" : false,
     };
-    toastr.error('واتس لووب | Whats Loop', message);
+    toastr.error('', message);
 }

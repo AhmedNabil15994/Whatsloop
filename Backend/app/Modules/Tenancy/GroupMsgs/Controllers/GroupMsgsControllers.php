@@ -36,7 +36,7 @@ class GroupMsgsControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -63,6 +63,7 @@ class GroupMsgsControllers extends Controller {
             'modelName' => 'GroupMsg',
             'icon' => 'mdi mdi-send',
             'sortName' => 'message',
+            'addOne' => trans('main.newGroupMessage'),
         ];
 
         $data['searchData'] = [
@@ -136,7 +137,7 @@ class GroupMsgsControllers extends Controller {
                 'type' => '',
                 'className' => '',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable ',
+                'anchor-class' => 'editable badge badge-dark',
             ],
             'group' => [
                 'label' => trans('main.group'),
@@ -274,7 +275,7 @@ class GroupMsgsControllers extends Controller {
 
         if($input['group_id'] == '@'){
             $groupObj = new GroupNumber;
-            $groupObj->channel = Session::get('channel');
+            $groupObj->channel = Session::get('channelCode');
             $groupObj->name_ar = $input['name_ar'];
             $groupObj->name_en = $input['name_en'];
             $groupObj->description_ar = '';

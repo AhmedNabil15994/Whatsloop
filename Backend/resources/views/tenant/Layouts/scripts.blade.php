@@ -76,9 +76,10 @@
 <script src="{{ asset('plugins/jquery.maskedinput/jquery.maskedinput.js') }}" type="text/javascript"></script>
 <script src="{{ asset('plugins/spectrum-colorpicker/spectrum.js') }}" type="text/javascript"></script>
 <script src="{{ asset('plugins/amazeui-datetimepicker/js/amazeui.datetimepicker.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('plugins/jquery-simple-datetimepicker/jquery.simple-dtpicker.js') }}" type="text/javascript"></script>
 <!--Internal  index js -->
 <script src="{{ asset('js/apexcharts.js') }}"></script>
+<script src="{{ asset('plugins/jquery-ui/ui/widgets/datepicker.js') }}"></script>
+
 @yield('topScripts')
 <script src="{{ asset('js/index.js') }}"></script>
 
@@ -97,6 +98,7 @@
 <script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
 
 <script src="{{ asset('js/utils.js') }}" type="text/javascript"></script>
+<script src="{{ asset('js/form-elements.js') }}" type="text/javascript"></script>
 
 <script src="{{ asset('components/globals.js') }}"></script>
 

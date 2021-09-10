@@ -68,10 +68,13 @@ class Invoice extends Model{
         $data->id = $source->id;
         $data->client_id = $source->client_id;
         $data->client = $source->Client->name;
+        $data->company = $source->Client->company;
+        $data->transaction_id = $source->transaction_id;
         $data->due_date = $source->due_date;
         $data->payment_method = $source->payment_method;
         $data->notes = $source->notes;
         $data->total = $source->total;
+        $data->payment_gateaway = $source->payment_gateaway;
         $data->items = $source->items != null ? unserialize($source->items) : [];
         $data->sort = $source->sort;
         $data->status = $source->status;

@@ -28,3 +28,7 @@ Route::group(['prefix' => '/'] , function () {
 
     Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
 });
+
+
+Route::get('/whatsappOrders/orders/{id}',[App\Http\Controllers\WhatsappOrdersControllers::class,'getOneOrder']);
+Route::get('/whatsappOrders/orders/{id}/info',[App\Http\Controllers\WhatsappOrdersControllers::class,'setOrderIno']);

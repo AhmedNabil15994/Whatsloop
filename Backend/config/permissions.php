@@ -4,6 +4,7 @@
 return [
     
     'DashboardControllers@Dashboard' => 'general',
+    'DashboardControllers@menu' => 'general',
     'DashboardControllers@changeLang' => 'general',
     'DashboardControllers@changeTheme' => 'general',
     'DashboardControllers@changeThemeToDefault' => 'general',
@@ -25,6 +26,12 @@ return [
     'SubscriptionControllers@postUpdateSubscription' => 'general',
     'SubscriptionControllers@updateAddonStatus' => 'general',
     'SubscriptionControllers@updateQuotaStatus' => 'general',
+
+
+
+
+    'WhatsappOrdersControllers@getOneOrder' => 'general',
+
     
     'SubscriptionControllers@checkout' => 'general',
     'SubscriptionControllers@postCheckout' => 'general',
@@ -72,7 +79,7 @@ return [
 
 
     'ApiModsControllers@msgsArchive'  => 'list-messages-archive',
-    'ApiModsControllers@report'  =>  'list-groupNumberRepors',
+    'ApiModsControllers@report'  =>  'list-groupNumberReports',
     'ApiModsControllers@index'  =>  'list-statuses',
 
     'ContactsControllers@index' => 'list-contacts',

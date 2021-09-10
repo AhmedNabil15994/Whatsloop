@@ -76,6 +76,7 @@ class Comment extends Model{
         $data->comment = $source->comment; 
         $data->status = $source->status;
         $data->reply_on = $source->reply_on;
+        $data->created_by = $source->created_by;
         $data->replies = $source->reply_on == 0 ? self::dataList($source->ticket_id,$source->id) : [];
         $data->image = User::selectImage($source->Creator);
         $data->creator = $source->Creator->name;

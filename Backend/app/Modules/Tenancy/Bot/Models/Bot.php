@@ -45,8 +45,8 @@ class Bot extends Model{
         }
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel']);
-        }else if(Session::has('channel')){
-            $source->where('channel',Session::get('channel'));
+        }else if(Session::has('channelCode')){
+            $source->where('channel',Session::get('channelCode'));
         }
         $source->orderBy('sort', 'ASC');
         return self::generateObj($source);
@@ -69,7 +69,7 @@ class Bot extends Model{
     static function getData($source) {
         $data = new  \stdClass();
         $data->id = $source->id;
-        $data->channel = trans('main.channel').' #'.$source->channel;
+        $data->channel = $source->channel;
         $data->message_type = $source->message_type;
         $data->message_type_text = self::getMessageType($source->message_type);
         $data->message = $source->message;

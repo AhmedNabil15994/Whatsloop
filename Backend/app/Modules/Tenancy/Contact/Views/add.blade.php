@@ -60,17 +60,6 @@
                                                 <hr>
                                                 <p><i class="fa fa-plus"></i> {{ trans('main.add').' '.trans('main.group') }}</p>
                                                 <div class="form-group row mb-3">
-                                                    <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
-                                                    <div class="col-9">
-                                                        <select class="form-control channel" data-toggle="select2" data-style="btn-outline-myPR">
-                                                            <option value="">{{ trans('main.channel') }}</option>
-                                                            @foreach($data->channels as $channel)
-                                                            <option value="{{ $channel->id }}" {{ old('channel') == $channel->name || (Session::has('channel') && Session::get('channel') == $channel->id) ? 'selected' : '' }}>{{ $channel->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row mb-3">
                                                     <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.titleAr') }} :</label>
                                                     <div class="col-9">
                                                         <input type="text" class="form-control name_ar" placeholder="{{ trans('main.titleAr') }}">
@@ -193,10 +182,10 @@
                         <input type="hidden" name="status">
                         <input type="hidden" name="vType">
                         <hr>
-                        <div class="form-group mb-0 justify-content-end row">
-                            <div class="col-9 mb-3">
-                                <button type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
-                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                        <div class="form-group justify-content-end row">
+                            <div class="col-9 text-right">
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                             </div>
                         </div>
                     </form>

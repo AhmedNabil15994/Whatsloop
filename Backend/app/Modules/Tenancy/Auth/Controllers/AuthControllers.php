@@ -20,7 +20,7 @@ class AuthControllers extends Controller {
 
     public function login() {
         if(Session::has('user_id')){
-            return redirect('/dashboard');
+            return redirect('/menu');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         return view('Tenancy.Auth.Views.login')->with('data',(object) $data);

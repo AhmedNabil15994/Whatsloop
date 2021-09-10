@@ -34,14 +34,6 @@
 
     <div class="row">
         <div class="panel panel-primary tabs-style-2">
-            <div class=" tab-menu-heading">
-                <div class="tabs-menu1">
-                    <!-- Tabs -->
-                    <ul class="nav panel-tabs main-nav-line">
-                        <li><a href="#tab4" class="nav-link active" data-toggle="tab">{{ trans('main.subscription') }}</a></li>
-                    </ul>
-                </div>
-            </div>
             <div class="panel-body tabs-menu-body main-content-body-right border">
                 <div class="tab-content">
                     <div class="tab-pane active" id="tab4">
@@ -106,7 +98,7 @@
                                     <div class="card-header pb-0 pd-t-25"> 
                                         <div class="row"> 
                                             <div class="col-6">
-                                                <h3 class="card-title mb-0"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h3> 
+                                                <h3 class="card-title mb-0"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ trans('main.invoices') }}</h3> 
                                             </div>
                                             <div class="col-6 text-right">
                                                 @if(!isset($data->dis) || $data->dis != true)
@@ -153,8 +145,8 @@
                                                         </a>
                                                     @endif
 
-                                                    <a href="#" class="btn btn-info btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
-                                                        <i class="typcn typcn-info-large-outline"></i>
+                                                    <a href="#" class="btn label label-light-warning btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
+                                                        <i class="si si-info pd-t-10"></i>
                                                     </a>
                                                 </div> 
                                                 @endif
@@ -210,18 +202,18 @@
                                                         </div>
                                                         <div class="m-separator"></div>
                                                         <div class="row mt-4">
-                                                            <div class="col-lg-12 text-left">
-                                                                <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
-                                                                    <span class="ladda-spinner"></span>
-                                                                    <div class="ladda-progress" style="width: 75px;"></div>
-                                                                </button>
+                                                            <div class="col-lg-12 text-right">
                                                                 <a href="{{ URL::current() }}" class="btn btn-light" id="m_reset">
                                                                     <span>
                                                                         <i class="fa fa-times"></i>
                                                                         <span>{{ trans('main.cancel') }}</span>
                                                                     </span>
                                                                 </a>
+                                                                <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
+                                                                    <span class="ladda-spinner"></span>
+                                                                    <div class="ladda-progress" style="width: 75px;"></div>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </form>

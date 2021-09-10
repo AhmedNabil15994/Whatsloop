@@ -22,6 +22,7 @@ class GroupsControllers extends Controller {
             'modelName' => 'Group',
             'icon' => 'fas fa-layer-group',
             'sortName' => 'name_'.LANGUAGE_PREF,
+            'addOne' => trans('main.newUserGroup'),
         ];
 
         $data['searchData'] = [

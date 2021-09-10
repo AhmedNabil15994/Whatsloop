@@ -26,58 +26,47 @@ use App\Models\CentralCategory;
 use App\Models\Department;
 use App\Models\Rate;
 use App\Models\ModTemplate;
+use App\Models\UserStatus;
 
 class DashboardControllers extends Controller {
 
     use \TraitsFunc;
 
-    public function Dashboard(){   
-        $input = \Request::all();
-
-        if(!Session::has('membership') || Session::get('membership') == null){
+    public function menu(){
+        if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
             $data['memberships'] = Membership::dataList(1)['data'];
             return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
         }
 
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $result = $mainWhatsLoopObj->status();
-        $result = $result->json();
-        if(isset($result['data'])){
-            if($result['data']['accountStatus'] == 'got qr code'){
-                if(isset($result['data']['qrCode'])){
-                    $image = '/uploads/instanceImage' . time() . '.png';
-                    $destinationPath = public_path() . $image;
-                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
-                    $succ = file_put_contents($destinationPath, $qrCode);   
-                    // $data['qrImage'] = \URL::to('/public'.$image);
-                    $data['qrImage'] = \URL::to('/').$image;
-                    // $data['qrImage'] = \URL::to('/').'/engine/public'.$image;
+
+        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
+        $data = [];
+        if($userStatusObj->status != 1){
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $result = $mainWhatsLoopObj->status();
+            $result = $result->json();
+            if(isset($result['data'])){
+                if($result['data']['accountStatus'] == 'got qr code'){
+                    if(isset($result['data']['qrCode'])){
+                        $image = '/uploads/instanceImage' . time() . '.png';
+                        $destinationPath = public_path() . $image;
+                        $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
+                        $succ = file_put_contents($destinationPath, $qrCode);   
+                        // $data['qrImage'] = \URL::to('/public'.$image);
+                        $data['qrImage'] = \URL::to('/').$image;
+                        // $data['qrImage'] = \URL::to('/').'/engine/public'.$image;
+                    }
                 }
             }
         }
+        
         Session::forget('check_user_id');
-        $now = date('Y-m-d');
-        $start = $now;
-        $end = $now;
-        $date = null;
-        if(isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])){
-            $start = $input['from'].' 00:00:00';
-            $end = $input['to'].' 23:59:59';
-            $date = 1;
-        }
-        // $contactUs = ContactUs::getByDate($date,$start,$end);
+        return view('Tenancy.Dashboard.Views.menu')->with('data',(object) $data);
+    }
 
-        $data['contactUs'] = [];//$contactUs['data'];
-        $data['contactUsCount'] = 0;//$contactUs['count'];
-        $data['webActions'] =  [];
-        $data['webActionsCount'] =  0;
-        $data['chartData1'] = [];//$this->getChartData($start,$end,'\ContactUs');
-        $data['chartData2'] = $this->getChartData($start,$end,'\User');
-        $data['addCount'] = 0;
-        $data['editCount'] = 0;
-        $data['deleteCount'] = 0;
-        $data['fastEditCount'] = 0;
-        return view('Tenancy.Dashboard.Views.dashboard')->with('data',(object) $data);
+    public function Dashboard(){   
+        $input = \Request::all();
+        return view('Tenancy.Dashboard.Views.dashboard');
     }
 
     public function getChartData($start=null,$end=null,$moduleName){
@@ -200,6 +189,11 @@ class DashboardControllers extends Controller {
 
     public function addRate(){
         $input = \Request::all();
+
+        $rateObj = Rate::NotDeleted()->where('user_id',USER_ID)->where('changelog_id',$input['id'])->first();
+        if($rateObj){
+            return \TraitsFunc::ErrorMessage(trans('main.youRated'));
+        }
         $rateObj = new Rate();
         $rateObj->user_id = USER_ID;
         $rateObj->tenant_id = TENANT_ID;

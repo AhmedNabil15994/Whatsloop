@@ -26,8 +26,8 @@ class CreateUsersTable extends Migration
             $table->boolean('is_approved')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
-            $table->integer('notifications')->default(0);
-            $table->integer('offers')->default(0);
+            $table->integer('notifications')->default(1);
+            $table->integer('offers')->default(1);
             $table->integer('pin_code')->nullable(0);
             $table->string('emergency_number')->nullable();
             $table->integer('two_auth')->default(1);

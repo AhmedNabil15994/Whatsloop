@@ -20,7 +20,7 @@ class RepliesControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -32,6 +32,7 @@ class RepliesControllers extends Controller {
             'modelName' => 'Reply',
             'icon' => ' far fa-comment-alt',
             'sortName' => 'name_'.LANGUAGE_PREF,
+            'addOne' => trans('main.newReply'),
         ];
 
         $data['searchData'] = [
@@ -75,7 +76,7 @@ class RepliesControllers extends Controller {
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable',
+                'anchor-class' => 'editable badge badge-dark',
             ],
             'name_ar' => [
                 'label' => trans('main.titleAr'),
@@ -101,13 +102,6 @@ class RepliesControllers extends Controller {
         ];
 
         $data['modelData'] = [
-            'channel' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'options' => $channels,
-                'label' => trans('main.channel'),
-                'specialAttr' => '',
-            ],
             'name_ar' => [
                 'type' => 'text',
                 'class' => 'form-control',
@@ -139,13 +133,11 @@ class RepliesControllers extends Controller {
 
     protected function validateInsertObject($input){
         $rules = [
-            'channel' => 'required',
             'name_ar' => 'required',
             'name_en' => 'required',
         ];
 
         $message = [
-            'channel.required' => trans('main.channelValidate'),
             'name_ar.required' => trans('main.titleArValidate'),
             'name_en.required' => trans('main.titleEnValidate'),
         ];
@@ -196,7 +188,7 @@ class RepliesControllers extends Controller {
             return redirect()->back();
         }
 
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
         $dataObj->description_ar = $input['description_ar'];
@@ -229,7 +221,7 @@ class RepliesControllers extends Controller {
         
 
         $dataObj = new Reply;
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
         $dataObj->description_ar = $input['description_ar'];

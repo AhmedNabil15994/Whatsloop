@@ -103,10 +103,10 @@ class ApiModsControllers extends Controller {
 
         $data['designElems']['mainData'] = [
             'title' => trans('main.groupNumberRepors'),
-            'url' => 'groupNumberRepors',
-            'name' => 'groupNumberRepors',
-            'nameOne' => 'groupNumberRepors',
-            'modelName' => 'groupNumberRepors',
+            'url' => 'groupNumberReports',
+            'name' => 'groupNumberReports',
+            'nameOne' => 'groupNumberReports',
+            'modelName' => 'groupNumberReports',
             'icon' => 'mdi mdi-file-account-outline',
         ];
         $data['designElems']['searchData'] = [];
@@ -182,7 +182,7 @@ class ApiModsControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }

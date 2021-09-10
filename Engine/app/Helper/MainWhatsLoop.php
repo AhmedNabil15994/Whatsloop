@@ -535,4 +535,78 @@ class MainWhatsLoop {
         $result = Http::get($fullURL,$data);
         return $result;
     }
+
+    // Last Updates On 3/9/2021
+
+    /*----------------------------------------------------------
+    Dialogs
+    ----------------------------------------------------------*/
+
+    // ['chatId' => chatId ]
+    public function archiveChat($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'archiveChat?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    // ['chatId' =>  chatId ]
+    public function unarchiveChat($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'unarchiveChat?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    // ['chatId' =>  chatId ]
+    public function disappearingChat($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'disappearingChat?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    // ['chatId' =>  chatId ]
+    public function clearChat($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'clearChat?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    /*----------------------------------------------------------
+    Products
+    ----------------------------------------------------------*/
+
+    // ['businessId' =>  businessId ]
+    public function getProducts($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'getProducts?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    // ['businessId' =>  businessId , 'productId' => productId ]
+    public function getProduct($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'getProduct?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    // ['productId' =>  productId , 'filename' => productImage , 'body' => HTTP link , 'phone' => phone ]
+    public function sendProduct($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'sendProduct?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
+
+    // ['orderId' =>  orderId , 'orderToken' => orderToken]
+    public function getOrder($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/';
+        $fullURL = $mainURL.'getOrder?token='.$this->token;
+        $result = Http::post($fullURL,$data);
+        return $result; 
+    }
 }

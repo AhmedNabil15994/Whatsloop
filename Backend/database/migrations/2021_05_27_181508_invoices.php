@@ -21,6 +21,8 @@ class Invoices extends Migration
             $table->text('items');
             $table->integer('payment_method')->nullable();
             $table->text('notes')->nullable();
+            $table->text('transaction_id')->nullable();
+            $table->string('payment_gateaway')->nullable();
             $table->integer('sort');
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();

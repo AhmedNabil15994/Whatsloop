@@ -18,10 +18,13 @@ $('.actions ul li a[href="#finish"]').on('click',function(e){
     window.location.href = "/QR/finish/"+modID;
 });
 
+$('.actions ul li.prev').css('visibility','hidden');
+
 function next(elem){
     if(!elem.parent('li').hasClass('disabled')){
         elem.parents('.actions').siblings('.steps').find('.current').not('.last').removeClass('current').addClass('done').next('li').removeClass('disabled').addClass('current');
         if(!$('.steps li.current').hasClass('first')){
+            $('.actions ul li.prev').css('visibility','visible');
             $('.actions ul li.prev').removeClass('disabled');
         }
 
@@ -40,6 +43,7 @@ function prev(elem) {
     if(!elem.parent('li').hasClass('disabled')){
         elem.parents('.actions').siblings('.steps').find('.current').not('.first').removeClass('current').addClass('done').prev('li').addClass('current');
         if($('.steps li.current').hasClass('first')){
+            $('.actions ul li.prev').css('visibility','hidden');
             $('.actions ul li.prev').addClass('disabled');
         }
 

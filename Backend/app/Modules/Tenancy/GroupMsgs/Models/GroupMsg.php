@@ -58,9 +58,9 @@ class GroupMsg extends Model{
         
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel']);
-        }else if(Session::has('channel') && empty($input['group_id'])){
+        }else if(Session::has('channelCode') && empty($input['group_id'])){
             $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channel'));
+                $groupQuery->where('channel',Session::get('channelCode'));
             });
         }
 

@@ -1,7 +1,7 @@
 <!-- Footer opened -->
 <div class="main-footer">
-    <div class="container-fluid pd-t-0-f ht-100p">
-        <span>{{ date('Y') }} &copy; {{ trans('main.rights') }} <a href="https://servers.com.sa/ar/Home.html">Servers.sa</a>.</span>
+    <div class="text-right container-fluid pd-t-0-f ht-100p">
+        <span>{{ date('Y') }} &copy;  <a href="https://whatsloop.net/ar/Home.html" target="_blank"> {{ trans('main.rights') }} {{ trans('main.appName') }}</a>.</span>
     </div>
 </div>
 <!-- Footer closed -->

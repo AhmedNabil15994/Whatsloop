@@ -10,6 +10,19 @@
     .border.rounded .float-right img{
         width: 80px;
     }
+    .wizard>.steps>ul li{
+        width: 33%;
+    }
+    html[dir="ltr"] .wizard>.steps>ul>li:not(.last) a:after{
+        right: -150px;
+        transform: rotateZ(180deg);
+    }
+    html[dir="rtl"] .wizard>.steps>ul>li:not(.last) a:after{
+        left: -150px
+    }
+    span.number{
+        padding: 15px;
+    }
 </style>
 @endsection
 
@@ -38,7 +51,7 @@
                             <li role="tab" class="disabled">
                                 <a id="wizard1-t-3" href="#wizard1-h-3" aria-controls="wizard1-p-3">
                                     <span class="number">2</span> 
-                                    <span class="title">{{ trans('main.qrScan') }}</span>
+                                    <span class="title">{{ trans('main.financial_setting') }}</span>
                                 </a>
                             </li>
                             <li role="tab" class="disabled last">
@@ -49,7 +62,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="content clearfix">
+                    <div class="content clearfix qrData">
                         <h3 id="wizard1-h-0" tabindex="-1" class="title mb-5 current">{{ trans('main.myCart') }}</h3>
                         <section id="wizard1-p-0" role="tabpanel" aria-labelledby="wizard1-h-0" class="body current" aria-hidden="false">
                             <div class="table-responsive mg-t-20">
@@ -309,7 +322,7 @@
                             </div>
                         </section>
                     </div>
-                    <div class="actions clearfix">
+                    <div class="actions clearfix qrData">
                         <ul role="menu" aria-label="Pagination">
                             <li class="disabled prev" aria-disabled="true">
                                 <a href="#previous" role="menuitem">{{ trans('main.prev') }}</a>

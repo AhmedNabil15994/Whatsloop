@@ -17,7 +17,7 @@ class Instance
             'webhook',
 
             // Dialogs
-            'allDialogs','dialog','group','pinChat','unpinChat','readChat','unreadChat','removeChat','joinGroup','leaveGroup','addGroupParticipant','removeGroupParticipant','promoteGroupParticipant','demoteGroupParticipant','typing','recording','labelChat','unlabelChat',
+            'allDialogs','dialog','group','pinChat','unpinChat','readChat','unreadChat','archiveChat','unarchiveChat','disappearingChat','clearChat','removeChat','joinGroup','leaveGroup','addGroupParticipant','removeGroupParticipant','promoteGroupParticipant','demoteGroupParticipant','typing','recording','labelChat','unlabelChat',
 
             // Queues
             'showMessagesQueue','clearMessagesQueue','showActionsQueue','clearActionsQueue',
@@ -30,6 +30,9 @@ class Instance
 
             // Users
             'userStatus',
+
+            // Products
+            'getProducts','getProduct','sendProduct','getOrder',
         ];
 
         if(!in_array($request->segment(2), $statusesArr)){

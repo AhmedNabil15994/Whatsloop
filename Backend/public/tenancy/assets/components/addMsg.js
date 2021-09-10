@@ -77,10 +77,12 @@ $(function(){
 		$("input[name='date']").toggleClass('hidden');
 	});
 
-	$('input.flatpickr').flatpickr({
-        enableTime:!0,
-        dateFormat:"Y-m-d H:i",
-    });
+	$('#datetimepicker').datetimepicker({
+		format: 'yyyy-mm-dd hh:ii',
+		autoclose: true,
+		// minuteStep: 1,
+	});
+
 
  	$("select[name='group_id']").on('change',function(){
  		var lastOpt = $(this).val();

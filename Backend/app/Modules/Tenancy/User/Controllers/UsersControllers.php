@@ -18,12 +18,12 @@ class UsersControllers extends Controller {
     use \TraitsFunc;
 
     public function getData(){
-        $groups = Group::dataList(1)['data'];
+        $groups = Group::dataList(1,[1])['data'];
         $userObj = User::getData(User::getOne(USER_ID));
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -35,6 +35,7 @@ class UsersControllers extends Controller {
             'modelName' => 'User',
             'icon' => 'fa fa-users',
             'sortName' => 'name',
+            'addOne' => trans('main.newUser'),
         ];
 
         $data['searchData'] = [
@@ -114,13 +115,6 @@ class UsersControllers extends Controller {
                 'data-col' => 'group_id',
                 'anchor-class' => 'editable',
             ],
-            'channelCodes' => [
-                'label' => trans('main.channel'),
-                'type' => '',
-                'className' => 'edits selects',
-                'data-col' => 'channels',
-                'anchor-class' => 'editable',
-            ],
             'actions' => [
                 'label' => trans('main.actions'),
                 'type' => '',
@@ -160,13 +154,6 @@ class UsersControllers extends Controller {
                 'type' => 'email',
                 'class' => 'form-control',
                 'label' => trans('main.email'),
-                'specialAttr' => '',
-            ],
-            'channels' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'options' => $channels,
-                'label' => trans('main.channel'),
                 'specialAttr' => '',
             ],
             'image' => [
@@ -308,10 +295,6 @@ class UsersControllers extends Controller {
             }
         }
 
-        if(isset($input['channels']) && !empty(isset($input['channels']))){
-            $dataObj->channels = serialize([$input['channels']]);
-        }
-
         $dataObj->name = $input['name'];
         $dataObj->group_id = $input['group_id'];
         $dataObj->email = $input['email'];
@@ -407,13 +390,11 @@ class UsersControllers extends Controller {
         }
 
         $dataObj = new User;
-        if(isset($input['channels']) && !empty(isset($input['channels']))){
-            $dataObj->channels = serialize([$input['channels']]);
-        }
-
         $dataObj->name = $input['name'];
         $dataObj->group_id = $input['group_id'];
         $dataObj->email = $input['email'];
+        $dataObj->channels = User::NotDeleted()->first()->channels;
+        $dataObj->two_auth = 0;
         $dataObj->phone = $input['phone'];
         $dataObj->password = \Hash::make($input['password']);
         $dataObj->extra_rules = serialize($permissionsArr);
@@ -437,6 +418,7 @@ class UsersControllers extends Controller {
                 CentralUser::where('id',$dataObj->id)->update([
                     'name' => $dataObj->name,
                     'email' => $dataObj->email,
+                    'two_auth' => 0,
                     'extra_rules' => $dataObj->extra_rules,
                     'updated_at' => $dataObj->updated_at,
                     'updated_by' => $dataObj->updated_by,
@@ -454,6 +436,9 @@ class UsersControllers extends Controller {
     public function delete($id) {
         $id = (int) $id;
         $dataObj = User::getOne($id);
+        if($dataObj->group_id == 1 && User::first()->id == $dataObj->id){
+            return \TraitsFunc::ErrorMessage(trans('main.notDeleted'));
+        }
         \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/'.$this->getData()['mainData']['name'].'/'.$id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);

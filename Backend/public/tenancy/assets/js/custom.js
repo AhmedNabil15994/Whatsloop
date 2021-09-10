@@ -2,7 +2,7 @@ $(function() {
 	'use strict'
 	
 	// ______________LOADER
-	$("#global-loader").fadeOut("slow");
+	$("#global-loader").fadeOut();
 	
 	
 	// This template is mobile first so active menu in navbar

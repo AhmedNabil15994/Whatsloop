@@ -47,9 +47,9 @@ class ContactReport extends Model{
             $source->whereHas('Group',function($groupQuery) use ($input){
                 $groupQuery->where('channel',$input['channel']);
             });
-        }else if(Session::has('channel')){
+        }else if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channel'));
+                $groupQuery->where('channel',Session::get('channelCode'));
             });
         }
 

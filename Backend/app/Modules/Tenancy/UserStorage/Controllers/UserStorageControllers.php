@@ -125,6 +125,14 @@ class UserStorageControllers extends Controller {
             $dataObj = GroupMsg::getData(GroupMsg::getOne($id));
         }
         
+        if( isset($dataObj->photo_name) && $dataObj->photo_name == null){
+            return redirect()->back();
+        }
+
+        if( isset($dataObj->file_name) && $dataObj->file_name == null){
+            return redirect()->back();
+        }
+    
         $data['data'] = $dataObj;
         $data['designElems'] = $this->getData();
         $data['type'] = $type;
@@ -152,14 +160,14 @@ class UserStorageControllers extends Controller {
             $dataObj->save();
         } 
         \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/'.$type.'/'.$id);
-        \Session::flash('success',trans('main.deleteSuccess'));
-        return redirect()->back();
+        $data['status'] = \TraitsFunc::SuccessResponse(trans('main.deleteSuccess'));
+        return response()->json($data);
     }
 
     public function removeChatFile($id){
         \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/chats/'.$id);
-        \Session::flash('success',trans('main.deleteSuccess'));
-        return redirect()->back();
+        $data['status'] = \TraitsFunc::SuccessResponse(trans('main.deleteSuccess'));
+        return response()->json($data);
     }
 
 }

@@ -14,22 +14,6 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item">{{ ucfirst($data->designElems['mainData']['service']) }}</li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-    </div>     
-    <!-- end page title --> 
     <div class="row">
         <div class="col-8">
             <div class="card">
@@ -41,15 +25,7 @@
                     </div>
                     <hr>
                     <form class="form-horizontal grpmsg" method="POST" action="{{ URL::to('/services/'.$data->designElems['mainData']['service'].'/templates/update/'.$data->data->id) }}">
-                        @csrf
-                        <div class="form-group row mb-3">
-                            <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
-                            <div class="col-9">
-                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" readonly name="channel">
-                                    <option value="{{ $data->data->channel }}" selected>{{ $data->data->channel }}</option>
-                                </select>
-                            </div>
-                        </div> 
+                        @csrf 
                         <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.status') }} :</label>
                             <div class="col-9">

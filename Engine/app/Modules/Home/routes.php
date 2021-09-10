@@ -72,6 +72,14 @@ Route::group(['prefix' => '/users'] , function () {
 });
 
 /*----------------------------------------------------------
+Products
+----------------------------------------------------------*/
+Route::group(['prefix' => '/products'] , function () {
+    $controller = App\Http\Controllers\HomeControllers::class;
+    Route::post('/{status}', [$controller,'index'])->middleware('instance');
+});
+
+/*----------------------------------------------------------
 Channels
 ----------------------------------------------------------*/
 Route::group(['prefix' => '/channels'] , function () {

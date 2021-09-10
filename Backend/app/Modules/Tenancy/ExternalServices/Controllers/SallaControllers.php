@@ -515,7 +515,7 @@ class SallaControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->name = $value->name;
             $channels[] = $channelObj;
         }
@@ -559,14 +559,14 @@ class SallaControllers extends Controller {
             'statusText' => [
                 'type' => 'select',
                 'class' => 'form-control ',
-                'label' => trans('main.status'),
+                'label' => trans('main.type'),
                 'index' => '',
                 'options' => $options,
             ],
             'status' => [
                 'type' => 'select',
                 'class' => 'form-control ',
-                'label' => trans('main.type'),
+                'label' => trans('main.status'),
                 'index' => '',
                 'options' => $actives,
             ],
@@ -596,14 +596,14 @@ class SallaControllers extends Controller {
                 'anchor-class' => 'pre-space',
             ],   
             'statusText' => [
-                'label' => trans('main.status'),
+                'label' => trans('main.type'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusText',
                 'anchor-class' => '',
             ],  
             'statusIDText' => [
-                'label' => trans('main.type'),
+                'label' => trans('main.status'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusIDText',
@@ -685,6 +685,7 @@ class SallaControllers extends Controller {
         ];
         $userObj = User::getData(User::getOne(USER_ID));
         $data['channel'] = $userObj->channels[0];
+        $data['channel']->id = Session::get('channelCode');
         $options = [['id'=>'ترحيب بالعميل','name'=>'ترحيب بالعميل']];
         if (Schema::hasTable($service.'_order_status')) {
             $statuses = DB::table($service.'_order_status')->get();
@@ -706,7 +707,7 @@ class SallaControllers extends Controller {
         }
 
         $dataObj = new ModTemplate;
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->content_ar = $input['content_ar'];
         $dataObj->content_en = $input['content_en'];
         $dataObj->statusText = $input['statusText'];

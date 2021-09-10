@@ -153,18 +153,18 @@
                                     </div>
                                     <div class="m-separator"></div>
                                     <div class="row mt-4">
-                                        <div class="col-lg-12 text-left">
-                                            <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
-                                                <span class="ladda-spinner"></span>
-                                                <div class="ladda-progress" style="width: 75px;"></div>
-                                            </button>
+                                        <div class="col-lg-12 text-right">
                                             <a href="{{ URL::current() }}" class="btn btn-light" id="m_reset">
                                                 <span>
                                                     <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
+                                            <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
+                                                <span class="ladda-spinner"></span>
+                                                <div class="ladda-progress" style="width: 75px;"></div>
+                                            </button>
                                         </div>
                                     </div>
                                 </form>

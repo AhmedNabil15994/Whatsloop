@@ -27,6 +27,7 @@ class TicketControllers extends Controller {
             'modelName' => 'Ticket',
             'icon' => ' dripicons-ticket',
             'sortName' => 'title',
+            'addOne' => trans('main.newTicket'),
         ];
         $departments = Department::dataList(1)['data'];
         $statuses = [
@@ -198,7 +199,7 @@ class TicketControllers extends Controller {
 
 
         $dataObj->subject = $input['subject'];
-        $dataObj->user_id = $input['user_id'];
+        $dataObj->user_id = USER_ID;
         $dataObj->department_id = $input['department_id'];
         $dataObj->description = $input['description'];
         if(isset($input['assignment']) && !empty($input['assignment'])){
@@ -253,7 +254,7 @@ class TicketControllers extends Controller {
         
         $dataObj = new Ticket;
         $dataObj->subject = $input['subject'];
-        $dataObj->user_id = $input['user_id'];
+        $dataObj->user_id = USER_ID;
         $dataObj->priority_id = isset($input['priority_id']) && !empty($input['priority_id']) ? $input['priority_id'] : 1;
         $dataObj->department_id = $input['department_id'];
         $dataObj->description = $input['description'];
@@ -457,29 +458,10 @@ class TicketControllers extends Controller {
             return \TraitsFunc::ErrorMessage(trans('main.ticketNotFound'), 400);
         }
 
-        if($input['reply'] != 0){
-            $commentObj = Comment::getOne($input['reply']);
-            if($commentObj == null){
-                return \TraitsFunc::ErrorMessage(trans('main.commentNotFound'), 400);
-            }
-            $input['reply'] = $commentObj->reply_on != 0 ? $commentObj->reply_on : $input['reply'];
-            if($commentObj->reply_on == 0 ){
-                if($commentObj->created_by == USER_ID){
-                    return \TraitsFunc::ErrorMessage(trans('main.cantReply'), 400);
-                }
-            }
-            $replier = CentralUser::getData(CentralUser::getOne(USER_ID));
-            // $msg = $replier->name.' replied on your comment';
-            // $tokens = Devices::getDevicesBy($commentObj->created_by,true);
-            // $fireBase = new \FireBase();
-            // $metaData = ['title' => "New Comment", 'body' => $msg,];
-            // $myData = ['type' => 3 , 'id' => $commentObj->video_id];
-            // $fireBase->send_android_notification($tokens[0],$metaData,$myData);
-        }
 
         $commentObj = new Comment;
         $commentObj->comment = $input['comment'];
-        $commentObj->reply_on = $input['reply'];
+        $commentObj->reply_on = 0;
         $commentObj->ticket_id = $id;
         $commentObj->status = 1;
         $commentObj->created_by = CentralUser::NotDeleted()->where('phone',User::getOne(USER_ID)->phone)->first()->id;

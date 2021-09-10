@@ -15,7 +15,7 @@
 <!-- Start Content-->
 <div class="container-fluid">
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -30,8 +30,10 @@
                             <label class="col-3 col-form-label">{{ trans('main.status') }} :</label>
                             <div class="col-9">
                                 <div class="checkbox checkbox-success mb-2">
-                                    <input id="checkbox3" type="checkbox" name="webhook_on" {{ \App\Models\Variable::getVar('WEBHOOK_ON') == 1 ? 'checked' : '' }} >
-                                    <label for="checkbox3"></label>
+                                    <label class="ckbox prem">
+                                        <input type="checkbox" name="webhook_on" {{ \App\Models\Variable::getVar('WEBHOOK_ON') == 1 ? 'checked' : '' }} >
+                                        <span> </span>
+                                    </label>
                                 </div>
                             </div>
                         </div> 
@@ -43,9 +45,9 @@
                         </div>
                         <hr class="mt-5">
                         <div class="form-group justify-content-end row">
-                            <div class="col-9">
-                                <button class="btn btn-success AddBTN">{{ trans('main.edit') }}</button>
-                                <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                            <div class="col-9 text-right">
+                                <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                             </div>
                         </div>
                     </form>
@@ -53,24 +55,6 @@
                 </div> <!-- end card body-->
             </div> <!-- end card -->
         </div><!-- end col-->
-        <div class="col-4">
-            <div class="card-box text-center">
-                <img src="{{ $data->data->photo }}" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
-                <h4 class="mb-0">{{ $data->data->name }}</h4>
-                <p class="text-muted">{{ $data->data->group }}</p>
-                <div class="text-left mt-3">
-                    <p class="text-muted mb-2 font-13"><strong>{{ trans('main.name') }} :</strong> <span class="ml-2">{{ $data->data->name }}</span></p>
-
-                    <p class="text-muted mb-2 font-13"><strong>{{ trans('main.phone') }} :</strong><span class="ml-2">{{ $data->data->phone }}</span></p>
-
-                    <p class="text-muted mb-2 font-13"><strong>{{ trans('main.email') }} :</strong> <span class="ml-2">{{ $data->data->email }}</span></p>
-
-                    <p class="text-muted mb-2 font-13"><strong>{{ trans('main.company_name') }} :</strong><span class="ml-2">{{ $data->data->company }}</span></p>
-
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ $data->data->channelCodes }}</span></p>
-                </div>
-            </div>
-        </div>
     </div>
     <!-- end row-->
 </div> <!-- container -->

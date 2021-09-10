@@ -70,27 +70,27 @@
                                     </div> 
                                 </div>  --}}
                                 @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                                <a class="btn btn-primary btn-icon" data-toggle="tooltip" data-original-title=" {{ $data->designElems['mainData']['url'] == 'groupMsgs' ? trans('main.send') : trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
+                                <a class="btn label label-success" data-toggle="tooltip" data-original-title=" {{ $data->designElems['mainData']['url'] == 'groupMsgs' ? trans('main.send') : trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
                                     @if($data->designElems['mainData']['url'] == 'groupMsgs')
                                     <i class="typcn typcn-location-arrow"></i>
                                     @else
-                                    <i class="typcn typcn-document-add"></i>
+                                    <i class="si si-plus ml-1 mr-1"></i> {{ $data->designElems['mainData']['addOne'] }}  
                                     @endif
                                 </a>
                                 @endif
 
                                 @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
-                                    <a href="#" class="btn btn-success btn-icon quickEdit" data-toggle="tooltip" data-original-title="{{ trans('main.fastEdit') }}">
-                                        <i class="typcn typcn-edit"></i>
+                                    <a href="#" class="btn label label-default quickEdit" data-toggle="tooltip" data-original-title="{{ trans('main.fastEdit') }}">
+                                        <i class="si si-note ml-1 mr-1"></i> {{ trans('main.fastEdit') }}
                                     </a>
                                 @endif
 
-                                <a href="#" class="btn btn-info btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
-                                    <i class="typcn typcn-info-large-outline"></i>
+                                <a href="#" class="btn label label-light-warning btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
+                                    <i class="si si-info pd-t-10"></i>
                                 </a>
 
                                 <a href="#" class="btn btn-light btn-icon changeDesign" data-toggle="tooltip" data-original-title="Change Desgin">
-                                    <i class="typcn typcn-equals-outline"></i>
+                                    <i class="si si-list pd-t-10"></i>
                                 </a>
                             </div> 
                             @endif
@@ -146,16 +146,16 @@
                                         </div>
                                         <div class="m-separator"></div>
                                         <div class="row mt-4">
-                                            <div class="col-lg-12 text-left">
-                                                <button class="btn btn-primary loginBut"  dir="ltr" type="submit">
-                                                    <i class="fa fa-search"></i> {{ trans('main.search') }}
-                                                </button>
+                                            <div class="col-lg-12 text-right">
                                                 <a href="{{ URL::current() }}" class="btn btn-light" id="m_reset">
                                                     <span>
                                                         <i class="fa fa-times"></i>
                                                         <span>{{ trans('main.cancel') }}</span>
                                                     </span>
                                                 </a>
+                                                <button class="btn btn-primary loginBut"  dir="ltr" type="submit">
+                                                    <i class="fa fa-search"></i> {{ trans('main.search') }}
+                                                </button>
                                             </div>
                                         </div>
                                     </form>
@@ -213,7 +213,7 @@
 
                                             <div class="avatar avatar-lg d-none d-sm-flex bg-{{ $colorsArr[$customerKey%7] }} rounded-circle">{{ $abbreviation }}</div>
                                         </div> 
-                                        <h5 class=" mb-1 mt-3 card-title">{{ $customer->name }}</h5> 
+                                        <h5 class=" mb-1 mt-3 card-title" dir="ltr">{{ $customer->name }}</h5> 
                                         <div class="mt-2 user-info btn-list"> 
                                             <a class="btn btn-outline-light btn-block text-right" href="mail:to{{ $customer->email }}">
                                                 <i class="typcn typcn-mail mr-2 tx-22 lh-1 float-left"></i>
@@ -222,6 +222,10 @@
                                             <a class="btn btn-outline-light btn-block text-right" href="tel:{{ $customer->phone }}">
                                                 <i class="typcn typcn-phone mr-2 tx-22 lh-1 float-left"></i>
                                                 <span>{{ $customer->phone }}</span>
+                                            </a> 
+                                            <a class="btn btn-outline-light btn-block text-right" href="#">
+                                                <i class="typcn typcn-group mr-2 tx-22 lh-1 float-left"></i>
+                                                <span>{{ $customer->group }}</span>
                                             </a> 
                                             <a class="btn btn-outline-light btn-block text-right" href="#">
                                                 <i class="typcn typcn-map mr-2 tx-22 lh-1 float-left"></i>

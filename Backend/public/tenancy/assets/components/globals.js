@@ -41,23 +41,58 @@ function deleteItem($id) {
         title: title,
         text: deleteText,
         type: "warning",
-        sshowCancelButton: true,
+        showCancelButton: true,
         confirmButtonText: confirmButton,
         confirmButtonClass: 'btn btn-success mt-2',
         cancelButtonText: cancelButton,
-        cancelButtonClass: 'btn btn-danger ml-2 mt-2',
+        cancelButtonClass: 'btn-danger ml-2 mt-2',
+        closeOnConfirm: false,
+        buttonsStyling:!1
+    },
+    function(isConfirm) {
+        if (isConfirm) {
+            $.get(myURL+'/delete/' + $id,function(data) {
+                if (data.status.original && data.status.original.status.status == 1) {
+                    successNotification(data.status.original.status.message);
+                    swal(success1, success2, "success");
+                    setTimeout(function(){
+                        $('#kt_datatable').DataTable().ajax.reload();
+                    },2500)
+                } else {
+                    errorNotification(data.status.message);
+                }
+            });
+        } else {
+            swal(
+                cancel1,
+                cancel2,
+                "error"
+            )
+            swal("Cancelled", "Your imaginary file is safe :)", "error");
+        }
+    });
+}
+
+function deleteStorageFile($url) {
+    swal({
+        title: title,
+        text: deleteText,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: confirmButton,
+        confirmButtonClass: 'btn btn-success mt-2',
+        cancelButtonText: cancelButton,
+        cancelButtonClass: 'btn-danger ml-2 mt-2',
         closeOnConfirm: false,
         buttonsStyling:!1
     },
     function(isConfirm) {
         if (isConfirm) {
             swal(success1, success2, "success");
-            $.get(myURL+'/delete/' + $id,function(data) {
+            $.get($url,function(data) {
                 if (data.status.original.status.status == 1) {
                     successNotification(data.status.original.status.message);
-                    setTimeout(function(){
-                        $('#kt_datatable').DataTable().ajax.reload();
-                    },2500)
+                    window.location.href = '/storage';
                 } else {
                     errorNotification(data.status.original.status.message);
                 }
@@ -72,6 +107,7 @@ function deleteItem($id) {
         }
     });
 }
+
 
 $('select[data-toggle="select2"]').select2();
 $('select#selectize-select').selectize({
@@ -336,7 +372,7 @@ $('#SubmitBTN,.SaveBTN').on('click',function(e){
         }
     }else{
         $('input.teles').val(phone);
-        $('form').submit();
+        $(this).parents('form').submit();
     }
 });
 
@@ -355,7 +391,7 @@ $('.SaveBTNs').on('click',function(e){
     });
     
     if(errors == 0){
-        $('form').submit();
+        $(this).parent().parents('form').submit();
     }else{
         if(lang == 'en'){
             errorNotification("This Phone Number Isn't Valid!");
@@ -535,7 +571,7 @@ $("#night").click(function(){
 });
 
 
-$('.ckbox input[type="checkbox"]').on('change',function(){
+$('.ckbox:not(.prem) input[type="checkbox"]').on('change',function(){
     if($(this).is(":checked")){
         $(this).parent('label').parent('.col').siblings('.col').find('input[type="checkbox"]').prop('checked', false);
         window.location.href = myURL.split(/[?#]/)[0]+"?category_id="+ $(this).data('area');
@@ -544,7 +580,7 @@ $('.ckbox input[type="checkbox"]').on('change',function(){
 
 $('.emoji-img').on('click',function(){
     $(this).siblings().removeClass('selected');
-    $('input[name="rate"]').val($(this).data('area'));
+    $(this).parent('.imgs').siblings('input[name="rate"]').val($(this).data('area'));
     $(this).toggleClass('selected');
 });
 
@@ -559,7 +595,7 @@ $('.addRate').on('click',function(e){
         $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
         $.ajax({
             type: 'POST',
-            url: myURL+'/addRate',
+            url: '/helpCenter/addRate',
             data:{
                 '_token': $('meta[name="csrf-token"]').attr('content'),
                 'id': id,
@@ -585,6 +621,11 @@ if($('.changeDesign').length){
         e.preventDefault();
         e.stopPropagation();
         $('.sa.d-none').removeClass('d-none').siblings('.sa').addClass('d-none');
+        if($(this).children('.si').hasClass('si-grid')){
+            $(this).children('.si').removeClass('si-grid').addClass('si-list');
+        }else{
+            $(this).children('.si').removeClass('si-list').addClass('si-grid');
+        }
     });
 }
 
@@ -596,4 +637,13 @@ if($('.buttons-colviss').length){
     });
 }
 
+$('.permission .card-header input[type="checkbox"]').on('change',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    if($(this).is(':checked')){
+        $(this).parents('.permission').children('.card-body').find('input[type="checkbox"]').prop('checked',1);
+    }else{
+        $(this).parents('.permission').children('.card-body').find('input[type="checkbox"]').prop('checked',0);
+    }
+});
 

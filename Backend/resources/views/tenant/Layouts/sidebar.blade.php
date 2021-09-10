@@ -33,10 +33,9 @@
                                     <div class="clearfix"></div>
                                     <div class="text-muted {{ $oneLog->description != '' ? 'mg-b-10' : '' }} desc">{{ $oneLog->description }}</div>
                                 </div>
-                                <input type="hidden" name="rate" value="">
                                 <img class="card-img-bottom" src="{{ $oneLog->photo }}" alt="Changelog Photo">
                                 <div class="pt-3 emoji">
-                                    <div class="ml-auto mb-3 text-muted text-center">
+                                    <div class="ml-auto imgs mb-3 text-muted text-center">
                                         <img class="emoji-img" data-area="1" src="{{ asset('emoji/1.svg') }}" alt="">
                                         <img class="emoji-img" data-area="2" src="{{ asset('emoji/2.svg') }}" alt="">
                                         <img class="emoji-img" data-area="3" src="{{ asset('emoji/3.svg') }}" alt="">
@@ -44,6 +43,7 @@
                                         <img class="emoji-img" data-area="5" src="{{ asset('emoji/5.svg') }}" alt="">
                                     </div>
                                     <textarea name="reply" class="form-control d-block" placeholder="{{ trans('main.postComment') }}"></textarea>
+                                    <input type="hidden" name="rate" value="">
                                     <button class="btn d-block btn-primary addRate mb-2 mt-2 w-100" data-area="{{ $oneLog->id }}"> <i class="typcn typcn-location-arrow"></i> {{ trans('main.send') }}</button>
                                 </div>
                             </div>
@@ -180,6 +180,26 @@
             </li>
             @endif
 
+            @if(\Helper::checkRules('whatsapp-orders,whatsapp-products'))
+            <li class="slide">
+                <a class="side-menu__item" data-toggle="slide" href="#">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('images/whatsapp.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.whatsappOrders') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
+                </a>
+                <ul class="slide-menu">
+                    @if(\Helper::checkRules('whatsapp-orders'))
+                    <li><a class="slide-item" href="{{ URL::to('/whatsappOrders/products') }}">{{ trans('main.products') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('whatsapp-products'))
+                    <li><a class="slide-item" href="{{ URL::to('/whatsappOrders/orders') }}">{{ trans('main.orders') }}</a></li>
+                    @endif
+                </ul>
+            </li>
+            @endif
+
           
 
             @if(\Helper::checkRules('list-bots'))
@@ -230,24 +250,36 @@
             </li>
             @endif
 
-            @if(\Helper::checkRules('list-group-numbers,add-number-to-group,list-contacts'))
+            @if(\Helper::checkRules('list-contacts'))
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/contacts')) }}" href="{{ URL::to('/contacts') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('images/contacts.svg') }}" alt="">
+                    <span class="side-menu__label"> {{ trans('main.contacts') }} </span>
+                </a>
+            </li>
+            @endif
+
+            @if(\Helper::checkRules('list-group-numbers,add-number-to-group,list-groupNumberReports'))
             <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">
                     <div class="side-angle1"></div>
                     <div class="side-angle2"></div>
                     <div class="side-arrow"></div>
-                    <img src="{{ asset('images/contacts.svg') }}" alt="">
-                    <span class="side-menu__label">{{ trans('main.contacts') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
+                    <img src="{{ asset('images/group_numbers_report.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.groupNumbers') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
                 </a>
                 <ul class="slide-menu">
-                    @if(\Helper::checkRules('list-contacts'))
-                    <li><a class="slide-item" href="{{ URL::to('/contacts') }}">{{ trans('main.contacts') }}</a></li>
-                    @endif
                     @if(\Helper::checkRules('list-group-numbers'))
                     <li><a class="slide-item" href="{{ URL::to('/groupNumbers') }}">{{ trans('main.groupNumbers') }}</a></li>
                     @endif
                     @if(\Helper::checkRules('add-number-to-group'))
                     <li><a class="slide-item" href="{{ URL::to('/addGroupNumbers') }}">{{ trans('main.addGroupNumbers') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('list-groupNumberReports'))
+                    <li><a class="slide-item" href="{{ URL::to('/groupNumberReports') }}">{{ trans('main.groupNumberRepors') }}</a></li>
                     @endif
                 </ul>
             </li>
@@ -281,18 +313,6 @@
                     <div class="side-arrow"></div>
                     <img src="{{ asset('images/statuses.svg') }}" alt="">
                     <span class="side-menu__label"> {{ trans('main.statuses') }} </span>
-                </a>
-            </li>
-            @endif
-
-            @if(\Helper::checkRules('list-groupNumberRepors'))
-            <li class="slide">
-                <a class="side-menu__item {{ Active(URL::to('/groupNumberRepors')) }}" href="{{ URL::to('/groupNumberRepors') }}">
-                    <div class="side-angle1"></div>
-                    <div class="side-angle2"></div>
-                    <div class="side-arrow"></div>
-                    <img src="{{ asset('images/group_numbers_report.svg') }}" alt="">
-                    <span class="side-menu__label"> {{ trans('main.groupNumberRepors') }} </span>
                 </a>
             </li>
             @endif
@@ -340,7 +360,7 @@
                     <div class="side-angle2"></div>
                     <div class="side-arrow"></div>
                     <img src="{{ asset('images/invoice.svg') }}" alt="">
-                    <span class="side-menu__label"> {{ trans('main.invoices') }} </span>
+                    <span class="side-menu__label"> {{ trans('main.subs_invoices') }} </span>
                 </a>
             </li>
             @endif
@@ -388,22 +408,40 @@
             </li>
             @endif
 
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/profile/personalInfo')) }}" href="{{ URL::to('/profile/personalInfo') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('images/setting.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.account_setting') }}</span>
+                </a>
+            </li>
+
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/helpCenter')) }}" href="{{ URL::to('/helpCenter') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('images/help.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.helpCenter') }}</span>
+                </a>
+            </li>
+
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/logout')) }}" href="{{ URL::to('/logout') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('images/logout.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.logout') }}</span>
+                </a>
+            </li>
+
+
         </ul>
 
-        <div class="app-sidefooter">
-            <a class="side-menu__item" href="{{ URL::to('/profile') }}">
-                <img src="{{ asset('images/setting.svg') }}" alt="">
-                <span class="side-menu__label">{{ trans('main.account_setting') }}</span>
-            </a>
-            <a class="side-menu__item" href="{{ URL::to('/faq') }}">
-                <img src="{{ asset('images/help.svg') }}" alt="">
-                <span class="side-menu__label">{{ trans('main.faqs') }}</span>
-            </a>
-            <a class="side-menu__item" href="{{ URL::to('/logout') }}">
-                <img src="{{ asset('images/logout.svg') }}" alt="">
-                <span class="side-menu__label">{{ trans('main.logout') }}</span>
-            </a>
-        </div>
+        
     </div>
 </aside>
 <!-- main-sidebar -->

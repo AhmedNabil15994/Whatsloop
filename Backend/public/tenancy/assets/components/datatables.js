@@ -107,29 +107,32 @@ $(function(){
 						}
 						if(index == 'statusIDText'){
 							if(full.status == 1){
-								labelClass = 'badge text-muted';
+								labelClass = 'label badge label-success';
 							}else{
-								labelClass = 'badge badge-danger';
+								labelClass = 'label badge label-danger';
 							}
 						}
 						if(index == 'statusText'){
 							if(full.statusText == 'مسترجع' || full.statusText == 'ملغي' || full.statusText == 'تم الالغاء'){
-								labelClass = 'badge badge-danger';
+								labelClass = 'label badge label-light-danger';
 							}
-							if(full.statusText == 'تم الشحن' || full.statusText == 'تم التنفيذ' || full.statusText == 'جديد'){
-								labelClass = 'badge badge-success';
+							if(full.statusText == 'تم الشحن' || full.statusText == 'تم التنفيذ' || full.statusText == 'جديد' || full.statusText == 'ترحيب بالعميل'){
+								labelClass = 'label badge label-light-success';
 							}
 							if(full.statusText == 'تم التوصيل' || full.statusText == 'قيد التنفيذ'){
-								labelClass = 'badge badge-warning';
+								labelClass = 'label badge label-light-warning';
 							}
-							if(full.statusText == 'جاري التوصيل' || full.statusText == 'بإنتظار المراجعة' || full.statusText == 'جاهز'){
-								labelClass = 'badge badge-primary';
+							if(full.statusText == 'جاهز'){
+								labelClass = 'label badge label-light-primary';
 							}
-							if(full.statusText == 'بإنتظار الدفع' || full.statusText == 'جاري التجهيز'){
-								labelClass = 'badge badge-info';
+							if(full.statusText == 'جاري التجهيز'){
+								labelClass = 'label badge label-light-info';
 							}
-							if(full.statusText == 'ترحيب بالعميل' || full.statusText == 'جارى التوصيل' ){
-								labelClass = 'badge badge-secondary';
+							if(full.statusText == 'بإنتظار الدفع' ){
+								labelClass = 'label badge label-default';
+							}
+							if(full.statusText == 'جاري التوصيل' || full.statusText == 'جارى التوصيل' || full.statusText == 'بإنتظار المراجعة'){
+								labelClass = 'label badge label-light-info';
 							}
 						}
 						return '<a class="'+item['anchor-class']+' '+labelClass+'" data-col="'+item['data-col']+'" data-id="'+full.id+'">'+data+'</a>';
@@ -147,40 +150,45 @@ $(function(){
 					var showButton = '';
 					var exportButton = '';
 					var deleteButton = '';
+
 					if($('input[name="data-area"]').val() == 1){
                             // <a class="dropdown-item" href="#"><i class="fe fe-plus mr-2"></i> Add</a>
-
-						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-block btn-outline-success"> <i class="fe fe-edit mr-2"></i> '+editText+'</a>';
+						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+data+'" class="action-icon btn btn-block btn-outline-success"> <i class="si si-note"></i> '+editText+'</a>';
 					}
 
 					if($('input[name="data-tabs"]').length && $('input[name="data-tabs"]').val() == 1){
-						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-copy"></i> '+copyText+'</a>';
+						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-layers"></i> '+copyText+'</a>';
 					}
 
 					if(designElems.mainData.url == 'groupNumbers'){
-						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-eye"></i> '+showText+'</a>';
+						showButton = '<a href="/contacts?group_id='+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+showText+'</a>';
 						if($('input[name="data-tests"]').length && $('input[name="data-tests"]').val() == 1){
-							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon btn btn-block btn-outline-secondary"> <i class="las la-file-csv"></i> '+exportText+'</a>';
+							exportButton = '<a href="/contacts/export/'+data+'" class="action-icon btn btn-block btn-outline-secondary"> <i class="si si-cloud-download"></i> '+exportText+'</a>';
 						}
 					}
 
 					if($('input[name="data-cols"]').val() == 1){
-						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-block btn-outline-danger"> <i class="mdi mdi-delete"></i> '+deleteText+'</a>'
+						deleteButton = '<a onclick="deleteItem('+data+')" class="action-icon btn btn-block btn-outline-danger"> <i class="si si-trash"></i> '+deleteText+'</a>'
 					}
 
 					if(designElems.mainData.url == 'groupMsgs' && $('input[name="data-tab"]').val() == 1){
-						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-eye"></i> '+detailsText+'</a>';
+						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+detailsText+'</a>';
 						editButton = '';
 						deleteButton = '';
 					}
 
 					if((designElems.mainData.url == 'tickets' || designElems.mainData.url == 'clients' || designElems.mainData.url == 'invoices') && $('input[name="data-tab"]').val() == 1){
-						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="fas fa-eye"></i> '+viewText+'</a>';
+						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+viewText+'</a>';
 					}
+
+					if(designElems.mainData.url == 'tickets' && $('input[name="tenant"]').val()){
+                    	editButton = '';
+                    	deleteButton = '';
+                    }
 
 					return '<div class="btn-group mt-4 ml-3">'+ 
                         '<a class="btn-link option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#">'+
-                            '<i class="fe fe-more-horizontal tx-gray-500"></i>'+
+                            '<i class="fe fe-more-horizontal"></i>'+
                         '</a>'+ 
                         '<div class="dropdown-menu">'+ 
                         	editButton + copyButton + showButton + exportButton + deleteButton+
@@ -200,7 +208,7 @@ $(function(){
 		// DOM Layout settings
 		dom:'Bfrtip',
 		dom:
-			"<'row'<'col-xs-12 col-sm-6 col-md-6'l><'col-xs-12 col-sm-6 col-md-6 text-right'Bf>>" +
+			"<'row mg-b-25'<'col-xs-12 col-sm-6 col-md-6'l><'col-xs-12 col-sm-6 col-md-6 text-right'Bf>>" +
 			"<'row'<'col-sm-12 'tr>>" +
 			"<'row'<'col-xs-6 col-sm-6 col-md-6 'i><'col-xs-6 col-sm-6 col-md-6 'p>>", // read more: https://datatables.net/examples/basic_init/dom.html
         buttons: [

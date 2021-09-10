@@ -53,7 +53,9 @@ class ProfileControllers extends Controller {
         $mainUserObj = User::getOne(USER_ID);
         $dataObj = User::getData($mainUserObj);
         $domainObj = \DB::connection('main')->table('domains')->where('domain',$dataObj->domain)->first();
-        
+
+        $oldDomainValue = $domainObj->domain;
+
         if(isset($input['email']) && !empty($input['email'])){
             $userObj = User::checkUserBy('email',$input['email'],USER_ID);
             if($userObj){
@@ -126,6 +128,10 @@ class ProfileControllers extends Controller {
                 $mainUserObj->image = $images;
                 $mainUserObj->save();  
             }
+        }
+
+        if($input['domain'] != $oldDomainValue){
+            return redirect()->to(config('tenancy.protocol').$input['domain'].'.'.config('tenancy.central_domains')[0].'/login');
         }
 
         Session::forget('photos');
@@ -698,12 +704,12 @@ class ProfileControllers extends Controller {
     }
 
     public function webhookSetting(){
-        $userObj = User::authenticatedUser();        
+        // $userObj = User::authenticatedUser();        
         $data['designElems']['mainData'] = [
             'title' => trans('main.webhook_setting'),
             'icon' => 'mdi mdi-webhook',
         ];
-        $data['data'] = $userObj;
+        $data['data'] = [];
         return view('Tenancy.Profile.Views.webhookSetting')->with('data', (object) $data);
     }
 

@@ -4,6 +4,7 @@ use Request;
 use Response;
 use URL;
 use App\Models\Variable;
+use App\Models\Channel;
 use Illuminate\Support\Facades\Http;
 
 class HomeControllers extends Controller {
@@ -22,7 +23,7 @@ class HomeControllers extends Controller {
         	if(isset($result['result']) && $result['result'] == 'failed'){
             	return [0,str_replace('@c.us', '', str_replace('app.chat-api.com','wloop.net',$result['message']))];
         	}
-            if(is_array($result) && !in_array($status, ['labelsList','showMessagesQueue','showActionsQueue','allMessages','messagesHistory'])){
+            if(is_array($result) && !in_array($status, ['labelsList','getProduct','showMessagesQueue','showActionsQueue','allMessages','messagesHistory'])){
                 $extraResult = array_values($result);
                 if(isset($extraResult[0]) && $extraResult[0] == false && !isset($result['sendDelay'])){
                     return [0,str_replace('@c.us', '', str_replace('app.chat-api.com','wloop.net',@$result['message']))];
@@ -66,7 +67,13 @@ class HomeControllers extends Controller {
     		}
     	}
 
-    	if(in_array($status, ['dialogs','pinChat','unpinChat','readChat','unreadChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory'])){
+        if(isset($input['businessId']) && !empty($input['businessId']) && in_array($status, ['getProducts','getProduct','sendProduct'])){
+            if(isset($input['businessId']) && !empty($input['businessId'])){
+                $input['businessId'] = $input['businessId'].'@s.whatsapp.net';
+            }
+        }
+
+    	if(in_array($status, ['dialogs','pinChat','unpinChat','readChat','unreadChat','archiveChat','unarchiveChat','disappearingChat','clearChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory'])){
     		if(isset($input['chatId']) && !empty($input['chatId'])){
     			$input['chatId'] = $input['chatId'].'@c.us';
     		}
@@ -94,7 +101,7 @@ class HomeControllers extends Controller {
     		}
     	}
 
-        if(isset($input['liveChatId']) && !empty($input['liveChatId']) && in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','typing','recording','allMessages','dialogs','labelChat','unlabelChat'])){
+        if(isset($input['liveChatId']) && !empty($input['liveChatId']) && in_array($status, ['dialog','pinChat','unpinChat','readChat','unreadChat','typing','recording','allMessages','dialogs','labelChat','unlabelChat','archiveChat','unarchiveChat','disappearingChat','clearChat'])){
             if(!is_array($input['liveChatId'])){
                 $input['chatId'] = $input['liveChatId'];
                 unset($input['liveChatId']);

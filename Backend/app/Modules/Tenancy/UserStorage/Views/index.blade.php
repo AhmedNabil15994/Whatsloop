@@ -19,10 +19,10 @@
                 <div class="inbox-leftbar col-3">
                     <div class="card">
                     	<div class="mail-list mt-3">
-	                        <a href="{{ URL::to('/storage') }}" class="list-group-item border-0 {{ Active(URL::to('/storage')) }} {{ Active(URL::to('/storage/users*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2"></i>{{ trans('main.users') }}</a>
-	                        <a href="{{ URL::to('/storage/bots') }}" class="list-group-item border-0 {{ Active(URL::to('/storage/bots*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2"></i>{{ trans('main.bot') }}</a>
-	                        <a href="{{ URL::to('/storage/groupMsgs') }}" class="list-group-item border-0 {{ Active(URL::to('/storage/groupMsgs*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2"></i>{{ trans('main.groupMsgs') }}</a>
-	                        <a href="{{ URL::to('/storage/chats') }}" class="list-group-item border-0 {{ Active(URL::to('/storage/chats*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2"></i>{{ trans('main.livechat') }}</a>
+	                        <a href="{{ URL::to('/storage') }}" class="list-group-item border-0 {{ Active(URL::to('/storage')) }} {{ Active(URL::to('/storage/users*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2 ml-2"></i>{{ trans('main.users') }}</a>
+	                        <a href="{{ URL::to('/storage/bots') }}" class="list-group-item border-0 {{ Active(URL::to('/storage/bots*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2 ml-2"></i>{{ trans('main.bot') }}</a>
+	                        <a href="{{ URL::to('/storage/groupMsgs') }}" class="list-group-item border-0 {{ Active(URL::to('/storage/groupMsgs*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2 ml-2"></i>{{ trans('main.groupMsgs') }}</a>
+	                        <a href="{{ URL::to('/storage/chats') }}" class="list-group-item border-0 {{ Active(URL::to('/storage/chats*')) }}"><i class="mdi mdi-folder-outline font-18 align-middle mr-2 ml-2"></i>{{ trans('main.livechat') }}</a>
 	                    </div>
 	                    <div class="mt-5">
 	                        <h6 class="text-uppercase mt-3">{{ trans('main.storages') }}</h6>
@@ -32,7 +32,7 @@
 	                        	@endphp
 	                            <div class="progress-bar progress-lg bg-success" role="progressbar" style="width: {{ $result }}%" aria-valuenow="{{ $result }}" aria-valuemin="0" aria-valuemax="100"></div>
 	                        </div>
-	                        <p class="text-muted font-12 mb-0">{{ $data->totalSize }} ({{ $result }}%) of {{ $data->totalStorage / 1024 }} {{ trans('main.gigaB') }} used</p>
+	                        <p class="text-muted font-12 mb-0">{{ $data->totalSize }} ({{ $result }}%) {{ trans('main.of') }} {{ $data->totalStorage / 1024 }} {{ trans('main.gigaB') }} {{ trans('main.used') }}</p>
 	                    </div>
                     </div>
                 </div>
@@ -76,69 +76,103 @@
 			                                        <p class="mb-0">{{ date('D m, Y',strtotime($item->created_at)) }}</p>
 			                                    </td>
 			                                    <td class="border-0">{{ $item->folder_size }}</td>
-			                                    <td class="border-0">
-			                                    	<div class="btn-group dropdown">
-			                                            <a href="javascript: void(0);" class="table-action-btn dropdown-toggle arrow-none btn btn-xs" data-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-horizontal"></i></a>
-			                                            <div class="dropdown-menu dropdown-menu-right">
-			                                                <a class="dropdown-item" href="{{ URL::current().'/'.$data->type.'/'.$item->id }}"><i class="mdi mdi-eye mr-2 text-muted vertical-middle"></i>{{ trans('main.view') }}</a>
+			                                    <td class="border-0 text-center">
+			                                    	<div class="btn-group mt-4 ml-3">
+			                                    		<a class="btn-link option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#">
+			                                    			<i class="fe fe-more-horizontal"></i>
+			                                    		</a>
+			                                    		<div class="dropdown-menu">
+			                                    			<a class="dropdown-item" href="{{ URL::current().'/'.$data->type.'/'.$item->id }}"><i class="mdi mdi-eye mr-2 text-muted vertical-middle"></i>{{ trans('main.view') }}</a>
 			                                                @if(\Helper::checkRules('delete-storage'))
 			                                                <a class="dropdown-item" href="{{ URL::current().'/'.$data->type.'/'.$item->id.'/remove' }}"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
 			                                                @endif
-			                                            </div>
-			                                        </div>
+			                                    		</div>
+			                                    	</div>
+			                                    	
 			                                    </td>
 			                                </tr>
 		                           		 	@endforeach
-			                                @else
-			                                
+			                            @else
 			                                @if($data->type == 'chats')
 			                                @foreach($data->data as $oneItem)
-			                                <tr>
+			                                <tr class="tr{{ $oneItem->id }} {{ $oneItem->file_name != null ? 'hasImage' : '' }}">
 			                                    <td class="border-0">
 			                                        <i class="mdi mdi-file-outline"></i>
 			                                        <span class="ml-2 font-weight-medium">
-			                                        	<a href="{{ $oneItem->file }}" target="_blank" class="text-reset">{{ $oneItem->file_name }}</a>
+			                                        	<a href="{{ $oneItem->file }}" target="_blank" class="text-reset">
+			                                        		<img class="float-left thumb" src="{{ $oneItem->file }}" alt="{{ $oneItem->file_name }}">
+			                                        	</a>
+			                                        	<span class="name">{{ $oneItem->file_name }}</span>
 			                                        </span>
 			                                    </td>
 			                                    <td class="border-0">
 			                                        <p class="mb-0">-----</p>
 			                                    </td>
 			                                    <td class="border-0">{{ $oneItem->file_size }}</td>
-			                                    <td class="border-0">
-			                                        <div class="btn-group dropdown">
+			                                    <td class="border-0 text-center">
+			                                    	<div class="btn-group mt-4 ml-3">
+			                                    		<a class="btn-link option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#">
+			                                    			<i class="fe fe-more-horizontal"></i>
+			                                    		</a>
+			                                    		<div class="dropdown-menu">
+			                                    			<a class="dropdown-item" href="{{ $oneItem->file }}" target="_blank"><i class="mdi mdi-download mr-2 text-muted vertical-middle"></i>{{ trans('main.download') }}</a>
+			                                                @if(\Helper::checkRules('delete-storage'))
+			                                                <a class="dropdown-item" onclick="deleteStorageFile('{{ URL::current().'/'.$oneItem->file_name.'/removeFile' }}')"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
+			                                                @endif
+			                                    		</div>
+			                                    	</div>
+
+			                                        {{-- <div class="btn-group dropdown">
 			                                            <a href="javascript: void(0);" class="table-action-btn dropdown-toggle arrow-none btn btn-xs" data-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-horizontal"></i></a>
 			                                            <div class="dropdown-menu dropdown-menu-right">
 			                                                <a class="dropdown-item" href="{{ $oneItem->file }}" target="_blank"><i class="mdi mdi-download mr-2 text-muted vertical-middle"></i>{{ trans('main.download') }}</a>
 			                                                @if(\Helper::checkRules('delete-storage'))
-			                                                <a class="dropdown-item" href="{{ URL::current().'/'.$oneItem->file_name.'/removeFile' }}"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
+			                                                <a class="dropdown-item" onclick="deleteStorageFile('{{ URL::current().'/'.$oneItem->file_name.'/removeFile' }}')"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
 			                                                @endif
 			                                            </div>
-			                                        </div>
+			                                        </div> --}}
 			                                    </td>
 			                                </tr>
 			                                @endforeach
 			                                @else
-			                                <tr>
+			                                <tr class="tr{{ isset($data->data->photo) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }} {{ isset($data->data->photo) && $data->data->photo_name != null ? 'hasImage' : '' }}">
 			                                    <td class="border-0">
-			                                        <i class="mdi mdi-file-outline"></i>
 			                                        <span class="ml-2 font-weight-medium">
-			                                        	<a href="{{ $data->data->photo != null ? $data->data->photo : $data->data->file }}" target="_blank" class="text-reset">{{ $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }}</a>
+			                                        	<a href="{{ isset($data->data->photo) && $data->data->photo != null ? $data->data->photo : $data->data->file }}" target="_blank" class="text-reset">
+			                                        		<img class="float-left thumb" src="{{ isset($data->data->photo) && $data->data->photo != null ? $data->data->photo : $data->data->file }}" alt="{{ isset($data->data->photo_name) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }}">
+			                                        	</a>
+			                                        	<span class="name">
+			                                        		{{ isset($data->data->photo_name) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }}
+			                                        	</span>
 			                                        </span>
 			                                    </td>
 			                                    <td class="border-0">
 			                                        <p class="mb-0">{{ date('D m, Y',strtotime($data->data->created_at)) }}</p>
 			                                    </td>
-			                                    <td class="border-0">{{ $data->data->photo_size != null ? $data->data->photo_size : $data->data->file_size }}</td>
 			                                    <td class="border-0">
+			                                    	<p class="mb-0">{{ isset($data->data->photo) && $data->data->photo_size != null ? $data->data->photo_size : $data->data->file_size }}</p>
+			                                    </td>
+			                                    <td class="border-0 text-center">
+
+			                                    	<div class="btn-group mt-4 ml-3">
+			                                    		<a class="btn-link option-dots" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#">
+			                                    			<i class="fe fe-more-horizontal"></i>
+			                                    		</a>
+			                                    		<div class="dropdown-menu">
+			                                    			<a class="dropdown-item" href="{{ isset($data->data->photo) && $data->data->photo != null ? $data->data->photo : $data->data->file }}" target="_blank"><i class="mdi mdi-download mr-2 text-muted vertical-middle"></i>{{ trans('main.download') }}</a>
+			                                                @if(\Helper::checkRules('delete-storage'))
+			                                                <a class="dropdown-item" onclick="deleteStorageFile('{{ URL::current().'/remove' }}')"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
+			                                                @endif
+			                                    		</div>
+			                                    	</div>
+
+{{-- 
 			                                        <div class="btn-group dropdown">
 			                                            <a href="javascript: void(0);" class="table-action-btn dropdown-toggle arrow-none btn btn-xs" data-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-horizontal"></i></a>
 			                                            <div class="dropdown-menu dropdown-menu-right">
-			                                                <a class="dropdown-item" href="{{ $data->data->photo != null ? $data->data->photo : $data->data->file }}" target="_blank"><i class="mdi mdi-download mr-2 text-muted vertical-middle"></i>{{ trans('main.download') }}</a>
-			                                                @if(\Helper::checkRules('delete-storage'))
-			                                                <a class="dropdown-item" href="{{ URL::current().'/remove' }}"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
-			                                                @endif
+			                                                
 			                                            </div>
-			                                        </div>
+			                                        </div> --}}
 			                                    </td>
 			                                </tr>
 			                                @endif

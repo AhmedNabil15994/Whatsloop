@@ -66,7 +66,7 @@ $(function(){
                 },
                 success:function(data){
                     if(data.status.status == 1){
-                        window.location.href = "/dashboard";
+                        window.location.href = "/menu";
                     }else{
                         errorNotification(data.status.message);
                     }

@@ -24,7 +24,7 @@ class BotControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -59,6 +59,7 @@ class BotControllers extends Controller {
             'modelName' => 'Bot',
             'icon' => 'fas fa-robot',
             'sortName' => 'message',
+            'addOne' => trans('main.newBot'),
         ];
 
         $data['searchData'] = [
@@ -111,7 +112,7 @@ class BotControllers extends Controller {
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable',
+                'anchor-class' => 'editable badge badge-dark',
             ],
             'message_type_text' => [
                 'label' => trans('main.messageType'),
@@ -148,14 +149,12 @@ class BotControllers extends Controller {
 
     protected function validateInsertObject($input){
         $rules = [
-            'channel' => 'required',
             'message_type' => 'required',
             'message' => 'required',
             'reply_type' => 'required',
         ];
 
         $message = [
-            'channel.required' => trans('main.channelValidate'),
             'message_type.required' => trans('main.messageTypeValidate'),
             'message.required' => trans('main.messageValidate'),
             'reply_type.required' => trans('main.replyTypeValidate'),
@@ -186,7 +185,7 @@ class BotControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -237,7 +236,7 @@ class BotControllers extends Controller {
             }
         }
 
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->message_type = $input['message_type'];
         $dataObj->message = $input['message'];
         $dataObj->reply_type = $input['reply_type'];
@@ -312,7 +311,7 @@ class BotControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -342,7 +341,7 @@ class BotControllers extends Controller {
         }
 
         $dataObj = new Bot;
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->message_type = $input['message_type'];
         $dataObj->message = $input['message'];
         $dataObj->reply_type = $input['reply_type'];

@@ -5,7 +5,7 @@ Users
 ----------------------------------------------------------*/
 Route::group(['prefix' => '/profile'] , function () {
     $controller = \App\Http\Controllers\ProfileControllers::class;
-    Route::get('/', [$controller,'index']);
+    // Route::get('/', [$controller,'index']);
     
     Route::get('/personalInfo', [$controller,'personalInfo']);
     Route::post('/updatePersonalInfo', [$controller,'updatePersonalInfo']);

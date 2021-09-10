@@ -36,8 +36,8 @@ class GroupNumber extends Model{
                 }
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel'])->orWhere('channel','');
-        }else if(Session::has('channel')){
-            $source->where('channel',Session::get('channel'))->orWhere('channel','');
+        }else if(Session::has('channelCode')){
+            $source->where('channel',Session::get('channelCode'))->orWhere('channel','');
         }
         if($id != null){
             $source->whereNotIn('id',$id);

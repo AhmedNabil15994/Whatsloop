@@ -10,7 +10,7 @@ Route::group(['prefix' => '/tickets'] , function () {
     Route::get('/arrange', [$controller,'arrange']);
     Route::post('/arrange/sort', [$controller,'sort']);
     Route::get('/charts', [$controller,'charts']);
-    Route::get('/edit/{id}', [$controller,'edit']);
+    // Route::get('/edit/{id}', [$controller,'edit']);
     Route::get('/view/{id}', [$controller,'view']);
     Route::post('/update/{id}', [$controller,'update']);
     Route::post('/fastEdit', [$controller,'fastEdit']);
@@ -22,8 +22,8 @@ Route::group(['prefix' => '/tickets'] , function () {
     ----------------------------------------------------------*/
 
     Route::post('/add/uploadImage', [$controller,'uploadImage']);
-    Route::post('/edit/{id}/editImage', [$controller,'uploadImage']);
-    Route::post('/edit/{id}/deleteImage', [$controller,'deleteImage']);
+    // Route::post('/edit/{id}/editImage', [$controller,'uploadImage']);
+    // Route::post('/edit/{id}/deleteImage', [$controller,'deleteImage']);
 
 
     /*----------------------------------------------------------

@@ -1,7 +1,19 @@
 <?php
 
 class Helper
-{
+{   
+     // 100 = x + .15x
+     // .15x = 100 - x
+     // x = 100 - x * (100/15) 
+    // 100 = x + 100/15 x
+    // 100 = 115/15 x
+    // x = 100 * 15/115
+
+    static function calcTax($mainPrice){
+        $tax = 15/100;
+        $estimatedTax = $mainPrice * (15/115);
+        return round($estimatedTax,2);
+    }
 
     static function formatDate($date, $formate = "Y-m-d h:i:s A", $unix = false){
         $date = str_replace("," , '' , $date);
@@ -251,7 +263,13 @@ class Helper
                 $externalPermissions = [];
             }elseif($addon == 'whiteLogo'){
                 $externalPermissions = [];
+            }elseif($addon == 'whatsappOrders'){
+                $externalPermissions = [
+                    'WhatsappOrdersControllers@products' => 'whatsapp-products',
+                    'WhatsappOrdersControllers@orders' => 'whatsapp-orders',
+                ];
             }
+
             $controllers = array_merge($controllers,$externalPermissions);
         }
         return $controllers;

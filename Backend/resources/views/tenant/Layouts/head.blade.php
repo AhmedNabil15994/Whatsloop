@@ -32,11 +32,11 @@
 <link href="{{ asset('css/toastr.min.css') }}" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="{{ asset('libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
 
+<link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
 @if(DIRECTION == 'ltr')
 <link rel="stylesheet" type="text/css" href="{{ asset('switcher/css/switcher.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('switcher/css/demo.css') }}">
 <link href="{{ asset('css/icons.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/intlTelInput.css') }}">
 <link rel="stylesheet" href="{{ asset('css/sidemenu.css') }}">
 <!-- style css -->
 <link href="{{ asset('css/style.css') }}" rel="stylesheet">
@@ -48,7 +48,7 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('switcher/css/switcher-rtl.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('switcher/css/demo.css') }}">
 <link href="{{ asset('css-rtl/icons.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('plugins/telephoneinput/telephoneinput-rtl.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('plugins/telephoneinput/telephoneinput-rtl.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('css-rtl/sidemenu.css') }}">
 <link href="{{ asset('css-rtl/style.css') }}" rel="stylesheet">
 <link href="{{ asset('css-rtl/style-dark.css') }}" rel="stylesheet">
@@ -56,6 +56,7 @@
 <link href="{{ asset('css-rtl/skin-modes.css') }}" rel="stylesheet" />
 <link href="{{ asset('css-rtl/animate.css') }}" rel="stylesheet">
 @endif
+<link href="{{ asset('plugins/amazeui-datetimepicker/css/amazeui.datetimepicker.css') }}" rel="stylesheet">
 <link href="{{ asset('css/touches.css') }}" rel="stylesheet" type="text/css">
 <!-- third party css -->
 @yield('styles')

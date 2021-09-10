@@ -84,7 +84,7 @@
                                 </div>
                                 <p class="check-title">{{ trans('main.send_at') }}</p>
                                 <div class="clearfix"></div>
-                                <input type="text" placeholder="YYYY-MM-DD H:i" name="date" class="form-control hidden flatpickr mt-2">
+                                <input type="text" placeholder="YYYY-MM-DD H:i" name="date" class="form-control hidden mt-2" id="datetimepicker">
                             </div>
                         </div> 
                         <div class="reply" data-id="1">
@@ -198,9 +198,9 @@
                         </div>
                         <hr class="mt-5">
                         <div class="form-group justify-content-end row">
-                            <div class="col-9">
-                                <button class="btn btn-success AddBTN">{{ trans('main.add') }}</button>
-                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                            <div class="col-9 text-right">
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.send') }}</button>
                             </div>
                         </div>
                     </form>

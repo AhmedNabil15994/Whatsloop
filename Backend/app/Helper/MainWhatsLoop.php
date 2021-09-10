@@ -619,4 +619,79 @@ class MainWhatsLoop {
             'CHANNELTOKEN' => $channelId,
         ])->post($mainURL,$data);
     }
+
+        // Last Updates On 3/9/2021
+
+    /*----------------------------------------------------------
+    Dialogs
+    ----------------------------------------------------------*/
+
+    public function archiveChat($data){
+        $mainURL = $this->baseUrl.'dialogs/archiveChat';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    public function unarchiveChat($data){
+        $mainURL = $this->baseUrl.'dialogs/unarchiveChat';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    public function disappearingChat($data){
+        $mainURL = $this->baseUrl.'dialogs/disappearingChat';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    public function clearChat($data){
+        $mainURL = $this->baseUrl.'dialogs/clearChat';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    /*----------------------------------------------------------
+    Products
+    ----------------------------------------------------------*/
+
+    public function getProducts($data){
+        $mainURL = $this->baseUrl.'products/getProducts';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    public function getProduct($data){
+        $mainURL = $this->baseUrl.'products/getProduct';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    public function sendProduct($data){
+        $mainURL = $this->baseUrl.'products/sendProduct';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+
+    public function getOrder($data){
+        $mainURL = $this->baseUrl.'products/getOrder';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
+   
 }

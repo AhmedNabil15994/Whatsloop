@@ -16,10 +16,10 @@ class Group extends Model{
             ->first();
     }
 
-    static function dataList($status=null) {
+    static function dataList($status=null,$notInIds=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted()->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->where(function ($query) use ($input,$notInIds) {
                     if (isset($input['name_ar']) && !empty($input['name_ar'])) {
                         $query->where('name_ar', 'LIKE', '%' . $input['name_ar'] . '%');
                     } 
@@ -30,6 +30,9 @@ class Group extends Model{
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
                 });
+        if($notInIds != null){
+            $source->whereNotIn('id',$notInIds);
+        }
         if($status != null){
             $source->where('status',$status);
         }

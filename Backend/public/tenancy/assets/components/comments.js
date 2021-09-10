@@ -50,7 +50,7 @@ function sendComment(reply){
         url: myURL,
         data:{
             '_token': $('meta[name="csrf-token"]').attr('content'),
-            'comment': $('.comment').val(),
+            'comment': $('textarea.comment').val(),
             'reply': reply,
         },
         success:function(data){

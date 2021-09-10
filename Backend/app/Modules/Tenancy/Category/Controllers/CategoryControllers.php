@@ -20,7 +20,7 @@ class CategoryControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -33,6 +33,7 @@ class CategoryControllers extends Controller {
             'modelName' => 'Category',
             'icon' => ' fas fa-tags',
             'sortName' => 'name_'.LANGUAGE_PREF,
+            'addOne' => trans('main.newCategory'),
         ];
         $colors = [
             ['id'=>1,'title'=>trans('main.green')],
@@ -91,6 +92,7 @@ class CategoryControllers extends Controller {
                 'index' => '',
                 'options' => $channels,
                 'label' => trans('main.channel'),
+                'anchor-class' => 'badge badge-dark',
             ],
             'color' => [
                 'label' => trans('main.color'),
@@ -123,13 +125,6 @@ class CategoryControllers extends Controller {
         ];
 
         $data['modelData'] = [
-            'channel' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'options' => $channels,
-                'label' => trans('main.channel'),
-                'specialAttr' => '',
-            ],
             'color_id' => [
                 'type' => 'select',
                 'class' => 'form-control',
@@ -247,7 +242,7 @@ class CategoryControllers extends Controller {
             }
         }
 
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->color_id = $input['color_id'];
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
@@ -291,7 +286,7 @@ class CategoryControllers extends Controller {
         $labelId = $result['data']['label']['id'];
 
         $dataObj = new Category;
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->color_id = 0;
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];

@@ -164,6 +164,7 @@ class NoonControllers extends Controller {
             }
             $dataList['data'] = $fullData;
             $dataList['data']['paymentGateaway'] = 'noon';
+            $dataList['data']['transaction_id'] = $transactionObj->tran_ref;
 
             $transactionObj->response_status = $noon->result->order->status;
             $transactionObj->save();

@@ -36,8 +36,8 @@ class Template extends Model{
         }
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel']);
-        }else if(Session::has('channel')){
-            $source->where('channel',Session::get('channel'));
+        }else if(Session::has('channelCode')){
+            $source->where('channel',Session::get('channelCode'));
         }
         $source->orderBy('sort','ASC');
         return self::generateObj($source);

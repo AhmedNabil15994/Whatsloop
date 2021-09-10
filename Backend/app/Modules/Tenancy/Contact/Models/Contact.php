@@ -94,9 +94,9 @@ class Contact extends Model{
                 if($status != null){
                     $source->where('status',$status);
                 }
-        if(Session::has('channel')){
+        if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+                $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
         if($id != null){
@@ -148,9 +148,9 @@ class Contact extends Model{
 
                 });
                 
-        if(Session::has('channel')){
+        if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+                $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
 
@@ -175,9 +175,9 @@ class Contact extends Model{
 
     static function getFullContactsInfo($group_id,$group_message_id){
         $source = self::NotDeleted()->with('Reports')->where('group_id',$group_id);
-        if(Session::has('channel')){
+        if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+                $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
         $source->orderBy('sort','ASC');
@@ -186,9 +186,9 @@ class Contact extends Model{
 
     static function getContactsReports(){
         $source = self::NotDeleted();
-        if(Session::has('channel')){
+        if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channel'))->orWhere('channel','');
+                $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
         $source = $source->select('*','phone as phones',\DB::raw('count(*) as total'))->groupBy('created_at','group_id')->orderBy('created_at','DESC')->get();

@@ -18,17 +18,6 @@
                     <form class="form-horizontal" method="POST" action="{{ URL::to('/'.$data->designElems['mainData']['url'].'/create') }}">
                         @csrf
                         <div class="form-group row mb-3">
-                            <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.client') }} :</label>
-                            <div class="col-9">
-                                <select class="form-control" data-toggle="select2" name="user_id">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($data->clients as $client)
-                                    <option value="{{ $client->id }}" {{ $client->id == old('user_id') ? 'selected' : '' }}>{{ '#'.$client->id .' - '. $client->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group row mb-3">
                             <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.department') }} :</label>
                             <div class="col-9">
                                 <select class="form-control" data-toggle="select2" name="department_id">
@@ -88,10 +77,10 @@
                             </div>
                         </div>
                         @endif
-                        <div class="form-group mb-0 justify-content-end row">
-                            <div class="col-9">
+                        <div class="form-group justify-content-end row">
+                            <div class="col-9 text-right">
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
-                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
                     </form>

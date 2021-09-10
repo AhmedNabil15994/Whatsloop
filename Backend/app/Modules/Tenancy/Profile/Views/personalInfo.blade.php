@@ -23,12 +23,12 @@
                     @if(\Helper::checkRules('paymentInfo,taxInfo'))
                     <li><a href="#tab6" class="nav-link" data-toggle="tab"><i class="mdi mdi-credit-card"></i> {{ trans('main.payment_setting') }}</a></li>
                     @endif
-                    @if(\Helper::checkRules('notifications'))
+                   {{--  @if(\Helper::checkRules('notifications'))
                     <li><a href="#tab7" class="nav-link" data-toggle="tab"><i class="fe fe-bell"></i> {{ trans('main.notifications') }}</a></li>
                     @endif
                     @if(\Helper::checkRules('offers'))
                     <li><a href="#tab8" class="nav-link" data-toggle="tab"><i class="fe fe-radio"></i> {{ trans('main.offers') }}</a></li>
-                    @endif
+                    @endif --}}
                 </ul>
             </div>
         </div>
@@ -62,7 +62,7 @@
                                         <div class="form-group row">
                                             <label class="col-3 col-form-label">{{ trans('main.phone') }} :</label>
                                             <div class="col-9">
-                                                <input class="form-control teles" type="tel" value="{{ $data->data->phone }}" name="phone" placeholder="{{ trans('main.phone') }}">
+                                                <input class="form-control teles" dir="ltr" type="tel" value="{{ $data->data->phone }}" name="phone" placeholder="{{ trans('main.phone') }}">
                                             </div>
                                         </div> 
                                         <div class="form-group row">
@@ -71,7 +71,7 @@
                                                 <input class="form-control" type="text" value="{{ $data->data->domain }}" name="domain" placeholder="{{ trans('main.domain') }}">
                                             </div>
                                         </div> 
-                                        <div class="form-group row">
+                                        <div class="form-group row d-hidden">
                                             <label class="col-3 col-form-label">{{ trans('main.pinCode') }} :</label>
                                             <div class="col-9">
                                                 <input class="form-control" name="pin_code" value="{{ $data->data->pin_code }}" placeholder="{{ trans('main.pinCode') }}">
@@ -80,7 +80,7 @@
                                         <div class="form-group row">
                                             <label class="col-3 col-form-label">{{ trans('main.emergencyNumber') }}</label>
                                             <div class="col-9">
-                                                <input type="tel" name="emergency_number" value="{{ $data->data->emergency_number }}" class="form-control teles">
+                                                <input type="tel" name="emergency_number" value="{{ $data->data->emergency_number }}" class="form-control teles" dir="ltr">
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -134,8 +134,8 @@
                                         <hr class="mt-5">
                                         <div class="form-group justify-content-end row">
                                             <div class="col-9 text-right">
-                                                <button class="btn btn-success" type="submit">{{ trans('main.edit') }}</button>
-                                                <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                                                <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                                <button name="Submit" type="submit" class="btn btn-success SaveBTNs" id="SubmitBTNs">{{ trans('main.add') }}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -166,9 +166,9 @@
                                         </div>
                                         <hr class="mt-5">
                                         <div class="form-group justify-content-end row">
-                                            <div class="col-9 text-right">
-                                                <button class="btn btn-success" type="submit">{{ trans('main.edit') }}</button>
-                                                <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                                            <div class="col-12 text-right">
+                                                <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -252,8 +252,8 @@
                                         <hr class="mt-5">
                                         <div class="form-group justify-content-end row">
                                             <div class="col-9 text-right">
-                                                <button class="btn btn-success" type="submit">{{ trans('main.edit') }}</button>
-                                                <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                                                <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -264,7 +264,7 @@
                 </div>
                 @endif
 
-                @if(\Helper::checkRules('notifications'))
+                {{-- @if(\Helper::checkRules('notifications'))
                 <div class="tab-pane" id="tab7">
                     <div class="row">
                         <div class="col-12">
@@ -283,9 +283,9 @@
                                         </div> 
                                         <hr class="mt-5">
                                         <div class="form-group justify-content-end row">
-                                            <div class="col-9 text-right">
-                                                <button class="btn btn-success" type="submit">{{ trans('main.edit') }}</button>
-                                                <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                                            <div class="col-12 text-right">
+                                                <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -315,9 +315,9 @@
                                         </div> 
                                         <hr class="mt-5">
                                         <div class="form-group justify-content-end row">
-                                            <div class="col-9 text-right">
-                                                <button class="btn btn-success" type="submit">{{ trans('main.edit') }}</button>
-                                                <a href="{{ URL::to('/profile') }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
+                                            <div class="col-12 text-right">
+                                                <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
+                                                <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -326,7 +326,7 @@
                         </div>
                     </div>
                 </div>
-                @endif
+                @endif --}}
             </div>
         </div>
     </div>

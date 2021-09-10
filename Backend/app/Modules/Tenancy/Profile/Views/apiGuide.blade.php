@@ -48,11 +48,11 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header bg-dark py-3 text-white">
+                <div class="card-header label label-light-success py-3">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase1" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase1" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""></a>
                     </div>
-                    <h5 class="card-title mb-0 text-white">{{ trans('main.send_text') }}</h5>
+                    <h5 class="card-title mb-0 text-black">{{ trans('main.send_text') }}</h5>
                 </div>
                 <div id="cardCollpase1" class="collapse example show" style="">
                     <div class="card-body">
@@ -98,11 +98,11 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header bg-dark py-3 text-white">
+                <div class="card-header label label-light-success py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""></a>
                     </div>
-                    <h5 class="card-title mb-0 text-white">{{ trans('main.send_file') }}</h5>
+                    <h5 class="card-title mb-0 text-black">{{ trans('main.send_file') }}</h5>
                 </div>
                 <div id="cardCollpase2" class="collapse example" style="">
                     <div class="card-body">
@@ -150,11 +150,11 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header bg-dark py-3 text-white">
+                <div class="card-header label label-light-success py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""></a>
                     </div>
-                    <h5 class="card-title mb-0 text-white">{{ trans('main.send_sound') }}</h5>
+                    <h5 class="card-title mb-0 text-black">{{ trans('main.send_sound') }}</h5>
                 </div>
                 <div id="cardCollpase2" class="collapse example" style="">
                     <div class="card-body">
@@ -204,11 +204,11 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header bg-dark py-3 text-white">
+                <div class="card-header label label-light-success py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""></a>
                     </div>
-                    <h5 class="card-title mb-0 text-white">{{ trans('main.send_location') }}</h5>
+                    <h5 class="card-title mb-0 text-black">{{ trans('main.send_location') }}</h5>
                 </div>
                 <div id="cardCollpase2" class="collapse example" style="">
                     <div class="card-body">
@@ -257,11 +257,11 @@
     <div class="row">
         <div class="col">
             <div class="card">
-                <div class="card-header bg-dark py-3 text-white">
+                <div class="card-header label label-light-success py-3 text-white">
                     <div class="card-widgets">
-                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""><i class="mdi mdi-minus"></i></a>
+                        <a data-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="true" aria-controls="cardCollpase2" class=""></a>
                     </div>
-                    <h5 class="card-title mb-0 text-white">{{ trans('main.send_link') }}</h5>
+                    <h5 class="card-title mb-0 text-black">{{ trans('main.send_link') }}</h5>
                 </div>
                 <div id="cardCollpase2" class="collapse example" style="">
                     <div class="card-body">

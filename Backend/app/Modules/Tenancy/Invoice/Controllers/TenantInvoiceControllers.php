@@ -11,6 +11,7 @@ use App\Models\UserExtraQuota;
 use App\Models\UserChannels;
 use App\Models\CentralChannel;
 use App\Models\Variable;
+use App\Models\CentralVariable;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -25,7 +26,7 @@ class TenantInvoiceControllers extends Controller {
 
     public function getData(){
         $data['mainData'] = [
-            'title' => trans('main.invoices'),
+            'title' => trans('main.subs_invoices'),
             'url' => 'invoices',
             'name' => 'invoices',
             'nameOne' => 'invoice',
@@ -173,6 +174,15 @@ class TenantInvoiceControllers extends Controller {
         }
         // dd('here');
         $data['data'] = Invoice::getData($userObj);
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
         $data['designElems'] = $this->getData();
         $data['clients'] = $data['designElems']['clients'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.invoices') ;

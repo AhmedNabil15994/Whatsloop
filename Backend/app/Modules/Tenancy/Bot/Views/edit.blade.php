@@ -21,17 +21,6 @@
                         @csrf
                         <input type="hidden" name="status">
                         <div class="form-group row mb-3">
-                            <label class="col-3 col-form-label">{{ trans('main.channel') }} :</label>
-                            <div class="col-9">
-                                <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="channel">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($data->channels as $group)
-                                    <option value="{{ $group->id }}" {{ str_replace(trans('main.channel'). ' #', '', $data->data->channel) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div> 
-                        <div class="form-group row mb-3">
                             <label class="col-3 col-form-label">{{ trans('main.messageType') }} :</label>
                             <div class="col-9">
                                 <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="message_type">
@@ -331,9 +320,9 @@
                         </div>
                         <hr class="mt-5">
                         <div class="form-group justify-content-end row">
-                            <div class="col-9">
+                            <div class="col-9 text-right">
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset float-left">{{ trans('main.back') }}</a>
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
-                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btn-danger Reset">{{ trans('main.back') }}</a>
                             </div>
                         </div>
                     </form>

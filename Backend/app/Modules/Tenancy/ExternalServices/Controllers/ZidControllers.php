@@ -555,7 +555,7 @@ class ZidControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->name = $value->name;
             $channels[] = $channelObj;
         }
@@ -601,14 +601,14 @@ class ZidControllers extends Controller {
             'statusText' => [
                 'type' => 'select',
                 'class' => 'form-control ',
-                'label' => trans('main.status'),
+                'label' => trans('main.type'),
                 'index' => '',
                 'options' => $options,
             ],
             'status' => [
                 'type' => 'select',
                 'class' => 'form-control ',
-                'label' => trans('main.type'),
+                'label' => trans('main.status'),
                 'index' => '',
                 'options' => $actives,
             ],
@@ -638,14 +638,14 @@ class ZidControllers extends Controller {
                 'anchor-class' => 'pre-space',
             ],   
             'statusText' => [
-                'label' => trans('main.status'),
+                'label' => trans('main.type'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusText',
                 'anchor-class' => '',
             ],  
             'statusIDText' => [
-                'label' => trans('main.type'),
+                'label' => trans('main.status'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusIDText',
@@ -728,6 +728,7 @@ class ZidControllers extends Controller {
         ];
         $userObj = User::getData(User::getOne(USER_ID));
         $data['channel'] = $userObj->channels[0];
+        $data['channel']->id = Session::get('channelCode');
         $data['statuses'] = [
                 ['id'=>'جديد','name'=>'جديد'],
                 ['id'=>'جاري التجهيز','name'=>'جاري التجهيز'],
@@ -751,7 +752,7 @@ class ZidControllers extends Controller {
         }
 
         $dataObj = new ModTemplate;
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->content_ar = $input['content_ar'];
         $dataObj->content_en = $input['content_en'];
         $dataObj->statusText = $input['statusText'];

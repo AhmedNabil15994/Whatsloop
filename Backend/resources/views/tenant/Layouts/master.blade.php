@@ -14,13 +14,14 @@
 	<body class="main-body tena light-theme app sidebar-mini active leftmenu-color">
 		<!-- Begin page -->
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
+		@if(Request::segment(1) != 'menu')
 		@include('tenant.Layouts.sidebar')
-		
+		@endif
 		<!-- main-content -->
-		<div class="main-content app-content">
+		<div class="main-content app-content" {{ Request::segment(1) == 'menu' ? ' style=margin:0 ': '' }}>
 			@include('tenant.Layouts.header')
 			<!-- container -->
-			<div class="container-fluid mg-t-20">
+			<div class="container-fluid mg-t-35 ">
 				@include('tenant.Layouts.breadcrumb')
 				@yield('content')
 			</div>

@@ -11,7 +11,7 @@ return [
     'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
 
     'domain_model' => Domain::class,
-
+    'protocol' => 'http://',
     /**
      * The list of domains hosting your central app.
      *

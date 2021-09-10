@@ -5,6 +5,7 @@ Dashboard
 ----------------------------------------------------------*/
 Route::group(['prefix' => '/'] , function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardControllers::class,'Dashboard'])->name('userDash');
+    Route::get('/menu', [App\Http\Controllers\DashboardControllers::class,'menu']);
 
     Route::post('/changeChannel', [App\Http\Controllers\DashboardControllers::class,'changeChannel']);
     

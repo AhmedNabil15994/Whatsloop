@@ -2,7 +2,7 @@
 <?php
 $current_page = $data->pagination->current_page;
 $total_pages = $data->pagination->last_page;
-$per_page = count($data->data);
+$per_page = count($data->data) == 0 ? 1 : count($data->data);
 $page = $current_page;
 
 $total = $total_pages;

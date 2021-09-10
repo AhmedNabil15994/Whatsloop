@@ -24,6 +24,10 @@
     <input type="hidden" name="data-tabs" value="{{ \Helper::checkRules('copy-'.$data->designElems['mainData']['nameOne']) }}">
     @endif
 
+    @if($data->designElems['mainData']['url'] == 'tickets')
+    <input type="hidden" name="tenant" value="1">
+    @endif
+
     @if($data->designElems['mainData']['url'] == 'groupMsgs' || $data->designElems['mainData']['url'] == 'tickets' || $data->designElems['mainData']['url'] == 'invoices')
     <input type="hidden" name="data-tab" value="{{ \Helper::checkRules('view-'.$data->designElems['mainData']['nameOne']) }}">
     @endif
@@ -70,23 +74,23 @@
                                     </div> 
                                 </div>  --}}
                                 @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                                <a class="btn btn-primary btn-icon" data-toggle="tooltip" data-original-title=" {{ $data->designElems['mainData']['url'] == 'groupMsgs' ? trans('main.send') : trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
+                                <a class="btn label label-success" data-toggle="tooltip" data-original-title=" {{ $data->designElems['mainData']['url'] == 'groupMsgs' ? trans('main.send') : trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
                                     @if($data->designElems['mainData']['url'] == 'groupMsgs')
-                                    <i class="typcn typcn-location-arrow"></i>
+                                    <i class="si si-cursor ml-1 mr-1"></i> {{ $data->designElems['mainData']['addOne'] }}  
                                     @else
-                                    <i class="typcn typcn-document-add"></i>
+                                    <i class="si si-plus ml-1 mr-1"></i> {{ $data->designElems['mainData']['addOne'] }}  
                                     @endif
                                 </a>
                                 @endif
 
                                 @if(\Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'groupMsgs')
-                                    <a href="#" class="btn btn-success btn-icon quickEdit" data-toggle="tooltip" data-original-title="{{ trans('main.fastEdit') }}">
-                                        <i class="typcn typcn-edit"></i>
+                                    <a href="#" class="btn label label-default quickEdit" data-toggle="tooltip" data-original-title="{{ trans('main.fastEdit') }}">
+                                        <i class="si si-note ml-1 mr-1"></i> {{ trans('main.fastEdit') }}
                                     </a>
                                 @endif
 
-                                <a href="#" class="btn btn-info btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
-                                    <i class="typcn typcn-info-large-outline"></i>
+                                <a href="#" class="btn label label-light-warning btn-icon search-mode" data-toggle="tooltip" data-original-title="{{ trans('main.advancedSearchTip') }}">
+                                    <i class="si si-info pd-t-10"></i>
                                 </a>
                             </div> 
                             @endif
@@ -160,18 +164,18 @@
                                     </div>
                                     <div class="m-separator"></div>
                                     <div class="row mt-4">
-                                        <div class="col-lg-12 text-left">
-                                            <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
-                                                <span class="ladda-spinner"></span>
-                                                <div class="ladda-progress" style="width: 75px;"></div>
-                                            </button>
+                                        <div class="col-lg-12 text-right">
                                             <a href="{{ URL::current() }}" class="btn btn-light" id="m_reset">
                                                 <span>
                                                     <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
+                                            <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
+                                                <span class="ladda-spinner"></span>
+                                                <div class="ladda-progress" style="width: 75px;"></div>
+                                            </button>
                                         </div>
                                     </div>
                                 </form>

@@ -20,7 +20,7 @@ class GroupNumbersControllers extends Controller {
         $channels = [];
         foreach ($userObj->channels as $key => $value) {
             $channelObj = new \stdClass();
-            $channelObj->id = $value->id;
+            $channelObj->id = Session::get('channelCode');
             $channelObj->title = $value->name;
             $channels[] = $channelObj;
         }
@@ -32,6 +32,7 @@ class GroupNumbersControllers extends Controller {
             'modelName' => 'GroupNumber',
             'icon' => 'fas fa-users',
             'sortName' => 'name_'.LANGUAGE_PREF,
+            'addOne' => trans('main.newGroupNumber'),
         ];
 
         $data['searchData'] = [
@@ -75,7 +76,7 @@ class GroupNumbersControllers extends Controller {
                 'type' => '',
                 'className' => 'edits selects',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable',
+                'anchor-class' => 'editable badge badge-dark',
             ],
             'name_ar' => [
                 'label' => trans('main.titleAr'),
@@ -101,13 +102,6 @@ class GroupNumbersControllers extends Controller {
         ];
 
         $data['modelData'] = [
-            'channel' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'options' => $channels,
-                'label' => trans('main.channel'),
-                'specialAttr' => '',
-            ],
             'name_ar' => [
                 'type' => 'text',
                 'class' => 'form-control',
@@ -139,13 +133,11 @@ class GroupNumbersControllers extends Controller {
 
     protected function validateInsertObject($input){
         $rules = [
-            'channel' => 'required',
             'name_ar' => 'required',
             'name_en' => 'required',
         ];
 
         $message = [
-            'channel.required' => trans('main.channelValidate'),
             'name_ar.required' => trans('main.titleArValidate'),
             'name_en.required' => trans('main.titleEnValidate'),
         ];
@@ -195,7 +187,7 @@ class GroupNumbersControllers extends Controller {
             return redirect()->back();
         }
 
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
         $dataObj->description_ar = $input['description_ar'];
@@ -231,7 +223,7 @@ class GroupNumbersControllers extends Controller {
 
 
         $dataObj = new GroupNumber;
-        $dataObj->channel = $input['channel'];
+        $dataObj->channel = Session::get('channelCode');
         $dataObj->name_ar = $input['name_ar'];
         $dataObj->name_en = $input['name_en'];
         if($request->ajax()){
@@ -305,6 +297,7 @@ class GroupNumbersControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
         $data['channels'] = User::getData(User::getOne(USER_ID))->channels;
+        $data['channels'][0]->id = Session::get('channelCode');
         $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
         return view('Tenancy.GroupNumbers.Views.add')->with('data', (object) $data);
     }

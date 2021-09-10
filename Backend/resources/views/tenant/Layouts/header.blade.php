@@ -314,16 +314,16 @@
                             <div class="main-img-user"><img alt="" src="{{ $image }}"></div>
                             <h6>{{ FULL_NAME }}</h6><span>{{ GROUP_NAME }}</span>
                         </div>
-                        <a class="dropdown-item" href="{{ URL::to('/profile/personalInfo') }}"><i class="far fa-user"></i> {{ trans('main.profile') }}</a>
+                        <a class="dropdown-item" href="{{ URL::to('/profile/subscription') }}"><i class="fas fa-sliders-h"></i> {{ trans('main.subscriptionManage') }}</a>
                         {{-- <a class="dropdown-item" href=""><i class="far fa-clock"></i> Activity Logs</a> // Sessions logs --}}
                         <a class="dropdown-item" href="{{ URL::to('/invoices') }}"><i class="fas fa-file-alt"></i> {{ trans('main.subs_invoices') }}</a>
-                        <a class="dropdown-item" href="{{ URL::to('/profile') }}"><i class="fas fa-sliders-h"></i> {{ trans('main.account_setting') }}</a>
+                        <a class="dropdown-item" href="{{ URL::to('/profile/personalInfo') }}"><i class="far fa-user"></i> {{ trans('main.account_setting') }}</a>
                         <a class="dropdown-item" href="{{ URL::to('/helpCenter') }}"><i class="ti ti-help-alt"></i> {{ trans('main.helpCenter') }}</a>
                         <a class="dropdown-item" href="{{ URL::to('/logout') }}"><i class="fas fa-sign-out-alt"></i> {{ trans('main.logout') }}</a>
                     </div>
                 </div>
-                <div class="dropdown main-header-message right-toggle">
-                    <a class="nav-link pr-0" data-toggle="sidebar-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}" data-target=".sidebar-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}">
+                <div class="main-header-message right-toggle">
+                    <a class="nav-link pr-0" href="{{ URL::to('/menu') }}">
                         <i class="ion ion-md-menu tx-20 bg-transparent"></i>
                     </a>
                 </div>

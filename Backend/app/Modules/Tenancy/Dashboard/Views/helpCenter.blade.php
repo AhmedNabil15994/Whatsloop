@@ -25,7 +25,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="panel-body tabs-menu-body main-content-body-right border">
+            <div class="panel-body tabs-menu-body main-content-body-right border faqCenter">
                 <div class="tab-content">
                     <div class="tab-pane {{ Request::has('category_id') ? '' : 'active' }}" id="tab4">
                         <div class="row">
@@ -142,63 +142,65 @@
                         </div>
                     </div>
                     <div class="tab-pane {{ Request::has('category_id') ? 'active' : '' }}" id="tab5">
-                        <div class="row">
-                            <div class="col-8 logs-col">
-                                @foreach($data->changeLogs as $logKey => $oneLog)
-                                <div class="col logs-col mb-3">
-                                    <div class="card  pricing-card overflow-hidden">
-                                        <div class="row bg-{{ $oneLog->color }} text-center">
-                                            @if($oneLog->category != '')
-                                            <div class="card-status bg-{{ $oneLog->color }}"></div>
-                                            <span class="mb-2 cats">{{ $oneLog->category }}</span>
-                                            @endif
-                                        </div>
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="text-capitalize">
-                                                <a href="#">{{ $oneLog->title }}</a>
-                                                <small class="text-muted float-right">{{ $oneLog->dateForHuman }}</small>
-                                            </h5>
-                                            <div class="clearfix"></div>
-                                            <div class="text-muted {{ $oneLog->description != '' ? 'mg-b-10' : '' }} desc">{{ $oneLog->description }}</div>
-                                        </div>
-                                        <img class="card-img-bottom" src="{{ $oneLog->photo }}" alt="Changelog Photo">
-                                        <div class="pt-3 emoji mt-3">
-                                            <div class="ml-auto imgs mb-3 text-muted text-center">
-                                                <img class="emoji-img" data-area="1" src="{{ asset('emoji/1.svg') }}" alt="">
-                                                <img class="emoji-img" data-area="2" src="{{ asset('emoji/2.svg') }}" alt="">
-                                                <img class="emoji-img" data-area="3" src="{{ asset('emoji/3.svg') }}" alt="">
-                                                <img class="emoji-img" data-area="4" src="{{ asset('emoji/4.svg') }}" alt="">
-                                                <img class="emoji-img" data-area="5" src="{{ asset('emoji/5.svg') }}" alt="">
+                        <div class="card changLogs">
+                            <div class="row">
+                                <div class="col-8 logs-col">
+                                    @foreach($data->changeLogs as $logKey => $oneLog)
+                                    <div class="col logs-col mb-3">
+                                        <div class="card  pricing-card overflow-hidden">
+                                            <div class="row bg-{{ $oneLog->color }} text-center">
+                                                @if($oneLog->category != '')
+                                                <div class="card-status bg-{{ $oneLog->color }}"></div>
+                                                <span class="mb-2 cats">{{ $oneLog->category }}</span>
+                                                @endif
                                             </div>
-                                            <textarea name="reply" class="form-control d-block" placeholder="{{ trans('main.postComment') }}"></textarea>
-                                            <input type="hidden" name="rate" value="">
-                                            <button class="btn addRate d-block btn-primary mb-2 mt-2 w-100" data-area="{{ $oneLog->id }}"> <i class="typcn typcn-location-arrow"></i> {{ trans('main.send') }}</button>
+                                            <div class="card-body d-flex flex-column">
+                                                <h5 class="text-capitalize">
+                                                    <a href="#">{{ $oneLog->title }}</a>
+                                                    <small class="text-muted float-right">{{ $oneLog->dateForHuman }}</small>
+                                                </h5>
+                                                <div class="clearfix"></div>
+                                                <div class="text-muted {{ $oneLog->description != '' ? 'mg-b-10' : '' }} desc">{{ $oneLog->description }}</div>
+                                            </div>
+                                            <img class="card-img-bottom" src="{{ $oneLog->photo }}" alt="Changelog Photo">
+                                            <div class="pt-3 emoji mt-3">
+                                                <div class="ml-auto imgs mb-3 text-muted text-center">
+                                                    <img class="emoji-img" data-area="1" src="{{ asset('emoji/1.svg') }}" alt="">
+                                                    <img class="emoji-img" data-area="2" src="{{ asset('emoji/2.svg') }}" alt="">
+                                                    <img class="emoji-img" data-area="3" src="{{ asset('emoji/3.svg') }}" alt="">
+                                                    <img class="emoji-img" data-area="4" src="{{ asset('emoji/4.svg') }}" alt="">
+                                                    <img class="emoji-img" data-area="5" src="{{ asset('emoji/5.svg') }}" alt="">
+                                                </div>
+                                                <textarea name="reply" class="form-control d-block" placeholder="{{ trans('main.postComment') }}"></textarea>
+                                                <input type="hidden" name="rate" value="">
+                                                <button class="btn addRate d-block btn-primary mb-2 mt-2 w-100" data-area="{{ $oneLog->id }}"> <i class="typcn typcn-location-arrow"></i> {{ trans('main.send') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div><!-- end col-->
+                                <div class="col-4">
+                                    <div class="col logs-col mb-3">
+                                        <div class="card  pricing-card overflow-hidden">
+                                            <div class="row bg-primary text-center">
+                                                <div class="card-status bg-primary"></div>
+                                                <span class="mb-2 cats">{{ trans('main.filterByCat') }}</span>
+                                            </div>
+                                            <div class="card-body d-flex flex-column">
+                                                @foreach($data->categories as $categoryKey => $oneCategory)
+                                                <div class="col mb-2">
+                                                    <label class="ckbox">
+                                                        <input type="checkbox" name="category_id" data-area="{{ $oneCategory->id }}" {{ Request::has('category_id') && Request::get('category_id') == $oneCategory->id ? 'checked' : '' }}>
+                                                        <span>{{ $oneCategory->title }}</span>
+                                                    </label>
+                                                </div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                @endforeach
-                            </div><!-- end col-->
-                            <div class="col-4">
-                                <div class="col logs-col mb-3">
-                                    <div class="card  pricing-card overflow-hidden">
-                                        <div class="row bg-primary text-center">
-                                            <div class="card-status bg-primary"></div>
-                                            <span class="mb-2 cats">{{ trans('main.filterByCat') }}</span>
-                                        </div>
-                                        <div class="card-body d-flex flex-column">
-                                            @foreach($data->categories as $categoryKey => $oneCategory)
-                                            <div class="col mb-2">
-                                                <label class="ckbox">
-                                                    <input type="checkbox" name="category_id" data-area="{{ $oneCategory->id }}" {{ Request::has('category_id') && Request::get('category_id') == $oneCategory->id ? 'checked' : '' }}>
-                                                    <span>{{ $oneCategory->title }}</span>
-                                                </label>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> 
+                            </div> 
+                        </div>
                     </div>
                     <div class="tab-pane" id="tab6">
                         <!-- row -->
@@ -212,7 +214,7 @@
                                         </div>
                                         <div aria-multiselectable="true" class="accordion" id="accordion" role="tablist">
                                             @foreach($data->data as $key => $one)
-                                            <div class="card mb-0">
+                                            <div class="card mb-0 faq">
                                                 <div class="card-header" id="headingOne{{ $key }}" role="tab">
                                                     <a aria-controls="collapseOne{{ $key }}" aria-expanded="true" data-toggle="collapse" href="#collapseOne{{ $key }}">{{ $one->title }}</a>
                                                 </div>

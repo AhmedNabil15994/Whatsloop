@@ -31,6 +31,11 @@ class GeneralAuthEngine
                 return \TraitsFunc::ErrorMessage("Invalid Channel, Please Check Your Credentials", 401);
             }
 
+            if(($request->segment(1) == 'products') && in_array($request->segment(2),['getProducts','getProduct','sendProduct'])){
+                $checkChannel = Channel::NotDeleted()->first();
+            }
+           
+
             define('CHANNEL_ID', $checkChannel->id);
             define('CHANNEL_TOKEN', $checkChannel->token);
         }

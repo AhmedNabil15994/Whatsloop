@@ -27,7 +27,7 @@ class RoutesGate {
             return $next($request);
         }
 
-        if(\Request::segment(1) != 'livechatApi'){
+        if(\Request::segment(1) != 'livechat'){
             $checkPermissions = User::userPermission($rules);
             if(!$checkPermissions) {
                 return redirect('401');

@@ -1,6 +1,8 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Order;
+use App\Models\Product;
 
 class ChatMessage extends Model{
     use \TraitsFunc;
@@ -83,6 +85,48 @@ class ChatMessage extends Model{
         $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
         $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
         $dataObj->save();
+
+        if(isset($source->metadata)){
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $data['orderId'] = $source->metadata['orderId'];
+            $data['orderToken'] = $source->metadata['orderToken'];
+            $result = $mainWhatsLoopObj->getOrder($data);
+            $result = $result->json();
+
+            if($result['status']['status'] == 1 && isset($result['data']['orders']) && !empty($result['data']['orders'])  ){
+                $orderObj = Order::getOne($data['orderId']);
+                if(!$orderObj){
+                    $orderObj = new Order;
+                    $orderObj->status = 1;
+                }
+
+                $prodsArr = [];
+                foreach($result['data']['orders'][0]['products'] as $oneProduct){
+                    $prodsArr[] = $oneProduct['id'];
+                    $productObj = Product::getOne($oneProduct['id']);
+                    if(!$productObj){
+                        $productObj = new Product;
+                    }
+
+                    $productObj->product_id =  $oneProduct['id'];
+                    $productObj->name =  $oneProduct['name'];
+                    $productObj->currency =  $oneProduct['currency'];
+                    $productObj->price =  $oneProduct['price'];
+                    $productObj->images =  serialize($oneProduct['images']);
+                    $productObj->save();
+                }
+
+                $orderObj->order_id =  $source->metadata['orderId'];
+                $orderObj->subtotal = $result['data']['orders'][0]['subtotal'];
+                $orderObj->tax = $result['data']['orders'][0]['tax'];
+                $orderObj->total = $result['data']['orders'][0]['total'];
+                $orderObj->message_id = $dataObj->id;
+                $orderObj->products = serialize($result['data']['orders'][0]['products']);
+                $orderObj->client_id = $dataObj->author;
+                $orderObj->created_at = $result['data']['orders'][0]['createdAt'];
+                $orderObj->save();
+            }
+        }
         return $dataObj;
     }
 

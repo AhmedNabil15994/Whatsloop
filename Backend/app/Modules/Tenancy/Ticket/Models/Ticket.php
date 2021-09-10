@@ -133,6 +133,7 @@ class Ticket extends Model{
             $dataObj = new \stdClass();
             $dataObj->photo = self::getPhotoPath($id, $value);
             $dataObj->photo_name = $value;
+            $dataObj->file_type = \ImagesHelper::checkExtensionType(explode('.', $value)[1]);
             $dataObj->photo_size = \ImagesHelper::getPhotoSize($dataObj->photo);
             array_push($myImages, $dataObj);
         }

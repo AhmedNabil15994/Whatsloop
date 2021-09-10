@@ -17,36 +17,7 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-11">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ URL::to('/dashboard') }}">{{ trans('main.dashboard') }}</a></li>
-                        <li class="breadcrumb-item">{{ ucfirst($data->designElems['mainData']['service']) }}</li>
-                        <li class="breadcrumb-item active">{{ $data->designElems['mainData']['title'] }}</li>
-                    </ol>
-                </div>
-                <h3 class="page-title">{{ $data->designElems['mainData']['title'] }}</h3>
-            </div>
-        </div>
-        <div class="col-1 text-right">
-            <div class="btn-group dropleft mb-3 mt-2">
-                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="mdi mdi-cog"></i>
-                </button>
-                <div class="dropdown-menu">
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
-                    <a class="dropdown-item" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
-                        <i class="fa fa-plus"></i> {{ trans('main.add') }}
-                    </a>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>     
-    <!-- end page title --> 
+    
     <input type="hidden" name="data-area" value="{{ \Helper::checkRules('edit-'.$data->designElems['mainData']['nameOne']) }}">
     <input type="hidden" name="data-cols" value="{{ \Helper::checkRules('delete-'.$data->designElems['mainData']['nameOne']) }}">
     <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
@@ -69,27 +40,27 @@
                                     <a class="custom-accordion-title text-reset collapsed d-block" data-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                         <i class="fa fa-search"></i>
                                         {{ trans('main.advancedSearch') }} 
-                                        <i class="mdi mdi-chevron-down accordion-arrow"></i>
+                                        <i class="mdi mdi-chevron-down accordion-arrow float-right"></i>
                                     </a>
                                 </h5>
                             </div>
                             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#custom-accordion-one">
-                                <div class="card-body m-form--fit">
-                                    <div class="row">
+                                <form class="card-body m-form--fit" method="get" action="{{ URL::current() }}">
+                                    <div class="row pt-2">
                                         @foreach($data->designElems['searchData'] as $searchKey => $searchItem)
                                         @if(in_array($searchItem['type'],['email','text','number','password']))
-                                            @if(strpos($searchKey, 'from') || strpos($searchKey, 'to'))
-                                            <div class="col">
-                                                <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                                <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" name="{{ $searchKey }}" data-col-index="{{ $searchItem['index'] }}" id="{{ $searchItem['id'] }}" placeholder="{{ $searchItem['label'] }}">
-                                            </div>
-                                            @else
-                                            <div class="col-lg-3 col-md-4 col-sm-6">
-                                                <label class="col-form-label">{{ $searchItem['label'] }}:</label>
-                                                <input type="{{ $searchItem['type'] }}" data-date-autoclose="true" class="{{ $searchItem['class'] }}" placeholder="{{ $searchItem['label'] }}" name="{{ $searchKey }}" data-col-index="{{ $searchItem['index'] }}">
-                                                <br>
-                                            </div>
-                                            @endif
+                                        @if($searchKey == 'from' || $searchKey == 'to')
+                                        <div class="col">
+                                            <label class="col-form-label">{{ $searchItem['label'] }}:</label>
+                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" value="{{ Request::get($searchKey) }}" name="{{ $searchKey }}" id="{{ $searchItem['id'] }}" placeholder="{{ $searchItem['label'] }}">
+                                        </div>
+                                        @else
+                                        <div class="col-lg-3 col-md-4 col-sm-6">
+                                            <label class="col-form-label">{{ $searchItem['label'] }}:</label>
+                                            <input type="{{ $searchItem['type'] }}" data-date-format="dd-mm-yyyy" data-date-autoclose="true" class="{{ $searchItem['class'] }}" value="{{ Request::get($searchKey) }}" placeholder="{{ $searchItem['label'] }}" name="{{ $searchKey }}">
+                                            <br>
+                                        </div>
+                                        @endif
                                         @endif
                                         @if($searchItem['type'] == 'select')
                                         <div class="col-lg-3 col-md-4 col-sm-6">
@@ -107,24 +78,22 @@
                                         @endforeach
                                     </div>
                                     <div class="m-separator"></div>
-                                    <div class="row">
+                                    <div class="row mt-4">
                                         <div class="col-lg-12 text-right">
-                                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" style="margin-top: 3px;" class="btn btn-outline-secondary" id="m_reset">
+                                            <a href="{{ URL::current() }}" class="btn btn-light" id="m_reset">
                                                 <span>
                                                     <i class="fa fa-times"></i>
                                                     <span>{{ trans('main.cancel') }}</span>
                                                 </span>
                                             </a>
-                                            <div class="mb-0 text-center" style="display: inline-block;">
-                                                <button class="ladda-button btn btn-info btn-block loginBut" id="m_search" dir="ltr" data-style="expand-right">
-                                                    <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
-                                                    <span class="ladda-spinner"></span>
-                                                    <div class="ladda-progress" style="width: 75px;"></div>
-                                                </button>
-                                            </div>
+                                            <button class="btn btn-primary loginBut" id="m_search" dir="ltr" data-style="expand-right">
+                                                <span class="ladda-label"><i class="fa fa-search"></i> {{ trans('main.search') }}</span>
+                                                <span class="ladda-spinner"></span>
+                                                <div class="ladda-progress" style="width: 75px;"></div>
+                                            </button>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>

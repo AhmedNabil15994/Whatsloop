@@ -31,6 +31,7 @@ class ContactsControllers extends Controller {
             'modelName' => 'Contact',
             'icon' => 'fas fa-users',
             'sortName' => 'name',
+            'addOne' => trans('main.newContact'),
         ];
 
         $data['searchData'] = [

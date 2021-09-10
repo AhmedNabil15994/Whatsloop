@@ -85,7 +85,7 @@
                         <div class="form-group row mb-3">
                             <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.messageContent') }} :</label>
                             <div class="col-9">
-                                <textarea class="form-control summernote" name="description" placeholder="{{ trans('main.messageContent') }}">{{ $data->data->description }}</textarea>
+                                <textarea class="form-control summernote" name="description" placeholder="{{ trans('main.messageContent') }}">{!! $data->data->description !!}</textarea>
                             </div>
                         </div>
                         <div class="form-group mb-0 justify-content-end row">

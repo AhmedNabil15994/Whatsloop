@@ -290,6 +290,7 @@ class User extends Authenticatable implements Syncable
         // $channels = User::getData($userObj)->channels;
         $channels = $userObj->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($userObj->channels))->get() : [];
         session(['channel' => !empty($channels) ? $channels[0]->id : null]);
+        session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0]->id)->first()->instanceId : null ]);
         session(['membership' => $userObj->membership_id]);
         if($isAdmin){
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
