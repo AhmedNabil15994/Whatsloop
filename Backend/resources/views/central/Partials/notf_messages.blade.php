@@ -10,7 +10,7 @@
             "onclick": null,
             "showDuration": "400",
             "hideDuration": "1000",
-            "timeOut": "2000",
+            "timeOut": "4000",
             // "extendedTimeOut": "1000",
             "showEasing": "swing",
             "hideEasing": "linear",
@@ -18,7 +18,7 @@
             "hideMethod": "fadeOut",
             "icon" : false,
         };
-        toastr.success('واتس لووب | Whats Loop', "{{ Session::get('success') }}" );
+        toastr.success('', "{{ Session::get('success') }}" );
     @endif
     @if(Session::has('error'))
         toastr.options = {
@@ -31,7 +31,7 @@
             "onclick": null,
             "showDuration": "400",
             "hideDuration": "1000",
-            "timeOut": "2000",
+            "timeOut": "4000",
             // "extendedTimeOut": "1000",
             "showEasing": "swing",
             "hideEasing": "linear",
@@ -39,6 +39,6 @@
             "hideMethod": "fadeOut",
             "icon" : false,
         };
-        toastr.error('واتس لووب | Whats Loop', "{{ Session::get('error') }}" );
+        toastr.error('', "{{ Session::get('error') }}" );
     @endif
 </script>

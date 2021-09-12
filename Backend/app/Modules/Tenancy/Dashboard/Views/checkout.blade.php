@@ -81,13 +81,13 @@
                                                 <td>
                                                     <div class="media">
                                                         <div class="card-aside-img">
-                                                            <img src="{{ asset('img/ecommerce/01.jpg') }}" alt="img" class="ht-70-f wd-70-f mg-r-20">
+                                                            <img src="{{ asset('img/ecommerce/01.jpg') }}" alt="img" class="ht-70-f wd-70-f mg-{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-20">
                                                         </div>
                                                         <div class="media-body">
                                                             <div class="card-item-desc mt-1">
                                                                 <h6 class="font-weight-semibold mt-0 text-uppercase">{{ $oneItem[2] }}</h6>
                                                                 <dl class="card-item-desc-1">
-                                                                    <dt>{{ trans('main.type') }}: </dt>
+                                                                    <dt>{{ trans('main.extra_type') }}: </dt>
                                                                     <dd>{{ trans('main.'.$oneItem[1]) }}</dd>
                                                                 </dl>
                                                                 <dl class="card-item-desc-1">
@@ -154,13 +154,13 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.address') }} :</label>
-                                                <input class="form-control" name="address" value="{{ $data->payment->address }}" placeholder="{{ trans('main.address') }}">
+                                                <input class="form-control" name="address" value="{{ isset($data->payment) ? $data->payment->address : '' }}" placeholder="{{ trans('main.address') }}">
                                             </div> 
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.address') }} 2 :</label>
-                                                <input class="form-control" name="address2" value="{{ $data->payment->address2 }}" placeholder="{{ trans('main.address') }} 2">
+                                                <input class="form-control" name="address2" value="{{ isset($data->payment) ? $data->payment->address2 : '' }}" placeholder="{{ trans('main.address') }} 2">
                                             </div> 
                                         </div>    
                                     </div>
@@ -168,13 +168,13 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.city') }} :</label>
-                                                <input class="form-control" name="city" value="{{ $data->payment->city }}" placeholder="{{ trans('main.city') }}">
+                                                <input class="form-control" name="city" value="{{ isset($data->payment) ? $data->payment->city : '' }}" placeholder="{{ trans('main.city') }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.region') }} :</label>
-                                                <input class="form-control" name="region" value="{{ $data->payment->region }}" placeholder="{{ trans('main.region') }}">
+                                                <input class="form-control" name="region" value="{{ isset($data->payment) ? $data->payment->region : '' }}" placeholder="{{ trans('main.region') }}">
                                             </div>
                                         </div>
                                     </div>
@@ -182,13 +182,13 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.postal_code') }} :</label>
-                                                <input class="form-control" name="postal_code" value="{{ $data->payment->postal_code }}" placeholder="{{ trans('main.postal_code') }}">
+                                                <input class="form-control" name="postal_code" value="{{ isset($data->payment) ? $data->payment->postal_code : '' }}" placeholder="{{ trans('main.postal_code') }}">
                                             </div> 
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.country') }} :</label>
-                                                <input class="form-control" value="{{ $data->payment->country }}" name="country" placeholder="{{ trans('main.country') }}">
+                                                <input class="form-control" value="{{ isset($data->payment) ? $data->payment->country : '' }}" name="country" placeholder="{{ trans('main.country') }}">
                                             </div> 
                                         </div>
                                     </div>
@@ -196,7 +196,7 @@
                                         <div class="col">
                                             <div class="form-group">
                                                 <label>{{ trans('main.tax_id') }} :</label>
-                                                <input class="form-control" name="tax_id" value="{{ $data->payment->tax_id }}" placeholder="{{ trans('main.tax_id') }}">
+                                                <input class="form-control" name="tax_id" value="{{ isset($data->payment) ? $data->payment->tax_id : '' }}" placeholder="{{ trans('main.tax_id') }}">
                                             </div> 
                                         </div>
                                     </div>

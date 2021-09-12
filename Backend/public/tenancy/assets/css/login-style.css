@@ -121,6 +121,17 @@ form .form--title {
     color: var(--white-color);
     background-color: #142546;
 }
+.user-form form input p{
+    width: 80.25%;
+    border-style: none;
+    outline: none;
+    height: 54px;
+    border-radius: 5px;
+    padding: 0 24px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white-color);
+}
 
 .user-form form input:focus {
     border: solid 2px var(--secondary-color);

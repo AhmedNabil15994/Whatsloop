@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_PREF }}" dir="{{ DIRECTION }}">
     <head>
         <meta charset="utf-8" />
         <title>واتس لووب | Whats Loop | {{ trans('auth.change') }}</title>
@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="{{ asset('tenancy/assets/css/login-bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('tenancy/assets/css/intlTelInput.css') }}">
         <link href="{{ asset('tenancy/assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{{ asset('tenancy/assets/css/touches.css') }}">
         <link rel="stylesheet" href="{{ asset('tenancy/assets/css/login-style.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">

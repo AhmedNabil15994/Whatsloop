@@ -9,6 +9,11 @@ html,body,
 .toast-title{
   padding-top: 6px;
 }
+html[dir="rtl"] #toast-container,
+html[dir="rtl"] #toast-container *{
+  direction: rtl;
+  text-align: right;
+}
 #toast-container,.toast{
 	width: 100% !important;
 	top: 0 !important;
@@ -2012,4 +2017,13 @@ table span img.float-left.thumb{
 }
 .card.changLogs{
   padding: 50px 20px;
+}
+.pricing-card .features{
+  min-height: 172px;
+} 
+.priceSpan{
+  position: absolute;
+}
+.custom-switch{
+  cursor: pointer;
 }

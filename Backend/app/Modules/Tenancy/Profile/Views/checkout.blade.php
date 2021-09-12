@@ -81,13 +81,13 @@
                                                 <td>
                                                     <div class="media">
                                                         <div class="card-aside-img">
-                                                            <img src="{{ asset('img/ecommerce/01.jpg') }}" alt="img" class="ht-70-f wd-70-f mg-r-20">
+                                                            <img src="{{ asset('img/ecommerce/01.jpg') }}" alt="img" class="ht-70-f wd-70-f mg-{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-20">
                                                         </div>
                                                         <div class="media-body">
                                                             <div class="card-item-desc mt-1">
                                                                 <h6 class="font-weight-semibold mt-0 text-uppercase">{{ $oneItem[2] }}</h6>
                                                                 <dl class="card-item-desc-1">
-                                                                    <dt>{{ trans('main.type') }}: </dt>
+                                                                    <dt>{{ trans('main.extra_type') }}: </dt>
                                                                     <dd>{{ trans('main.'.$oneItem[1]) }}</dd>
                                                                 </dl>
                                                                 <dl class="card-item-desc-1">

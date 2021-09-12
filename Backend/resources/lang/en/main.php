@@ -248,6 +248,8 @@ return [
 	'product' => 'Product',
 	'orders' => 'Orders',
 	'noCountryCode' => ' Without Country Code',
+	'code' => 'Code',
+	'checkCode' => 'Check Your Code',
 	'order' => 'Order No',
 	'orderItems' => 'Order Items',
 	'quantity' => 'Quantity',
@@ -494,6 +496,7 @@ return [
 	'yearly' => 'Yearly',
 	'domainValidate' => 'Domain Field is required',
 	'membershipValidate' => 'Package Field is required',
+	'addonsValidate' => 'Addons Field is required',
 	'durationTypeValidate' => 'Duration Type is required',
 	'domainValidate2' => 'Domain Already Existed',
 	'attachments' => 'Attachments',
@@ -656,4 +659,11 @@ return [
 	'transaction_id' => 'Transaction ID',
 	'transaction_price' => 'Transaction Price',
 	'paymentGateaway' => 'Payment Gateaway',
+	'checkAvailability' => 'Check Phone Availability',
+
+	'bundles' => 'Bundles',
+	'packageP' => 'Including VAT',
+	'packages_h' => 'Packages that suit you',
+	'packages_p' => 'You can choose one of these packages or go to the customized package.',
+
 ];

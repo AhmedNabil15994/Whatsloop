@@ -33,6 +33,17 @@ return [
     'GroupsControllers@arrange' => 'sort-group',
     'GroupsControllers@charts' => 'charts-group',
 
+    'BundleControllers@index' => 'list-bundles',
+    'BundleControllers@edit' => 'edit-bundle',
+    'BundleControllers@update' => 'edit-bundle',
+    'BundleControllers@fastEdit' => 'edit-bundle',
+    'BundleControllers@add' => 'add-bundle',
+    'BundleControllers@create' => 'add-bundle',
+    'BundleControllers@delete' => 'delete-bundle',
+    'BundleControllers@arrange' => 'sort-bundle',
+    'BundleControllers@sort' => 'sort-bundle',
+    'BundleControllers@charts' => 'charts-bundle',
+
     'MembershipControllers@index' => 'list-memberships',
     'MembershipControllers@edit' => 'edit-membership',
     'MembershipControllers@update' => 'edit-membership',

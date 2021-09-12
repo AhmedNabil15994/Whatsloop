@@ -311,7 +311,7 @@
     </div>
     <div class="col-xl-3 col-lg-6 col-sm-6 col-md-6">
         <div class="card text-center">
-            <a href="{{ URL::to('/profile') }}" title="">
+            <a href="{{ URL::to('/profile/personalInfo') }}" title="">
                 <div class="card-body ">
                     <div class="feature widget-2 text-center mt-0 mb-3">
                         <img src="{{ asset('images/setting.svg') }}" alt="">

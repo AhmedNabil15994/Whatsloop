@@ -26,6 +26,7 @@ use App\Models\CentralCategory;
 use App\Models\Department;
 use App\Models\Rate;
 use App\Models\ModTemplate;
+use App\Models\Bundle;
 
 class SubscriptionControllers extends Controller {
 
@@ -33,7 +34,8 @@ class SubscriptionControllers extends Controller {
 
     public function packages(){   
         $input = \Request::all();
-        $data['memberships'] = Membership::dataList(1)['data'];
+        // $data['memberships'] = Membership::dataList(1)['data'];
+        $data['bundles'] = Bundle::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
     }
 
@@ -60,6 +62,65 @@ class SubscriptionControllers extends Controller {
         $data['memberships'] = Membership::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.cart')->with('data',(object) $data);
     }
+
+    public function postBundle($id){
+        $id = (int) $id;
+        $input = \Request::all();
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
+
+        $bundleObj = Bundle::getOne($id);
+        if(!$bundleObj){
+            return redirect(404);
+        }
+        $membershipObj = Membership::getData($bundleObj->Membership);
+        $addons = [];
+        if($bundleObj->addons != null){
+            $addons = Addons::dataList(1,unserialize($bundleObj->addons))['data'];
+        }
+
+        $testData = [];
+        $total = $bundleObj->monthly_after_vat;
+        $start_date = date('Y-m-d');
+
+        $testData[] = [
+            $membershipObj->id,
+            'membership',
+            $membershipObj->title,
+            1,
+            $start_date,
+            date('Y-m-d',strtotime('+1 month',strtotime($start_date))),
+            $membershipObj->monthly_after_vat,
+            1,
+        ];
+
+        foreach($addons as $addon){
+            $testData[] = [
+                $addon->id,
+                'addon',
+                $addon->title,
+                1,
+                $start_date,
+                date('Y-m-d',strtotime('+1 month',strtotime($start_date))),
+                $addon->monthly_after_vat,
+                1,
+            ];
+        }
+
+        $data['data'] = $testData;
+        $tax = \Helper::calcTax($total);
+        $data['totals'] = [
+            $total-$tax,
+            0,
+            $tax,
+            $total,
+        ];
+
+        $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
+    }
+
 
     public function postCheckout(){
         $input = \Request::all();
@@ -219,29 +280,6 @@ class SubscriptionControllers extends Controller {
             $result = json_decode($result);
             return redirect()->away($result->data->result->redirect_url);
         }
-        
-        // dd($input['payType']);
-        // $invoiceData = [
-        //     'title' => $userObj->name,
-        //     'cc_first_name' => $names[0],
-        //     'cc_last_name' => isset($names[1]) ? $names[1] : '',
-        //     'email' => $userObj->email,
-        //     'cc_phone_number' => '',
-        //     'phone_number' => $userObj->phone,
-        //     'products_per_title' => 'New Membership',
-        //     'reference_no' => 'whatsloop-'.$userObj->id,
-        //     'unit_price' => $totals,
-        //     'quantity' => 1,
-        //     'amount' => $totals,
-        //     'other_charges' => 'VAT',
-        //     'discount' => '',
-        //     'payment_type' => 'mastercard',
-        //     'OrderID' => 'whatsloop-'.$userObj->id,
-        //     'SiteReturnURL' => \URL::to('/pushInvoice'),
-        // ];
-
-        // $paymentObj = new \PaymentHelper();        
-        // return $paymentObj->RedirectWithPostForm($invoiceData);
     }
 
     public function pushInvoice(){
@@ -250,43 +288,14 @@ class SubscriptionControllers extends Controller {
         $data['status'] = json_decode($input['status']);
 
         if($data['status']->status == 1){
-            return $this->activate();
+            return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
             \Session::flash('error',$data['status']->message);
             return redirect()->to('/');
         }
-        
-        // dd($data);
-        // if (isset($input['cartId']) && !empty($input['cartId'])) {
-        //     $postData['OrderID'] = $input['cartId'];
-        //     $paymentObj = new \PaymentHelper();        
-        //     $createPayment = $paymentObj->OpenURLWithPost($postData);
-        //     $CreateaPage = json_decode($createPayment, TRUE);
-        
-        //     if ($CreateaPage['Code'] == "1001") {
-        //         if ($CreateaPage['Data']['Status'] == "Success") {
-        //             return $this->activate();
-        //         }
-        //         $UpdateOrder = [];
-        //         if ($CreateaPage['Data']['Status'] == "Rejected") {
-        //             $UpdateOrder['Status'] = "تم رفض العملية";
-        //         }
-        //         if ($CreateaPage['Data']['Status'] == "Canceled") {
-        //             $UpdateOrder['Status'] = "تم الالغاء";
-        //         }
-        //         if ($CreateaPage['Data']['Status'] == "Expired Card") {
-        //             $UpdateOrder['Status'] = "البطاقة المستخدمة منتهية";
-        //         }
-        //         \Session::flash('error',$UpdateOrder['Status']);
-        //         return redirect()->to('/');
-        //     }else{
-        //         \Session::flash('error','حدثت مشكلة في عملية الدفع');
-        //         return redirect()->to('/dashboard');
-        //     }
-        // }
     }
 
-    public function activate(){
+    public function activate($transaction_id = null , $paymentGateaway = null){
         $cartObj = Variable::getVar('cartObj');
         $cartObj = json_decode(json_decode($cartObj));
         $userObj = User::first();
@@ -389,6 +398,8 @@ class SubscriptionControllers extends Controller {
 
         $invoiceObj = new Invoice;
         $invoiceObj->client_id = $userObj->id;
+        $invoiceObj->transaction_id = $transaction_id;
+        $invoiceObj->payment_gateaway = $paymentGateaway;  
         $invoiceObj->total = $total - $userCredits ;
         $invoiceObj->due_date = $start_date;
         $invoiceObj->items = serialize($items);
@@ -402,7 +413,15 @@ class SubscriptionControllers extends Controller {
         $disableTransfer = 0;
 
         foreach($addonData as $oneAddonData){
-            $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->where('status',2)->first();
+            $userAddonObj = UserAddon::where([
+                ['user_id',$oneAddonData['user_id']],
+                ['addon_id',$oneAddonData['addon_id']],
+                ['status',2],
+            ])->orWhere([
+                ['user_id',$oneAddonData['user_id']],
+                ['addon_id',$oneAddonData['addon_id']],
+                ['end_date','<',date('Y-m-d')],
+            ])->first();
             if($userAddonObj){
                 $userAddonObj->update($oneAddonData);
                 $disableUpdate = 1;
@@ -416,7 +435,15 @@ class SubscriptionControllers extends Controller {
         }
 
         foreach($extraQuotaData as $oneItemData){
-            $userExtraQuotaObj = UserExtraQuota::where('user_id',$oneItemData['user_id'])->where('extra_quota_id',$oneItemData['extra_quota_id'])->where('status',2)->first();
+            $userExtraQuotaObj = UserExtraQuota::where([
+                ['user_id',$oneItemData['user_id']],
+                ['extra_quota_id',$oneItemData['extra_quota_id']],
+                ['status',2],
+            ])->orWhere([
+                ['user_id',$oneItemData['user_id']],
+                ['extra_quota_id',$oneItemData['extra_quota_id']],
+                ['end_date','<',date('Y-m-d')],
+            ])->first();
             if($userExtraQuotaObj){
                 $userExtraQuotaObj->update($oneItemData);
                 $disableUpdate = 1;
@@ -703,7 +730,8 @@ class SubscriptionControllers extends Controller {
         }else if($input['type'] == 'addon'){
             $data['userCredits'] = 0;
             $data['start_date'] = date('Y-m-d');
-            $data['addons'] = Addons::dataList(1,null,Session::get('addons'))['data'];
+            $addons = UserAddon::NotDeleted()->where('user_id',USER_ID)->whereIn('status',[1,3])->where('end_date','>=',date('Y-m-d'))->pluck('addon_id');
+            $data['addons'] = Addons::dataList(1,null,reset($addons))['data'];
         }
         else if($input['type'] == 'extra_quota'){
             $data['userCredits'] = 0;
@@ -763,7 +791,8 @@ class SubscriptionControllers extends Controller {
         $userAddonObj = UserAddon::getOne($addon_id);
         if(!$userAddonObj || $userAddonObj->user_id != USER_ID){
             return redirect('404');
-        }
+        }   
+        // dd($status);
 
         $userObj = User::getOne($userAddonObj->user_id);
         if($status == 5){
@@ -803,6 +832,12 @@ class SubscriptionControllers extends Controller {
                 $price,
             ];
             return $this->postUpdateSubscription($request,json_encode($dataArr),json_encode($totalArr));
+        }elseif($status == 3){
+            $userAddonObj->status = 3;
+            $userAddonObj->save();
+        }elseif($status == 1){
+            $userAddonObj->status = 1;
+            $userAddonObj->save();
         }
         
         User::setSessions(User::getOne($userAddonObj->user_id));

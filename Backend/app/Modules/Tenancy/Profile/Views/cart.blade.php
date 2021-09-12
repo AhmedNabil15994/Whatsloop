@@ -37,8 +37,8 @@
                                     </div>
                                     <h3 class="h6 mb-2 font-weight-bold text-uppercase">{{ $membership->title }}</h3>
                                     <div class="d-block">
-                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $membership->monthly_after_vat }}">{{ $membership->monthly_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
-                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $membership->annual_after_vat }}">{{ $membership->annual_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $membership->monthly_after_vat }}">{{ $membership->monthly_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $membership->annual_after_vat }}">{{ $membership->annual_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
                                     </div>
                                     <button class="btn btn-primary btn-block cartButton mb-0 mt-4 {{ $data->membership->id == $membership->id ? 'added' : 'add' }}" data-cols="{{ $membership->id }}" data-area="membership">
                                         @if($data->membership->id == $membership->id)

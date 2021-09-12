@@ -27,6 +27,7 @@ use App\Models\Department;
 use App\Models\Rate;
 use App\Models\ModTemplate;
 use App\Models\UserStatus;
+use App\Models\Bundle;
 
 class DashboardControllers extends Controller {
 
@@ -34,8 +35,7 @@ class DashboardControllers extends Controller {
 
     public function menu(){
         if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
-            $data['memberships'] = Membership::dataList(1)['data'];
-            return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
+            return redirect('/packages');
         }
 
 
@@ -65,8 +65,18 @@ class DashboardControllers extends Controller {
     }
 
     public function Dashboard(){   
+        if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
+           return redirect('/packages');
+        }
         $input = \Request::all();
         return view('Tenancy.Dashboard.Views.dashboard');
+    }
+
+    public function packages(){
+        if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
+            $data['bundles'] = Bundle::dataList(1)['data'];
+            return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
+        }
     }
 
     public function getChartData($start=null,$end=null,$moduleName){

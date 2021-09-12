@@ -6,6 +6,7 @@ Dashboard
 Route::group(['prefix' => '/'] , function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardControllers::class,'Dashboard'])->name('userDash');
     Route::get('/menu', [App\Http\Controllers\DashboardControllers::class,'menu']);
+    Route::get('/packages', [App\Http\Controllers\DashboardControllers::class,'packages']);
 
     Route::post('/changeChannel', [App\Http\Controllers\DashboardControllers::class,'changeChannel']);
     
@@ -15,18 +16,6 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/faq', [App\Http\Controllers\DashboardControllers::class,'faqs']);
     Route::get('/helpCenter', [App\Http\Controllers\DashboardControllers::class,'helpCenter']);
     Route::post('/helpCenter/addRate', [App\Http\Controllers\DashboardControllers::class,'addRate']);
-
-
-    // Route::get('/checkout', [App\Http\Controllers\DashboardControllers::class,'checkout'])->name('checkout');
-    // Route::post('/checkout', [App\Http\Controllers\DashboardControllers::class,'postCheckout']);
-    // Route::post('/completeOrder', [App\Http\Controllers\DashboardControllers::class,'completeOrder']);
-    
-    // Route::get('/QR', [App\Http\Controllers\DashboardControllers::class,'qrIndex']);
-    // Route::post('/QR/updateName', [App\Http\Controllers\DashboardControllers::class,'updateName']);
-    // Route::post('/QR/getQR', [App\Http\Controllers\DashboardControllers::class,'getQR']);
-    // Route::get('/QR/finish/{modID}', [App\Http\Controllers\DashboardControllers::class,'finishModID']);
-    // Route::post('/QR/editTemplate', [App\Http\Controllers\DashboardControllers::class,'editTemplate']);
-
 
 });
 
@@ -42,7 +31,11 @@ Route::group(['prefix' => '/'] , function () {
 
     Route::get('/checkout', [App\Http\Controllers\SubscriptionControllers::class,'checkout'])->name('checkout');
     Route::post('/checkout', [App\Http\Controllers\SubscriptionControllers::class,'postCheckout']);
+
+    Route::get('/postBundle/{id}', [App\Http\Controllers\SubscriptionControllers::class,'postBundle']);
+    
     Route::post('/completeOrder', [App\Http\Controllers\SubscriptionControllers::class,'completeOrder']);
+    
     Route::get('/QR', [App\Http\Controllers\SubscriptionControllers::class,'qrIndex']);
     Route::post('/QR/updateName', [App\Http\Controllers\SubscriptionControllers::class,'updateName']);
     Route::post('/QR/getQR', [App\Http\Controllers\SubscriptionControllers::class,'getQR']);

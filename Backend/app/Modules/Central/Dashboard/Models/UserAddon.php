@@ -37,7 +37,13 @@ class UserAddon extends Model{
     }
 
     static function getDeactivated($user_id){
-        $source = self::NotDeleted()->where('user_id',$user_id)->where('status',2)->pluck('addon_id');
+        $source = self::NotDeleted()->where([
+            ['user_id',$user_id],
+            ['status',2]
+        ])->orWhere([
+            ['user_id',$user_id],
+            ['end_date','<',date('Y-m-d')]
+        ])->pluck('addon_id');
         return reset($source);
     }
 
@@ -46,12 +52,20 @@ class UserAddon extends Model{
         if($addons != null){
             $data = [];
             $allData = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[1,2,3])->pluck('addon_id');
-            $dataId = self::NotDeleted()->where('user_id',$user_id)->where('status',2)->pluck('addon_id');
+            $disabled = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[3])->pluck('addon_id');
+            $dataId = self::NotDeleted()->where([
+                    ['user_id',$user_id],
+                    ['status',2]
+                ])->orWhere([
+                    ['user_id',$user_id],
+                    ['end_date','<',date('Y-m-d')]
+                ])->pluck('addon_id');
             $data[0] = reset($allData);
             $data[1] = reset($dataId);
+            $data[2] = reset($disabled);
             return $data;
         }else{
-            $source = self::NotDeleted()->whereIn('status',$statusArr);
+            $source = self::NotDeleted()->where('end_date','>=',date('Y-m-d'))->whereIn('status',$statusArr);
             if($user_id != null){
                 $source->where('user_id',$user_id);
             }

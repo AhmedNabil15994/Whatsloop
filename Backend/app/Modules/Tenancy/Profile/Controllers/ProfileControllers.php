@@ -520,7 +520,6 @@ class ProfileControllers extends Controller {
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
         $data['channel'] = CentralChannel::getData(CentralChannel::getOne(Session::get('channel')));
         $data['contactsCount'] = Contact::NotDeleted()->count();
-        
         return view('Tenancy.Profile.Views.subscription')->with('data', (object) $data);
     }
 

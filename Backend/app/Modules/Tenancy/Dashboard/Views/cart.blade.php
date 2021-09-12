@@ -26,7 +26,7 @@
                     <a aria-controls="collapseOne4" aria-expanded="false" data-toggle="collapse" href="#collapseOne4" class="collapsed card-title">{{ trans('main.memberships') }}</a>
                 </div>
                 <div aria-labelledby="headingOne4" class="collapse show" data-parent="#accordion4" id="collapseOne4" role="tabpanel" style="">
-                    <div class="d-flex pt-4">
+                    <div class="d-flex pt-4 border-0">
                         @foreach($data->memberships as $membership)
                         @if($membership->id != 4)
                         <div class="col-4">
@@ -38,8 +38,8 @@
                                     </div>
                                     <h3 class="h6 mb-2 font-weight-bold text-uppercase">{{ $membership->title }}</h3>
                                     <div class="d-block">
-                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $membership->monthly_after_vat }}">{{ $membership->monthly_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
-                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $membership->annual_after_vat }}">{{ $membership->annual_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $membership->monthly_after_vat }}">{{ $membership->monthly_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $membership->annual_after_vat }}">{{ $membership->annual_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
                                     </div>
                                     <button class="btn btn-primary btn-block cartButton mb-0 mt-4 {{ Request::get('membership_id') == $membership->id ? 'added' : 'add' }}" data-cols="{{ $membership->id }}" data-area="membership">
                                         @if(Request::get('membership_id') == $membership->id)
@@ -66,12 +66,12 @@
                 <div class="card-header headingOnes border-bottom pb-3 pt-3" id="headingOne" role="tab">
                     <a aria-controls="collapseOne" aria-expanded="false" data-toggle="collapse" href="#collapseOne" class="collapsed card-title">{{ trans('main.addons') }}</a>
                 </div>
-                <div aria-labelledby="headingOne" class="collapse" data-parent="#accordion" id="collapseOne" role="tabpanel" style="">
-                    <div class="d-flex pt-4">
+                <div aria-labelledby="headingOne" class="collapse show" data-parent="#accordion" id="collapseOne" role="tabpanel" style="">
+                    <div class="d-flex pt-4 border-0">
                         @foreach($data->addons as $key => $addon)
                         @if($key % 3 == 0 )
                         </div>
-                        <div class="d-flex pt-4">
+                        <div class="d-flex pt-4 border-0">
                         @endif
                         <div class="col-4">
                             <div class="product-card card overflow-hidden">
@@ -99,13 +99,13 @@
         </div>
         @endif
         @if(!empty($data->extraQuotas))
-        <div aria-multiselectable="true" class="accordion border-top pt-3" id="accordion2" role="tablist">
+        <div aria-multiselectable="true" class="accordion border-top pt-3 mb-3" id="accordion2" role="tablist">
             <div class="card mb-0">
                 <div class="card-header headingOnes border-bottom pb-3 pt-3" id="headingOne2" role="tab">
                     <a aria-controls="collapseOne" aria-expanded="false" data-toggle="collapse" href="#collapseOne2" class="collapsed card-title">{{ trans('main.extraQuotas') }}</a>
                 </div>
-                <div aria-labelledby="headingOne2" class="collapse" data-parent="#accordion2" id="collapseOne2" role="tabpanel" style="">
-                    <div class="d-flex pt-4">
+                <div aria-labelledby="headingOne2" class="collapse show" data-parent="#accordion2" id="collapseOne2" role="tabpanel" style="">
+                    <div class="d-flex pt-4 border-0">
                         @foreach($data->extraQuotas as $one)
                         <div class="col-4">
                             <div class="product-card card overflow-hidden">
@@ -151,13 +151,13 @@
             <div class="card-header border-bottom py-3 d-sm-flex align-items-center">
                 <div class="row w-100">
                     <div class="col-6">
-                        <h4 class="card-title mg-t-15"><i class="fe fe-shopping-cart mr-1"></i> {{ trans('main.myCart') }}(<span class="cartCount">1</span>)</h4>
+                        <h4 class="card-title mg-t-15"><i class="fe fe-shopping-cart mr-1"></i> {{ trans('main.myCart') }} ( <span class="cartCount">1</span> ) </h4>
                     </div>
                     <div class="col-6">
-                        <div class="row w-100">
+                        <div class="row w-100 mg-0">
                             <input type="hidden" name="addon" value="{{ trans('main.addon') }}">
                             <input type="hidden" name="extra_quota" value="{{ trans('main.extra_quota') }}">
-                            <div class="font-weight-bold mg-t-10 col-2"><i class="fe fe-clock"></i> </div>
+                            <div class="font-weight-bold mg-t-10 col-2"><i class="fe fe-clock tx-20 mg-t-3"></i> </div>
                             <div class="col-10">
                                 <select class="form-control" data-toggle="select2" name="duration_type">
                                     <option value="1" selected>{{ trans('main.monthly') }}</option>
@@ -183,7 +183,7 @@
                         <div class="card-item-desc mt-0">
                             <h6 class="font-weight-semibold mt-0 text-uppercase">{{ $data->membership->title }}</h6>
                             <small class="text-muted tx-13"></small>
-                            <p class="tx-13 mg-b-5"><b>{{ trans('main.type') }}:</b> {{ trans('main.membership') }} </p>
+                            <p class="tx-13 mg-b-5"><b>{{ trans('main.extra_type') }}:</b> {{ trans('main.membership') }} </p>
                             <div class="d-flex">
                                 <h4 class="h5 w-50 font-weight-bold text-danger monthly" data-tabs="{{ $data->membership->monthly_after_vat }}">{{ $data->membership->monthly_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
                                 <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $data->membership->annual_after_vat }}">{{ $data->membership->annual_price }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
@@ -200,7 +200,7 @@
                     <div class="card-title mb-0">{{ trans('main.order_sum') }}</div>
                 </div>
                 <div class="card-body">
-                    <div class="row mb-4">
+                    <div class="row mb-4 d-hidden">
                         <div class="col-6"><input class="productcart form-control" type="text" placeholder="{{ trans('main.couponCode') }}"></div>
                         <div class="col-6"><a href="#" style="left: unset;bottom: unset;" class="btn btn-primary btn-md">{{ trans('main.apply') }}</a></div>
                     </div>

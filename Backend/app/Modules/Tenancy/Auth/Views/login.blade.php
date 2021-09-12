@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_PREF }}">
+<html lang="{{ LANGUAGE_PREF }}" dir="{{ DIRECTION }}">
     <head>
         <meta charset="utf-8" />
         <title>واتس لووب | Whats Loop | {{ trans('auth.login') }}</title>
@@ -19,10 +19,6 @@
         <section class="main--page">
             <div class="container-fluid">
                 <div class="row login-page">
-                    <div class="col-lg-12 col-xl-6 slogan-side">
-                        <div class="overlay"></div>
-                        <img src="{{ asset('images/whatsapp-chat.png') }}" alt="">
-                    </div>
                     <div class="col-lg-12 col-xl-6 control-side">
                         <div class="logo">
                             <img src="{{ asset('images/logo.png') }}" alt="Whatsapp-loop">
@@ -42,6 +38,10 @@
                                 {{-- <a href="#" class="nav-link theme__light">إنساء حساب جديد</a> --}}
                             </form>
                         </div>
+                    </div>
+                    <div class="col-lg-12 col-xl-6 slogan-side">
+                        <div class="overlay"></div>
+                        <img src="{{ asset('images/bg-wl.png') }}" alt="">
                     </div>
                 </div>
             </div>

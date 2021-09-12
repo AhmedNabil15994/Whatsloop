@@ -163,7 +163,7 @@ class NoonControllers extends Controller {
                 $dataList['status'] = \TraitsFunc::SuccessMessage();
             }
             $dataList['data'] = $fullData;
-            $dataList['data']['paymentGateaway'] = 'noon';
+            $dataList['data']['paymentGateaway'] = 'Noon';
             $dataList['data']['transaction_id'] = $transactionObj->tran_ref;
 
             $transactionObj->response_status = $noon->result->order->status;

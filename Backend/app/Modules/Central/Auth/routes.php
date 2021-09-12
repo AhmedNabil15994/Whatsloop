@@ -36,6 +36,10 @@ Route::group(['prefix' => '/'] , function () {
     Route::post('/checkResetPassword', [$authController,'checkResetPassword']);
     Route::post('/completeReset', [$authController,'completeReset']);
 
+    Route::get('/checkAvailability', [$authController,'checkAvailability'])->name('checkAvailability');
+    Route::post('/checkAvailability', [$authController,'postCheckAvailability'])->name('postCheckAvailability');
+    Route::post('/checkAvailabilityCode', [$authController,'checkAvailabilityCode'])->name('checkAvailabilityCode');
+    
     Route::get('/register', [$authController,'register'])->name('register');
     Route::post('/register', [$authController,'postRegister'])->name('register');
 

@@ -1,15 +1,8 @@
 <?php namespace App\Http\Controllers;
 
-use App\Models\Invoice;
-use App\Models\CentralUser;
-use App\Models\UserAddon;
-use App\Models\UserExtraQuota;
-use App\Models\ExtraQuota;
-use App\Models\Tenant;
-use App\Models\PaymentInfo;
-use App\Models\Domain;
-use App\Models\CentralChannel;
-use App\Models\CentralVariable;
+use App\Models\Membership;
+use App\Models\Bundle;
+use App\Models\Addons;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -17,21 +10,21 @@ use App\Models\CentralWebActions;
 use DataTables;
 
 
-class InvoiceControllers extends Controller {
+class BundleControllers extends Controller {
 
     use \TraitsFunc;
 
     public function getData(){
         $data['mainData'] = [
-            'title' => trans('main.invoices'),
-            'url' => 'invoices',
-            'name' => 'invoices',
-            'nameOne' => 'invoice',
-            'modelName' => 'Invoice',
-            'icon' => 'fas fa-file-invoice',
-            'sortName' => 'id',
+            'title' => trans('main.bundles'),
+            'url' => 'bundles',
+            'name' => 'bundles',
+            'nameOne' => 'bundle',
+            'modelName' => 'Bundle',
+            'icon' => 'far fa-id-card',
+            'sortName' => 'title_'.LANGUAGE_PREF,
         ];
-        $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('group_id',0)->get(['name','id']);
+
         $data['searchData'] = [
             'id' => [
                 'type' => 'text',
@@ -40,33 +33,19 @@ class InvoiceControllers extends Controller {
                 'label' => trans('main.id'),
                 'specialAttr' => '',
             ],
-            'client_id' => [
-                'type' => 'select',
+            'title_ar' => [
+                'type' => 'text',
                 'class' => 'form-control m-input',
                 'index' => '1',
-                'label' => trans('main.client'),
-                'options' => $data['clients'],
-            ],
-            'due_date' => [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'index' => '2',
-                'label' => trans('main.due_date'),
+                'label' => trans('main.name_ar'),
                 'specialAttr' => '',
             ],
-            'status' => [
-                'type' => 'select',
+            'title_en' => [
+                'type' => 'text',
                 'class' => 'form-control m-input',
-                'index' => '4',
-                'label' => trans('main.status'),
-                'options' => [
-                    ['id' => 0 , 'title' => trans('main.invoice_status_0')],
-                    ['id' => 1 , 'title' => trans('main.invoice_status_1')],
-                    ['id' => 2 , 'title' => trans('main.invoice_status_2')],
-                    ['id' => 3 , 'title' => trans('main.invoice_status_3')],
-                    ['id' => 4 , 'title' => trans('main.invoice_status_4')],
-                    ['id' => 5 , 'title' => trans('main.invoice_status_5')],
-                ],
+                'index' => '2',
+                'label' => trans('main.name_en'),
+                'specialAttr' => '',
             ],
         ];
 
@@ -78,40 +57,47 @@ class InvoiceControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'client' => [
-                'label' => trans('main.client'),
+            'title_ar' => [
+                'label' => trans('main.name_ar'),
+                'type' => '',
+                'className' => 'edits',
+                'data-col' => 'title_ar',
+                'anchor-class' => 'editable',
+            ],
+            'title_en' => [
+                'label' => trans('main.name_en'),
+                'type' => '',
+                'className' => 'edits',
+                'data-col' => 'title_en',
+                'anchor-class' => 'editable',
+            ],
+            'membershipText' => [
+                'label' => trans('main.membership'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'client_id',
+                'data-col' => 'membershipText',
                 'anchor-class' => '',
             ],
-            'due_date' => [
-                'label' => trans('main.due_date'),
+            'addonsText' => [
+                'label' => trans('main.addons'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'due_date',
+                'data-col' => 'addonsText',
                 'anchor-class' => '',
             ],
-            'total' => [
-                'label' => trans('main.total'),
+            'monthly_after_vat' => [
+                'label' => trans('main.monthly_after_vat'),
                 'type' => '',
-                'className' => '',
-                'data-col' => 'total',
-                'anchor-class' => '',
+                'className' => 'edits',
+                'data-col' => 'monthly_after_vat',
+                'anchor-class' => 'editable',
             ],
-            'statusText' => [
-                'label' => trans('main.status'),
+            'annual_after_vat' => [
+                'label' => trans('main.annual_after_vat'),
                 'type' => '',
-                'className' => '',
-                'data-col' => 'status',
-                'anchor-class' => '',
-            ],
-            'created_at' => [
-                'label' => trans('main.created_at'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'created_at',
-                'anchor-class' => '',
+                'className' => 'edits',
+                'data-col' => 'annual_after_vat',
+                'anchor-class' => 'editable',
             ],
             'actions' => [
                 'label' => trans('main.actions'),
@@ -124,10 +110,34 @@ class InvoiceControllers extends Controller {
         return $data;
     }
 
+    protected function validateInsertObject($input){
+        $rules = [
+            'title_ar' => 'required',
+            'title_en' => 'required',
+            'membership_id' => 'required',
+            // 'addons' => 'required',
+            'monthly_after_vat' => 'required',
+            'annual_after_vat' => 'required',
+        ];
+
+        $message = [
+            'title_ar.required' => trans('main.titleArValidate'),
+            'title_en.required' => trans('main.titleEnValidate'),
+            'membership_id.required' => trans('main.membershipValidate'),
+            // 'addons.required' => trans('main.addonsValidate'),
+            'monthly_after_vat.required' => trans('main.monthlyVatValidate'),
+            'annual_after_vat.required' => trans('main.annualVatValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+
+        return $validate;
+    }
+
     public function index(Request $request) {
         if($request->ajax()){
-            $data = Invoice::dataList();
-            return Datatables::of($data['data'])->make(true);
+            $data = Bundle::dataList();
+            return Datatables::of($data['data'])->rawColumns(['featruesText'])->make(true);
         }
         $data['designElems'] = $this->getData();
         return view('Central.User.Views.index')->with('data', (object) $data);
@@ -136,68 +146,51 @@ class InvoiceControllers extends Controller {
     public function edit($id) {
         $id = (int) $id;
 
-        $userObj = Invoice::NotDeleted()->find($id);
+        $userObj = Bundle::NotDeleted()->find($id);
         if($userObj == null) {
             return Redirect('404');
         }
 
-        $data['data'] = Invoice::getData($userObj);
+        $data['data'] = Bundle::getData($userObj);
         $data['designElems'] = $this->getData();
-        $data['clients'] = $data['designElems']['clients'];
-        $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.invoices') ;
+        $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.bundles') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        return view('Central.Invoice.Views.edit')->with('data', (object) $data);      
-    }
-
-    public function view($id) {
-        $id = (int) $id;
-
-        $invoiceObj = Invoice::NotDeleted()->find($id);
-        if($invoiceObj == null) {
-            return Redirect('404');
-        }
-
-        $userObj = CentralUser::NotDeleted()->find($invoiceObj->client_id);
-        $userObjData = CentralUser::getData($userObj);
-        $domainObj = Domain::where('domain',$userObjData->domain)->first();
-        $tenant = Tenant::find($domainObj->tenant_id);
-        tenancy()->initialize($tenant);
-        $paymentObj = PaymentInfo::where('user_id',$userObj->id)->first();
-        $data['paymentInfo'] = $paymentObj != null ? PaymentInfo::getData($paymentObj) : [];
-        tenancy()->end($tenant);
-
-        $data['data'] = Invoice::getData($invoiceObj);
-        $data['companyAddress'] = (object) [
-            'servers' => CentralVariable::getVar('servers'),
-            'address' => CentralVariable::getVar('address'),
-            'region' => CentralVariable::getVar('region'),
-            'city' => CentralVariable::getVar('city'),
-            'postal_code' => CentralVariable::getVar('postal_code'),
-            'country' => CentralVariable::getVar('country'),
-            'tax_id' => CentralVariable::getVar('tax_id'),
-        ];
-        $data['designElems'] = $this->getData();
-        $data['clients'] = $data['designElems']['clients'];
-        $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.invoices') ;
-        $data['designElems']['mainData']['icon'] = 'fa fa-eye';
-        return view('Central.Invoice.Views.view')->with('data', (object) $data);      
+        $data['addons'] = Addons::dataList(1)['data'];
+        $data['memberships'] = Membership::dataList(1)['data'];
+        return view('Central.Bundle.Views.edit')->with('data', (object) $data);      
     }
 
     public function update($id) {
         $id = (int) $id;
-
         $input = \Request::all();
-        $dataObj = Invoice::NotDeleted()->find($id);
+        
+        $dataObj = Bundle::getOne($id);
         if($dataObj == null) {
             return Redirect('404');
         }
 
-        $dataObj->client_id = $input['client_id'];
-        $dataObj->due_date = $input['due_date'];
-        $dataObj->total = $input['total'];
-        $dataObj->items = serialize($input['items']);
-        $dataObj->notes = $input['notes'];
-        $dataObj->payment_method = $input['payment_method'];
+        $membershipObj = Membership::NotDeleted()->find($input['membership_id']);
+        if($membershipObj == null) {
+            return Redirect('404');
+        }
+
+        $validate = $this->validateInsertObject($input);
+        if($validate->fails()){
+            Session::flash('error', $validate->messages()->first());
+            return redirect()->back();
+        }
+
+
+        $dataObj->title_ar = $input['title_ar'];
+        $dataObj->title_en = $input['title_en'];
+        $dataObj->description_ar = $input['description_ar'];
+        $dataObj->description_en = $input['description_en'];
+        $dataObj->monthly_after_vat = $input['monthly_after_vat'];
+        $dataObj->annual_after_vat = $input['annual_after_vat'];
+        $dataObj->membership_id = $input['membership_id'];
+        if(isset($input['addons']) && !empty($input['addons'])){
+            $dataObj->addons = serialize($input['addons']);
+        }
         $dataObj->status = $input['status'];
         $dataObj->updated_at = DATE_TIME;
         $dataObj->updated_by = USER_ID;
@@ -208,10 +201,48 @@ class InvoiceControllers extends Controller {
         return \Redirect::back()->withInput();
     }
 
+    public function add() {
+        $data['designElems'] = $this->getData();
+        $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.bundles') ;
+        $data['designElems']['mainData']['icon'] = 'fa fa-plus';
+        $data['addons'] = Addons::dataList(1)['data'];
+        $data['memberships'] = Membership::dataList(1)['data'];
+        return view('Central.Bundle.Views.add')->with('data', (object) $data);
+    }
+
+    public function create() {
+        $input = \Request::all();
+        $validate = $this->validateInsertObject($input);
+        if($validate->fails()){
+            Session::flash('error', $validate->messages()->first());
+            return redirect()->back()->withInput();
+        }
+        
+        $dataObj = new Bundle;
+        $dataObj->title_ar = $input['title_ar'];
+        $dataObj->title_en = $input['title_en'];
+        $dataObj->description_ar = $input['description_ar'];
+        $dataObj->description_en = $input['description_en'];
+        $dataObj->monthly_after_vat = $input['monthly_after_vat'];
+        $dataObj->annual_after_vat = $input['annual_after_vat'];
+        $dataObj->membership_id = $input['membership_id'];
+        if(isset($input['addons']) && !empty($input['addons'])){
+            $dataObj->addons = serialize($input['addons']);
+        }
+        $dataObj->sort = Bundle::newSortIndex();
+        $dataObj->status = $input['status'];
+        $dataObj->created_at = DATE_TIME;
+        $dataObj->created_by = USER_ID;
+        $dataObj->save();
+
+        CentralWebActions::newType(1,$this->getData()['mainData']['modelName']);
+        Session::flash('success', trans('main.addSuccess'));
+        return redirect()->to($this->getData()['mainData']['url'].'/');
+    }
 
     public function delete($id) {
         $id = (int) $id;
-        $dataObj = Invoice::getOne($id);
+        $dataObj = Bundle::getOne($id);
         CentralWebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
     }
@@ -220,7 +251,7 @@ class InvoiceControllers extends Controller {
         $input = \Request::all();
         foreach ($input['data'] as $item) {
             $col = $item[1];
-            $dataObj = Invoice::find($item[0]);
+            $dataObj = Bundle::find($item[0]);
             $dataObj->$col = $item[2];
             $dataObj->updated_at = DATE_TIME;
             $dataObj->updated_by = USER_ID;
@@ -232,7 +263,7 @@ class InvoiceControllers extends Controller {
     }
 
     public function arrange() {
-        $data = Invoice::dataList();
+        $data = Bundle::dataList();
         $data['designElems'] = $this->getData()['mainData'];
         return view('Central.User.Views.arrange')->with('data', (Object) $data);;
     }
@@ -244,7 +275,7 @@ class InvoiceControllers extends Controller {
         $sorts = json_decode($input['sorts']);
 
         for ($i = 0; $i < count($ids) ; $i++) {
-            Invoice::where('id',$ids[$i])->update(['sort'=>$sorts[$i]]);
+            Bundle::where('id',$ids[$i])->update(['sort'=>$sorts[$i]]);
         }
         return \TraitsFunc::SuccessResponse(trans('main.sortSuccess'));
     }

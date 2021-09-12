@@ -297,12 +297,14 @@ class User extends Authenticatable implements Syncable
             $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
+            session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
             $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
+            session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
         }
         session(['tenant_id' => $tenantObj->tenant_id]);
 

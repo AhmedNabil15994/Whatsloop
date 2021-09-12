@@ -7,6 +7,7 @@ use App\Models\CentralWebActions;
 use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\ClientsRequests;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
@@ -32,6 +33,8 @@ class CentralAuthControllers extends Controller {
     public function register() {
         if(Session::has('user_id')){
             return redirect('/dashboard');
+        }elseif(!Session::has('checked_user_phone')){
+            return redirect('/checkAvailability');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         return view('Central.Auth.Views.register')->with('data',(object) $data);
@@ -286,6 +289,73 @@ class CentralAuthControllers extends Controller {
         return redirect('/dashboard');
     }
 
+    public function checkAvailability(){
+        $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
+        return view('Central.Auth.Views.checkAvailability')->with('data',(object) $data);
+    }
+
+    public function postCheckAvailability(Request $request){
+        $input = \Request::all();
+
+        $userObj = CentralUser::checkUserBy('phone',$input['phone']);
+        if($userObj){
+            Session::flash('error', trans('main.phoneError'));
+            return redirect()->back()->withInput();
+        }
+
+        
+        $dataArr['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
+        $dataArr['phone'] = $input['phone'];
+        
+        $clientRequestObj = ClientsRequests::getOne($input['phone']);
+        // dd($clientRequestObj);
+        if($clientRequestObj){
+            $dataArr['userCode'] = $clientRequestObj->code;
+            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+        }else{
+            $channelObj = \DB::connection('main')->table('channels')->first();
+            $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
+            
+            $code = rand(1000,10000);
+            $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+            $data['phone'] = str_replace('+','',$input['phone']);
+
+            $test = $whatsLoopObj->sendMessage($data);
+            $result = $test->json();
+
+            if($result['status']['status'] != 1){
+                return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+            }
+
+            $clientRequestObj = new ClientsRequests();
+            $clientRequestObj->phone = $input['phone'];
+            $clientRequestObj->code = $code;
+            $clientRequestObj->ip_address = $request->ip();
+            $clientRequestObj->created_at = DATE_TIME;
+            $clientRequestObj->save();
+            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+        }
+    }
+
+    public function checkAvailabilityCode(){
+        $input = \Request::all();
+        $clientRequestObj = ClientsRequests::getOne($input['phone']);
+        $dataArr['phone'] = $input['phone'];
+        $dataArr['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
+        if(!$clientRequestObj){
+            Session::flash('error', trans('main.userNotFound'));
+            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+        }
+
+        if(isset($clientRequestObj) && $clientRequestObj->code != $input['code']){
+            Session::flash('error', trans('auth.codeError'));
+            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+        }
+
+        Session::put('checked_user_phone',$input['phone']);
+        return redirect()->to('/register');
+    }
+
     protected function validateInsertObject($input){
         $rules = [
             'name' => 'required',
@@ -316,7 +386,7 @@ class CentralAuthControllers extends Controller {
 
     public function postRegister(){
         $input = \Request::all();
-
+        $input['phone'] = Session::get('checked_user_phone');
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
@@ -398,7 +468,7 @@ class CentralAuthControllers extends Controller {
 
         Session::flash('success', trans('main.addSuccess'));
 
-        $token = tenancy()->impersonate($tenant,$user->id,'/dashboard');
+        $token = tenancy()->impersonate($tenant,$user->id,'/menu');
         Session::put('check_user_id',$user->id);
         return redirect(tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
             'token' => $token

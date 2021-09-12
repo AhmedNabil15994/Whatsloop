@@ -93,6 +93,18 @@
                 </a>
             </li>  
 
+            @if(\Helper::checkRules('list-bundles'))
+                <li class="slide">
+                    <a class="side-menu__item {{ Active(URL::to('/bundles')) }}" href="{{ URL::to('/bundles') }}">
+                        <div class="side-angle1"></div>
+                        <div class="side-angle2"></div>
+                        <div class="side-arrow"></div>
+                        <img src="{{ asset('tenancy/assets/images/bill.svg') }}" alt="">
+                        <span class="side-menu__label">{{ trans('main.bundles') }}</span>
+                    </a>
+                </li>  
+            @endif
+
             @if(\Helper::checkRules('list-memberships,list-features'))
                <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">

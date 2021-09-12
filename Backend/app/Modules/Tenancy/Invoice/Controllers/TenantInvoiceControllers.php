@@ -217,6 +217,9 @@ class TenantInvoiceControllers extends Controller {
 
     public function checkout($id){
         $id = (int) $id;
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
 
         $invoiceObj = Invoice::NotDeleted()->find($id);
         $userObj = User::first();
@@ -224,28 +227,33 @@ class TenantInvoiceControllers extends Controller {
             return Redirect('404');
         } 
 
-        $names = explode(' ', $userObj->name ,2);
-        $invoiceData = [
-            'title' => $userObj->name,
-            'cc_first_name' => $names[0],
-            'cc_last_name' => isset($names[1]) ? $names[1] : '',
-            'email' => $userObj->email,
-            'cc_phone_number' => '',
-            'phone_number' => $userObj->phone,
-            'products_per_title' => 'New Membership',
-            'reference_no' => 'whatsloop-'.$userObj->id,
-            'unit_price' => $invoiceObj->total,
-            'quantity' => 1,
-            'amount' => $invoiceObj->total,
-            'other_charges' => 'VAT',
-            'discount' => '',
-            'payment_type' => 'mastercard',
-            'OrderID' => 'whatsloop-'.$userObj->id,
-            'SiteReturnURL' => \URL::to('/invoices/'.$id.'/pushInvoice'),
-        ];
-
-        $paymentObj = new \PaymentHelper();        
-        return $paymentObj->RedirectWithPostForm($invoiceData);
+        $myData   = unserialize($invoiceObj->items);
+        dd($myData);
+        $testData = [];
+        $total = 0;
+        foreach($myData as $key => $one){
+            $testData[$key] = $one;
+            if($one[1] == 'membership'){
+                $dataObj = Membership::getOne($one[0]);
+                $title = $dataObj->{'title_'.LANGUAGE_PREF};
+            }else if($one[1] == 'addon'){
+                $dataObj = Addons::getOne($one[0]);
+                $title = $dataObj->{'title_'.LANGUAGE_PREF};
+            }else if($one[1] == 'extra_quota'){
+                $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
+                $title = $dataObj->extra_count . ' '.$dataObj->extraTypeText . ' ' . ($dataObj->extra_type == 1 ? trans('main.msgPerDay') : '');
+            }
+            $testData[$key][2] = $title;
+            $testData[$key][6] = $one[3] == 1 ? $dataObj->monthly_after_vat : $dataObj->annual_after_vat;
+            $total+= $testData[$key][6] * (int)$testData[$key][7];
+        }
+        
+        $data['data'] = $testData;
+        $input['totals'] = json_decode($input['totals']);
+        $input['totals'][3] = $total;
+        $data['totals'] = $input['totals'];
+        $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
     }
 
     public function pushInvoice($id){

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_PREF }}">
+<html lang="{{ LANGUAGE_PREF }}" dir="{{ DIRECTION }}">
     <head>
         <meta charset="utf-8" />
         <title>واتس لووب | Whats Loop | {{ trans('auth.login') }}</title>
@@ -38,7 +38,7 @@
                     </div>
                     <div class="col-lg-12 col-xl-6 slogan-side">
                         <div class="overlay"></div>
-                        <img src="{{ asset('images/whatsapp-chat.png') }}" alt="">
+                        <img src="{{ asset('images/bg-wl.png') }}" alt="">
                     </div>
                 </div>
             </div>

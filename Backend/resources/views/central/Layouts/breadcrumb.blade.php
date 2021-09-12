@@ -1,6 +1,6 @@
 <!-- breadcrumb -->
 <div class="breadcrumb-header justify-content-between">
-	<div class="left-content">
+	<div class="left-content" style="margin-top: 15px;">
 		@if(Request::segment(1) != 'dashboard')
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb">

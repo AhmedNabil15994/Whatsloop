@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_PREF }}">
+<html lang="{{ LANGUAGE_PREF }}" dir="{{ DIRECTION }}">
     <head>
         <meta charset="utf-8" />
         <title>واتس لووب | Whats Loop | {{ trans('auth.login') }}</title>
@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="{{ asset('tenancy/assets/css/login-bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('tenancy/assets/css/intlTelInput.css') }}">
         <link href="{{ asset('tenancy/assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="{{ asset('tenancy/assets/css/touches.css') }}">
         <link rel="stylesheet" href="{{ asset('tenancy/assets/css/login-style.css') }}">
     </head>
     <body class="authPages loading authentication-bg authentication-bg-pattern">
@@ -46,7 +47,6 @@
             </div>
         </section>
 
-        @include('central.Partials.notf_messages')
 
         <!-- end page -->
         <script src="{{ asset('tenancy/assets/js/vendor.min.js') }}"></script>
@@ -57,5 +57,6 @@
         <script src="{{ asset('tenancy/assets/js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('tenancy/assets/js/utils.js') }}" type="text/javascript"></script>
         <script src="{{ asset('tenancy/assets/components/login.js') }}" type="text/javascript"></script>
+        @include('central.Partials.notf_messages')
     </body>
 </html>

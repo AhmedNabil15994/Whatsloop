@@ -148,7 +148,7 @@ class PayTabsControllers extends Controller {
         $paytabs = json_decode($paytabs);
         if(isset($paytabs->payment_result)){
             $dataList['data'] = $paytabs;
-            $dataList['data']->paymentGateaway = 'paytabs';
+            $dataList['data']->paymentGateaway = 'PayTabs';
             $dataList['data']->transaction_id = $transactionObj->tran_ref;
             if($paytabs->payment_result->response_status == 'A'){
                 $dataList['status'] = \TraitsFunc::SuccessMessage();

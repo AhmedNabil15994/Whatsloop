@@ -23,6 +23,7 @@ return [
 
     'SubscriptionControllers@packages' => 'general',
     'SubscriptionControllers@updateSubscription' => 'general',
+    'SubscriptionControllers@postBundle' => 'general',
     'SubscriptionControllers@postUpdateSubscription' => 'general',
     'SubscriptionControllers@updateAddonStatus' => 'general',
     'SubscriptionControllers@updateQuotaStatus' => 'general',

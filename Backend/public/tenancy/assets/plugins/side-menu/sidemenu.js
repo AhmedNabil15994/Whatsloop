@@ -154,8 +154,11 @@
 	$(window).resize(toggleSidebar);
 	
 	//p-scroll
-	const ps1 = new PerfectScrollbar('.sidebar-scroll', {
-		suppressScrollX: true
-	});
+	if($('.sidebar-scroll').length){
+		const ps1 = new PerfectScrollbar('.sidebar-scroll', {
+			suppressScrollX: true
+		});
+	}
+		
 
 })();
