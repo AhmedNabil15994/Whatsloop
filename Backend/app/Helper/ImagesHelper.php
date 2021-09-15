@@ -122,6 +122,12 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/tickets/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
+            case "bank_transfers":
+                $checkFile = public_path() . '/uploads';
+                $fullPath = $path.'/uploads' . '/bank_transfers/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/bank_transfers/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
             case "changeLogs":
                 $checkFile = public_path() . '/uploads';
                 $fullPath = $path.'/uploads' . '/changeLogs/' . $id . '/' . $filename;
@@ -213,6 +219,11 @@ class ImagesHelper {
         if ($strAction == 'tickets') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'tickets/' . $id;
+        }
+
+        if ($strAction == 'bank_transfers') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'bank_transfers/' . $id;
         }
 
         if ($strAction == 'changeLogs') {
@@ -316,6 +327,11 @@ class ImagesHelper {
             $directory = $path . 'tickets/' . $id;
         }
 
+        if ($strAction == 'bank_transfers') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'bank_transfers/' . $id;
+        }
+
         if ($strAction == 'changeLogs') {
             $directory = $path . 'changeLogs/' . $id;
         }
@@ -342,7 +358,7 @@ class ImagesHelper {
         return false;
     }
 
-    static function uploadFileFromRequest($strAction, $fieldInput, $fileType = '') {
+    static function uploadFileFromRequest($strAction, $fieldInput,$id='', $fileType = '') {
 
         if ($fieldInput == '') {
             return false;
@@ -393,6 +409,11 @@ class ImagesHelper {
 
         if ($strAction == 'chats') {
             $directory = $path . 'chats/';
+        }
+
+        if ($strAction == 'bank_transfers') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'bank_transfers/' . $id;
         }
 
         $fileName_full = $fileName . '.' . $extension;

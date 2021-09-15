@@ -27,6 +27,12 @@ class RoutesGate {
             return $next($request);
         }
 
+
+        if(!\Session::has('membership')){
+            return Redirect('/packages');
+        }
+
+
         if(\Request::segment(1) != 'livechat'){
             $checkPermissions = User::userPermission($rules);
             if(!$checkPermissions) {

@@ -12,6 +12,7 @@ Route::group(['prefix' => '/invoices'] , function () {
     Route::get('/edit/{id}', [$controller,'edit']);
     Route::get('/view/{id}', [$controller,'view']);
     Route::get('/view/{id}/checkout', [$controller,'checkout']);
+    Route::post('/view/{id}/checkout', [$controller,'postCheckout']);
     Route::post('/update/{id}', [$controller,'update']);
     Route::post('/fastEdit', [$controller,'fastEdit']);
     Route::get('/delete/{id}', [$controller,'delete']);

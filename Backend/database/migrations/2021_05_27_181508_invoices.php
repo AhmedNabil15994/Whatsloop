@@ -17,6 +17,7 @@ class Invoices extends Migration
             $table->id();
             $table->integer('client_id');
             $table->date('due_date');
+            $table->dateTime('paid_date')->nullable();
             $table->double('total');
             $table->text('items');
             $table->integer('payment_method')->nullable();

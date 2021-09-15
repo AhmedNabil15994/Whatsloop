@@ -24,6 +24,7 @@ return [
 	'groups' => 'Users Groups',
 	'id' => 'ID',
 	'name' => 'Name',
+	'name2' => 'Full Name',
 	'name_ar' => 'Name Ar',
 	'name_en' => 'Name En',
 	'dateFrom' => 'Date (From)',
@@ -74,6 +75,7 @@ return [
 
 	'groupValidate' => "Group Field is required",
 	'nameValidate' => "Name Field is required",
+	'name2Validate' => "Please Enter Full Name",
 	'phoneValidate' => "Phone Field is required",
 	'passwordValidate' => "Password Field is required",
 	'passwordValidate2' => "Password must be at least 6 characters",
@@ -531,6 +533,7 @@ return [
 	'invoice_status_4' => 'Cancelled', 
 	'invoice_status_5' => 'Refunded', 
 	'due_date' => 'Due Date',
+	'paid_date' => 'Paid Date',
 	'total' => 'Total',
 	'notes' => 'Notes',
 	'item' => 'Item',
@@ -665,5 +668,11 @@ return [
 	'packageP' => 'Including VAT',
 	'packages_h' => 'Packages that suit you',
 	'packages_p' => 'You can choose one of these packages or go to the customized package.',
+	'bankName' => 'Bank Name',
+	'accountName' => 'Account Name',
+	'accountNo' => 'Account Number',
+	'transferSuccess' => 'The transfer receipt has been successfully attached and your request is currently being reviewed.',
+	'transfers' => 'Transfer Requests',
+	'order_no' => 'Order No',
 
 ];

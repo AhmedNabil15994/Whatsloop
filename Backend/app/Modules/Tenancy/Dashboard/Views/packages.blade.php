@@ -19,6 +19,7 @@
 {{-- Content --}}
 @section('content')
     <!-- row -->
+    @if(!isset($data->msg) || empty($data->msg))
     <div class="row text-center mg-t-20 mg-b-20 d-block">
         <h2 class="header-title h2 tx-bold">{{ trans('main.packages_h') }}</h2>
         <p class="tx-18 mg-b-20">{{ trans('main.packages_p') }} </p>
@@ -61,13 +62,28 @@
                 </div>
                 <div class="card-body text-center">
                     <div class="text-center mt-6">
-                        <a href="{{ $bundle->id == 6 ?  URL::to('/checkout?membership_id=1') :  URL::to('/postBundle/'.$bundle->id) }}" class="btn btn-primary btn-block">{{ trans('main.subscribe') }}</a>
+                        <a href="{{ $bundle->id == 7 ?  URL::to('/checkout?membership_id=1') :  URL::to('/postBundle/'.$bundle->id) }}" class="btn btn-primary btn-block">{{ trans('main.subscribe') }}</a>
                     </div>
                 </div>
             </div>
         </div><!-- col-end -->
         @endforeach
     </div>
+    @else
+    <div class="row text-center mg-t-100 mg-b-20 d-block">
+        {{-- <div class="col-3"></div> --}}
+        <div class="col-12 w-auto m-auto d-block">
+            <div class="card">
+                <div class="card-body">
+                    <img src="{{ asset('images/waiting.svg') }}" class="transferSVG" alt="">
+                    <h2 class="header-title h2 tx-bold mg-b-40">{{ $data->msg }}</h2>
+                    <p class="h3 mg-b-50 text-muted tx-bold">رقم طلبك هو : <span class="tx-black">{{ $data->transfer->order_no }}</span></p>
+                    <p class="h3 text-muted tx-bold">للاتصال بخدمة العملاء : <span class="tx-black" dir="ltr">{{ $data->phone }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     <!-- end row -->
 @endsection
 

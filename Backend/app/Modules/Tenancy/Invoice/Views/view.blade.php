@@ -23,7 +23,7 @@
 <div class="container-fluid">
     <div class="row d-block w-100">
         <div class="col-12 mb-4 text-right">
-            @if(IS_ADMIN && $data->data->status != 3)
+            @if(IS_ADMIN && $data->data->status != 1)
             <a href="{{ URL::current().'/checkout' }}" class="btn btn-success"><i class="fas fa-credit-card"></i> {{ trans('main.checkout') }}</a>
             @endif
             @if(IS_ADMIN && $data->data->status == 1 && !in_array( date('d',strtotime($data->data->due_date)) , [1,28,29,30,31]) )

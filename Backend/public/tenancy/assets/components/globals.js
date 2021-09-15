@@ -203,7 +203,7 @@ $('.quickEdit').on('click',function(e){
         }
     });
 
-    $('td.dates span span input.datetimepicker-input').flatpickr({
+    $('td.dates span span input.datetimepicker-input').datepicker({
         enableTime:!0,
         dateFormat:"Y-m-d H:i:s",
     });
@@ -327,6 +327,34 @@ $('a.DeletePhoto').on('click',function(e){
         },
     });
 });
+
+$('select[name="country"]').on('change',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var id = $(this).val();
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+    $.ajax({
+        type: 'get',
+        url: '/getCities',
+        data:{
+            '_token': $('meta[name="csrf-token"]').attr('content'),
+            'id': id,
+        },
+        success:function(data){
+            if(data.status.status == 1){
+                $('select[name="region"] option.data').remove();
+                var elemString = '';
+                $.each(data.regions,function(index,item){
+                    elemString+= '<option value="'+index+'" class="data">'+item.name+'</option>'
+                });
+                $('select[name="region"]').append(elemString)
+            }else{
+                errorNotification(data.status.message);
+            }
+        },
+    });
+});
+
 
 $('.print-but').on('click',function(e){
     e.preventDefault();

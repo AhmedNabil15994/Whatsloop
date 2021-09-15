@@ -387,6 +387,13 @@ class CentralAuthControllers extends Controller {
     public function postRegister(){
         $input = \Request::all();
         $input['phone'] = Session::get('checked_user_phone');
+
+        $names = explode(' ',$input['name']);
+        if(count($names) < 2){
+            Session::flash('error', trans('main.name2Validate'));
+            return redirect()->back()->withInput();
+        }
+
         $validate = $this->validateInsertObject($input);
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
@@ -410,6 +417,7 @@ class CentralAuthControllers extends Controller {
             Session::flash('error', trans('main.phoneError'));
             return redirect()->back()->withInput();
         }
+
 
         $tenant = Tenant::create([
             'phone' => $input['phone'],

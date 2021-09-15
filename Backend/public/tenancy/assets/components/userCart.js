@@ -21,11 +21,13 @@ $(function(){
 	var added = 'Added To Cart';
 	var remove = "Remove";
 	var className = 'mr-4';
+	var typeText = 'Type';
 	if(lang == 'ar'){
 		add = 'أضف إلى السلة';
 		added = 'تمت الإضافة إلى السلة';
 		remove = "حذف";
 	    className = 'ml-4';
+		typeText = 'النوع';
 	}
 
 	$(document).on('click','a.rmv',function(e){
@@ -86,9 +88,9 @@ $(function(){
 			$('.card-body.membership a.rmv')[0].click();
 		}else if(classType == 'extra_quota'){
 			extraString =   '<div class="d-flex mg-t-10">'+
-								'<a class="tx-24 mg-t-5"><i class="fe fe-minus-circle"></i></a>'+
+								'<a class="tx-24 mg-t-10"><i class="fe fe-minus-circle"></i></a>'+
 								'<input type="text" class="form-control form-control-sm text-center wd-50 mg-x-5" max="5" value="1" min="1">'+
-								'<a class="tx-24 mg-t-5"><i class="fe fe-plus-circle"></i></a>'+
+								'<a class="tx-24 mg-t-10"><i class="fe fe-plus-circle"></i></a>'+
 							'</div>';
 		}
 
@@ -103,7 +105,7 @@ $(function(){
 									'<div class="card-item-desc mt-0">'+
 										'<h6 class="font-weight-semibold mt-0 text-uppercase">'+ ( classType == 'extra_quota' ? $(this).siblings('small.text-muted').text() : $(this).siblings('.h6.text-uppercase').text() ) +'</h6>'+
 										'<small class="text-muted tx-13"></small>'+
-										'<p class="tx-13 mg-b-5"><b>Type:</b> '+ $(this).siblings('.d-flex').find('span.text-muted').text() +' </p>'+
+										'<p class="tx-13 mg-b-5"><b>'+typeText+':</b> '+ $(this).siblings('.d-flex').find('span.text-muted').text() +' </p>'+
 										'<div class="d-flex">'+
 											'<h4 class="h5 w-50 font-weight-bold text-danger monthly '+monthlyHidden+'" data-tabs="'+$(this).siblings('.d-block').find('.monthly').data('tabs')+'">'+ $(this).siblings('.d-block').find('.monthly').html() +'</h4>'+
 											'<h4 class="h5 w-50 font-weight-bold text-danger yearly '+yearlyHidden+'" data-tabs="'+$(this).siblings('.d-block').find('.yearly').data('tabs')+'">'+$(this).siblings('.d-block').find('.yearly').html() +'</h4>'+
@@ -162,7 +164,7 @@ $(function(){
 	function calcPrices(itemPrice,itemAfterVat,operator,classType=null){
 		var oldGrandTotal = $('span.grandTotal').text();
 		var oldEstimatedTax = $('span.estimatedTax').text();
-		var oldTotal = $('p.total').text();
+		var oldTotal = $('span.total').text();
 		var userCredits = $('input[name="background"]').val();
 		
 		if(classType == 'membership'){
@@ -182,12 +184,7 @@ $(function(){
 				oldTotal = parseInt(oldTotal) + parseInt(itemAfterVat);
 			}
 		}
-		
-		oldEstimatedTax = parseInt(oldTotal) - parseInt(oldGrandTotal);
-
-		$('span.grandTotal').text(oldGrandTotal);
-		$('span.estimatedTax').text(oldEstimatedTax);
-		$('p.total').text(oldTotal);
+		calcTaxes(oldTotal);
 	};
 
 	function calcAllPrices(){
@@ -207,11 +204,20 @@ $(function(){
 			}
 		});
 
-		oldEstimatedTax = parseInt(oldTotal) - parseInt(oldGrandTotal);
+		calcTaxes(oldTotal);
+	}
 
-		$('span.grandTotal').text(oldGrandTotal);
-		$('span.estimatedTax').text(oldEstimatedTax);
-		$('p.total').text(oldTotal);
+	function calcTaxes(oldGrandTotal){
+		var oldTotal = oldGrandTotal.toFixed(2);
+        var estimatedTax = oldTotal * (15/115);
+        
+        estimatedTax = estimatedTax.toFixed(2);
+		oldEstimatedTax = parseInt(oldGrandTotal) - parseInt(estimatedTax);
+		oldEstimatedTax = oldEstimatedTax.toFixed(2);
+
+		$('span.grandTotal').text(oldEstimatedTax);
+		$('span.estimatedTax').text(estimatedTax);
+		$('span.total').text(oldTotal);
 	}
 
 	$('button.checkout').on('click',function(e){
@@ -237,7 +243,7 @@ $(function(){
         	$('span.grandTotal').html(),
         	0, // discount
         	$('span.estimatedTax').html(),
-        	$('p.total').html(),
+        	$('span.total').html(),
         ];
 
 	    $('input[name="data"]').val(JSON.stringify(data));

@@ -2027,3 +2027,54 @@ table span img.float-left.thumb{
 .custom-switch{
   cursor: pointer;
 }
+.borderTop{
+  border-top: 1px solid #edeef7 !important;
+}
+.borderTop tbody tr:not(:last-child){
+  background-color: #eee;
+}
+.borderTop tbody tr:not(:last-child) td{
+  color: #000 !important;
+  border-bottom: 2px solid #FFF !important;
+  border-right: 2px solid #FFF !important;
+}
+.borderTop tbody tr:last-child{
+  background-color: #008cff;
+}
+.borderTop tbody tr:last-child td{
+  color: #FFF;
+  border-bottom: 2px solid #FFF !important;
+  border-right: 2px solid #FFF !important;
+}
+html[dir="rtl"] .borderTop tbody tr td{
+  border-left: 2px solid #FFF !important;
+}
+.borderTop tbody tr td{
+  font-weight: bold;
+  font-size: 14px !important;
+}
+.table-striped tbody tr:nth-of-type(odd) .form-group{
+  border: 1px solid #ddd;
+}
+table .rmv{
+  display: inline-flex;
+  padding-top: 0;
+}
+table .checkoutRow td{
+  color: #000 !important;
+  font-size: 14px !important;
+}
+@media (min-width: 1366px){
+  .wizard table{
+    overflow: hidden;
+  }
+}
+.payments[data-area="1"] i {
+  font-size: 35px;
+  margin-top: -8px;
+}
+.transferSVG{
+  width: 100px;
+  height: 100px;
+  margin-bottom: 20px;
+}

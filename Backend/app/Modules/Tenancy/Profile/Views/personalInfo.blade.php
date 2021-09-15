@@ -42,9 +42,9 @@
                                     <form class="form-horizontal grpmsg" method="POST" action="{{ URL::to('/profile/updatePersonalInfo') }}">
                                         @csrf
                                         <div class="form-group row">
-                                            <label class="col-3 col-form-label">{{ trans('main.name') }} :</label>
+                                            <label class="col-3 col-form-label">{{ trans('main.name2') }} :</label>
                                             <div class="col-9">
-                                                <input class="form-control" name="name" value="{{ $data->data->name }}" placeholder="{{ trans('main.name') }}">
+                                                <input class="form-control" name="name" value="{{ $data->data->name }}" placeholder="{{ trans('main.name2') }}">
                                             </div>
                                         </div> 
                                         <div class="form-group row">
@@ -227,9 +227,9 @@
                                             <div class="col-9">
                                                 <select name="payment_method" data-toggle="select2" class="form-control">
                                                     <option value="">{{ trans('main.choose') }}</option>
-                                                    <option value="1" {{ $data->paymentInfo->payment_method == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
-                                                    <option value="2" {{ $data->paymentInfo->payment_method == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
-                                                    <option value="3" {{ $data->paymentInfo->payment_method == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
+                                                    <option value="1" {{ $data->paymentInfo && $data->paymentInfo->payment_method == 1 ? 'selected' : '' }}>{{ trans('main.mada') }}</option>
+                                                    <option value="2" {{ $data->paymentInfo && $data->paymentInfo->payment_method == 2 ? 'selected' : '' }}>{{ trans('main.visaMaster') }}</option>
+                                                    <option value="3" {{ $data->paymentInfo && $data->paymentInfo->payment_method == 3 ? 'selected' : '' }}>{{ trans('main.bankTransfer') }}</option>
                                                 </select>
                                             </div>
                                         </div> 
@@ -238,8 +238,8 @@
                                             <div class="col-9">
                                                 <select name="currency" data-toggle="select2" class="form-control">
                                                     <option value="">{{ trans('main.choose') }}</option>
-                                                    <option value="1" {{ $data->paymentInfo->currency == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
-                                                    <option value="2" {{ $data->paymentInfo->currency == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
+                                                    <option value="1" {{ $data->paymentInfo && $data->paymentInfo->currency == 1 ? 'selected' : '' }}>{{ trans('main.sar') }}</option>
+                                                    <option value="2" {{ $data->paymentInfo && $data->paymentInfo->currency == 2 ? 'selected' : '' }}>{{ trans('main.usd') }}</option>
                                                 </select>
                                             </div>
                                         </div> 

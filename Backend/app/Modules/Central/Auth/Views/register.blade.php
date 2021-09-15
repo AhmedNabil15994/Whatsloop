@@ -28,7 +28,7 @@
                             <form action="{{ URL::to('/register') }}" method="post">
                                 @csrf
                                 <div class="form--title">{{ trans('auth.newClient') }}</div>
-                                <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('main.name') }}">
+                                <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('main.name2') }}">
                                 <input type="text" name="company" value="{{ old('company') }}" placeholder="{{ trans('main.company_name') }}">
                                 <input type="text" name="domain" value="{{ old('domain') }}" placeholder="{{ trans('main.domain') }}">
                                 <p class="text-white text-left d-block" dir="ltr">

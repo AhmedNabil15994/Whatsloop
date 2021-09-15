@@ -70,8 +70,8 @@ function next(elem){
         }
 
         if($('.steps li.current').hasClass('last')){
-            $('.actions ul li.next').hide();
-            $('.actions ul li.finish').show();
+            // $('.actions ul li.next').hide();
+            // $('.actions ul li.finish').show();
         }
 
         $('section[role="tabpanel"].body.current').hide().siblings('.title.current').removeClass('current').hide();
@@ -87,11 +87,12 @@ $('.payments.rounded').on('click',function(){
         $('.ePayment').addClass('d-hidden');
     }else{
         $('.transfer').addClass('d-hidden');
-        $('.ePayment').removeClass('d-hidden');
+        $('input[name="payType"]').val(paymentType);
+        $('.completeOrder').submit();
+        // $('.ePayment').removeClass('d-hidden');
     }
     $('.ePayment input[type="radio"]').prop('checked',false);
     $('.noon').addClass('d-hidden');
-    $('input[name="payType"]').val(paymentType);
 });
 
 $(document).on('change','input[name="billingOptions"]',function(){
@@ -99,16 +100,25 @@ $(document).on('change','input[name="billingOptions"]',function(){
         var paymentType = $(this).data('area');
         if(paymentType == 2){
             $('.transfer').addClass('d-hidden');
-            $('.noon').addClass('d-hidden');
         }else if(paymentType == 3){
             $('.transfer').addClass('d-hidden');
-            $('.noon').removeClass('d-hidden');
-            $('.ePayment').addClass('d-hidden');
-            $('.noon input[type="radio"]').prop('checked',false);
         }
         $('input[name="payType"]').val(paymentType);
     }
 });
+
+function calcTaxes(oldGrandTotal){
+    var oldTotal = oldGrandTotal.toFixed(2);
+    var estimatedTax = oldTotal * (15/115);
+
+    estimatedTax = estimatedTax.toFixed(2);
+    oldEstimatedTax = parseFloat(oldGrandTotal) - parseFloat(estimatedTax);
+    oldEstimatedTax = oldEstimatedTax.toFixed(2);
+
+    $('span.grandTotal').text(oldEstimatedTax);
+    $('span.estimatedTax').text(estimatedTax);
+    $('span.total').text(oldTotal);
+}
 
 $('select[name="quantity"]').on('change',function(){
     var oldValue = $(this).data('tabs');
@@ -117,20 +127,17 @@ $('select[name="quantity"]').on('change',function(){
     var oldPrice = printElem.text();
     var newValue = $(this).val();
     var newPrice = newValue * elemPrice;
-
-    var diff = newPrice - oldPrice;
-
-
     printElem.text(newPrice);
     $(this).attr('data-tabs',newValue);
-    $('span.grandTotal').text(parseInt($('span.grandTotal').html()) + parseInt(diff));
-    $('span.total').text(parseInt($('span.total').html()) + parseInt(diff));
+
+    var diff = newPrice - oldPrice;
+    var newTotal = parseFloat($('span.total').html()) + parseFloat(diff);
+    calcTaxes(newTotal);
 });
 
 $('a.rmv').on('click',function(){
     var elemPrice = $(this).parents('tr').children('td.prices').find('span.price').text();
-    $('span.grandTotal').text(parseInt($('span.grandTotal').html()) - parseInt(elemPrice));
-    $('span.total').text(parseInt($('span.total').html()) - parseInt(elemPrice));
+    calcTaxes(parseFloat($('span.total').html()) - parseFloat(elemPrice));
 
     $(this).parents('tr').remove();
 });

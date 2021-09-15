@@ -497,28 +497,30 @@ class ProfileControllers extends Controller {
         // }
 
         // Fetch Subscription Data
-        $membershipObj = Membership::getData(Membership::getOne(Session::get('membership')));
-        $channelObj = CentralChannel::getData(CentralChannel::getOne(Session::get('channel')));
-        $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
+        $membershipObj = Session::get('membership') != null ?  Membership::getData(Membership::getOne(Session::get('membership'))) : [];
+        $channelObj = Session::get('channel') != null ?  CentralChannel::getData(CentralChannel::getOne(Session::get('channel'))) : null;
+        if($channelObj){
+            $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
+        }
 
         $data['subscription'] = (object) [
-            'package_id' => $membershipObj->id,
-            'package_name' => $membershipObj->title,
-            'channelStatus' => $channelStatus,
-            'start_date' => $channelObj->start_date,
-            'end_date' => $channelObj->end_date,
-            'leftDays' => $channelObj->leftDays,
-            'addons' => UserAddon::dataList(null,USER_ID,null,[1,2,3])['data'],
-            'extra_quotas' => UserExtraQuota::getForUser(GLOBAL_ID)[1],
+            'package_id' => $channelObj ?  $membershipObj->id : '',
+            'package_name' => $channelObj ?  $membershipObj->title : '',
+            'channelStatus' => $channelObj ?  $channelStatus : '',
+            'start_date' => $channelObj ?  $channelObj->start_date : '',
+            'end_date' => $channelObj ?  $channelObj->end_date : '',
+            'leftDays' => $channelObj ?  $channelObj->leftDays : '',
+            'addons' => $channelObj ?  UserAddon::dataList(null,USER_ID,null,[1,2,3])['data'] : [],
+            'extra_quotas' => $channelObj ?  UserExtraQuota::getForUser(GLOBAL_ID)[1] : [],
         ];
      
         $data['data'] = $userObj;
         $data['me'] = (object) ($result != null && isset($result['data']) ? $result['data'] : []);
-        $data['status'] = UserStatus::getData(UserStatus::orderBy('id','DESC')->first());
+        $data['status'] = $channelObj ? UserStatus::getData(UserStatus::orderBy('id','DESC')->first()) : '';
         $data['allMessages'] = ChatMessage::count();
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
-        $data['channel'] = CentralChannel::getData(CentralChannel::getOne(Session::get('channel')));
+        $data['channel'] = $channelObj ? CentralChannel::getData(CentralChannel::getOne(Session::get('channel'))) : null;
         $data['contactsCount'] = Contact::NotDeleted()->count();
         return view('Tenancy.Profile.Views.subscription')->with('data', (object) $data);
     }

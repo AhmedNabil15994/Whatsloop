@@ -42,17 +42,17 @@ class CreateUserExtraQuotasTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            // $table->foreign('user_id')
+            //     ->references('id')
+            //     ->on('users')
+            //     ->onUpdate('cascade')
+            //     ->onDelete('cascade');
 
-            $table->foreign('extra_quota_id')
-                ->references('id')
-                ->on('extra_quotas')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            // $table->foreign('extra_quota_id')
+            //     ->references('id')
+            //     ->on('extra_quotas')
+            //     ->onUpdate('cascade')
+            //     ->onDelete('cascade');
         });
     }
 

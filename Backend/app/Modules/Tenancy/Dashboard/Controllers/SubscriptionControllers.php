@@ -27,6 +27,8 @@ use App\Models\Department;
 use App\Models\Rate;
 use App\Models\ModTemplate;
 use App\Models\Bundle;
+use App\Models\BankTransfer;
+
 
 class SubscriptionControllers extends Controller {
 
@@ -34,6 +36,12 @@ class SubscriptionControllers extends Controller {
 
     public function packages(){   
         $input = \Request::all();
+        $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('invoice_id',null)->first();
+        if($bankTransferObj){
+            $data['msg'] = trans('main.transferSuccess');
+            $data['phone'] = CentralVariable::getVar('TECH_PHONE');
+            $data['transfer'] = $bankTransferObj;
+        }
         // $data['memberships'] = Membership::dataList(1)['data'];
         $data['bundles'] = Bundle::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
@@ -117,6 +125,9 @@ class SubscriptionControllers extends Controller {
             $total,
         ];
 
+        $data['user'] = User::getOne(USER_ID);
+        $data['countries'] = countries();
+        $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
     }
@@ -148,12 +159,30 @@ class SubscriptionControllers extends Controller {
             $total+= $testData[$key][6] * (int)$testData[$key][7];
         }
         
-        $data['data'] = $testData;
         $input['totals'] = json_decode($input['totals']);
         $input['totals'][3] = $total;
+
+        $data['data'] = $testData;
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        $data['user'] = User::getOne(USER_ID);
+        $data['countries'] = countries();
+        $data['regions'] = [];
+        if(!empty($data['payment']) && $data['payment']->country){
+            $egypt = country($data['payment']->country); 
+            $data['regions'] = $egypt->getDivisions(); 
+        }
+        
         return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
+    }
+
+    public function getCities(){
+        $input = \Request::all();
+        $egypt = country($input['id']); 
+
+        $statusObj['regions'] = $egypt->getDivisions();
+        $statusObj['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $statusObj);
     }
 
     public function completeOrder(){
@@ -161,7 +190,7 @@ class SubscriptionControllers extends Controller {
         if(!IS_ADMIN){
             return redirect()->to('/dashboard');
         }
-
+        
         $total = json_decode($input['totals']);
         $totals = $total[3];
         $cartData = $input['data'];
@@ -194,6 +223,8 @@ class SubscriptionControllers extends Controller {
         $cartObj->save();
         
         $userObj = User::first();
+        $centralUser = CentralUser::getOne($userObj->id);
+
 
         $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
         if(!$paymentInfoObj){
@@ -213,51 +244,76 @@ class SubscriptionControllers extends Controller {
             $paymentInfoObj->save();
         }
 
+        if(isset($input['name']) && !empty($input['name'])){
+
+            $names = explode(' ',$input['name']);
+            if(count($names) < 2){
+                Session::flash('error', trans('main.name2Validate'));
+                return redirect()->back()->withInput();
+            }
+
+            $userObj->name = $input['name'];
+            $userObj->save();
+
+            $centralUser->name = $input['name'];
+            $centralUser->save();
+        }
+
+        if(isset($input['company_name']) && !empty($input['company_name'])){
+            $userObj->company = $input['company_name'];
+            $userObj->save();
+
+            $centralUser->company = $input['company_name'];
+            $centralUser->save();
+        }
+
         $names = explode(' ', $userObj->name ,2);
-        if($input['payType'] == 2){ // Paytabs Integration
-            $profileId = '49334';
-            $serverKey = 'SWJNLRLRKG-JBZZRMGMMM-GZKTBBLMNW';
+        // if($input['payType'] == 2){ // Paytabs Integration
+        //     $profileId = '49334';
+        //     $serverKey = 'SWJNLRLRKG-JBZZRMGMMM-GZKTBBLMNW';
 
-            $dataArr = [
-                'returnURL' => \URL::to('/pushInvoice'),
-                'cart_id' => 'whatsloop-'.$userObj->id,
-                'cart_amount' => $totals,
-                'cart_description' => 'New',
-                'paypage_lang' => LANGUAGE_PREF,
-                'name' => $userObj->name,
-                'email' => $userObj->email,
-                'phone' => $userObj->phone,
-                'street' => $paymentInfoObj->address,
-                'city' => $paymentInfoObj->city,
-                'state' => $paymentInfoObj->region,
-                'country' => $paymentInfoObj->country,
-                'postal_code' => $paymentInfoObj->postal_code,
-            ];
+        //     $dataArr = [
+        //         'returnURL' => \URL::to('/pushInvoice'),
+        //         'cart_id' => 'whatsloop-'.$userObj->id,
+        //         'cart_amount' => $totals,
+        //         'cart_description' => 'New',
+        //         'paypage_lang' => LANGUAGE_PREF,
+        //         'name' => $userObj->name,
+        //         'email' => $userObj->email,
+        //         'phone' => $userObj->phone,
+        //         'street' => $paymentInfoObj->address,
+        //         'city' => $paymentInfoObj->city,
+        //         'state' => $paymentInfoObj->region,
+        //         'country' => $paymentInfoObj->country,
+        //         'postal_code' => $paymentInfoObj->postal_code,
+        //     ];
 
-            $extraHeaders = [
-                'PROFILEID: '.$profileId,
-                'SERVERKEY: '.$serverKey,
-            ];
+        //     $extraHeaders = [
+        //         'PROFILEID: '.$profileId,
+        //         'SERVERKEY: '.$serverKey,
+        //     ];
 
-            $paymentObj = new \PaymentHelper();        
-            $result = $paymentObj->hostedPayment($dataArr,'/paytabs',$extraHeaders);
-            $result = json_decode($result);
+        //     $paymentObj = new \PaymentHelper();        
+        //     $result = $paymentObj->hostedPayment($dataArr,'/paytabs',$extraHeaders);
+        //     $result = json_decode($result);
 
-            return redirect()->away($result->data->redirect_url);
+        //     return redirect()->away($result->data->redirect_url);
 
-        }elseif($input['payType'] == 4 || $input['payType'] == 5 || $input['payType'] == 6){// Noon Integration
+        // }
+        if($input['payType'] == 2){// Noon Integration
             $businessId = 'digital_servers';
             $appName = 'whatsloop';
             // $appKey = '085f038ec4214c88a507341ac05ad432'; //For Test
-            $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
             // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDowODVmMDM4ZWM0MjE0Yzg4YTUwNzM0MWFjMDVhZDQzMg=='; // For Test
+            $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
             $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDphOTFmY2YyYzZhZGY0ZWRkYWNlM2YxNWE0MTcwNTc0Mw==';
             $dataArr = [
                 'returnURL' => \URL::to('/pushInvoice'),
-                'cart_id' => 'whatsloop-'.$userObj->id,
+                'cart_id' => 'whatsloop-'.rand(1,100000),
                 'cart_amount' => $totals,
                 'cart_description' => 'New Membership',
                 'paypage_lang' => LANGUAGE_PREF,
+                'description' => 'WhatsLoop Membership For User '.$userObj->id,
             ];
 
             $extraHeaders = [
@@ -267,25 +323,67 @@ class SubscriptionControllers extends Controller {
                 'AUTHKEY: '.$authKey,
             ];
             $urlSecondSegment = '/noon';
-            if($input['payType'] == 5){ // Noon Subscription Integration
-                $urlSecondSegment = '/noon/subscription';
-                $dataArr = array_merge($dataArr,[
-                    'subs_name' => 'Whatsloop New Membership',
-                    'subs_valid_till' => date('Y-m-d H:i:s',strtotime()),
-                    'subs_type' => 1,
-                ]);
-            }   
+            // if($input['payType'] == 5){ // Noon Subscription Integration
+            //     $urlSecondSegment = '/noon/subscription';
+            //     $dataArr = array_merge($dataArr,[
+            //         'subs_name' => 'Whatsloop New Membership',
+            //         'subs_valid_till' => date('Y-m-d H:i:s',strtotime()),
+            //         'subs_type' => 1,
+            //     ]);
+            // }   
             $paymentObj = new \PaymentHelper();        
             $result = $paymentObj->hostedPayment($dataArr,$urlSecondSegment,$extraHeaders);
             $result = json_decode($result);
-            return redirect()->away($result->data->result->redirect_url);
+            // dd($result);
+            if(($result->data) && $result->data->result->redirect_url){
+                return redirect()->away($result->data->result->redirect_url);
+            }
         }
+    }
+
+    public function bankTransfer(Request $request) {
+        if ($request->hasFile('transfer_image')) {
+            $files = $request->file('transfer_image');
+
+            $nextID = 1;
+            $lastBankTransferObj = BankTransfer::orderBy('id','DESC')->first();
+            if($lastBankTransferObj){
+                $nextID = $lastBankTransferObj->id + 1;
+            }
+
+            $fileName = \ImagesHelper::uploadFileFromRequest('bank_transfers', $files,$nextID);
+            if($fileName == false){
+                return false;
+            }
+
+            $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('invoice_id',null)->first();
+            if(!$bankTransferObj){
+                $bankTransferObj = new BankTransfer;
+                $bankTransferObj->user_id = USER_ID;
+                $bankTransferObj->tenant_id = TENANT_ID;
+                $bankTransferObj->global_id = GLOBAL_ID;
+                $bankTransferObj->domain = DOMAIN;
+                $bankTransferObj->order_no = rand(1,100000);
+                $bankTransferObj->status = 1;
+                $bankTransferObj->sort = BankTransfer::newSortIndex();
+                $bankTransferObj->created_at = DATE_TIME;
+                $bankTransferObj->created_by = USER_ID;
+            }
+            $bankTransferObj->image = $fileName;
+            $bankTransferObj->save();
+
+            $statusObj['data'] = \URL::to('/dashboard');
+            $statusObj['status'] = \TraitsFunc::SuccessMessage(trans('main.addSuccess'));
+            Session::flash('success',trans('main.transferSuccess'));
+            return \Response::json((object) $statusObj);
+        }       
     }
 
     public function pushInvoice(){
         $input = \Request::all();
         $data['data'] = json_decode($input['data']);
         $data['status'] = json_decode($input['status']);
+            dd($data['data']);
 
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
@@ -402,6 +500,7 @@ class SubscriptionControllers extends Controller {
         $invoiceObj->payment_gateaway = $paymentGateaway;  
         $invoiceObj->total = $total - $userCredits ;
         $invoiceObj->due_date = $start_date;
+        $invoiceObj->paid_date = DATE_TIME;
         $invoiceObj->items = serialize($items);
         $invoiceObj->status = 1;
         $invoiceObj->payment_method = 2;
@@ -556,6 +655,7 @@ class SubscriptionControllers extends Controller {
                 ]);
             }
         }
+
         Session::flush();
         User::setSessions($userObj);
         return redirect()->to('/dashboard');
@@ -748,13 +848,14 @@ class SubscriptionControllers extends Controller {
             $input['data'] = $dataArr;
             $input['totals'] = $totalArr;
         }
-
         if(!IS_ADMIN){
             return redirect()->to('/dashboard');
         }
 
         $myData   = json_decode($input['data']);
         $testData = [];
+        dd($myData);
+
         $total = Session::has('userCredits') ? - (int) Session::get('userCredits') : 0;
         foreach($myData as $key => $one){
             $testData[$key] = $one;

@@ -281,7 +281,7 @@
                                 <!--begin::Title-->
                                 <div class="d-flex justify-content-between flex-wrap mt-1">
                                     <div class="d-flex mr-3">
-                                        <a href="#" class="text-dark font-size-h5 font-weight-bold mr-3">{{ $data->channel->name }}</a>
+                                        <a href="#" class="text-dark font-size-h5 font-weight-bold mr-3">{{ $data->channel != null ? $data->channel->name : '' }}</a>
                                         <a href="#">
                                             <i class="fas fa-check-circle badge-outline-success"></i>
                                         </a>
@@ -295,7 +295,7 @@
                                             <div class="row">
                                                 <div class="col-sm-4">
                                                     <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                        {{ trans('main.channel') }} : <b># {{ $data->channel->instanceId }}</b>
+                                                        {{ trans('main.channel') }} : <b># {{ $data->channel != null ? $data->channel->instanceId : '' }}</b>
                                                     </a>
                                                 </div>
                                                 <div class="col-sm-4">
@@ -305,7 +305,7 @@
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                        {{ trans('main.connection_date') }}: <b style="direction: ltr;display: inline-block;">{{ $data->status->created_at }}</b>
+                                                        {{ trans('main.connection_date') }}: <b style="direction: ltr;display: inline-block;">{{ $data->status != null ? $data->status->created_at : '' }}</b>
                                                     </a>
                                                 </div>
                                                 <div class="col-sm-12">
@@ -313,7 +313,7 @@
                                                     <div class="row">
                                                         <div class="col-sm-4">
                                                             <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                {{ trans('main.phone_status') }} : <b><div class="label label-lg label-light-success label-inline">{{ $data->status->statusText }}</div></b>
+                                                                {{ trans('main.phone_status') }} : <b><div class="label label-lg label-light-success label-inline">{{ $data->status != null ? $data->status->statusText : '' }}</div></b>
                                                             </a>
                                                         </div>
                                                         <div class="col-sm-4">
@@ -360,9 +360,9 @@
                                     <div class="d-flex align-items-center w-25 flex-fill float-right mt-lg-12 mt-8">
                                         <span class="font-weight-bold text-dark-75">{{ trans('main.leftDays') }}</span>
                                         <div class="progress progress-xs mx-3 w-100">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $data->channel->rate }}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="80"></div>
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $data->channel != null ? $data->channel->rate : '' }}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="80"></div>
                                         </div>
-                                        <span class="font-weight-bolder text-dark">{{ $data->channel->leftDays }} {{ trans('main.day') }}</span>
+                                        <span class="font-weight-bolder text-dark">{{ $data->channel != null ? $data->channel->leftDays : '' }} {{ trans('main.day') }}</span>
                                     </div>
                                 </div>
                                 <!--end::Content-->

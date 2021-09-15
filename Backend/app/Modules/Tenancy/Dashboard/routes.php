@@ -6,7 +6,7 @@ Dashboard
 Route::group(['prefix' => '/'] , function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardControllers::class,'Dashboard'])->name('userDash');
     Route::get('/menu', [App\Http\Controllers\DashboardControllers::class,'menu']);
-    Route::get('/packages', [App\Http\Controllers\DashboardControllers::class,'packages']);
+    // Route::get('/packages', [App\Http\Controllers\DashboardControllers::class,'packages']);
 
     Route::post('/changeChannel', [App\Http\Controllers\DashboardControllers::class,'changeChannel']);
     
@@ -30,7 +30,9 @@ Route::group(['prefix' => '/'] , function () {
     Route::post('/updateSubscription', [App\Http\Controllers\SubscriptionControllers::class,'postUpdateSubscription'])->name('postCheckout');
 
     Route::get('/checkout', [App\Http\Controllers\SubscriptionControllers::class,'checkout'])->name('checkout');
+    Route::get('/getCities', [App\Http\Controllers\SubscriptionControllers::class,'getCities'])->name('getCities');
     Route::post('/checkout', [App\Http\Controllers\SubscriptionControllers::class,'postCheckout']);
+    Route::post('/checkout/bankTransfer', [App\Http\Controllers\SubscriptionControllers::class,'bankTransfer']);
 
     Route::get('/postBundle/{id}', [App\Http\Controllers\SubscriptionControllers::class,'postBundle']);
     

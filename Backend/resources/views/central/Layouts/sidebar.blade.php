@@ -145,16 +145,25 @@
             </li>
             @endif
 
-            @if(\Helper::checkRules('list-clients'))
-            <li class="slide">
-                <a class="side-menu__item {{ Active(URL::to('/clients')) }}" href="{{ URL::to('/clients') }}">
+
+            @if(\Helper::checkRules('list-clients,list-transfers'))
+               <li class="slide">
+                <a class="side-menu__item" data-toggle="slide" href="#">
                     <div class="side-angle1"></div>
                     <div class="side-angle2"></div>
                     <div class="side-arrow"></div>
                     <img src="{{ asset('tenancy/assets/images/team.svg') }}" alt="">
-                    <span class="side-menu__label">{{ trans('main.clients') }}</span>
+                    <span class="side-menu__label">{{ trans('main.clients') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
                 </a>
-            </li> 
+                <ul class="slide-menu">
+                    @if(\Helper::checkRules('list-clients'))
+                    <li><a class="slide-item" href="{{ URL::to('/clients') }}">{{ trans('main.clients') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('list-transfers'))
+                    <li><a class="slide-item" href="{{ URL::to('/transfers') }}">{{ trans('main.transfers') }}</a></li>
+                    @endif
+                </ul>
+            </li>
             @endif
 
             @if(\Helper::checkRules('list-invoices'))

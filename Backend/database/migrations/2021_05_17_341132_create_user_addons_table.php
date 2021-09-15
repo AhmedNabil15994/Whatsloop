@@ -43,17 +43,17 @@ class CreateUserAddonsTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            // $table->foreign('user_id')
+            //     ->references('id')
+            //     ->on('users')
+            //     ->onUpdate('cascade')
+            //     ->onDelete('cascade');
 
-            $table->foreign('addon_id')
-                ->references('id')
-                ->on('addons')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+            // $table->foreign('addon_id')
+            //     ->references('id')
+            //     ->on('addons')
+            //     ->onUpdate('cascade')
+            //     ->onDelete('cascade');
         });
     }
 

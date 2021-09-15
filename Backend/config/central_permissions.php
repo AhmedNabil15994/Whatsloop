@@ -159,6 +159,17 @@ return [
     'ClientControllers@charts' => 'charts-client',
     'ClientControllers@uploadImage' => 'uploadImage-client',
     'ClientControllers@deleteImage' => 'deleteImage-client',
+
+    'TransferRequestControllers@index' => 'list-transfers',
+    'TransferRequestControllers@edit' => 'edit-transfer',
+    'TransferRequestControllers@update' => 'edit-transfer',
+    'TransferRequestControllers@fastEdit' => 'edit-transfer',
+    'TransferRequestControllers@add' => 'add-transfer',
+    'TransferRequestControllers@create' => 'add-transfer',
+    'TransferRequestControllers@delete' => 'delete-transfer',
+    'TransferRequestControllers@arrange' => 'sort-transfer',
+    'TransferRequestControllers@sort' => 'sort-transfer',
+    'TransferRequestControllers@charts' => 'charts-transfer',
   
     'InvoiceControllers@index' => 'list-invoices',
     'InvoiceControllers@edit' => 'edit-invoice',

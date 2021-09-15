@@ -75,7 +75,7 @@ class NoonControllers extends Controller {
         $input['street'] = isset($input['street']) && !empty($input['street']) ? $input['street'] : 'street2'; 
         $input['city'] = isset($input['city']) && !empty($input['city']) ? $input['city'] : 'jeddah'; 
         $input['state'] = isset($input['state']) && !empty($input['state']) ? $input['state'] : 'jeddah'; 
-        $input['country'] = isset($input['country']) && !empty($input['country']) ? $input['country'] : 'KSA'; 
+        $input['country'] = isset($input['country']) && !empty($input['country']) ? $input['country'] : 'SA'; 
         $input['postal_code'] = isset($input['postal_code']) && !empty($input['postal_code']) ? $input['postal_code'] : '23324'; 
         $input['description'] = isset($input['description']) && !empty($input['description']) ? $input['description'] : 'Sample order name'; 
        
@@ -99,6 +99,22 @@ class NoonControllers extends Controller {
                 "returnUrl" => URL::to('/noon/testResult?date='.$date),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
+            ],
+            "billing" => [
+                'address' => [
+                    "street" => "7447 Al Ilham",
+                    "city" => "Jeddah",
+                    "stateProvince" => "Jeddah",
+                    "country" => "SA",
+                    "postalCode" => '23324',
+                ],
+                'contact' => [
+                    "firstName" => "Ahmed",
+                    "lastName" => "Nabil",
+                    "phone" => "201069273925",
+                    "mobilePhone" => "201069273925",
+                    "email" => "ahmednabil15994@gmail.com"
+                ],
             ],
         ];
         $noon = \Noon::hostedPayment($data);

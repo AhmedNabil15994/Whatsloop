@@ -43,6 +43,8 @@ return [
     'SubscriptionControllers@getQR' => 'general',
     'SubscriptionControllers@finishModID' => 'general',
     'SubscriptionControllers@editTemplate' => 'general',
+    'SubscriptionControllers@getCities' => 'general',
+    'SubscriptionControllers@bankTransfer' => 'general',
 
 
 
@@ -197,6 +199,7 @@ return [
     'TenantInvoiceControllers@charts' => 'charts-invoice',
     'TenantInvoiceControllers@checkout' => 'pay-invoice',
     'TenantInvoiceControllers@pushInvoice' => 'pay-invoice',
+    'TenantInvoiceControllers@postCheckout' => 'general',
 
 
     // 'SallaControllers@customers' => 'salla-customers',

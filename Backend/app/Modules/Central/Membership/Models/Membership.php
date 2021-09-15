@@ -77,7 +77,7 @@ class Membership extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $features = Feature::NotDeleted()->where('status',1)->whereIn('id',unserialize($source->features))->pluck('title_'.LANGUAGE_PREF);
+        $features = $source != null ? Feature::NotDeleted()->where('status',1)->whereIn('id',unserialize($source->features))->pluck('title_'.LANGUAGE_PREF) : [];
         // dd($features);
         $data->id = $source->id;
         $data->title = $source->{'title_'.LANGUAGE_PREF};
