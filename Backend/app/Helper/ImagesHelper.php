@@ -128,6 +128,12 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/bank_transfers/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
+            case "bankAccounts":
+                $checkFile = public_path() . '/uploads';
+                $fullPath = $path.'/uploads' . '/bankAccounts/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/bankAccounts/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
             case "changeLogs":
                 $checkFile = public_path() . '/uploads';
                 $fullPath = $path.'/uploads' . '/changeLogs/' . $id . '/' . $filename;
@@ -226,6 +232,11 @@ class ImagesHelper {
             $directory = $path . 'bank_transfers/' . $id;
         }
 
+        if ($strAction == 'bankAccounts') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'bankAccounts/' . $id;
+        }
+
         if ($strAction == 'changeLogs') {
             $directory = $path . 'changeLogs/' . $id;
         }
@@ -273,14 +284,13 @@ class ImagesHelper {
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
-
-        $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml','3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv','x-m4v'];
+        $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml','3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv','x-m4v','svg'];
 
         if (!in_array($extension, $appliedExtensions)) {
             return false;
         }
 
-        
+
         $rand = rand() . date("YmdhisA");
         $fileName = 'whatsloop' . '-' . $rand;
         $directory = '';
@@ -330,6 +340,11 @@ class ImagesHelper {
         if ($strAction == 'bank_transfers') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'bank_transfers/' . $id;
+        }
+
+        if ($strAction == 'bankAccounts') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'bankAccounts/' . $id;
         }
 
         if ($strAction == 'changeLogs') {
@@ -414,6 +429,11 @@ class ImagesHelper {
         if ($strAction == 'bank_transfers') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'bank_transfers/' . $id;
+        }
+
+        if ($strAction == 'bankAccounts') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'bankAccounts/' . $id;
         }
 
         $fileName_full = $fileName . '.' . $extension;

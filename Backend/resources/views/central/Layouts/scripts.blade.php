@@ -76,9 +76,10 @@
 <script src="{{ asset('tenancy/assets/plugins/jquery.maskedinput/jquery.maskedinput.js') }}" type="text/javascript"></script>
 <script src="{{ asset('tenancy/assets/plugins/spectrum-colorpicker/spectrum.js') }}" type="text/javascript"></script>
 <script src="{{ asset('tenancy/assets/plugins/amazeui-datetimepicker/js/amazeui.datetimepicker.min.js') }}" type="text/javascript"></script>
-<script src="{{ asset('tenancy/assets/plugins/jquery-simple-datetimepicker/jquery.simple-dtpicker.js') }}" type="text/javascript"></script>
 <!--Internal  index js -->
 <script src="{{ asset('tenancy/assets/js/apexcharts.js') }}"></script>
+<script src="{{ asset('tenancy/assets/plugins/jquery-ui/ui/widgets/datepicker.js') }}"></script>
+
 @yield('topScripts')
 <script src="{{ asset('tenancy/assets/js/index.js') }}"></script>
 
@@ -97,6 +98,7 @@
 <script src="{{ asset('tenancy/assets/js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
 
 <script src="{{ asset('tenancy/assets/js/utils.js') }}" type="text/javascript"></script>
+<script src="{{ asset('tenancy/assets/js/form-elements.js') }}" type="text/javascript"></script>
 
 <script src="{{ asset('tenancy/assets/components/globals.js') }}"></script>
 

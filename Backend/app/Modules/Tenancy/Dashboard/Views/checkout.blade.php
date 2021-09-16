@@ -162,7 +162,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>{{ trans('main.name2') }} :</label>
-                                                <input class="form-control" name="name2" value="{{ $data->user->name }}" placeholder="{{ trans('main.address') }}">
+                                                <input class="form-control" name="name" value="{{ $data->user->name }}" placeholder="{{ trans('main.address') }}">
                                             </div> 
                                         </div>
                                         <div class="col-md-6">
@@ -278,22 +278,28 @@
                                 <div class="row w-100 mg-0">
                                     <div class="row mg-0 transfer w-100 d-hidden">
                                         <div class="col-6 d-block">
-                                            <div class="col text-center">
-                                                <img class="mb-2 mt-2" src="{{ asset('images/snb.png') }}" alt="">
-                                            </div>
-                                            <div class="row w-100 mt-5 mb-5 d-block">
-                                                <div class="tx-bold float-left w-49 text-left">
-                                                    <p>{{ trans('main.bankName') }} : </p>
-                                                    <p>{{ trans('main.accountName') }} : </p>
-                                                    <p>{{ trans('main.accountNo') }} : </p>
+                                            @foreach($data->bankAccounts as $bankAccount)
+                                                <div class="card bd-default">
+                                                    <div class="card-body">
+                                                        <div class="col text-center">
+                                                            <img class="mb-2 mt-2" src="{{ $bankAccount->photo }}" alt="">
+                                                        </div>
+                                                        <div class="row w-100 mt-5 d-block">
+                                                            <div class="tx-bold float-left w-49 text-left">
+                                                                <p>{{ trans('main.bankName') }} : </p>
+                                                                <p>{{ trans('main.accountName') }} : </p>
+                                                                <p>{{ trans('main.accountNo') }} : </p>
+                                                            </div>
+                                                            <div class="tx-bold float-right w-49 text-right">
+                                                                <p>{{ $bankAccount->bank_name }}</p>
+                                                                <p>{{ $bankAccount->account_name }}</p>
+                                                                <p>{{ $bankAccount->account_number }}</p>
+                                                            </div>
+                                                            <div class="clearfix"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="tx-bold float-right w-49 text-right">
-                                                    <p>البنك الاهلي السعودي</p>
-                                                    <p>شركة الخوادم الرقمية للإتصالات وتقنية المعلومات</p>
-                                                    <p>SA4810000013100000546209</p>
-                                                </div>
-                                                <div class="clearfix"></div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                         <div class="col-6 d-block">
                                             <input type="file" class="dropify" id="dropify010" data-height="200" />

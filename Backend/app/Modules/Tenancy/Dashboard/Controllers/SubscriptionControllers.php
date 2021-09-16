@@ -28,6 +28,7 @@ use App\Models\Rate;
 use App\Models\ModTemplate;
 use App\Models\Bundle;
 use App\Models\BankTransfer;
+use App\Models\BankAccount;
 
 
 class SubscriptionControllers extends Controller {
@@ -36,7 +37,7 @@ class SubscriptionControllers extends Controller {
 
     public function packages(){   
         $input = \Request::all();
-        $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('invoice_id',null)->first();
+        $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->orderBy('id','DESC')->first();
         if($bankTransferObj){
             $data['msg'] = trans('main.transferSuccess');
             $data['phone'] = CentralVariable::getVar('TECH_PHONE');
@@ -129,6 +130,7 @@ class SubscriptionControllers extends Controller {
         $data['countries'] = countries();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
     }
 
@@ -165,6 +167,7 @@ class SubscriptionControllers extends Controller {
         $data['data'] = $testData;
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         $data['user'] = User::getOne(USER_ID);
         $data['countries'] = countries();
         $data['regions'] = [];
@@ -267,7 +270,6 @@ class SubscriptionControllers extends Controller {
             $centralUser->save();
         }
 
-        $names = explode(' ', $userObj->name ,2);
         // if($input['payType'] == 2){ // Paytabs Integration
         //     $profileId = '49334';
         //     $serverKey = 'SWJNLRLRKG-JBZZRMGMMM-GZKTBBLMNW';
@@ -345,18 +347,7 @@ class SubscriptionControllers extends Controller {
         if ($request->hasFile('transfer_image')) {
             $files = $request->file('transfer_image');
 
-            $nextID = 1;
-            $lastBankTransferObj = BankTransfer::orderBy('id','DESC')->first();
-            if($lastBankTransferObj){
-                $nextID = $lastBankTransferObj->id + 1;
-            }
-
-            $fileName = \ImagesHelper::uploadFileFromRequest('bank_transfers', $files,$nextID);
-            if($fileName == false){
-                return false;
-            }
-
-            $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('invoice_id',null)->first();
+            $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->first();
             if(!$bankTransferObj){
                 $bankTransferObj = new BankTransfer;
                 $bankTransferObj->user_id = USER_ID;
@@ -369,8 +360,93 @@ class SubscriptionControllers extends Controller {
                 $bankTransferObj->created_at = DATE_TIME;
                 $bankTransferObj->created_by = USER_ID;
             }
+            $bankTransferObj->total = $request->total;
+            $bankTransferObj->save();
+
+            $fileName = \ImagesHelper::uploadFileFromRequest('bank_transfers', $files,$bankTransferObj->id);
+            if($fileName == false){
+                return false;
+            }
+
             $bankTransferObj->image = $fileName;
             $bankTransferObj->save();
+
+
+            $total = json_decode($request->totals);
+            $totals = $total[3];
+            $cartData = $request->data;
+            $cartObj = Variable::where('var_key','cartObj')->first();
+            if(!$cartObj){
+                $cartObj = new Variable();
+            }
+
+            if(Session::has('userCredits')){
+                $userCreditsObj = Variable::where('var_key','userCredits')->first();
+                if(!$userCreditsObj){
+                    $userCreditsObj = new Variable();
+                }
+                $userCreditsObj->var_value = Session::get('userCredits');
+                $userCreditsObj->var_key = 'userCredits';
+                $userCreditsObj->save();
+
+                $startDateObj = Variable::where('var_key','start_date')->first();
+                if(!$startDateObj){
+                    $startDateObj = new Variable();
+                }
+                $startDateObj->var_value = json_decode($cartData)[0][4];
+                $startDateObj->var_key = 'start_date';
+                $startDateObj->save();
+            }
+            
+
+            $cartObj->var_key = 'cartObj';
+            $cartObj->var_value = json_encode($cartData);
+            $cartObj->save();
+            
+            $userObj = User::first();
+            $centralUser = CentralUser::getOne($userObj->id);
+
+
+            $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
+            if(!$paymentInfoObj){
+                $paymentInfoObj = new PaymentInfo;
+            }
+            if(isset($request->address) && !empty($request->address)){
+                $paymentInfoObj->user_id = $userObj->id;
+                $paymentInfoObj->address = $request->address;
+                $paymentInfoObj->address2 = $request->address2;
+                $paymentInfoObj->city = $request->city;
+                $paymentInfoObj->country = $request->country;
+                $paymentInfoObj->region = $request->region;
+                $paymentInfoObj->postal_code = $request->postal_code;
+                $paymentInfoObj->tax_id = $request->tax_id;
+                $paymentInfoObj->created_at = DATE_TIME;
+                $paymentInfoObj->created_by = $userObj->id;
+                $paymentInfoObj->save();
+            }
+
+            if(isset($request->name) && !empty($request->name)){
+
+                $names = explode(' ',$request->name);
+                if(count($names) < 2){
+                    Session::flash('error', trans('main.name2Validate'));
+                    return redirect()->back()->withInput();
+                }
+
+                $userObj->name = $request->name;
+                $userObj->save();
+
+                $centralUser->name = $request->name;
+                $centralUser->save();
+            }
+
+            if(isset($request->company_name) && !empty($request->company_name)){
+                $userObj->company = $request->company_name;
+                $userObj->save();
+
+                $centralUser->company = $request->company_name;
+                $centralUser->save();
+            }
 
             $statusObj['data'] = \URL::to('/dashboard');
             $statusObj['status'] = \TraitsFunc::SuccessMessage(trans('main.addSuccess'));
@@ -656,7 +732,6 @@ class SubscriptionControllers extends Controller {
             }
         }
 
-        Session::flush();
         User::setSessions($userObj);
         return redirect()->to('/dashboard');
     }
@@ -701,7 +776,7 @@ class SubscriptionControllers extends Controller {
         $data['data'] = array_values($userAddonsTutorial);
         $names = Addons::NotDeleted()->whereIn('id',$data['data'])->pluck('title_'.LANGUAGE_PREF);
         $data['dataNames'] = reset($names);
-        $data['channelName'] = UserChannels::first()->name;
+        $data['channelName'] = trans('main.channel'). ' #'.Session::get('channelCode');
         $data['dis'] = 0;
         if(count($data['data']) > 0){
             $data['templates'] = ModTemplate::dataList(null, ($data['data'][0] == 5 ? 1 : 2 )  )['data'];

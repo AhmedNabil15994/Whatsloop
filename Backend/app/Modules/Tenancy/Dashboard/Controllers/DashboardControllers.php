@@ -41,7 +41,7 @@ class DashboardControllers extends Controller {
 
         $userStatusObj = UserStatus::orderBy('id','DESC')->first();
         $data = [];
-        if($userStatusObj->status != 1){
+        if(($userStatusObj && $userStatusObj->status != 1) || !$userStatusObj ){
             $mainWhatsLoopObj = new \MainWhatsLoop();
             $result = $mainWhatsLoopObj->status();
             $result = $result->json();
@@ -59,7 +59,7 @@ class DashboardControllers extends Controller {
                 }
             }
         }
-        
+
         Session::forget('check_user_id');
         return view('Tenancy.Dashboard.Views.menu')->with('data',(object) $data);
     }

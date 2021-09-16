@@ -18,29 +18,40 @@
                     <form class="form-horizontal" method="POST" action="{{ URL::to('/'.$data->designElems['mainData']['url'].'/create') }}">
                         @csrf
                         <div class="form-group row mb-3">
-                            <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.name_ar') }} :</label>
+                            <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.bank_name') }} :</label>
                             <div class="col-9">
-                                <input type="text" class="form-control" value="{{ old('title_ar') }}" name="title_ar" id="inputEmail3" placeholder="{{ trans('main.name_ar') }}">
+                                <input type="text" class="form-control" value="{{ old('bank_name') }}" name="bank_name" id="inputEmail3" placeholder="{{ trans('main.bank_name') }}">
                             </div>
                         </div>
                         <div class="form-group row mb-3">
-                            <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.name_en') }} :</label>
+                            <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.account_name') }} :</label>
                             <div class="col-9">
-                                <input type="text" class="form-control" value="{{ old('title_en') }}" name="title_en" id="inputPassword3" placeholder="{{ trans('main.name_en') }}">
+                                <input type="text" class="form-control" value="{{ old('account_name') }}" name="account_name" id="inputPassword3" placeholder="{{ trans('main.account_name') }}">
                                 <input type="hidden" name="status">
                             </div>
                         </div>
                         <div class="form-group row mb-3">
-                            <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.users') }} :</label>
+                            <label for="inputPassword3" class="col-3 col-form-label">{{ trans('main.account_number') }} :</label>
                             <div class="col-9">
-                                <select class="form-control" data-toggle="select2" name="emps[]" multiple>
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($data->emps as $emp)
-                                    <option value="{{ $emp->id }}" {{ in_array($emp->id, Request::has('emps') ? Request::get('emps') : []) ? 'selected' : '' }}>{{ '#'.$emp->id .' - '. $emp->name }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" class="form-control" value="{{ old('account_number') }}" name="account_number" id="inputPassword3" placeholder="{{ trans('main.account_number') }}">
                             </div>
                         </div>
+                        @if(\Helper::checkRules('uploadImage-'.$data->designElems['mainData']['nameOne']))
+                        <div class="form-group row mb-3">
+                            <label class="col-3 col-form-label">{{ trans('main.photo') }} :</label>
+                            <div class="col-9">
+                                <div class="dropzone" id="kt_dropzone_1">
+                                    <div class="fallback">
+                                        <input name="file" type="file" />
+                                    </div>
+                                    <div class="dz-message needsclick">
+                                        <i class="h1 si si-cloud-upload"></i>
+                                        <h3>{{ trans('main.dropzoneP') }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         <div class="form-group mb-0 justify-content-end row">
                             <div class="col-9">
                                 <button name="Submit" type="submit" class="btn btn-success AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>

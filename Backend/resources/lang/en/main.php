@@ -675,4 +675,33 @@ return [
 	'transfers' => 'Transfer Requests',
 	'order_no' => 'Order No',
 
+	'discount_type_1' => 'Specific Value',
+	'discount_type_2' => 'Percent',
+	'valid_type_1' => 'How often to use',
+	'valid_type_2' => 'Specific Date',
+	'codeFound' => 'This Code is already used before',
+	'coupons' => 'Coupons',
+	'coupon_code' => 'Code',
+	'discount_type' => 'Discount Type',
+	'discount_value' => 'Discount Value',
+	'valid_type' => 'Valid Type',
+	'valid_value' => 'Valid Till',
+	'codeValidate' => 'Code Field is required',
+	'discountTypeValidate' => 'Discount Type Field is required',
+	'discountValueValidate' => 'Discount Value Field is required',
+	'validTypeValidate' => 'Valid Type Field is required', 
+	'validValueVatValidate' => 'Valid Value Field is required', 
+	'requestSent' => 'Client Sent A request',
+	'accept' => 'Accept',
+	'refuse' => 'Refuse',
+
+	'bankAccounts' => 'Bank Accounts',
+	'bank_name' => 'Bank Name',
+	'account_name' => 'Account Name',
+	'account_number' => 'Account Number',
+	'bankNameValidate' => 'Bank Name Field is required',
+	'accountNameValidate' => 'Account Name Field is required',
+	'accountNumberValidate' => 'Account Number Field is required',	
+
+
 ];

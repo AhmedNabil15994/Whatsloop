@@ -21,7 +21,7 @@
     <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
 
 
-    @if($data->designElems['mainData']['url'] == 'clients' || $data->designElems['mainData']['url'] == 'tickets' || $data->designElems['mainData']['url'] == 'invoices')
+    @if($data->designElems['mainData']['url'] == 'clients'  || $data->designElems['mainData']['url'] == 'transfers' || $data->designElems['mainData']['url'] == 'tickets' || $data->designElems['mainData']['url'] == 'invoices')
     <input type="hidden" name="data-tab" value="{{ \Helper::checkRules('view-'.$data->designElems['mainData']['nameOne']) }}">
     @endif
 

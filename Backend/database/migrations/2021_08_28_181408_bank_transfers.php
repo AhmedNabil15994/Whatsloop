@@ -19,9 +19,10 @@ class BankTransfers extends Migration
             $table->string('tenant_id');
             $table->string('global_id');
             $table->string('domain');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->integer('invoice_id')->nullable();
             $table->integer('order_no');
+            $table->string('total')->nullable();
             $table->integer('status');
             $table->integer('sort');
             $table->integer('created_by')->nullable();

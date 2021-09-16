@@ -28,6 +28,9 @@ class VerifyCsrfToken extends Middleware
 
         '/faqs/add/uploadImage',
         '/faqs/edit/*/editImage',
+
+        '/bankAccounts/add/uploadImage',
+        '/bankAccounts/edit/*/editImage',
         
         '/tickets/add/uploadImage',
         '/tickets/edit/*/editImage',

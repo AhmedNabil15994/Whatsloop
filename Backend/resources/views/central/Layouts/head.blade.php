@@ -32,11 +32,11 @@
 <link href="{{ asset('tenancy/assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="{{ asset('tenancy/assets/libs/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
 
+<link rel="stylesheet" href="{{ asset('tenancy/assets/css/intlTelInput.css') }}">
 @if(DIRECTION == 'ltr')
 <link rel="stylesheet" type="text/css" href="{{ asset('tenancy/assets/switcher/css/switcher.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('tenancy/assets/switcher/css/demo.css') }}">
 <link href="{{ asset('tenancy/assets/css/icons.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('tenancy/assets/css/intlTelInput.css') }}">
 <link rel="stylesheet" href="{{ asset('tenancy/assets/css/sidemenu.css') }}">
 <!-- style css -->
 <link href="{{ asset('tenancy/assets/css/style.css') }}" rel="stylesheet">
@@ -48,7 +48,7 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('tenancy/assets/switcher/css/switcher-rtl.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('tenancy/assets/switcher/css/demo.css') }}">
 <link href="{{ asset('tenancy/assets/css-rtl/icons.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('tenancy/assets/plugins/telephoneinput/telephoneinput-rtl.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('tenancy/assets/plugins/telephoneinput/telephoneinput-rtl.css') }}"> --}}
 <link rel="stylesheet" href="{{ asset('tenancy/assets/css-rtl/sidemenu.css') }}">
 <link href="{{ asset('tenancy/assets/css-rtl/style.css') }}" rel="stylesheet">
 <link href="{{ asset('tenancy/assets/css-rtl/style-dark.css') }}" rel="stylesheet">
@@ -56,6 +56,7 @@
 <link href="{{ asset('tenancy/assets/css-rtl/skin-modes.css') }}" rel="stylesheet" />
 <link href="{{ asset('tenancy/assets/css-rtl/animate.css') }}" rel="stylesheet">
 @endif
+<link href="{{ asset('tenancy/assets/plugins/amazeui-datetimepicker/css/amazeui.datetimepicker.css') }}" rel="stylesheet">
 <link href="{{ asset('tenancy/assets/css/touches.css') }}" rel="stylesheet" type="text/css">
 <!-- third party css -->
 @yield('styles')

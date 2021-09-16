@@ -2078,3 +2078,6 @@ table .checkoutRow td{
   height: 100px;
   margin-bottom: 20px;
 }
+.bd-default{
+  border: 1px solid #edeef7 !important;
+}

@@ -68,19 +68,33 @@ class BankTransfer extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->user_id = $source->user_id;
-        $data->client = $source->Client->name;
-        $data->company = $source->Client->company;
+        $data->client = $source->Client != null ? $source->Client->name : '';
+        $data->company = $source->Client != null ? $source->Client->company : '';
         $data->global_id = $source->global_id;
         $data->tenant_id = $source->tenant_id;
         $data->invoice_id = $source->invoice_id;
         $data->order_no = $source->order_no;
+        $data->total = $source->total;
+        $data->domain = $source->domain;
         $data->sort = $source->sort;
         $data->status = $source->status;
+        $data->statusText = self::getStatus($source->status);
         $data->photo = self::getPhotoPath($source->id, $source->image);
         $data->photo_name = $source->image;
         $data->photo_size = $data->photo != '' ? \ImagesHelper::getPhotoSize($data->photo) : '';
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);
         return $data;
+    }
+
+    static function getStatus($status){
+        if($status == 1){
+            return trans('main.requestSent');
+        }elseif($status == 2){
+            return trans('main.accept');
+        }elseif($status == 3){
+            return trans('main.refuse');
+        }
+        
     }
 
     static function newSortIndex(){

@@ -218,6 +218,30 @@
             </li>
             @endif
             
+            @if(\Helper::checkRules('list-coupons'))
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/coupons')) }}" href="{{ URL::to('/coupons') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/coupon.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.coupons') }}</span>
+                </a>
+            </li> 
+            @endif
+
+            @if(\Helper::checkRules('list-bankAccounts'))
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/bankAccounts')) }}" href="{{ URL::to('/bankAccounts') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/administration.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.bankAccounts') }}</span>
+                </a>
+            </li> 
+            @endif
+
             @if(\Helper::checkRules('list-changeLogs,list-categories'))
                <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">
@@ -236,23 +260,39 @@
                     @endif
                 </ul>
             </li>
-            @endif      
-        </ul>
+            @endif    
 
-        <div class="app-sidefooter">
-            <a class="side-menu__item" href="{{ URL::to('/profile') }}">
-                <img src="{{ asset('tenancy/assets/images/setting.svg') }}" alt="">
-                <span class="side-menu__label">{{ trans('main.account_setting') }}</span>
-            </a>
-            <a class="side-menu__item" href="{{ URL::to('/faqs') }}">
-                <img src="{{ asset('tenancy/assets/images/help.svg') }}" alt="">
-                <span class="side-menu__label">{{ trans('main.faqs') }}</span>
-            </a>
-            <a class="side-menu__item" href="{{ URL::to('/logout') }}">
-                <img src="{{ asset('tenancy/assets/images/logout.svg') }}" alt="">
-                <span class="side-menu__label">{{ trans('main.logout') }}</span>
-            </a>
-        </div>
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/profile')) }}" href="{{ URL::to('/profile') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/setting.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.account_setting') }}</span>
+                </a>
+            </li> 
+
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/faqs')) }}" href="{{ URL::to('/faqs') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/help.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.faqs') }}</span>
+                </a>
+            </li> 
+
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/logout')) }}" href="{{ URL::to('/logout') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/logout.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.logout') }}</span>
+                </a>
+            </li> 
+              
+        </ul>
     </div>
 </aside>
 <!-- main-sidebar -->
