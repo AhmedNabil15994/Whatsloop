@@ -17,7 +17,7 @@
 				$text = trans('main.morning');
 			}elseif($currentTime >= "12:00" && $currentTime <= "17:59"){
 				$text = trans('main.afternoon');
-			}elseif($currentTime >= "18:00" && $currentTime <= "05:59"){
+			}elseif($currentTime >= "18:00" ){
 				$text = trans('main.evening');
 			}
 		@endphp

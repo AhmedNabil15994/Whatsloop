@@ -39,7 +39,7 @@ class UserAddon extends Model{
     static function getDeactivated($user_id){
         $source = self::NotDeleted()->where([
             ['user_id',$user_id],
-            ['status',2]
+            ['status','!=',1]
         ])->orWhere([
             ['user_id',$user_id],
             ['end_date','<',date('Y-m-d')]
@@ -65,7 +65,7 @@ class UserAddon extends Model{
             $data[2] = reset($disabled);
             return $data;
         }else{
-            $source = self::NotDeleted()->where('end_date','>=',date('Y-m-d'))->whereIn('status',$statusArr);
+            $source = self::NotDeleted()->whereIn('status',$statusArr);
             if($user_id != null){
                 $source->where('user_id',$user_id);
             }

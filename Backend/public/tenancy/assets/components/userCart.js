@@ -22,12 +22,14 @@ $(function(){
 	var remove = "Remove";
 	var className = 'mr-4';
 	var typeText = 'Type';
+	var selectMemebership = "You Have to select one membership before going to payment";
 	if(lang == 'ar'){
 		add = 'أضف إلى السلة';
 		added = 'تمت الإضافة إلى السلة';
 		remove = "حذف";
 	    className = 'ml-4';
 		typeText = 'النوع';
+	 	selectMemebership = "عفوا يجب عليك اختيار الباقة قبل التوجه الى الدفع";
 	}
 
 	$(document).on('click','a.rmv',function(e){
@@ -169,11 +171,11 @@ $(function(){
 		
 		if(classType == 'membership'){
 			if(operator == 'minus'){
-				oldGrandTotal = parseInt(itemPrice) - parseInt(userCredits);
-				oldTotal = parseInt(itemAfterVat) - parseInt(userCredits);
+				oldGrandTotal = parseInt(itemPrice) - parseFloat(userCredits);
+				oldTotal = parseInt(itemAfterVat) - parseFloat(userCredits);
 			}else{
-				oldGrandTotal = parseInt(itemPrice) - parseInt(userCredits);
-				oldTotal = parseInt(itemAfterVat) - parseInt(userCredits);
+				oldGrandTotal = parseInt(itemPrice) - parseFloat(userCredits);
+				oldTotal = parseInt(itemAfterVat) - parseFloat(userCredits);
 			}
 		}else{
 			if(operator == 'minus'){
@@ -196,11 +198,11 @@ $(function(){
 			var currentPrice = $(item).find('.h5:not(.d-hidden)').text();
 			var currentPriceWithVat = $(item).find('.h5:not(.d-hidden)').data('tabs');
 			if($(item).hasClass('extra_quota')){
-				oldGrandTotal = (parseInt(oldGrandTotal) + (parseInt(currentPrice) * $(item).find('input[type="text"]').val())) - parseInt(userCredits);
-				oldTotal = (parseInt(oldTotal) + (parseInt(currentPriceWithVat) * $(item).find('input[type="text"]').val())) - parseInt(userCredits);
+				oldGrandTotal = (parseInt(oldGrandTotal) + (parseInt(currentPrice) * $(item).find('input[type="text"]').val())) - parseFloat(userCredits);
+				oldTotal = (parseInt(oldTotal) + (parseInt(currentPriceWithVat) * $(item).find('input[type="text"]').val())) - parseFloat(userCredits);
 			}else {
-				oldGrandTotal = (parseInt(oldGrandTotal) + parseInt(currentPrice)) - parseInt(userCredits);
-				oldTotal = (parseInt(oldTotal) + parseInt(currentPriceWithVat)) - parseInt(userCredits);
+				oldGrandTotal = (parseInt(oldGrandTotal) + parseInt(currentPrice)) - parseFloat(userCredits);
+				oldTotal = (parseInt(oldTotal) + parseInt(currentPriceWithVat)) - parseFloat(userCredits);
 			}
 		});
 
@@ -212,7 +214,7 @@ $(function(){
         var estimatedTax = oldTotal * (15/115);
         
         estimatedTax = estimatedTax.toFixed(2);
-		oldEstimatedTax = parseInt(oldGrandTotal) - parseInt(estimatedTax);
+		oldEstimatedTax = parseFloat(oldGrandTotal) - parseFloat(estimatedTax);
 		oldEstimatedTax = oldEstimatedTax.toFixed(2);
 
 		$('span.grandTotal').text(oldEstimatedTax);

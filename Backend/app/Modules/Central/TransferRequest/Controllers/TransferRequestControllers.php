@@ -254,14 +254,14 @@ class TransferRequestControllers extends Controller {
             }
 
             if(!empty($addon)){
-                tenancy()->initialize($tenant);
+                $oldData = unserialize($userObj->addons);
+                $newData = array_merge($oldData,$addon);
                 $userObj->update([
-                    'addons' =>  serialize($addon),
+                    'addons' =>  serialize($newData),
                 ]);
-                tenancy()->end($tenant);
 
                 $centralUser->update([
-                    'addons' =>  serialize($addon),
+                    'addons' =>  serialize($newData),
                 ]);
             }
 
@@ -403,6 +403,8 @@ class TransferRequestControllers extends Controller {
             $userObj->update([
                 'channels' => serialize([$channel['id']]),
             ]);
+
+            Variable::whereIn('var_key',['userCredits','start_date'])->delete();
             tenancy()->end($tenant);
 
             $centralUser->update([

@@ -60,6 +60,24 @@ class DashboardControllers extends Controller {
             }
         }
 
+        $userAddonsTutorial = [];
+        $userAddons = array_unique(Session::get('addons'));
+        $addonsTutorial = [1,2,4,5];
+        for ($i = 0; $i < count($addonsTutorial) ; $i++) {
+            if(in_array($addonsTutorial[$i],$userAddons)){
+                $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
+                if($checkData == ''){
+                    $varObj = new Variable;
+                    $varObj->var_key = 'MODULE_'.$addonsTutorial[$i];
+                    $varObj->var_value = 0;
+                    $varObj->save();
+                    $userAddonsTutorial[] = $addonsTutorial[$i];
+                }elseif($checkData == 0){
+                    $userAddonsTutorial[] = $addonsTutorial[$i];
+                }
+            }
+        }
+        $data['tutorials'] = array_values($userAddonsTutorial);
         Session::forget('check_user_id');
         return view('Tenancy.Dashboard.Views.menu')->with('data',(object) $data);
     }

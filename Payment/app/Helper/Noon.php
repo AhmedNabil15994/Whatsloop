@@ -2,10 +2,10 @@
 
 class Noon{
 
-    // private static $mainURL = "https://api-test.noonpayments.com/payment/v1/";
-    // private static $mode = 'Test';
-    private static $mainURL = "https://api.noonpayments.com/payment/v1/";
-    private static $mode = 'Live';
+    private static $mainURL = "https://api-test.noonpayments.com/payment/v1/";
+    private static $mode = 'Test';
+    // private static $mainURL = "https://api.noonpayments.com/payment/v1/";
+    // private static $mode = 'Live';
 
 
 	public static function hostedPayment($data){

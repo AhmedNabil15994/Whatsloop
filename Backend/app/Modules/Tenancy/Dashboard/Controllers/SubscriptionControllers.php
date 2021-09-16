@@ -305,10 +305,10 @@ class SubscriptionControllers extends Controller {
         if($input['payType'] == 2){// Noon Integration
             $businessId = 'digital_servers';
             $appName = 'whatsloop';
-            // $appKey = '085f038ec4214c88a507341ac05ad432'; //For Test
-            // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDowODVmMDM4ZWM0MjE0Yzg4YTUwNzM0MWFjMDVhZDQzMg=='; // For Test
-            $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
-            $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDphOTFmY2YyYzZhZGY0ZWRkYWNlM2YxNWE0MTcwNTc0Mw==';
+            $appKey = '085f038ec4214c88a507341ac05ad432'; //For Test
+            $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDowODVmMDM4ZWM0MjE0Yzg4YTUwNzM0MWFjMDVhZDQzMg=='; // For Test
+            // $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
+            // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDphOTFmY2YyYzZhZGY0ZWRkYWNlM2YxNWE0MTcwNTc0Mw==';
             $dataArr = [
                 'returnURL' => \URL::to('/pushInvoice'),
                 'cart_id' => 'whatsloop-'.rand(1,100000),
@@ -459,7 +459,6 @@ class SubscriptionControllers extends Controller {
         $input = \Request::all();
         $data['data'] = json_decode($input['data']);
         $data['status'] = json_decode($input['status']);
-            dd($data['data']);
 
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
@@ -561,12 +560,14 @@ class SubscriptionControllers extends Controller {
         }
 
         if(!empty($addon)){
+            $oldData = unserialize($userObj->addons);
+            $newData = array_merge($oldData,$addon);
             $userObj->update([
-                'addons' =>  serialize($addon),
+                'addons' =>  serialize($newData),
             ]);
 
             $centralUser->update([
-                'addons' =>  serialize($addon),
+                'addons' =>  serialize($newData),
             ]);
         }
 
@@ -732,6 +733,8 @@ class SubscriptionControllers extends Controller {
             }
         }
 
+        Session::forget('userCredits');
+        Variable::whereIn('var_key',['userCredits','start_date'])->delete();
         User::setSessions($userObj);
         return redirect()->to('/dashboard');
     }
@@ -746,15 +749,13 @@ class SubscriptionControllers extends Controller {
                     $image = '/uploads/instanceImage' . time() . '.png';
                     $destinationPath = public_path() . $image;
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
-                    $succ = file_put_contents($destinationPath, $qrCode);   
-                    $data['qrImage'] = \URL::to('/').$image;
+                    // $succ = file_put_contents($destinationPath, $qrCode);   
+                    $data['qrImage'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
                 }
             }
         }
 
-        if(!isset($data['qrImage']) || $data['qrImage'] == null){
-            return redirect('dashboard');
-        }
+        
         $userAddonsTutorial = [];
         $userAddons = array_unique(Session::get('addons'));
         $addonsTutorial = [1,2,4,5];
@@ -773,10 +774,15 @@ class SubscriptionControllers extends Controller {
             }
         }
 
+
+        if((!isset($data['qrImage']) || $data['qrImage'] == null) && empty($userAddonsTutorial)){
+            return redirect('dashboard');
+        }
+
         $data['data'] = array_values($userAddonsTutorial);
         $names = Addons::NotDeleted()->whereIn('id',$data['data'])->pluck('title_'.LANGUAGE_PREF);
         $data['dataNames'] = reset($names);
-        $data['channelName'] = trans('main.channel'). ' #'.Session::get('channelCode');
+        $data['channelName'] = trans('main.channel'). ' # '.Session::get('channelCode');
         $data['dis'] = 0;
         if(count($data['data']) > 0){
             $data['templates'] = ModTemplate::dataList(null, ($data['data'][0] == 5 ? 1 : 2 )  )['data'];
@@ -820,10 +826,14 @@ class SubscriptionControllers extends Controller {
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
                     $succ = file_put_contents($destinationPath, $qrCode);   
                     // $data['qrImage'] = \URL::to('/public'.$image);
-                    $statusObj['data']['qrImage'] = \URL::to('/').$image;
+                    $statusObj['data']['qrImage'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
                     $statusObj['status'] = \TraitsFunc::SuccessMessage();
                     return \Response::json((object) $statusObj);
                 }
+            }else if($result['data']['accountStatus'] == 'authenticated'){
+                $statusObj['data']['qrImage'] = 'auth';
+                $statusObj['status'] = \TraitsFunc::SuccessMessage();
+                return \Response::json((object) $statusObj);
             }
         }
         
@@ -891,13 +901,13 @@ class SubscriptionControllers extends Controller {
             $newPriceAfterVat = $dataObj->monthly_after_vat;
 
             if($oldDuration == 1){
-                $usedCost = floor(($dataObj->monthly_after_vat / 30) * $usedDays);
+                $usedCost = ($dataObj->monthly_after_vat / 30) * $usedDays;
             }else if($oldDuration == 2){
-                $usedCost = floor(($dataObj->annual_after_vat / 365) * $usedDays);
+                $usedCost = ($dataObj->annual_after_vat / 365) * $usedDays;
                 $newPriceAfterVat = $dataObj->annual_after_vat;
             }
 
-            $data['userCredits'] = $newPriceAfterVat - $usedCost;
+            $data['userCredits'] = round($newPriceAfterVat - $usedCost,2);
             Session::put('userCredits',$data['userCredits']);
             $data['membership'] = Membership::getData($dataObj);
             $data['memberships'] = Membership::dataList(1)['data'];
@@ -929,9 +939,8 @@ class SubscriptionControllers extends Controller {
 
         $myData   = json_decode($input['data']);
         $testData = [];
-        dd($myData);
 
-        $total = Session::has('userCredits') ? - (int) Session::get('userCredits') : 0;
+        $total = Session::has('userCredits') ? - floatval(Session::get('userCredits'))  : 0;
         foreach($myData as $key => $one){
             $testData[$key] = $one;
             if($one[1] == 'membership'){
@@ -954,6 +963,11 @@ class SubscriptionControllers extends Controller {
         $data['data'] = $testData;
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        $data['user'] = User::first();
+        $data['countries'] = countries();
+        $egypt = country($data['payment']->country); 
+        $data['regions'] = $egypt->getDivisions(); 
+        $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         return view('Tenancy.Profile.Views.checkout')->with('data',(object) $data);
     }
 
@@ -1001,11 +1015,12 @@ class SubscriptionControllers extends Controller {
                     1
                 ]
             ];
+            $tax = \Helper::calcTax($price);
             $totalArr = [
-                $price,
+                number_format((float)$price - $tax, 2, '.', ''),
                 0,
-                0,
-                $price,
+                number_format((float)$tax, 2, '.', ''),
+                number_format((float)$price, 2, '.', ''),
             ];
             return $this->postUpdateSubscription($request,json_encode($dataArr),json_encode($totalArr));
         }elseif($status == 3){
@@ -1053,11 +1068,12 @@ class SubscriptionControllers extends Controller {
                     1
                 ]
             ];
+            $tax = \Helper::calcTax($price);
             $totalArr = [
-                $price,
+                number_format((float)$price - $tax, 2, '.', ''),
                 0,
-                0,
-                $price,
+                number_format((float)$tax, 2, '.', ''),
+                number_format((float)$price, 2, '.', ''),
             ];
             return $this->postUpdateSubscription($request,json_encode($dataArr),json_encode($totalArr));
         }

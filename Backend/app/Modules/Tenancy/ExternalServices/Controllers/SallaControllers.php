@@ -18,12 +18,11 @@ class SallaControllers extends Controller {
     public $service = 'salla';
     
     public function checkPerm(){
-        $disabled = Session::get('deactivatedAddons');
+        $disabled = UserAddon::getDeactivated(User::first()->id);
         $dis = 0;
         if(in_array(5,$disabled)){
             $dis = 1;
         }
-        return $dis;
     }
 
     public function customers(Request $request){

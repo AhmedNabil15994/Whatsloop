@@ -24,7 +24,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$tenantUser = User::first();
 		$tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$tenantUser->global_id)->first();
 		$userObj = \DB::connection('main')->table('domains')->where('tenant_id',$tenantObj->tenant_id)->first();
-
+		
 		$disabled = UserAddon::getDeactivated($tenantUser->id);
         $dis = 0;
         if(in_array(1,$disabled)){

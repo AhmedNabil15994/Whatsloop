@@ -103,8 +103,7 @@ class UserExtraQuota extends Model{
 
     // Status == 1 => Active
     // Status == 0 => Not Active
-    // Status == 2 ==> Deactivated
-    // Status == 3 ==> Disabled
+    // Status == 2 ==> Disabled
     static function getData($source){
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;

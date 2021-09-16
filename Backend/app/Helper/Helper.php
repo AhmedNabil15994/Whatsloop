@@ -183,7 +183,7 @@ class Helper
         $addons = \DB::connection('main')->table('addons')->whereIn('id',\Session::has('addons') ? \Session::get('addons') : [])->get(['module','id']);
         $addons = reset($addons);
         foreach ($addons as $addon) {
-            if(!in_array($addon->id,Session::get('deactivatedAddons')) && !in_array($addon->id,Session::get('disabledAddons'))){
+            if(!in_array($addon->id,Session::get('deactivatedAddons')) || !in_array($addon->id,Session::get('disabledAddons'))){
                 if($addon->module == 'Bot'){
                     $externalPermissions = [
                         'BotControllers@index' => 'list-bots',
@@ -264,7 +264,7 @@ class Helper
                     $externalPermissions = [];
                 }elseif($addon->module == 'whiteLogo'){
                     $externalPermissions = [];
-                }elseif($addon->module == 'whatsappOrders'){
+                }elseif($addon->module == 'whatsappOrder'){
                     $externalPermissions = [
                         'WhatsappOrdersControllers@products' => 'whatsapp-products',
                         'WhatsappOrdersControllers@orders' => 'whatsapp-orders',

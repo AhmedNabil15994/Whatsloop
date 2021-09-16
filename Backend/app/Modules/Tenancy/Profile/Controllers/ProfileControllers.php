@@ -513,10 +513,16 @@ class ProfileControllers extends Controller {
             'addons' => $channelObj ?  UserAddon::dataList(null,USER_ID,null,[1,2,3])['data'] : [],
             'extra_quotas' => $channelObj ?  UserExtraQuota::getForUser(GLOBAL_ID)[1] : [],
         ];
-     
+
         $data['data'] = $userObj;
         $data['me'] = (object) ($result != null && isset($result['data']) ? $result['data'] : []);
-        $data['status'] = $channelObj ? UserStatus::getData(UserStatus::orderBy('id','DESC')->first()) : '';
+        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
+        if($userStatusObj){
+            $data['status'] = $channelObj ? UserStatus::getData($userStatusObj) : '';
+        }else{
+            $data['status'] = [];
+        }
+
         $data['allMessages'] = ChatMessage::count();
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
@@ -562,7 +568,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
         Session::flash('success',trans('main.logoutDone'));
-        return redirect()->to('/dashboard');
+        return redirect()->to('/menu');
     }
 
     public function sync(){

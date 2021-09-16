@@ -7,30 +7,6 @@
 
 {{-- Content --}}
 @section('content')
-
-@if(isset($data->qrImage))
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="header-title">
-                    <div class="row d-block w-100">
-                        <div class="cols first">
-                            <i class="si si-close text-danger"></i>
-                        </div>
-                        <div class="cols second">
-                            <span class="text-danger">{{ trans('main.gotQrCode') }}</span>
-                            <a href="{{ URL::to('/QR') }}" class="btn btn-success float-right">{{ trans('main.reconnect') }}</a>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                </h5>
-            </div> <!-- end card-body-->
-        </div> <!-- end card-->
-    </div> <!-- end col -->
-</div>
-@endif
-
 <!-- row -->
 <div class="row row-sm">
     <div class="col-xl-3 col-lg-6 col-sm-6 col-md-6">

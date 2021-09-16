@@ -22,7 +22,7 @@ class GroupMsgsControllers extends Controller {
     use \TraitsFunc;
 
     public function checkPerm(){
-        $disabled = Session::get('deactivatedAddons');
+        $disabled = UserAddon::getDeactivated(User::first()->id);
         $dis = 0;
         if(in_array(3,$disabled)){
             $dis = 1;

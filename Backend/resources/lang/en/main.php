@@ -704,4 +704,7 @@ return [
 	'accountNumberValidate' => 'Account Number Field is required',	
 
 
+	'addonsConfigure' => 'You need to finish configuring some addons',
+	'reconfigure' => 'Configure Addons',
+	'upgrade' => 'Upgrade',
 ];

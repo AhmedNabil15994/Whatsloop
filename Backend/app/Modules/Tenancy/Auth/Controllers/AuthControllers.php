@@ -64,7 +64,6 @@ class AuthControllers extends Controller {
         $userObj->code = $code;
         $userObj->save();
 
-
         if($userObj->two_auth == 1){
             $channelObj = \DB::connection('main')->table('channels')->first();
             $whatsLoopObj =  new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);

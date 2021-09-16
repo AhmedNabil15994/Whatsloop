@@ -2081,3 +2081,24 @@ table .checkoutRow td{
 .bd-default{
   border: 1px solid #edeef7 !important;
 }
+.btn.label.waves-light{
+  margin-right: 5px;
+}
+html[dir="rtl"] .btn.label.waves-light{
+  margin-left: 5px;
+}
+.text-hover-primary .label{
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+img.me-avatar{
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+}
+.w-85{
+  width: 85%;
+}

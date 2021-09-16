@@ -111,7 +111,7 @@ class TenantInvoiceControllers extends Controller {
                 'anchor-class' => '',
             ],
             'paid_date' => [
-                'label' => trans('main.paid_at'),
+                'label' => trans('main.paid_date'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'paid_date',

@@ -1,3 +1,4 @@
+$('.actions ul li a[href="#next"]').unbind('click');
 $('.actions ul li a[href="#next"]').on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
@@ -86,6 +87,9 @@ function fireAjaxRequest(id,elem){
                 getQRCode(elem);
                 setTimeout(function(){
                     next(elem);
+                    if($('img.qrImage').data('area') == 1){
+                        next(elem);
+                    }
                 }, 2500);
             }else{
                 next(elem);
@@ -137,15 +141,20 @@ function fireAjaxRequest(id,elem){
             getQRCode(elem);
             setTimeout(function(){
                 next(elem);
+                if($('img.qrImage').data('area') == 1){
+                    next(elem);
+                }
             }, 2500);
+
         }else{
-            next(elem);   
+            next(elem);
         }
     }
 }
 
+var baseURL = $('img.qrImage').attr('src');
 function getQRCode(elem){
-    if($('img.qrImage').attr('src') == '#'){
+    if($('img.qrImage').attr('data-area') == 0){
         $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
         $.ajax({
             type: 'POST',
@@ -155,10 +164,17 @@ function getQRCode(elem){
             },
             success:function(data){
                 if(data.status.status == 1){
-                    $('img.qrImage').attr('src',data.data.qrImage);
-                    setTimeout(function(){
-                        newjobs();
-                    }, 45000);
+                    if(data.data.qrImage == 'auth'){
+                        $('img.qrImage').attr('src',baseURL);
+                        $('img.qrImage').attr('data-area',1);
+                        $('.actions ul li a[href="#next"]').show();
+                    }else{
+                        $('img.qrImage').attr('src',data.data.qrImage);
+                        $('.actions ul li a[href="#next"]').hide();
+                        setTimeout(function(){
+                            newjobs();
+                        }, 5000);
+                    }
                 }else{
                     errorNotification(data.status.message);
                 }
@@ -168,17 +184,23 @@ function getQRCode(elem){
 }
 
 
-function newjobs(){
+function newjobs(elem){
     var inputjob = $.ajax({
         url: "/QR/getQR",
         type: 'POST',
         data:{'_token': $('meta[name="csrf-token"]').attr('content'),},
     });
     inputjob.done(function(data) {  
-        if($('img.qrImage').attr('src') != '#'){
-            $('img.qrImage').attr('src',data.data.qrImage);
+        if($('img.qrImage').attr('src') != 0){
+            if(data.data.qrImage == 'auth'){
+                $('.actions ul li a[href="#next"]').show();
+                $('img.qrImage').attr('src',baseURL);
+            }else{
+                $('img.qrImage').attr('src',data.data.qrImage);
+                $('.actions ul li a[href="#next"]').hide();
+                setTimeout(newjobs(elem), 5000); // recursion
+            }
         }
-        setTimeout(newjobs, 45000); // recursion
     });
 };
 

@@ -23,6 +23,7 @@
 			<!-- container -->
 			<div class="container-fluid mg-t-35 ">
 				@include('tenant.Layouts.breadcrumb')
+				@include('tenant.Layouts.userStatus')
 				@yield('content')
 			</div>
 		</div>

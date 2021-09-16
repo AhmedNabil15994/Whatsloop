@@ -38,8 +38,8 @@
                                     </div>
                                     <h3 class="h6 mb-2 font-weight-bold text-uppercase">{{ $membership->title }}</h3>
                                     <div class="d-block">
-                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $membership->monthly_after_vat }}">{{ number_format((float)$membership->monthly_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
-                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $membership->annual_after_vat }}">{{ number_format((float)$membership->annual_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 w-100 monthly" data-tabs="{{ $membership->monthly_after_vat }}">{{ number_format((float)$membership->monthly_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger w-100 yearly d-hidden" data-tabs="{{ $membership->annual_after_vat }}">{{ number_format((float)$membership->annual_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal d-block tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
                                     </div>
                                     <button class="btn btn-primary btn-block cartButton mb-0 mt-4 {{ Request::get('membership_id') == $membership->id ? 'added' : 'add' }}" data-cols="{{ $membership->id }}" data-area="membership">
                                         @if(Request::get('membership_id') == $membership->id)
@@ -82,8 +82,8 @@
                                     </div>
                                     <h3 class="h6 mb-2 font-weight-bold text-uppercase">{{ $addon->title }}</h3>
                                     <div class="d-block">
-                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $addon->monthly_after_vat }}">{{ number_format((float)$addon->monthly_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
-                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $addon->annual_after_vat }}">{{ number_format((float)$addon->annual_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 w-100 monthly" data-tabs="{{ $addon->monthly_after_vat }}">{{ number_format((float)$addon->monthly_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger w-100 yearly d-hidden" data-tabs="{{ $addon->annual_after_vat }}">{{ number_format((float)$addon->annual_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
                                     </div>
                                     <button class="btn btn-primary cartButton add btn-block mb-0 mt-4" data-cols="{{ $addon->id }}" data-area="addon">
                                         <i class="fe fe-shopping-cart mr-1"></i>
@@ -117,8 +117,8 @@
                                     <h3 class="h6 mb-2 font-weight-bold text-uppercase">{{ $one->extraTypeText }}</h3>
                                     <small class="text-muted tx-13">{{ $one->extra_count . ' '.$one->extraTypeText . ' ' . ($one->extra_type == 1 ? trans('main.msgPerDay') : '')}}</small>
                                     <div class="d-block">
-                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 monthly" data-tabs="{{ $one->monthly_after_vat }}">{{ number_format((float)$one->monthly_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
-                                        <h4 class="h5 w-50 font-weight-bold text-danger yearly d-hidden" data-tabs="{{ $one->annual_after_vat }}">{{ number_format((float)$one->annual_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger mb-0 w-100 monthly" data-tabs="{{ $one->monthly_after_vat }}">{{ number_format((float)$one->monthly_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.monthly') }}</span></h4>
+                                        <h4 class="h5 w-50 font-weight-bold text-danger w-100 yearly d-hidden" data-tabs="{{ $one->annual_after_vat }}">{{ number_format((float)$one->annual_price, 2, '.', '') }} {{ trans('main.sar') }} <span class="text-secondary font-weight-normal tx-13 ml-1">{{ trans('main.yearly') }}</span></h4>
                                     </div>
                                     <button class="btn btn-primary cartButton add btn-block mb-0 mt-4" data-cols="{{ $one->id }}" data-area="extra_quota">
                                         <i class="fe fe-shopping-cart mr-1"></i>

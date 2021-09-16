@@ -347,7 +347,7 @@ return [
 	'days' => 'أيام',
 	'add_days' => 'اضافة أيام',
 	'synced' => 'تمت المزامنة',
-	'synced' => 'لم تتم المزامنة',
+	'notSynced' => 'لم تتم المزامنة',
 	'phone_connected' => 'الهاتف متصل بالانترنت',
 	'channel_no' => 'رقم القناة',
 	'intro' => 'مقدمة',
@@ -698,4 +698,8 @@ return [
 	'bankNameValidate' => 'يرجي ادخال قيمة لحقل اسم البنك',
 	'accountNameValidate' => 'يرجي ادخال قيمة لحقل اسم الحساب',
 	'accountNumberValidate' => 'يرجي ادخال قيمة لحقل رقم الحساب',	
+
+	'addonsConfigure' => 'عليك الانتهاء من تهيئة بعض الاضافات',
+	'reconfigure' => 'تهيئة الاضافات',
+	'upgrade' => 'ترقية',
 ];
