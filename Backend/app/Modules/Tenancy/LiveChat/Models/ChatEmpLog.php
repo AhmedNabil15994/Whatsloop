@@ -9,6 +9,10 @@ class ChatEmpLog extends Model{
     public $timestamps = false;
     public $incrementing = false;
 
+    public function User(){
+        return $this->belongsTo('App\Models\User','user_id');
+    }
+
     static function getOne($id){
         return self::where('id', $id)->first();
     }
@@ -34,21 +38,27 @@ class ChatEmpLog extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->chatId = $source->chatId;
+        $data->chatId2 = $source->chatId != null ? self::reformChatId($source->chatId) : '';
         $data->user_id = $source->user_id;
+        $userObj = $source->User != null ? User::getData(($source->User)) : [];
+        $data->user = $source->User != null ? ucwords($userObj->name) : '';
+        $data->userImage = $source->User != null ? $userObj->photo : '';
         $data->type = $source->type;
         $data->typeText = self::getTypeText($source->type);
         $data->ended = $source->ended;
+        $data->ended_at = $source->ended_at;
         $data->created_at = \Helper::formatDate($source->created_at);
+        $data->created_at2 = \Carbon\Carbon::createFromTimeStamp(strtotime($source->created_at))->diffForHumans();
         return $data;
     }
 
     static function getTypeText($type){
         if($type == 1){
-            return 'Chat Entered';
+            return trans('main.chatEntered');
         }elseif($type == 2){
-            return 'Chat Exited';
+            return trans('main.chatExited');
         }elseif($type == 3){
-            return 'First Chat Reply';
+            return trans('main.firstReply');
         }
     }
 
@@ -62,9 +72,15 @@ class ChatEmpLog extends Model{
         $newObj->save();
     }
 
+    static function reformChatId($chatId){
+        $chatId = str_replace('@c.us','',$chatId);
+        $chatId = str_replace('@g.us','',$chatId);
+        return '+'.$chatId;
+    }
+
+
     static function newLog($chatId,$type=null){
-        // $userId = USER_ID;   
-        $userId = 0;
+        $userId = USER_ID;   
         $date = date('Y-m-d H:i:s');  
         if($type != null){
             $dataObj = self::where('user_id',$userId)->where('chatId',$chatId)->orderBy('id','DESC')->first();
@@ -78,6 +94,7 @@ class ChatEmpLog extends Model{
                     $oldChat = $dataObj->chatId;
                     if($dataObj->ended == 0){
                         $dataObj->ended = 1;
+                        $dataObj->ended_at = $date;
                         $dataObj->save();
                     }
                     if($dataObj->type == 1){
@@ -92,6 +109,7 @@ class ChatEmpLog extends Model{
                         
                     }elseif($dataObj->type == 2){
                         $dataObj->ended = 1;
+                        $dataObj->ended_at = $date;
                         $dataObj->save();
 
                         self::newRecord($chatId,1,$userId,$date,0);

@@ -2102,3 +2102,11 @@ img.me-avatar{
 .w-85{
   width: 85%;
 }
+.lastest{
+  height: 560px;
+  overflow-y: scroll;
+}
+.lastest-table{
+  height: 660px;
+  overflow-y: scroll;
+}

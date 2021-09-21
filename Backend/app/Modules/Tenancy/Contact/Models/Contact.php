@@ -62,6 +62,13 @@ class Contact extends Model{
         }
     }
 
+    static function lastContacts(){
+        $contactObj = self::NotDeleted()->orderBy('id','DESC')->take(20)->inRandomOrder();
+        if($contactObj != null){
+            return self::generateObj($contactObj);
+        }
+    }
+
     static function dataList($status=null,$id=null,$group_id=null,$withMessageStatus=null) {
         $input = \Request::all();
 
@@ -258,6 +265,7 @@ class Contact extends Model{
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);
+        $data->created_at2 = self::reformDate(strtotime($source->created_at));
         if($withMessageStatus != null){
             $status = [];
             $groupMsgObj = GroupMsg::getOne($group_message_id);
@@ -292,4 +300,17 @@ class Contact extends Model{
         return self::count() + 1;
     }
 
+    static function reformDate($time){
+        $diff = (time() - $time ) / (3600 * 24);
+        $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
+        if(round($diff) == 0){
+            return [date('Y-m-d',$time),date('h:i A',$time)];
+        }else if($diff>0 && $diff<=1){
+            return [trans('main.yesterday'), date('h:i A',$time)];
+        }else if($diff > 1 && $diff < 7){
+            return [$date->locale(LANGUAGE_PREF)->dayName,date('h:i A',$time)];
+        }else{
+            return [date('Y-m-d',$time),date('h:i A',$time)];
+        }
+    }
 }

@@ -77,8 +77,8 @@
                 <div class="card-body">
                     <img src="{{ asset('images/waiting.svg') }}" class="transferSVG" alt="">
                     <h2 class="header-title h2 tx-bold mg-b-40">{{ $data->msg }}</h2>
-                    <p class="h3 mg-b-50 text-muted tx-bold">رقم طلبك هو : <span class="tx-black">{{ $data->transfer->order_no }}</span></p>
-                    <p class="h3 text-muted tx-bold">للاتصال بخدمة العملاء : <span class="tx-black" dir="ltr">{{ $data->phone }}</span></p>
+                    <p class="h3 mg-b-50 text-muted tx-bold">{{ trans('main.yourOrderNo') }} : <span class="tx-black">{{ $data->transfer->order_no }}</span></p>
+                    <p class="h3 text-muted tx-bold">{{ trans('main.contactBSCustomer') }} : <span class="tx-black" dir="ltr">{{ $data->phone }}</span></p>
                 </div>
             </div>
         </div>

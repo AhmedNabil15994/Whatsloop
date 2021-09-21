@@ -694,4 +694,12 @@ class MainWhatsLoop {
         ])->post($mainURL,$data);
     }
    
+
+    public function clearInstance(){
+        $mainURL = $this->baseUrl.'instances/clearInstance';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL);
+    }
 }

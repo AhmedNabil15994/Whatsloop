@@ -45,5 +45,7 @@ class VerifyCsrfToken extends Middleware
         '/invoices/*/pushInvoice',
         '/checkout/bankTransfer',
 
+        '/livewire/message/*',
+
     ];
 }

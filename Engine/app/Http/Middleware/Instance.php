@@ -8,7 +8,7 @@ class Instance
     public function handle($request, Closure $next){
         $statusesArr = [
             // Instances
-            'status','qr_code','logout','screenshot','takeover','expiry','retry','reboot','settings','updateSettings','outputIP','me','updateName','updateStatus','repeatHook','labelsList','createLabel','updateLabel','removeLabel',
+            'status','qr_code','logout','screenshot','takeover','expiry','retry','reboot','settings','updateSettings','outputIP','me','updateName','updateStatus','repeatHook','labelsList','createLabel','updateLabel','removeLabel','clearInstance',
 
             // Messages
             'sendMessage','sendFile','sendPTT','sendLink','sendContact','sendLocation','sendVCard','forwardMessage','allMessages','messagesHistory','deleteMessage',
@@ -33,6 +33,8 @@ class Instance
 
             // Products
             'getProducts','getProduct','sendProduct','getOrder',
+
+
         ];
 
         if(!in_array($request->segment(2), $statusesArr)){

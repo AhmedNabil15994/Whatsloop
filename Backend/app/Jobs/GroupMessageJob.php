@@ -11,8 +11,8 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\GroupMsg;
 use App\Models\ContactReport;
 use App\Models\ChatMessage;
-
-class GroupMessageJob implements ShouldQueue
+// implements ShouldQueue
+class GroupMessageJob
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 

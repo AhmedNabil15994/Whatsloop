@@ -13,12 +13,16 @@ use App\Models\WebActions;
 use App\Models\Variable;
 use App\Models\UserChannels;
 use App\Models\ChatMessage;
+use App\Models\ChatDialog;
 use App\Models\PaymentInfo;
 use App\Models\CentralChannel;
+use App\Models\ContactLabel;
+use App\Models\ContactReport;
 use App\Models\UserStatus;
 use App\Models\ExtraQuota;
 use App\Models\Membership;
 use App\Models\UserExtraQuota;
+use App\Models\CentralUser;
 use Storage;
 use DataTables;
 use Validator;
@@ -574,6 +578,10 @@ class ProfileControllers extends Controller {
     public function sync(){
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
+        $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
+        if($lastMessageObj != null){
+            $data['min_time'] = $lastMessageObj->time - 7200;
+        }
         $updateResult = $mainWhatsLoopObj->messages($data);
         $result = $updateResult->json();
 
@@ -588,13 +596,84 @@ class ProfileControllers extends Controller {
         return redirect()->back();
     }
 
+    public function syncAll(){
+        $lastMessageObj = ChatMessage::where('id','!=',null)->delete();
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->messages($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        dispatch(new SyncMessagesJob($result['data']['messages']));
+        
+        Session::flash('success',trans('main.syncInProgress'));
+        return redirect()->back();
+    }
+
+    public function restoreAccountSettings(){
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        // // Update User With Settings For Whatsapp Based On His Domain
+        $myData = [
+            'sendDelay' => 0,
+            'webhookUrl' => '',
+            'instanceStatuses' => 0,
+            'webhookStatuses' => 0,
+            'statusNotificationsOn' => 0,
+            'ackNotificationsOn' => 0,
+            'chatUpdateOn' => 0,
+            'videoUploadOn' => 0,
+            'guaranteedHooks' => 0,
+            'parallelHooks' => 0,
+        ];
+        $updateResult = $mainWhatsLoopObj->postSettings($myData);
+        $result = $updateResult->json();
+
+        $updateResult = $mainWhatsLoopObj->clearInstance();
+        $result = $updateResult->json();
+    
+        $userObj = User::first();
+        $centralUser = CentralUser::getOne($userObj->id);
+        
+        $userObj->setting_pushed = 0;
+        $userObj->save();
+
+        $centralUser->setting_pushed = 0;
+        $centralUser->save();
+        
+        Variable::whereIn('var_key',[
+            'MODULE_1','MODULE_2','MODULE_3','MODULE_4','MODULE_5',
+            'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
+        ])->update(['var_value'=>0]);   
+
+        Contact::where('id','!=',null)->delete();
+        ChatMessage::where('id','!=',null)->delete();
+        ChatDialog::where('id','!=',null)->delete();
+        ContactLabel::where('id','!=',null)->delete();
+        ContactReport::where('id','!=',null)->delete();
+        UserStatus::where('id','!=',null)->delete();
+     
+        Session::flash('success',trans('main.logoutDone'));
+        return redirect()->back();
+    }
+
     public function read($status){
         $status = (int) $status;
         if(!in_array($status, [0,1])){
             return redirect('404');
         }
 
+        $sending_status_text = 2;
+        if($status == 1){
+            $sending_status_text = 3;
+        }
+
         $messages = ChatMessage::where('fromMe',0)->groupBy('chatId')->pluck('chatId');
+        ChatMessage::whereIn('chatId',reset($messages))->update(['sending_status' => $sending_status_text]);
         dispatch(new ReadChatsJob(reset($messages),$status));
 
         Session::flash('success',trans('main.inPrgo'));

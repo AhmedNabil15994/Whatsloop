@@ -16,8 +16,8 @@ class BankAccounts extends Migration
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->string('bank_name');
-            $table->integer('account_name');
-            $table->double('account_number');
+            $table->text('account_name');
+            $table->text('account_number');
             $table->string('image')->nullable();
             $table->integer('status');
             $table->integer('sort');

@@ -84,7 +84,7 @@ function fireAjaxRequest(id,elem){
             });
         }else{
             if(tabsLength == 3){
-                getQRCode(elem);
+                // getQRCode(elem);
                 setTimeout(function(){
                     next(elem);
                     if($('img.qrImage').data('area') == 1){
@@ -138,7 +138,7 @@ function fireAjaxRequest(id,elem){
         }
     }else{
         if(id == 'wizard1-p-2' && tabsLength == 5){
-            getQRCode(elem);
+            // getQRCode(elem);
             setTimeout(function(){
                 next(elem);
                 if($('img.qrImage').data('area') == 1){

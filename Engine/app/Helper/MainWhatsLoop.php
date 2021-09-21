@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
-
+use App\Models\Variable;
 /**
  * This Class For Whatsloop Api To Send ( Message - File - Photo - Location - Voice - Contact )
  *
@@ -608,5 +608,13 @@ class MainWhatsLoop {
         $fullURL = $mainURL.'getOrder?token='.$this->token;
         $result = Http::post($fullURL,$data);
         return $result; 
+    }
+
+    public function clearInstance(){
+        $mainURL = 'https://us-central1-app-chat-api-com.cloudfunctions.net/';
+        $uid = Variable::getVar('API_KEY');
+        $fullURL = $mainURL.'cleanInstance?uid='.$uid.'&instanceId='.$this->instanceId;
+        $result = Http::post($fullURL,[]);
+        return $result;     
     }
 }

@@ -29,6 +29,12 @@ class ChatMessage extends Model{
         return self::generateObj($source,$limit);
     }
 
+    static function lastMessages() {
+        $source = self::NotDeleted();
+        $source->orderBy('time','DESC');
+        return self::generateObj($source,50);
+    }
+
     static function generateObj($source,$limit=null){
         if($limit != null){
             $sourceArr = $source->paginate($limit);
@@ -145,6 +151,7 @@ class ChatMessage extends Model{
             $dataObj->created_at_day = isset($source->time) ? $dates[0]  : ''; 
             $dataObj->created_at_time = isset($source->time) ? $dates[1]  : ''; 
             $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
+            $dataObj->chatId2 = isset($source->chatId) ? self::reformChatId($source->chatId) : '';
             $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
             $dataObj->status = $source->status != null ? $source->status : ($source->status == null && $source->fromMe == 0 ? $source->senderName : '');
             $dataObj->message_type = $source->message_type  == null ? 'text' :  $source->message_type ;
@@ -178,6 +185,12 @@ class ChatMessage extends Model{
         }else if($status == 3){
             return trans('main.seen');
         }
+    }
+
+    static function reformChatId($chatId){
+        $chatId = str_replace('@c.us','',$chatId);
+        $chatId = str_replace('@g.us','',$chatId);
+        return '+'.$chatId;
     }
 
     static function reformDate($time){

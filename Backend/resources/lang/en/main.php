@@ -395,6 +395,8 @@ return [
 
 	'screenshot' => 'Screenshot',
 	'sync' => 'Sync',
+	'syncAll' => 'Sync All Messages',
+	'restoreAccountSettings' => 'Restore Account Settings',
 	'reestablish' => 'Re-establish Connection',
 	'closeConn' => 'Close Connection',
 	'readAll' => 'Read All Messages',
@@ -707,4 +709,17 @@ return [
 	'addonsConfigure' => 'You need to finish configuring some addons',
 	'reconfigure' => 'Configure Addons',
 	'upgrade' => 'Upgrade',
+
+	'serverStatus' => 'Server Status',
+	'sendStatus' => 'Sending Status',
+	'lastContactsAdded' => 'Lastest Contacts Added ',
+	'dialog' => 'Dialog',
+	'multimedia' => 'Multimedia',
+	'activityLog' => 'Activities Log',
+	'chatEntered' => 'Chat Entered',
+	'chatExited' => 'Chat Exited',
+	'firstReply' => 'First Chat Reply',
+
+	'yourOrderNo' => 'Your Order No ',
+	'contactBSCustomer' => 'To Contact Customer Service',
 ];

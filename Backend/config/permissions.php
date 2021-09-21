@@ -73,6 +73,8 @@ return [
     'ProfileControllers@reconnect' => 'subscription',
     'ProfileControllers@closeConn' => 'subscription',
     'ProfileControllers@sync' => 'subscription',
+    'ProfileControllers@syncAll' => 'subscription',
+    'ProfileControllers@restoreAccountSettings' => 'subscription',
     'ProfileControllers@read' => 'subscription',
 
     'ProfileControllers@apiSetting' => 'apiSetting',

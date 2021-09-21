@@ -1,0 +1,1 @@
+<img wire:poll.visible.2s="fetchNewImage" wire:model="QrImage" class="qrImage mb-3 mt-3" src="{{ $url }}" alt="qr" data-area="{{ $area }}">

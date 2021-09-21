@@ -8,6 +8,7 @@
 		@yield('extra-metas')
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 		@include('tenant.Layouts.head')
+		@livewireStyles
 	</head>
 	<!--end::Head-->
 	
@@ -23,7 +24,10 @@
 			<!-- container -->
 			<div class="container-fluid mg-t-35 ">
 				@include('tenant.Layouts.breadcrumb')
-				@include('tenant.Layouts.userStatus')
+				{{-- @include('tenant.Layouts.userStatus') --}}
+				@if(Request::segment(1) != 'QR')
+				@livewire('check-reconnection')
+				@endif
 				@yield('content')
 			</div>
 		</div>

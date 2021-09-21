@@ -324,7 +324,8 @@ class CentralAuthControllers extends Controller {
             $result = $test->json();
 
             if($result['status']['status'] != 1){
-                return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+                Session::flash('error', trans('auth.codeProblem'));
+                return redirect()->back()->withInput();
             }
 
             $clientRequestObj = new ClientsRequests();

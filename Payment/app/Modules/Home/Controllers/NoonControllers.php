@@ -96,7 +96,7 @@ class NoonControllers extends Controller {
             ],
             "configuration" => [
                 "tokenizeCc" => "true",
-                "returnUrl" => URL::to('/noon/testResult?date='.$date),
+                "returnUrl" => URL::to('/noon/testResult?date='.strtotime($date)),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
             ],
@@ -151,7 +151,7 @@ class NoonControllers extends Controller {
 
     public function testResult(){
         $input = \Request::all();
-        $transactionObj = Transaction::where('type','Noon')->where('created_at',$input['date'])->orderBy('created_at','DESC')->first();
+        $transactionObj = Transaction::where('type','Noon')->where('created_at',date('Y-m-d H:i:s',$input['date']))->orderBy('created_at','DESC')->first();
 
         $data = [
             'auth_key' => $transactionObj->auth_key,

@@ -395,6 +395,8 @@ return [
 
 	'screenshot' => 'لقطة الشاشة',
 	'sync' => 'مزامنة الرسائل',
+	'syncAll' => 'مزامنة جميع الرسائل',
+	'restoreAccountSettings' => 'اعادة ضبط الحساب',
 	'reestablish' => 'معاودة الاتصال',
 	'closeConn' => 'اغلاق الاتصال',
 	'readAll' => 'قراءة جميع الرسائل',
@@ -702,4 +704,16 @@ return [
 	'addonsConfigure' => 'عليك الانتهاء من تهيئة بعض الاضافات',
 	'reconfigure' => 'تهيئة الاضافات',
 	'upgrade' => 'ترقية',
+
+	'serverStatus' => 'حالة الخادم',
+	'sendStatus' => 'حالة الارسال',
+	'lastContactsAdded' => 'اخر الارقام المضافة ',
+	'dialog' => 'المحادثة',
+	'multimedia' => 'وسائط متعددة',
+	'activityLog' => 'سجل الانشطة',
+	'chatEntered' => 'تم فتح المحادثة',
+	'chatExited' => 'تم اغلاق المحادثة',
+	'firstReply' => 'اول رد علي المحادثة',
+	'yourOrderNo' => 'رقم طلبك هو',
+	'contactBSCustomer' => 'للاتصال بخدمة العملاء',
 ];

@@ -163,8 +163,8 @@
                         <section id="wizard1-p-3" role="tabpanel" aria-labelledby="wizard1-h-3" class="body text-center" aria-hidden="true" style="display: none;">
                             <div class="row">
                                 <div class="col-4">
-                                    {{-- @livewire('QR-Image') --}}
-                                    <img class="qrImage mb-3 mt-3" src="{{ asset('images/qr-load.png') }}" alt="qr" data-area="0">    
+                                    @livewire('qr-image')
+                                    {{-- <img class="qrImage mb-3 mt-3" src="{{ asset('images/qr-load.png') }}" alt="qr" data-area="0">     --}}
                                 </div>
                                 <div class="col-4">
                                     <div class="alert alert-custom alert-outline-2x alert-outline-light fade show" role="alert">

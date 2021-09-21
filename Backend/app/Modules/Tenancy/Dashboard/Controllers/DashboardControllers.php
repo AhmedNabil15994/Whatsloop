@@ -27,7 +27,10 @@ use App\Models\Department;
 use App\Models\Rate;
 use App\Models\ModTemplate;
 use App\Models\UserStatus;
+use App\Models\Contact;
+use App\Models\ChatMessage;
 use App\Models\Bundle;
+use App\Models\ChatEmpLog;
 
 class DashboardControllers extends Controller {
 
@@ -86,8 +89,37 @@ class DashboardControllers extends Controller {
         if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
            return redirect('/packages');
         }
-        $input = \Request::all();
-        return view('Tenancy.Dashboard.Views.dashboard');
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $result = $mainWhatsLoopObj->status();
+        $result = $result->json();     
+
+        $sendStatus = 0;   
+        if(isset($result['data'])){
+            if($result['data']['accountStatus'] == 'got qr code'){
+                if(isset($result['data']['qrCode'])){
+                    $sendStatus = 100;
+                }
+            }elseif($result['data']['accountStatus'] == 'authenticated'){
+                $sendStatus = 100;
+            }
+        }
+
+
+
+        $messages = (object) ChatMessage::lastMessages();
+
+        $data['allMessages'] = ChatMessage::count();
+        $data['data'] = $messages->data;
+        $data['pagination'] = $messages->pagination;
+        $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
+        $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
+        $data['contactsCount'] = Contact::NotDeleted()->count();
+        $data['sendStatus'] = $sendStatus;
+        $data['serverStatus'] = 100;
+        $data['lastContacts'] = Contact::lastContacts()['data'];
+        $data['logs'] = ChatEmpLog::dataList()['data'];
+        return view('Tenancy.Dashboard.Views.dashboard')->with('data',(object) $data);
     }
 
     public function packages(){

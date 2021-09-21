@@ -79,6 +79,7 @@
 <!--Internal  index js -->
 <script src="{{ asset('js/apexcharts.js') }}"></script>
 <script src="{{ asset('plugins/jquery-ui/ui/widgets/datepicker.js') }}"></script>
+@livewireScripts 
 
 @yield('topScripts')
 <script src="{{ asset('js/index.js') }}"></script>

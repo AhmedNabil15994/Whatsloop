@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class CheckWhatsappJob implements ShouldQueue
+class CheckWhatsappJob
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 

@@ -39,6 +39,12 @@
                             <a href="{{ URL::to('/profile/subscription/sync') }}" class="btn label tx-bold label-light-info waves-effect waves-light">
                                 <i class="fas fa-undo"></i> {{ trans('main.sync') }}<span class="btn-label-right"></span>
                             </a>
+                            <a href="{{ URL::to('/profile/subscription/syncAll') }}" class="btn label tx-bold label-light-danger waves-effect waves-light">
+                                <i class="fas fa-undo"></i> {{ trans('main.syncAll') }}<span class="btn-label-right"></span>
+                            </a>
+                            <a href="{{ URL::to('/profile/subscription/restoreAccountSettings') }}" class="btn label tx-bold label-light-info waves-effect waves-light">
+                                <i class="fas fa-redo"></i> {{ trans('main.restoreAccountSettings') }}<span class="btn-label-right"></span>
+                            </a>
                             <a href="{{ URL::to('/profile/subscription/reconnect') }}" class="btn label tx-bold label-light-warning waves-effect waves-light">
                                 <i class="fas fa-redo"></i> {{ trans('main.reestablish') }}<span class="btn-label-right"></span>
                             </a>

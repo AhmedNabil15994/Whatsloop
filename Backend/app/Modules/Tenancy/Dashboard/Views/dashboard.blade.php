@@ -2,6 +2,11 @@
 @section('title',trans('main.dashboard'))
 @section('styles')
 
+<link href="{{ asset('libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('libs/datatables.net-select-bs4/css//select.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+
 @endsection
 
 
@@ -10,344 +15,208 @@
 
 <!-- Start Content-->
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fa fa-info-circle text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Info"></i>
-                <h4 class="mt-0 font-16">Income Status</h4>
-                <h2 class="text-primary my-3 text-center">$<span data-plugin="counterup">31,570</span></h2>
-                <p class="text-muted mb-0">Total income: $22506 <span class="float-right"><i class="fa fa-caret-up text-success mr-1"></i>10.25%</span></p>
+   <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-md-6 col-xl-6">
+                    <div class="card stats">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="card-title mb-2">{{ trans('main.sendStatus') }}</h4>
+                                </div>
+                                <div class="chart-circle chart-circle-md float-right" data-value="{{ $data->sendStatus == 100 ? 1 : '0.'.$data->sendStatus }}" data-thickness="5" data-color="{{ $data->sendStatus == 100 ? '#00d48f' : '#fa5c7c' }}">
+                                    <canvas width="80" height="80"></canvas>
+                                    <canvas width="140" height="140"></canvas>
+                                    <div class="chart-circle-value">
+                                        <div class="tx-20 font-weight-bold">{{ $data->sendStatus }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                    <div class="card stats">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="card-title mb-2">{{ trans('main.serverStatus') }}</h4>
+                                </div>
+                                <div class="chart-circle chart-circle-md float-right" data-value="{{ $data->serverStatus == 100 ? 1 : '0.'.$data->serverStatus }}" data-thickness="5" data-color="{{ $data->serverStatus == 100 ? '#00d48f' : '#fa5c7c' }}">
+                                    <canvas width="80" height="80"></canvas>
+                                    <canvas width="140" height="140"></canvas>
+                                    <div class="chart-circle-value">
+                                        <div class="tx-20 font-weight-bold">{{ $data->serverStatus }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-comments plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.messages') }}</h6>
+                                <h2 class="mb-2">{{ $data->allMessages }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-address-book plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.contacts') }}</h6>
+                                <h2 class="mb-2">{{ $data->contactsCount }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-share plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.sentMessages') }}</h6>
+                                <h2 class="mb-2">{{ $data->sentMessages }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="plan-card text-center">
+                                <i class="fas fa-envelope plan-icon text-primary"></i>
+                                <h6 class="text-drak text-uppercase mt-2">{{ trans('main.incomeMessages') }}</h6>
+                                <h2 class="mb-2">{{ $data->incomingMessages }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fa fa-info-circle text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Info"></i>
-                <h4 class="mt-0 font-16">Sales Status</h4>
-                <h2 class="text-primary my-3 text-center"><span data-plugin="counterup">683</span></h2>
-                <p class="text-muted mb-0">Total sales: 2398 <span class="float-right"><i class="fa fa-caret-down text-danger mr-1"></i>7.85%</span></p>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fa fa-info-circle text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Info"></i>
-                <h4 class="mt-0 font-16">Recent Users</h4>
-                <h2 class="text-primary my-3 text-center"><span data-plugin="counterup">3.2</span>M</h2>
-                <p class="text-muted mb-0">Total users: 121 M <span class="float-right"><i class="fa fa-caret-up text-success mr-1"></i>3.64%</span></p>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-xl-3">
-            <div class="card-box">
-                <i class="fa fa-info-circle text-muted float-right" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Info"></i>
-                <h4 class="mt-0 font-16">Total Revenue</h4>
-                <h2 class="text-primary my-3 text-center">$<span data-plugin="counterup">68,541</span></h2>
-                <p class="text-muted mb-0">Total revenue: $1.2 M <span class="float-right"><i class="fa fa-caret-up text-success mr-1"></i>17.48%</span></p>
+        <div class="col-6">
+            <div class="col-sm-12">
+                <div class="card overflow-hidden">
+                    <div class="card-header mt-3">
+                        <h3 class="card-title">{{ trans('main.lastContactsAdded') }}</h3>
+                    </div>
+                    <div class="card-body lastest">
+                        @foreach($data->lastContacts as $contact)
+                        <div class="list d-flex align-items-center border-bottom py-3">
+                            <div class="avatar brround d-block cover-image" data-image-src="{{ asset('images/def_user.svg') }}" style="background: url('{{ asset('images/def_user.svg') }}') center center;">
+                                <span class="avatar-status bg-green"></span>
+                            </div>
+                            <div class="wrapper w-100 ml-3">
+                                <p class="mb-0">
+                                    <b dir="ltr">{{ $contact->name }} </b>
+                                </p>
+                                <div class="d-sm-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="mdi mdi-phone text-muted mr-1 ml-1"></i>
+                                        <p class="mb-0" dir="ltr">{{ $contact->phone }}</p>
+                                    </div>
+                                    <small class="text-muted">{{ $contact->created_at2[0] }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- end row -->
 
     <div class="row">
-        <div class="col-xl-6">
+        <div class="col-sm-12">
             <div class="card">
-                <div class="card-body">
-                    <div class="float-right d-none d-md-inline-block">
-                        <div class="btn-group mb-2">
-                            <button type="button" class="btn btn-xs btn-secondary">Today</button>
-                            <button type="button" class="btn btn-xs btn-light">Weekly</button>
-                            <button type="button" class="btn btn-xs btn-light">Monthly</button>
-                        </div>
-                    </div>
-                    <h4 class="header-title">Revenue</h4>
-                    <div class="row mt-4 text-center">
-                        <div class="col-4">
-                            <p class="text-muted font-15 mb-1 text-truncate">Target</p>
-                            <h4><i class="fe-arrow-down text-danger mr-1"></i>$7.8k</h4>
-                        </div>
-                        <div class="col-4">
-                            <p class="text-muted font-15 mb-1 text-truncate">Last week</p>
-                            <h4><i class="fe-arrow-up text-success mr-1"></i>$1.4k</h4>
-                        </div>
-                        <div class="col-4">
-                            <p class="text-muted font-15 mb-1 text-truncate">Last Month</p>
-                            <h4><i class="fe-arrow-down text-danger mr-1"></i>$15k</h4>
-                        </div>
-                    </div>
-                    <div class="mt-3 chartjs-chart">
-                        <canvas id="revenue-chart" data-colors="#1fa083,#f1556c" height="300"></canvas>
-                    </div>
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
-
-        <div class="col-xl-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="float-right d-none d-md-inline-block">
-                        <div class="btn-group mb-2">
-                            <button type="button" class="btn btn-xs btn-secondary">Today</button>
-                            <button type="button" class="btn btn-xs btn-light">Weekly</button>
-                            <button type="button" class="btn btn-xs btn-light">Monthly</button>
-                        </div>
-                    </div>
-                    <h4 class="header-title">Projections Vs Actuals</h4>
-                    <div class="row mt-4 text-center">
-                        <div class="col-4">
-                            <p class="text-muted font-15 mb-1 text-truncate">Target</p>
-                            <h4><i class="fe-arrow-down text-danger mr-1"></i>$3.8k</h4>
-                        </div>
-                        <div class="col-4">
-                            <p class="text-muted font-15 mb-1 text-truncate">Last week</p>
-                            <h4><i class="fe-arrow-up text-success mr-1"></i>$1.1k</h4>
-                        </div>
-                        <div class="col-4">
-                            <p class="text-muted font-15 mb-1 text-truncate">Last Month</p>
-                            <h4><i class="fe-arrow-down text-danger mr-1"></i>$25k</h4>
-                        </div>
-                    </div>
-                    <div class="mt-3 chartjs-chart">
-                        <canvas id="projections-actuals-chart" data-colors="#4a81d4,#e3eaef" height="300"></canvas>
-                    </div>
+                <div class="card-header">
+                    <h3 class="card-title mb-0 mt-3"><i class="far fa-message"></i> {{ trans('main.msgsArchive') }}</h3>
+                    <p></p>
                 </div>
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                <div class="card-body lastest-table">
+                    <div class="table-responsive">
+                        <table class="table text-md-nowrap table-striped nowrap w-100 dataTable">
+                            <thead>
+                                <tr>
+                                    <th class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ trans('main.dialog') }}</th>
+                                    <th class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ trans('main.messageContent') }}</th>
+                                    <th class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ trans('main.status') }}</th>
+                                    <th class="text-center">{{ trans('main.extra_type') }}</th>
+                                    <th class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ trans('main.sentDate') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data->data as $message)
+                                <tr>
+                                    <td class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ $message->chatId2 }}</td>
+                                    <td class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">
+                                        @if($message->whatsAppMessageType == 'chat')
+                                        <p class="w-100 d-block mg-0" {{ strlen($message->body) > 200 ? 'style=white-space:pre-line' : '' }} >
+                                            {{ $message->body }}
+                                        </p>
+                                        @else
+                                        <p class="w-100 d-block mg-0">{{ trans('main.multimedia') }}</p>
+                                        @endif
+                                    </td>
+                                    <td class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ $message->sending_status_text }}</td>
+                                    <td class="text-center">
+                                        @if($message->fromMe)
+                                            <i class="fas fa-share" style="color: #00d48f;transform: rotateZ(225deg);"></i>
+                                        @else
+                                            <i class="fas fa-redo" style="color: #fa5c7c;"></i>
+                                        @endif
+                                    </td>
+                                    <td class="text-{{ DIRECTION == 'rtl' ? 'left' : 'right' }}">{{ $message->created_at_day }}  {{ $message->created_at_time }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @include('tenant.Partials.pagination')
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- end row -->
 
     <div class="row">
-        <!-- INBOX -->
-        <div class="col-xl-4 col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="dropdown float-right">
-                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
-                            <i class="mdi mdi-dots-vertical"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Settings</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                        </div>
-                    </div>
-                    <h4 class="header-title mb-3">Inbox</h4>
-
-                    <div class="inbox-widget" data-simplebar style="max-height: 407px;">
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-2.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Tomaslau</p>
-                            <p class="inbox-item-text">I've finished it! See you so...</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-3.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Stillnotdavid</p>
-                            <p class="inbox-item-text">This theme is awesome!</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-4.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Kurafire</p>
-                            <p class="inbox-item-text">Nice to meet you</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-5.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Shahedk</p>
-                            <p class="inbox-item-text">Hey! there I'm available...</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-6.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Adhamdannaway</p>
-                            <p class="inbox-item-text">This theme is awesome!</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-3.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Stillnotdavid</p>
-                            <p class="inbox-item-text">This theme is awesome!</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-                        <div class="inbox-item">
-                            <div class="inbox-item-img"><img src="{{ asset('tenancy/assets/images/users/user-4.jpg') }}" class="rounded-circle" alt=""></div>
-                            <p class="inbox-item-author">Kurafire</p>
-                            <p class="inbox-item-text">Nice to meet you</p>
-                            <p class="inbox-item-date">
-                                <a href="javascript:(0);" class="btn btn-sm btn-link text-info font-13"> Reply </a>
-                            </p>
-                        </div>
-                    </div> <!-- end inbox-widget -->
+        <div class="col-sm-12">
+            <div class="card overflow-hidden">
+                <div class="card-header mt-3">
+                    <h3 class="card-title">{{ trans('main.activityLog') }}</h3>
                 </div>
-            </div> <!-- end card -->
-        </div> <!-- end col -->
-
-        <!-- Todos app -->
-        <div class="col-xl-4 col-lg-6">
-            <!-- Todo-->
-            <div class="card">
-                <div class="card-body">
-                    <div class="dropdown float-right">
-                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
-                            <i class="mdi mdi-dots-vertical"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Settings</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Action</a>
+                <div class="card-body lastest">
+                    @foreach($data->logs as $log)
+                    <div class="list d-flex align-items-center border-bottom py-3">
+                        <div class="avatar mr-1 ml-1 brround d-block cover-image" data-image-src="{{ $log->userImage }}" style="background: url('{{ $log->userImage }}') center center;">
+                            <span class="avatar-status bg-green"></span>
+                        </div>
+                        <div class="wrapper w-100 ml-3">
+                            <p class="mb-0">
+                                <b>{{ $log->user }} </b>
+                                {{ $log->typeText }}
+                            </p>
+                            <div class="d-sm-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="si si-speech text-muted mr-1 ml-1"></i>
+                                    <p class="mb-0" dir="ltr">{{ $log->chatId2 }}</p>
+                                </div>
+                                <small class="text-muted">{{ $log->created_at2 }}</small>
+                            </div>
                         </div>
                     </div>
-                    <h4 class="header-title mb-3">Todo</h4>
-
-                    <div class="todoapp">
-                        <div class="row">
-                            <div class="col">
-                                <h5 id="todo-message"><span id="todo-remaining"></span> of <span id="todo-total"></span> remaining</h5>
-                            </div>
-                            <div class="col-auto">
-                                <a href="" class="float-right btn btn-light btn-sm" id="btn-archive">Archive</a>
-                            </div>
-                        </div>
-
-                        <div style="max-height: 310px;" data-simplebar>
-                            <ul class="list-group list-group-flush todo-list" id="todo-list"></ul>
-                        </div>
-
-                        <form name="todo-form" id="todo-form" class="needs-validation mt-3" novalidate>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="text" id="todo-input-text" name="todo-input-text" class="form-control" 
-                                        placeholder="Add new todo" required>
-                                    <div class="invalid-feedback">
-                                        Please enter your task name
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <button class="btn-primary btn-md btn-block btn waves-effect waves-light" type="submit" id="todo-btn-submit">Add</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div> <!-- end .todoapp-->
-
-                </div> <!-- end card-body -->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
-
-        <!-- CHAT -->
-        <div class="col-xl-4 col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="dropdown float-right">
-                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
-                            <i class="mdi mdi-dots-vertical"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Settings</a>
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                        </div>
-                    </div>
-                    <h4 class="header-title mb-3">Chat</h4>
-
-                    <div class="chat-conversation">
-                        <div data-simplebar style="height: 370px;">
-                            <ul class="conversation-list">
-                                <li class="clearfix">
-                                    <div class="chat-avatar">
-                                        <img src="{{ asset('tenancy/assets/images/users/user-5.jpg') }}" alt="male">
-                                        <i>10:00</i>
-                                    </div>
-                                    <div class="conversation-text">
-                                        <div class="ctext-wrap">
-                                            <i>Geneva</i>
-                                            <p>
-                                                Hello!
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="clearfix odd">
-                                    <div class="chat-avatar">
-                                        <img src="{{ asset('tenancy/assets/images/users/user-1.jpg') }}" alt="Female">
-                                        <i>10:01</i>
-                                    </div>
-                                    <div class="conversation-text">
-                                        <div class="ctext-wrap">
-                                            <i>Dominic</i>
-                                            <p>
-                                                Hi, How are you? What about our next meeting?
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="clearfix">
-                                    <div class="chat-avatar">
-                                        <img src="{{ asset('tenancy/assets/images/users/user-5.jpg') }}" alt="male">
-                                        <i>10:01</i>
-                                    </div>
-                                    <div class="conversation-text">
-                                        <div class="ctext-wrap">
-                                            <i>Geneva</i>
-                                            <p>
-                                                Yeah everything is fine
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="clearfix odd">
-                                    <div class="chat-avatar">
-                                        <img src="{{ asset('tenancy/assets/images/users/user-1.jpg') }}" alt="male">
-                                        <i>10:02</i>
-                                    </div>
-                                    <div class="conversation-text">
-                                        <div class="ctext-wrap">
-                                            <i>Dominic</i>
-                                            <p>
-                                                Wow that's great
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <form class="needs-validation" novalidate name="chat-form" id="chat-form">
-                            <div class="row">
-                                <div class="col">
-                                    <input type="text" class="form-control chat-input" placeholder="Enter your text" required>
-                                    <div class="invalid-feedback">
-                                        Please enter your messsage
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <button type="submit" class="btn btn-danger chat-send btn-block waves-effect waves-light">Send</button>
-                                </div>
-                            </div>
-                        </form>
-
-                    </div> <!-- end .chat-conversation-->
+                    @endforeach
                 </div>
-            </div> <!-- end card-->
-        </div> <!-- end col-->
-    </div> <!-- end row -->
-    
+            </div>
+        </div>
+    </div>
 </div> <!-- container -->
 @endsection
 

@@ -117,8 +117,6 @@ class HomeControllers extends Controller {
         	return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
         }
 
-
-
         $dataList['data'] = $serverResult->json();
         // Customization For QR Code Images
         if(in_array($status, ['status','qr_code','screenshot'])){
@@ -235,5 +233,4 @@ class HomeControllers extends Controller {
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);        
     }
-
 }

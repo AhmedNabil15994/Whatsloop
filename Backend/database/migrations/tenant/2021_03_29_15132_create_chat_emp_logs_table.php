@@ -14,6 +14,7 @@ class CreateChatEmpLogsTable extends Migration
             $table->integer('user_id');
             $table->integer('type');
             $table->integer('ended')->default(0);
+            $table->dateTime('ended_at')->nullable();
             $table->dateTime('created_at')->nullable();
         });
     }

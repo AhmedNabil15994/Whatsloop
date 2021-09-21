@@ -21,37 +21,37 @@ use Stancl\Tenancy\Middleware\ScopeSessions;
 |
 */
 
-Route::middleware([
-    'web',
-    InitializeTenancyBySubdomain::class,
-    PreventAccessFromCentralDomains::class,
-    ScopeSessions::class
-])->group(function () {
+// Route::middleware([
+//     'general',
+//     InitializeTenancyBySubdomain::class,
+//     PreventAccessFromCentralDomains::class,
+//     ScopeSessions::class
+// ])->group(function () {
 
     
-    Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
+//     Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
     
-    Route::get('/',function(){
-        $routeLogin = route('login');
-        return view('tenant.welcome',compact('routeLogin'));
-    })->name('welcome');
+//     Route::get('/',function(){
+//         $routeLogin = route('login');
+//         return view('tenant.welcome',compact('routeLogin'));
+//     })->name('welcome');
 
 
-    Route::group(['prefix' => 'dashboard','middleware' => 'auth:web','namespace' => '\App\Http\Controllers\Tenant','as' => 'tenant.'],function(){
-        //dd(auth()->id());
+//     Route::group(['prefix' => 'dashboard','middleware' => 'auth:web','namespace' => '\App\Http\Controllers\Tenant','as' => 'tenant.'],function(){
+//         //dd(auth()->id());
 
-        //Dashboard routes
-        Route::get('/','DashboardController@index')->name('dashboard');
+//         //Dashboard routes
+//         Route::get('/','DashboardController@index')->name('dashboard');
 
-    });
+//     });
 
-    Route::get('/login', function(){
-        return redirect()->route('welcome');
-    })->name('login');
-    Route::post('/login',[App\Http\Controllers\Auth\LoginController::class, 'login']);
-    Route::post('/logout',[App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-    //Auth::routes();
-    //Route::get('/home', [App\Http\Controllers\Auth\HomeController::class, 'index'])->name('home');
+//     Route::get('/login', function(){
+//         return redirect()->route('welcome');
+//     })->name('login');
+//     Route::post('/login',[App\Http\Controllers\Auth\LoginController::class, 'login']);
+//     Route::post('/logout',[App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+//     //Auth::routes();
+//     //Route::get('/home', [App\Http\Controllers\Auth\HomeController::class, 'index'])->name('home');
 
 
-});
+// });
