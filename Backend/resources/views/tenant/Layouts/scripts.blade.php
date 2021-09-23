@@ -1,4 +1,4 @@
-<!-- JQuery min js -->
+JQuery min js -->
 <script src="{{ asset('plugins/jquery/jquery-3.5.1.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
 <!-- Bootstrap4 js-->
@@ -80,7 +80,9 @@
 <script src="{{ asset('js/apexcharts.js') }}"></script>
 <script src="{{ asset('plugins/jquery-ui/ui/widgets/datepicker.js') }}"></script>
 @livewireScripts 
-
+<script>
+    window.livewire_app_url = "{{ URL::to('/') }}"; 
+</script>
 @yield('topScripts')
 <script src="{{ asset('js/index.js') }}"></script>
 
@@ -105,4 +107,4 @@
 
 <!-- third party js -->
 @yield('scripts')
-<!-- third party js ends -->
+<!-- third party js ends

@@ -3,12 +3,18 @@ $('.actions ul li a[href="#next"]').on('click',function(e){
     e.stopPropagation();
     var id = $('.body.current').attr('id');
     next($(this));
+    if($('.body.current').attr('id') == 'wizard1-p-4'){
+        $('.actions ul li a[href="#next"]').hide();
+    }
 });
 
 $('.actions ul li a[href="#previous"]').on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
     prev($(this));
+    if($('.body.current').attr('id') != 'wizard1-p-4'){
+        $('.actions ul li a[href="#next"]').show();
+    }
 });
 
 $('.actions ul li a[href="#finish"]').on('click',function(e){

@@ -17,6 +17,7 @@ use Validator;
 use URL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use \Spatie\WebhookServer\WebhookCall;
 
 class CentralAuthControllers extends Controller {
 
@@ -59,13 +60,26 @@ class CentralAuthControllers extends Controller {
         }
 
         $userObj = CentralUser::checkUserBy('phone',$input['phone']);
-        if ($userObj == null || $userObj->group_id == 0) {
+        if ($userObj == null) {
             return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
         }
 
         $checkPassword = Hash::check($input['password'], $userObj->password);
         if ($checkPassword == null) {
             return \TraitsFunc::ErrorMessage(trans('auth.invalidPassword'));
+        }
+
+        if($userObj->group_id == 0){
+            $userObj = CentralUser::getData($userObj);
+            $domainObj = Domain::where('domain',$userObj->domain)->first();
+            $tenant = Tenant::find($domainObj->tenant_id);
+            $token = tenancy()->impersonate($tenant,$userObj->id,'/dashboard');
+            Session::put('check_user_id',$userObj->id);
+            $statusObj['data'] = tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
+                'token' => $token
+            ]);
+            $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.welcome') . ucwords($userObj->name));
+            return \Response::json((object) $statusObj);
         }
 
         // Send Code Here
@@ -126,8 +140,10 @@ class CentralAuthControllers extends Controller {
                 session(['central' => 1]);
             }
 
-            Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
-            return \TraitsFunc::LoginResponse(trans('auth.welcome') . $userObj->name_ar);
+            Session::flash('success', trans('auth.welcome') . ucwords($userObj->name));
+            $statusObj['data'] = \URL::to('/dashboard');
+            $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.welcome') . ucwords($userObj->name));
+            return \Response::json((object) $statusObj);
         }
         
     }

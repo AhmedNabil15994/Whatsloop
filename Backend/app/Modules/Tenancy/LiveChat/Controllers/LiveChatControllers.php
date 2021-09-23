@@ -227,7 +227,7 @@ class LiveChatControllers extends Controller {
         $checkData['phone'] = str_replace('@c.us', '', $input['chatId']);
         $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
         $checkNoResult = $checkResult->json();
-        dd($checkNoResult);
+
         if($checkNoResult['status']['status'] != 1){
             $status = 0;
         }

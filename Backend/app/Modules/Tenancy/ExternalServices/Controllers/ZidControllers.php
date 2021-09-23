@@ -9,6 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use App\Models\ModTemplate;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\UserAddon;
 use DB;
 use DataTables;
 
@@ -156,6 +157,51 @@ class ZidControllers extends Controller {
         $ajaxCheck = $request->ajax();
         return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
+
+    public function abandonedCarts(Request $request){
+        $input = \Request::all();
+        $modelName = 'abandonedCarts';
+        $service = $this->service;
+
+        $baseUrl = Variable::getVar('ZidURL');
+        $storeID = Variable::getVar('ZidStoreID');
+        $storeToken = Variable::getVar('ZidMerchantToken');
+        $managerToken = Variable::getVar('ZidStoreToken');
+        
+        $dataURL = $baseUrl.'/managers/store/abandoned-carts'; 
+
+        $tableName = $service.'_'.$modelName;
+
+        $myHeaders = [
+            "X-MANAGER-TOKEN" => $managerToken,
+            "STORE-ID" => $storeID,
+            "ROLE" => 'Manager',
+            'User-Agent' => 'whatsloop/1.00.00 (web)',
+        ];
+
+        $dataArr = [
+            'baseUrl' => $baseUrl,
+            'storeToken' => $storeToken,
+            'dataURL' => $dataURL,
+            'tableName' => $tableName,
+            'myHeaders' => $myHeaders,
+            'service' => $service,
+        ];
+
+        $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
+        $externalHelperObj = new \ExternalServices($dataArr);
+        if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
+            $externalHelperObj->startFuncs();
+        }
+
+        if($refresh == 'refresh'){
+            return redirect()->to('/services/'.$service.'/'.$modelName);
+        }
+
+        $ajaxCheck = $request->ajax();
+        return $this->runModuleService($modelName,$tableName,$ajaxCheck);
+    }
+
 
     public function runModuleService($model,$tableName,$ajaxCheck=0){
         $input = \Request::all();
@@ -354,6 +400,24 @@ class ZidControllers extends Controller {
                     'label' => trans('main.status'),
                 ],
             ];
+        }elseif($model == 'abandonedCarts'){
+            // Begin Search
+
+            // if(isset($input['keyword']) && !empty($input['keyword'])){
+            //     $source->where('first_name','LIKE','%'.$input['keyword'].'%')->orWhere('last_name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('country','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
+            // }
+
+            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            $formattedData = $this->formatData($modelData,$model);
+            
+            $data['mainData'] = [
+                'title' => trans('main.abandonedCarts'),
+                'url' => 'abandonedCarts',
+                'service' => $service,
+                'icon' => ' fas fa-user-tie',
+            ];
+
+            $data['searchData'] = [];
         }
 
         $mainData['designElems'] = $data;
@@ -364,7 +428,7 @@ class ZidControllers extends Controller {
         if(!empty($formattedData)){
             $mainData['pagination'] = \Helper::GeneratePagination($modelData);
         }
-
+        // dd($mainData);
         if($ajaxCheck){
             $returnHTML = view('Tenancy.ExternalServices.Views.ajaxData')->with('data', (object) $mainData)->render();
             return response()->json( array('success' => true, 'html'=>$returnHTML) );
@@ -426,6 +490,27 @@ class ZidControllers extends Controller {
                 $dataObj->status = $status['name'];
                 $dataObj->statusID = $status['code'];
                 $dataObj->items = [['name'=>$value->store_name,'quantity'=>1]];
+            }elseif($table == 'abandonedCarts'){
+                // $price = unserialize($value->total);
+                // $customer = unserialize($value->customer);
+                // $items = unserialize($value->items);
+                
+                // $itemsData = [];
+                // foreach($items as $item){
+                //     $productObj = DB::table($this->service.'_products')->where('id',$item['product_id'])->first();
+                //     $item['name'] = $productObj ? $productObj->name : trans('main.deletedProduct');
+                //     $itemsData[] = $item;
+                // }
+
+                // $dataObj->reference_id = $value->id;
+                // $dataObj->total = $price['amount'] . ' '.$price['currency'];
+                // $dataObj->order_url = $value->checkout_url;
+                // $dataObj->age_in_minutes = $value->age_in_minutes;
+                // $dataObj->coupon = $value->coupon;
+                // $dataObj->customer = $customer;
+                // $dataObj->items = $itemsData;
+                // $dataObj->created_at = date('Y-m-d H:i:s',strtotime($value->created_at));
+                // $dataObj->updated_at = date('Y-m-d H:i:s',strtotime($value->updated_at));
             }
             $objs[] = $dataObj;
         }

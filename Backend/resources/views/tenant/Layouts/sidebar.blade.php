@@ -120,7 +120,7 @@
             </li>
             @endif
 
-            @if(\Helper::checkRules('salla-customers,salla-products,salla-orders,salla-reports,salla-templates'))
+            @if(\Helper::checkRules('salla-customers,salla-products,salla-orders,salla-abandoned-carts,salla-reports,salla-templates'))
             <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">
                     <div class="side-angle1"></div>
@@ -140,6 +140,9 @@
                     @if(\Helper::checkRules('salla-orders'))
                     <li><a class="slide-item" href="{{ URL::to('/services/salla/orders') }}">{{ trans('main.orders') }}</a></li>
                     @endif
+                    @if(\Helper::checkRules('salla-abandoned-carts'))
+                    <li><a class="slide-item" href="{{ URL::to('/services/salla/abandonedCarts') }}">{{ trans('main.abandonedCarts') }}</a></li>
+                    @endif
                     @if(\Helper::checkRules('salla-reports'))
                     <li><a class="slide-item" href="{{ URL::to('/services/salla/reports') }}">{{ trans('main.notReports') }}</a></li>
                     @endif
@@ -150,7 +153,7 @@
             </li>
             @endif
 
-            @if(\Helper::checkRules('zid-customers,zid-products,zid-orders,zid-reports,zid-templates'))
+            @if(\Helper::checkRules('zid-customers,zid-products,zid-orders,zid-abandoned-carts,zid-reports,zid-templates'))
             <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">
                     <div class="side-angle1"></div>
@@ -169,6 +172,9 @@
                     @endif
                     @if(\Helper::checkRules('zid-orders'))
                     <li><a class="slide-item" href="{{ URL::to('/services/zid/orders') }}">{{ trans('main.orders') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('zid-abandoned-carts'))
+                    <li><a class="slide-item" href="{{ URL::to('/services/zid/abandonedCarts') }}">{{ trans('main.abandonedCarts') }}</a></li>
                     @endif
                     @if(\Helper::checkRules('zid-reports'))
                     <li><a class="slide-item" href="{{ URL::to('/services/zid/reports') }}">{{ trans('main.notReports') }}</a></li>

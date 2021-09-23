@@ -1,0 +1,123 @@
+{{-- Extends layout --}}
+@extends('tenant.Layouts.master')
+@section('title',$data->designElems['mainData']['title'])
+
+@section('styles')
+<style type="text/css" media="screen">
+    .card-box{
+        border: 1px solid #CCC;
+    }
+    .product-card .col{
+        background: #e3e6fa;
+    }
+    .product-card .col h3.text-center{
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+</style>
+@endsection
+
+@section('content')
+
+<div class="row row-sm">
+    <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
+    <div class="col-xl-3 col-lg-4 mb-3 mb-md-0">
+        <form action="{{ URL::current() }}" method="get" accept-charset="utf-8">
+            <div class="card overflow-hidden">
+                <h5 class="m-0 p-3 card-title bg-white border-bottom">{{ trans('main.search') }}</h5>
+                <div class="py-3 px-3">
+                    <div class="input-group">
+                        <input type="text" name="name" value="{{ Request::get('name') }}" class="form-control" placeholder="{{ trans('main.search') }} ...">
+                        <span class="input-group-append">
+                            <button class="btn btn-primary" type="submit">{{ trans('main.search') }}</button>
+                        </span>
+                    </div>
+                    @if(count(Request::all()) || $data->dis != 1)
+                        @if(count(Request::all()))
+                        <h5 class="m-0 p-3 card-title bg-white border-bottom">{{ trans('main.actions') }}</h5>
+                        <a href="{{ URL::current() }}" class="btn btn-success mt-4" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.back') }}">
+                            <i class=" fas fa-undo-alt"></i>
+                            {{ trans('main.back') }}
+                        </a>
+                        @endif
+                    @endif
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <h5 class="m-0 p-3 card-title bg-white border-bottom border-top">{{ trans('main.price') }}</h5>
+                <div class="p-3 d-flex align-items-center">
+                    <div class="w-100">
+                        <input placeholder="{{ trans('main.price') }}" value="{{ Request::get('price') }}" name="price" class="form-control rounded-0" />
+                    </div>
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                @if($data->dis != 1)
+                <a href="{{ URL::current().'?refresh=refresh' }}" class="btn btn-success mt-4 mg-15 float-right" data-toggle="tooltip" data-placement="top" data-original-title="{{ trans('main.refresh') }}">
+                    <i class=" fas fa-database"></i>
+                    {{ trans('main.refresh') }}
+                </a>
+                @endif
+            </div>
+        </form>
+    </div>
+    <div class="col-xl-9 col-lg-8">
+        <div class="row row-sm">
+            @foreach($data->data as $order)
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4">
+                <div class="product-card card overflow-hidden">
+                    <div class="col" style="padding:0;"> 
+                        <h3 class="text-center ">{{ trans('main.cartno').': '.$order->id }}</h3>
+                    </div>
+                    <div class="card-body h-100">
+                        <h3 class="h6 mb-2 font-weight-bold text-uppercase">
+                            <span class="float-right mt-2">{{ $order->created_at }}</span>
+                        </h3>
+                        <div class="d-block  mb-3" >
+                            <h4 class="h5 d-block w-100 font-weight-bold text-danger mb-3"> {{ trans('main.orderItems') }}:</h4>
+                            @foreach($order->items as $key=> $item)
+                            <div class="row">
+                                <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-auto">{{ $key+1 .'- '}} {{ $item['name'] }}</span>
+                                <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'l' : 'r' }}-auto">{{ trans('main.quantity').': '. $item['quantity'] }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="mt-2 user-info btn-list d-block"> 
+                            <h4 class="h5 d-block w-100 font-weight-bold text-danger mb-3"> {{ trans('main.client') }}:</h4>
+                            <a class="btn btn-outline-light btn-block text-right">
+                                <i class="typcn typcn-user mr-2 tx-22 lh-1 float-left"></i>
+                                <span>{{ $order->customer['name'] }}</span>
+                            </a> 
+                            <a class="btn btn-outline-light btn-block text-right" href="tel:{{ $order->customer['mobile'] }}">
+                                <i class="typcn typcn-phone mr-2 tx-22 lh-1 float-left"></i>
+                                <span>{{ $order->customer['mobile'] }}</span>
+                            </a> 
+                            <a class="btn btn-outline-light btn-block text-right" href="#">
+                                <i class="typcn typcn-map mr-2 tx-22 lh-1 float-left"></i>
+                                <span>{{ $order->customer['country'] }}</span>
+                            </a> 
+                        </div> 
+                        <a class="btn btn-primary btn-block mb-0 mt-4" target="_blank" href="{{ isset($order->order_url) ? $order->order_url : 'https://s.salla.sa/login' }}">
+                            <i class="fe fe-eye mr-1"></i>
+                            {{ trans('main.info') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @include('tenant.Partials.pagination')
+    </div>
+</div>
+    <!-- end row-->
+@endsection
+
+@section('modals')
+@include('tenant.Partials.search_modal')
+@endsection
+
+{{-- Scripts Section --}}
+
+@section('scripts')
+
+@endsection

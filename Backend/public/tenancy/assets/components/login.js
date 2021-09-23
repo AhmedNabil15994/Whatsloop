@@ -3,7 +3,14 @@ $(function(){
     var lang = $('html').attr('lang');
 
     $("#telephone").intlTelInput({
-        initialCountry: $('input[name="country_code"]').val(),
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            $.get("https://ipinfo.io", function () {
+            }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "";
+                success(countryCode);
+            });
+        },
         preferredCountries: ["sa","ae","bh","kw","om","eg"],
     });
 
@@ -36,7 +43,8 @@ $(function(){
                     if(data.status.status == 1){
                         successNotification(data.status.message);
                         if(data.status.code == 205){
-                            location.reload();
+                            // location.reload();
+                            window.location.href = data.data;
                         }else{
                             $('.codes').removeClass('hidden');
                             $('button.loginBut').addClass('check');

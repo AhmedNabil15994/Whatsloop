@@ -1,10 +1,11 @@
-@if(Request::segment(1) != 'QR' && Request::segment(1) != 'menu')
-    <div class="container-fluid"  wire:poll.2s="checkStatus" wire:model="CheckReconnection">
+@if($requestSemgent != 'QR' && $requestSemgent != 'menu')
+    <div class="container-fluid"  wire:poll.10s="checkStatus" wire:model="CheckReconnection">
         <div class="row">
+    
 @else
-    <div class="row"  wire:poll.2s="checkStatus" wire:model="CheckReconnection">
+    <div class="row"  wire:poll.10s="checkStatus" wire:model="CheckReconnection">
 @endif
-    @if(isset($haveImage) && $haveImage == 1)
+    @if((isset($haveImage) && $haveImage == 1) || (isset($tutorials) && !empty($tutorials)))
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -30,7 +31,7 @@
         </div> <!-- end col -->
     @endif
 
-@if(Request::segment(1) != 'QR' && Request::segment(1) != 'menu')
+@if($requestSemgent != 'QR' && $requestSemgent != 'menu')
         </div>
     </div>
 @else

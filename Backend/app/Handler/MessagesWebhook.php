@@ -9,9 +9,11 @@ use App\Models\ChatDialog;
 use App\Events\IncomingMessage;
 use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
+use App\Models\Variable;
 use App\Events\BotMessage;
 use App\Events\MessageStatus;
 use \Spatie\WebhookClient\ProcessWebhookJob;
+use \Spatie\WebhookServer\WebhookCall;
 use Http;
 use Session;
 
@@ -19,6 +21,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	public function handle(){
 	    $data = json_decode($this->webhookCall, true);
 	    $mainData = $data['payload'];
+
 	    $messages = @$mainData['messages'];
 	    $actions = @$mainData['ack'];
 		$tenantUser = User::first();
@@ -190,13 +193,18 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			// }
 	    		}	
 
+	    		// Fire Webhook For Client
+				$this->fireWebhook($message);
 	    	}
 	    }
 
 	    // If Chat Status Changed
-	    if(!empty($actions) && $dis){
+	    if(!empty($actions) && !$dis){
 	    	$this->handleUpdates($userObj->domain,$actions);
+	    	// Fire Webhook For Client
+			$this->fireWebhook($actions);
 	    }
+
 	}
 
 	public function handleUpdates($domain,$actions){
@@ -237,6 +245,17 @@ class MessagesWebhook extends ProcessWebhookJob{
 			$dialog->last_time = strtotime($message['time']);
 			$dialogObj = ChatDialog::getData($dialog); 
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
+		}
+	}
+
+	public function fireWebhook($data){
+		$webhook = Variable::getVar('WEBHOOK_URL');
+		if($webhook){
+			WebhookCall::create()
+			   ->url($webhook)
+			   ->payload(['data' => $data])
+			   ->doNotSign()
+			   ->dispatch();
 		}
 	}
 }

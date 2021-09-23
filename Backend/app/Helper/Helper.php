@@ -235,6 +235,7 @@ class Helper
                         'ZidControllers@customers' => 'zid-customers',
                         'ZidControllers@products' => 'zid-products',
                         'ZidControllers@orders' => 'zid-orders',
+                        'ZidControllers@abandonedCarts' => 'zid-abandoned-carts',
                         'ZidControllers@reports' => 'zid-reports',
                         'ZidControllers@templates' => 'zid-templates',
                         'ZidControllers@templatesEdit' => 'edit-zid-template',
@@ -248,6 +249,7 @@ class Helper
                     $externalPermissions = [
                         'SallaControllers@customers' => 'salla-customers',
                         'SallaControllers@products' => 'salla-products',
+                        'SallaControllers@abandonedCarts' => 'salla-abandoned-carts',
                         'SallaControllers@orders' => 'salla-orders',
                         'SallaControllers@reports' => 'salla-reports',
                         'SallaControllers@templates' => 'salla-templates',

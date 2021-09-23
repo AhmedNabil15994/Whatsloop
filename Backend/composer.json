@@ -22,6 +22,7 @@
         "rinvex/country": "^4.0",
         "santigarcor/laratrust": "^6.3",
         "spatie/laravel-webhook-client": "^2.7",
+        "spatie/laravel-webhook-server": "^2.0",
         "stancl/tenancy": "^3.4",
         "stevebauman/location": "^6.1",
         "watson/active": "^6.0",

@@ -14,7 +14,7 @@ class QrImage extends Component
         $result = $mainWhatsLoopObj->status();
         $result = $result->json();
         
-        $data['qrImage'] = asset('tenancy/assets/images/qr-load.png');
+        $data['qrImage'] = asset('images/qr-load.png');
         $data['area'] = 1;
         
         if(isset($result['data'])){
@@ -28,7 +28,7 @@ class QrImage extends Component
                     $data['area'] = 0;
                 }
             }else if($result['data']['accountStatus'] == 'authenticated'){
-                $data['qrImage'] = asset('tenancy/assets/images/qr-load.png');
+                $data['qrImage'] = asset('images/qr-load.png');
                 $data['area'] = 1;
             }
         }
@@ -36,7 +36,6 @@ class QrImage extends Component
         $newData = [
             'url' => $data['qrImage'],
             'area' => $data['area'],
-            'now' => 0,
         ];
         return $newData;
     }

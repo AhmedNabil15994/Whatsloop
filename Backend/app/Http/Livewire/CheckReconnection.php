@@ -12,17 +12,21 @@ class CheckReconnection extends Component
 {
     protected $haveImage = '';
     protected $tutorials = '';
-    public function getData(){
+    public $requestSemgent;
+    public $addons;
 
-        // $tenant = Tenant::find(Session::get('tenant_id'));
-        // tenancy()->initialize($tenant);
-        // $userStatusObj = UserStatus::orderBy('id','DESC')->first();
-        // tenancy()->end($tenant);
+    public function mount($requestSemgent,$addons){ 
+        $this->requestSemgent = $requestSemgent;
+        $this->addons = $addons;
+    }
+
+    public function getData(){
+        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
 
         $data = [];
         $data['haveImage'] = 0;
 
-        // if(($userStatusObj && $userStatusObj->status != 1) || !$userStatusObj ){
+        if(($userStatusObj && $userStatusObj->status != 1) || !$userStatusObj ){
             $mainWhatsLoopObj = new \MainWhatsLoop();
             $result = $mainWhatsLoopObj->status();
             $result = $result->json();
@@ -33,46 +37,44 @@ class CheckReconnection extends Component
                     }
                 }
             }
-        // }
+        }
             
-        // $userAddonsTutorial = [];
-        // $userAddons = array_unique(Session::get('addons'));
-        // $addonsTutorial = [1,2,4,5];
-        // for ($i = 0; $i < count($addonsTutorial) ; $i++) {
-        //     if(in_array($addonsTutorial[$i],$userAddons)){
-        //         tenancy()->initialize($tenant);
-        //         $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
-        //         tenancy()->end($tenant);
-        //         if($checkData == ''){
-        //             tenancy()->initialize($tenant);
-        //             $varObj = new Variable;
-        //             $varObj->var_key = 'MODULE_'.$addonsTutorial[$i];
-        //             $varObj->var_value = 0;
-        //             $varObj->save();
-        //             tenancy()->end($tenant);
-        //             $userAddonsTutorial[] = $addonsTutorial[$i];
-        //         }elseif($checkData == 0){
-        //             $userAddonsTutorial[] = $addonsTutorial[$i];
-        //         }
-        //     }
-        // }
-        // // dd($data);
+        $userAddonsTutorial = [];
+        $userAddons = array_unique($this->addons);
+        $addonsTutorial = [1,2,4,5];
+        for ($i = 0; $i < count($addonsTutorial) ; $i++) {
+            if(in_array($addonsTutorial[$i],$userAddons)){
+                tenancy()->initialize($tenant);
+                $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
+                tenancy()->end($tenant);
+                if($checkData == ''){
+                    tenancy()->initialize($tenant);
+                    $varObj = new Variable;
+                    $varObj->var_key = 'MODULE_'.$addonsTutorial[$i];
+                    $varObj->var_value = 0;
+                    $varObj->save();
+                    tenancy()->end($tenant);
+                    $userAddonsTutorial[] = $addonsTutorial[$i];
+                }elseif($checkData == 0){
+                    $userAddonsTutorial[] = $addonsTutorial[$i];
+                }
+            }
+        }
 
-        // $data['tutorials'] = array_values($userAddonsTutorial);
+        $data['tutorials'] = array_values($userAddonsTutorial);
         return $data;
     }
 
     public function render(){   
         $data = $this->getData();
         $this->haveImage = $data['haveImage'];
-        // $this->tutorials = $data['tutorials'];
-        // dd($data);
+        $this->tutorials = $data['tutorials'];
         return view('livewire.check-reconnection',$data);
     }
 
     public function checkStatus(){
         $data = $this->getData();
         $this->haveImage = $data['haveImage'];
-        // $this->tutorials = $data['tutorials'];
+        $this->tutorials = $data['tutorials'];
     }
 }

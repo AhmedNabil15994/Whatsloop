@@ -25,8 +25,11 @@
 			<div class="container-fluid mg-t-35 ">
 				@include('tenant.Layouts.breadcrumb')
 				{{-- @include('tenant.Layouts.userStatus') --}}
-				@if(Request::segment(1) != 'QR')
-				@livewire('check-reconnection')
+				@if(Request::segment(1) != 'QR' && Request::segment(1) != 'checkout'  && Request::segment(1) != 'updateSubscription'  && Request::segment(1) != 'postBundle')
+				@livewire('check-reconnection',[
+					'requestSemgent' => Request::segment(1),
+					'addons' => Session::get('addons')
+					])
 				@endif
 				@yield('content')
 			</div>

@@ -722,4 +722,7 @@ return [
 
 	'yourOrderNo' => 'Your Order No ',
 	'contactBSCustomer' => 'To Contact Customer Service',
+	'abandonedCarts' => 'Abandoned Carts',
+	'deletedProduct' => 'Deleted Product',
+	'cartno' => 'Cart No',
 ];

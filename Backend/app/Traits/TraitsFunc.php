@@ -110,7 +110,7 @@ trait TraitsFunc
         $statusObj['status']->status = 1;
         $statusObj['status']->code = 205;
         $statusObj['status']->message = $message;
-        return \Response::json((object) $statusObj);
+        return (object) $statusObj['status'];
     }
 
     public static function PublicDDM($dataArr, $withoutLang = false) {

@@ -79,8 +79,10 @@ class AuthControllers extends Controller {
         }else{
             User::setSessions($userObj);
 
-            Session::flash('success', trans('auth.welcome') . $userObj->name_ar);
-            return \TraitsFunc::LoginResponse(trans('auth.welcome') . $userObj->name_ar);
+            Session::flash('success', trans('auth.welcome') . ucwords($userObj->name));
+            $statusObj['data'] = \URL::to('/dashboard');
+            $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.welcome') . ucwords($userObj->name));
+            return \Response::json((object) $statusObj);
         }
     }
 

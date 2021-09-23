@@ -41,46 +41,7 @@ class DashboardControllers extends Controller {
             return redirect('/packages');
         }
 
-
-        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
-        $data = [];
-        if(($userStatusObj && $userStatusObj->status != 1) || !$userStatusObj ){
-            $mainWhatsLoopObj = new \MainWhatsLoop();
-            $result = $mainWhatsLoopObj->status();
-            $result = $result->json();
-            if(isset($result['data'])){
-                if($result['data']['accountStatus'] == 'got qr code'){
-                    if(isset($result['data']['qrCode'])){
-                        $image = '/uploads/instanceImage' . time() . '.png';
-                        $destinationPath = public_path() . $image;
-                        $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
-                        $succ = file_put_contents($destinationPath, $qrCode);   
-                        // $data['qrImage'] = \URL::to('/public'.$image);
-                        $data['qrImage'] = \URL::to('/').$image;
-                        // $data['qrImage'] = \URL::to('/').'/engine/public'.$image;
-                    }
-                }
-            }
-        }
-
-        $userAddonsTutorial = [];
-        $userAddons = array_unique(Session::get('addons'));
-        $addonsTutorial = [1,2,4,5];
-        for ($i = 0; $i < count($addonsTutorial) ; $i++) {
-            if(in_array($addonsTutorial[$i],$userAddons)){
-                $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
-                if($checkData == ''){
-                    $varObj = new Variable;
-                    $varObj->var_key = 'MODULE_'.$addonsTutorial[$i];
-                    $varObj->var_value = 0;
-                    $varObj->save();
-                    $userAddonsTutorial[] = $addonsTutorial[$i];
-                }elseif($checkData == 0){
-                    $userAddonsTutorial[] = $addonsTutorial[$i];
-                }
-            }
-        }
-        $data['tutorials'] = array_values($userAddonsTutorial);
+        $data = []; 
         Session::forget('check_user_id');
         return view('Tenancy.Dashboard.Views.menu')->with('data',(object) $data);
     }
@@ -98,14 +59,12 @@ class DashboardControllers extends Controller {
         if(isset($result['data'])){
             if($result['data']['accountStatus'] == 'got qr code'){
                 if(isset($result['data']['qrCode'])){
-                    $sendStatus = 100;
+                    $sendStatus = 0;
                 }
             }elseif($result['data']['accountStatus'] == 'authenticated'){
                 $sendStatus = 100;
             }
         }
-
-
 
         $messages = (object) ChatMessage::lastMessages();
 

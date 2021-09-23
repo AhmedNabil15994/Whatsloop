@@ -4,9 +4,9 @@
 User Auth
 ----------------------------------------------------------*/
 Route::group(['prefix' => '/'] , function () {
-	$authController = App\Http\Controllers\AuthControllers::class;
+    $authController = App\Http\Controllers\AuthControllers::class;
 
-    Route::get('/', function(){dd('landingPage');});
+    Route::get('/', function(){return redirect('/login');});
 
     Route::get('/login', [$authController,'login'])->name('login');
 
@@ -24,7 +24,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::post('/checkResetPassword', [$authController,'checkResetPassword']);
     Route::post('/completeReset', [$authController,'completeReset']);
 
-	Route::post('/changeLang', [$authController,'changeLang'])->name('changeLang');
+    Route::post('/changeLang', [$authController,'changeLang'])->name('changeLang');
 
     Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
 });

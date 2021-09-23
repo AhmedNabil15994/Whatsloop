@@ -188,9 +188,7 @@ class BundleControllers extends Controller {
         $dataObj->monthly_after_vat = $input['monthly_after_vat'];
         $dataObj->annual_after_vat = $input['annual_after_vat'];
         $dataObj->membership_id = $input['membership_id'];
-        if(isset($input['addons']) && !empty($input['addons'])){
-            $dataObj->addons = serialize($input['addons']);
-        }
+        $dataObj->addons = serialize(isset($input['addons']) ? $input['addons'] : []);
         $dataObj->status = $input['status'];
         $dataObj->updated_at = DATE_TIME;
         $dataObj->updated_by = USER_ID;

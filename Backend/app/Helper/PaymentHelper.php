@@ -116,5 +116,33 @@ class PaymentHelper {
         return $response;
     }   
 
+    public function initNoon($data){
+        $businessId = 'digital_servers';
+        $appName = 'whatsloop';
+        $appKey = '9ccc2c4b3f3345d4900d916d2a8c2abf'; //For Test
+        $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDo5Y2NjMmM0YjNmMzM0NWQ0OTAwZDkxNmQyYThjMmFiZg=='; // For Test
+        // $appKey = 'c55603b594b1495ea260a96bdccef35c';
+        // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDpjNTU2MDNiNTk0YjE0OTVlYTI2MGE5NmJkY2NlZjM1Yw==';
+        $dataArr = [
+            'returnURL' => $data['returnURL'],
+            'cart_id' => $data['cart_id'],
+            'cart_amount' => $data['cart_amount'],
+            'cart_description' => $data['cart_description'],
+            'paypage_lang' => $data['paypage_lang'],
+            'description' => $data['description'],
+        ];
+
+        $extraHeaders = [
+            'BUSINESSID: '.$businessId,
+            'APPNAME: '.$appName,
+            'APPKEY: '.$appKey,
+            'AUTHKEY: '.$authKey,
+        ];
+        return [
+            'dataArr' => $dataArr,
+            'extraHeaders' => $extraHeaders,
+        ];
+    }
+
 }
 

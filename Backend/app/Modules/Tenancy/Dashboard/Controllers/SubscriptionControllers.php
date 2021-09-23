@@ -134,7 +134,6 @@ class SubscriptionControllers extends Controller {
         return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
     }
 
-
     public function postCheckout(){
         $input = \Request::all();
         if(!IS_ADMIN){
@@ -188,15 +187,10 @@ class SubscriptionControllers extends Controller {
         return \Response::json((object) $statusObj);
     }
 
-    public function completeOrder(){
-        $input = \Request::all();
-        if(!IS_ADMIN){
-            return redirect()->to('/dashboard');
-        }
-        
-        $total = json_decode($input['totals']);
+    public function calcData($total,$cartData,$userObj){
+        $total = json_decode($total);
         $totals = $total[3];
-        $cartData = $input['data'];
+
         $cartObj = Variable::where('var_key','cartObj')->first();
         if(!$cartObj){
             $cartObj = new Variable();
@@ -225,27 +219,34 @@ class SubscriptionControllers extends Controller {
         $cartObj->var_value = json_encode($cartData);
         $cartObj->save();
         
-        $userObj = User::first();
-        $centralUser = CentralUser::getOne($userObj->id);
-
 
         $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
         if(!$paymentInfoObj){
             $paymentInfoObj = new PaymentInfo;
         }
-        if(isset($input['address']) && !empty($input['address'])){
+        if(isset($request->address) && !empty($request->address)){
             $paymentInfoObj->user_id = $userObj->id;
-            $paymentInfoObj->address = $input['address'];
-            $paymentInfoObj->address2 = $input['address2'];
-            $paymentInfoObj->city = $input['city'];
-            $paymentInfoObj->country = $input['country'];
-            $paymentInfoObj->region = $input['region'];
-            $paymentInfoObj->postal_code = $input['postal_code'];
-            $paymentInfoObj->tax_id = $input['tax_id'];
+            $paymentInfoObj->address = $request->address;
+            $paymentInfoObj->address2 = $request->address2;
+            $paymentInfoObj->city = $request->city;
+            $paymentInfoObj->country = $request->country;
+            $paymentInfoObj->region = $request->region;
+            $paymentInfoObj->postal_code = $request->postal_code;
+            $paymentInfoObj->tax_id = $request->tax_id;
             $paymentInfoObj->created_at = DATE_TIME;
             $paymentInfoObj->created_by = $userObj->id;
             $paymentInfoObj->save();
         }
+    }
+
+    public function completeOrder(){
+        $input = \Request::all();
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
+        
+        $userObj = User::first();
+        $centralUser = CentralUser::getOne($userObj->id);
 
         if(isset($input['name']) && !empty($input['name'])){
 
@@ -269,6 +270,9 @@ class SubscriptionControllers extends Controller {
             $centralUser->company = $input['company_name'];
             $centralUser->save();
         }
+
+        $cartData = $input['data'];
+        $this->calcData($input['totals'],$cartData,$userObj);
 
         // if($input['payType'] == 2){ // Paytabs Integration
         //     $profileId = '49334';
@@ -303,38 +307,21 @@ class SubscriptionControllers extends Controller {
 
         // }
         if($input['payType'] == 2){// Noon Integration
-            $businessId = 'digital_servers';
-            $appName = 'whatsloop';
-            $appKey = '085f038ec4214c88a507341ac05ad432'; //For Test
-            $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDowODVmMDM4ZWM0MjE0Yzg4YTUwNzM0MWFjMDVhZDQzMg=='; // For Test
-            // $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
-            // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDphOTFmY2YyYzZhZGY0ZWRkYWNlM2YxNWE0MTcwNTc0Mw==';
-            $dataArr = [
-                'returnURL' => \URL::to('/pushInvoice'),
+            $urlSecondSegment = '/noon';
+            $noonData = [
+                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice')),
+                // 'returnURL' => \URL::to('/pushInvoice'),  // For Local 
                 'cart_id' => 'whatsloop-'.rand(1,100000),
-                'cart_amount' => $totals,
+                'cart_amount' => json_decode($input['totals'])[3],
                 'cart_description' => 'New Membership',
                 'paypage_lang' => LANGUAGE_PREF,
                 'description' => 'WhatsLoop Membership For User '.$userObj->id,
             ];
 
-            $extraHeaders = [
-                'BUSINESSID: '.$businessId,
-                'APPNAME: '.$appName,
-                'APPKEY: '.$appKey,
-                'AUTHKEY: '.$authKey,
-            ];
-            $urlSecondSegment = '/noon';
-            // if($input['payType'] == 5){ // Noon Subscription Integration
-            //     $urlSecondSegment = '/noon/subscription';
-            //     $dataArr = array_merge($dataArr,[
-            //         'subs_name' => 'Whatsloop New Membership',
-            //         'subs_valid_till' => date('Y-m-d H:i:s',strtotime()),
-            //         'subs_type' => 1,
-            //     ]);
-            // }   
-            $paymentObj = new \PaymentHelper();        
-            $result = $paymentObj->hostedPayment($dataArr,$urlSecondSegment,$extraHeaders);
+            $paymentObj = new \PaymentHelper(); 
+            $resultData = $paymentObj->initNoon($noonData);            
+                   
+            $result = $paymentObj->hostedPayment($resultData['dataArr'],$urlSecondSegment,$resultData['extraHeaders']);
             $result = json_decode($result);
             // dd($result);
             if(($result->data) && $result->data->result->redirect_url){
@@ -345,6 +332,32 @@ class SubscriptionControllers extends Controller {
 
     public function bankTransfer(Request $request) {
         if ($request->hasFile('transfer_image')) {
+            
+            $userObj = User::first();
+            $centralUser = CentralUser::getOne($userObj->id);
+            
+            if(isset($request->name) && !empty($request->name)){
+
+                $names = explode(' ',$request->name);
+                if(count($names) < 2){
+                    return \TraitsFunc::ErrorMessage(trans('main.name2Validate'));
+                }
+
+                $userObj->name = $request->name;
+                $userObj->save();
+
+                $centralUser->name = $request->name;
+                $centralUser->save();
+            }
+
+            if(isset($request->company_name) && !empty($request->company_name)){
+                $userObj->company = $request->company_name;
+                $userObj->save();
+
+                $centralUser->company = $request->company_name;
+                $centralUser->save();
+            }
+
             $files = $request->file('transfer_image');
 
             $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->first();
@@ -371,83 +384,10 @@ class SubscriptionControllers extends Controller {
             $bankTransferObj->image = $fileName;
             $bankTransferObj->save();
 
-
-            $total = json_decode($request->totals);
-            $totals = $total[3];
             $cartData = $request->data;
-            $cartObj = Variable::where('var_key','cartObj')->first();
-            if(!$cartObj){
-                $cartObj = new Variable();
-            }
-
-            if(Session::has('userCredits')){
-                $userCreditsObj = Variable::where('var_key','userCredits')->first();
-                if(!$userCreditsObj){
-                    $userCreditsObj = new Variable();
-                }
-                $userCreditsObj->var_value = Session::get('userCredits');
-                $userCreditsObj->var_key = 'userCredits';
-                $userCreditsObj->save();
-
-                $startDateObj = Variable::where('var_key','start_date')->first();
-                if(!$startDateObj){
-                    $startDateObj = new Variable();
-                }
-                $startDateObj->var_value = json_decode($cartData)[0][4];
-                $startDateObj->var_key = 'start_date';
-                $startDateObj->save();
-            }
             
-
-            $cartObj->var_key = 'cartObj';
-            $cartObj->var_value = json_encode($cartData);
-            $cartObj->save();
+            $this->calcData($request->totals,$cartData,$userObj);
             
-            $userObj = User::first();
-            $centralUser = CentralUser::getOne($userObj->id);
-
-
-            $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
-            if(!$paymentInfoObj){
-                $paymentInfoObj = new PaymentInfo;
-            }
-            if(isset($request->address) && !empty($request->address)){
-                $paymentInfoObj->user_id = $userObj->id;
-                $paymentInfoObj->address = $request->address;
-                $paymentInfoObj->address2 = $request->address2;
-                $paymentInfoObj->city = $request->city;
-                $paymentInfoObj->country = $request->country;
-                $paymentInfoObj->region = $request->region;
-                $paymentInfoObj->postal_code = $request->postal_code;
-                $paymentInfoObj->tax_id = $request->tax_id;
-                $paymentInfoObj->created_at = DATE_TIME;
-                $paymentInfoObj->created_by = $userObj->id;
-                $paymentInfoObj->save();
-            }
-
-            if(isset($request->name) && !empty($request->name)){
-
-                $names = explode(' ',$request->name);
-                if(count($names) < 2){
-                    Session::flash('error', trans('main.name2Validate'));
-                    return redirect()->back()->withInput();
-                }
-
-                $userObj->name = $request->name;
-                $userObj->save();
-
-                $centralUser->name = $request->name;
-                $centralUser->save();
-            }
-
-            if(isset($request->company_name) && !empty($request->company_name)){
-                $userObj->company = $request->company_name;
-                $userObj->save();
-
-                $centralUser->company = $request->company_name;
-                $centralUser->save();
-            }
-
             $statusObj['data'] = \URL::to('/dashboard');
             $statusObj['status'] = \TraitsFunc::SuccessMessage(trans('main.addSuccess'));
             Session::flash('success',trans('main.transferSuccess'));
@@ -459,7 +399,7 @@ class SubscriptionControllers extends Controller {
         $input = \Request::all();
         $data['data'] = json_decode($input['data']);
         $data['status'] = json_decode($input['status']);
-
+        dd($data);
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
@@ -471,267 +411,13 @@ class SubscriptionControllers extends Controller {
     public function activate($transaction_id = null , $paymentGateaway = null){
         $cartObj = Variable::getVar('cartObj');
         $cartObj = json_decode(json_decode($cartObj));
-        $userObj = User::first();
-        $centralUser = CentralUser::find($userObj->id);
-        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-        $tenant_id = $tenantObj->tenant_id;
-        $userCreditsObj = Variable::getVar('userCredits');
-        $start_date = date('Y-m-d');
-        $userCredits = 0;
-        if($userCreditsObj){
-            $start_date = Variable::getVar('start_date');
-            $userCredits = $userCreditsObj;
-        } 
-        // dd($cartObj);
 
-        $items = [];
-        $addons = [];
-        $addonData = [];
-        $extraQuotaData = [];
-        $total = 0;
-
-        $hasMembership = 0;
-        foreach($cartObj as $key => $one){
-            if($one[1] == 'membership'){
-                $disableUpdate = 0;
-                $hasMembership = 1;
-                $dataObj = Membership::getOne($one[0]);
-                $userObj->update([
-                    'membership_id' => $one[0],
-                    'duration_type' => $one[3],
-                ]);
-
-                $centralUser->update([
-                    'membership_id' => $one[0],
-                    'duration_type' => $one[3],
-                ]);
-
-                $end_date =  $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date));
-            }else if($one[1] == 'addon'){
-                $dataObj = Addons::getOne($one[0]);
-                $addon[] = $one[0];
-                $addonData[] = [
-                    'tenant_id' => $tenant_id,
-                    'global_user_id' => $userObj->global_id,
-                    'user_id' => $userObj->id,
-                    'addon_id' => $one[0],
-                    'status' => 1,
-                    'duration_type' => $one[3],
-                    'start_date' => $start_date,
-                    'end_date' => $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date)), 
-                ];
-                $end_date = $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date));
-            }else if($one[1] == 'extra_quota'){
-                $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
-                for ($i = 0; $i < $one[7] ; $i++) {
-                    $extraQuotaData[] = [
-                        'tenant_id' => $tenant_id,
-                        'global_user_id' => $userObj->global_id,
-                        'user_id' => $userObj->id,
-                        'extra_quota_id' => $one[0],
-                        'duration_type' => $one[3],
-                        'status' => 1,
-                        'start_date' => $start_date,
-                        'end_date' => $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date)), 
-                    ];
-                    $end_date = $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date));
-                }
-            }
-            $price = $dataObj->monthly_price;
-            $price_after_vat = $dataObj->monthly_after_vat;
-            if($one[3] == 2){
-                $price = $dataObj->annual_price;
-                $price_after_vat = $dataObj->annual_after_vat;
-            }
-            $item = [
-                'type' => $one[1],
-                'data' => [
-                    'id' => $one[0],
-                    'title_ar' => ($one[1] != 'extra_quota' ? $dataObj->title_ar : $dataObj->extra_count . ' '.$dataObj->extraTypeText . ' ' . ($dataObj->extra_type == 1 ? trans('main.msgPerDay') : '') ),
-                    'title_en' => ($one[1] != 'extra_quota' ? $dataObj->title_en : $dataObj->extra_count . ' '.$dataObj->extraTypeText . ' ' . ($dataObj->extra_type == 1 ? trans('main.msgPerDay') : '') ),
-                    'price' => $price,
-                    'price_after_vat' => $price_after_vat,
-                    'duration_type' => $one[3],
-                    'quantity' => $one[7],
-                ],
-            ];
-            $total+= $price_after_vat * $one[7];
-            $items[] = $item;
-        }
-
-        if(!empty($addon)){
-            $oldData = unserialize($userObj->addons);
-            $newData = array_merge($oldData,$addon);
-            $userObj->update([
-                'addons' =>  serialize($newData),
-            ]);
-
-            $centralUser->update([
-                'addons' =>  serialize($newData),
-            ]);
-        }
-
-        $invoiceObj = new Invoice;
-        $invoiceObj->client_id = $userObj->id;
-        $invoiceObj->transaction_id = $transaction_id;
-        $invoiceObj->payment_gateaway = $paymentGateaway;  
-        $invoiceObj->total = $total - $userCredits ;
-        $invoiceObj->due_date = $start_date;
-        $invoiceObj->paid_date = DATE_TIME;
-        $invoiceObj->items = serialize($items);
-        $invoiceObj->status = 1;
-        $invoiceObj->payment_method = 2;
-        $invoiceObj->sort = Invoice::newSortIndex();
-        $invoiceObj->created_at = DATE_TIME;
-        $invoiceObj->created_by = $userObj->id;
-        $invoiceObj->save();
-
-        $disableTransfer = 0;
-
-        foreach($addonData as $oneAddonData){
-            $userAddonObj = UserAddon::where([
-                ['user_id',$oneAddonData['user_id']],
-                ['addon_id',$oneAddonData['addon_id']],
-                ['status',2],
-            ])->orWhere([
-                ['user_id',$oneAddonData['user_id']],
-                ['addon_id',$oneAddonData['addon_id']],
-                ['end_date','<',date('Y-m-d')],
-            ])->first();
-            if($userAddonObj){
-                $userAddonObj->update($oneAddonData);
-                $disableUpdate = 1;
-            }else{
-                UserAddon::insert($oneAddonData);
-                if(!$hasMembership){
-                    $disableUpdate = 1;
-                }
-            }
-
-        }
-
-        foreach($extraQuotaData as $oneItemData){
-            $userExtraQuotaObj = UserExtraQuota::where([
-                ['user_id',$oneItemData['user_id']],
-                ['extra_quota_id',$oneItemData['extra_quota_id']],
-                ['status',2],
-            ])->orWhere([
-                ['user_id',$oneItemData['user_id']],
-                ['extra_quota_id',$oneItemData['extra_quota_id']],
-                ['end_date','<',date('Y-m-d')],
-            ])->first();
-            if($userExtraQuotaObj){
-                $userExtraQuotaObj->update($oneItemData);
-                $disableUpdate = 1;
-            }else{
-                UserExtraQuota::insert($oneItemData);
-                if(!$hasMembership){
-                    $disableUpdate = 1;
-                }
-            }
-        }
- 
-
-        $mainUserChannel = UserChannels::first();
-        $channelObj = CentralChannel::first();
-        if(!$mainUserChannel){
-            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            $updateResult = $mainWhatsLoopObj->createChannel();
-            $result = $updateResult->json();
-
-        
-            if($result['status']['status'] != 1){
-                \Session::flash('error', $result['status']['message']);
-                return back()->withInput();
-            }
-
-            $channel = [
-                'id' => $result['data']['channel']['id'],
-                'token' => $result['data']['channel']['token'],
-                'name' => 'Channel #'.$result['data']['channel']['id'],
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
-
-            $extraChannelData = $channel;
-            $extraChannelData['tenant_id'] = $tenant_id;
-            $extraChannelData['global_user_id'] = $userObj->global_id;
-            $generatedData = CentralChannel::generateNewKey($result['data']['channel']['id']); // [ generated Key , generated Token]
-            $extraChannelData['instanceId'] = $generatedData[0];
-            $extraChannelData['instanceToken'] = $generatedData[1];
-
-            CentralChannel::create($extraChannelData);
-            UserChannels::create($channel);
-        }else{
-
-            if($mainUserChannel->end_date > date('Y-m-d')){
-                $disableTransfer = 1;
-            }
-
-            if(!$disableUpdate){
-                $mainUserChannel->start_date = $start_date;
-                $mainUserChannel->end_date = $end_date;
-                $mainUserChannel->save();
-
-                CentralChannel::where('id',$mainUserChannel->id)->update([
-                    'start_date' => $start_date,
-                    'end_date' => $end_date
-                ]);
-            }
-
-            $channel = [
-                'id' => $mainUserChannel->id,
-                'token' => $mainUserChannel->token,
-                'name' => 'Channel #'.$mainUserChannel->id,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
-        }
-        
-
-        if(!$disableTransfer){
-            $transferDaysData = [
-                'receiver' => $channel['id'],
-                'days' => 3, // 3
-                'source' => $channelObj->id,
-            ];
-
-            $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-            $result = $updateResult->json();
-        }
-        
-
-        $userObj->update([
-            'channels' => serialize([$channel['id']]),
-        ]);
-
-        $centralUser->update([
-            'channels' => serialize([$channel['id']]),
-        ]);
-
-        if(!empty($addon) && in_array(4,$addon)){
-            $varObj = Variable::where('var_key','ZidURL')->first();
-            if(!$varObj){
-                Variable::insert([
-                    [
-                        'var_key' => 'ZidURL',
-                        'var_value' => 'https://api.zid.sa/v1',
-                    ],
-                ]);
-            }
-        }
-
-        if(!empty($addon) && in_array(5,$addon)){
-            $varObj = Variable::where('var_key','SallaURL')->first();
-            if(!$varObj){
-                Variable::insert([
-                    [
-                        'var_key' => 'SallaURL',
-                        'var_value' => 'https://api.salla.dev/admin/v2',
-                    ],
-                ]);
-            }
-        }
+        $paymentObj = new \SubscriptionHelper(); 
+        $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d'));   
+        if($resultData[0] == 0){
+            Session::flash('error',$resultData[1]);
+            return back()->withInput();
+        }         
 
         Session::forget('userCredits');
         Variable::whereIn('var_key',['userCredits','start_date'])->delete();
@@ -965,8 +651,11 @@ class SubscriptionControllers extends Controller {
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['user'] = User::first();
         $data['countries'] = countries();
-        $egypt = country($data['payment']->country); 
-        $data['regions'] = $egypt->getDivisions(); 
+        $data['regions'] = [];
+        if(!empty($data['payment']) && $data['payment']->country){
+            $egypt = country($data['payment']->country); 
+            $data['regions'] = $egypt->getDivisions(); 
+        }
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         return view('Tenancy.Profile.Views.checkout')->with('data',(object) $data);
     }

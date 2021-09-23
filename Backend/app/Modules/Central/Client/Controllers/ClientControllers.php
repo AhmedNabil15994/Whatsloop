@@ -784,7 +784,7 @@ class ClientControllers extends Controller {
                 ],
                 [
                     'var_key' => 'ZidURL',
-                    'var_value' => 'https://api.zid.sa/v1',
+                    'var_value' => 'https://api.zid.dev/app/v2',
                 ],
             ]);
 

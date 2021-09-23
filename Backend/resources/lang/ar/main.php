@@ -716,4 +716,7 @@ return [
 	'firstReply' => 'اول رد علي المحادثة',
 	'yourOrderNo' => 'رقم طلبك هو',
 	'contactBSCustomer' => 'للاتصال بخدمة العملاء',
+	'abandonedCarts' => 'السلات المتروكة',
+	'deletedProduct' => 'منتج محذوف',
+	'cartno' => 'سلة رقم ',
 ];

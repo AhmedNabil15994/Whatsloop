@@ -155,7 +155,7 @@ class NoonControllers extends Controller {
 
         $data = [
             'auth_key' => $transactionObj->auth_key,
-            'orderId' => $input['orderId'],
+            'orderId' => $transactionObj->tran_ref,
         ];
 
         $noon = \Noon::queryTransaction($data);

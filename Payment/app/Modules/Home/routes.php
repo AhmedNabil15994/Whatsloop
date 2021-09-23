@@ -22,6 +22,6 @@ Route::group(['prefix' => '/noon'] , function () {
     Route::post('/subscription/mitUnsched', [$controller,'mitUnschedSubscription']);
     Route::post('/subscription/retrieve', [$controller,'retrieveSubscription']);
     Route::post('/subscription/cancel', [$controller,'cancelSubscription']);
-    Route::get('/testResult', [$controller,'testResult']);
+    Route::any('/testResult', [$controller,'testResult']);
     Route::post('/success', [$controller,'success']);
 });
