@@ -91,6 +91,7 @@ class PaymentHelper {
     public function hostedPayment($data,$urlSegment,$extraHeaders){
         $curl = curl_init();
         $mainURL = "http://payment.whatsloop.loc";
+        // $mainURL = "https://wloop.net/Payments";
 
         $headers = array(
             'Content-Type: application/json',
@@ -121,8 +122,8 @@ class PaymentHelper {
         $appName = 'whatsloop';
         $appKey = '9ccc2c4b3f3345d4900d916d2a8c2abf'; //For Test
         $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDo5Y2NjMmM0YjNmMzM0NWQ0OTAwZDkxNmQyYThjMmFiZg=='; // For Test
-        // $appKey = 'c55603b594b1495ea260a96bdccef35c';
-        // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDpjNTU2MDNiNTk0YjE0OTVlYTI2MGE5NmJkY2NlZjM1Yw==';
+        // $appKey = 'a91fcf2c6adf4eddace3f15a41705743';
+        // $authKey = 'ZGlnaXRhbF9zZXJ2ZXJzLndoYXRzbG9vcDphOTFmY2YyYzZhZGY0ZWRkYWNlM2YxNWE0MTcwNTc0Mw==';
         $dataArr = [
             'returnURL' => $data['returnURL'],
             'cart_id' => $data['cart_id'],

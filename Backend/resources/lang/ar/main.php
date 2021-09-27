@@ -404,7 +404,7 @@ return [
 
 	'reconnectDone' => 'تم معاودة الاتصال بنجاح',
 	'logoutDone' => 'تم اغلاق الاتصال بنجاح',
-	'syncInProgress' => 'موامنة الرسائل قيد التنفيذ',
+	'syncInProgress' => 'مزامنة الرسائل قيد التنفيذ',
 
 	'yesterday' => 'أمس',
 	'livechat' => 'المحادثة المباشرة',

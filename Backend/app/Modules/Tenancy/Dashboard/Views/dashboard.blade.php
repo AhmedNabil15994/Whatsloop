@@ -103,7 +103,7 @@
         </div>
 
         <div class="col-6">
-            <div class="col-sm-12">
+            <div class="col-sm-12 pd-0">
                 <div class="card overflow-hidden">
                     <div class="card-header mt-3">
                         <h3 class="card-title">{{ trans('main.lastContactsAdded') }}</h3>

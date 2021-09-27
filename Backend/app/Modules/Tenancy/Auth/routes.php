@@ -11,6 +11,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/login', [$authController,'login'])->name('login');
 
     Route::post('/pushInvoice', [App\Http\Controllers\SubscriptionControllers::class,'pushInvoice']);
+    Route::post('/pushInvoice2', [App\Http\Controllers\ProfileControllers::class,'pushInvoice2']);
     Route::post('/invoices/{id}/pushInvoice', [\App\Http\Controllers\TenantInvoiceControllers::class,'pushInvoice']);
     
     Route::get('/loginByCode', [$authController,'loginByCode'])->name('loginByCode');

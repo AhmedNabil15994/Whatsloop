@@ -71,7 +71,7 @@ class InstanceStatus extends Command
 
         $oldStatusObj = UserStatus::orderBy('id','DESC')->take(2)->get();
         $check = 0;
-        if($oldStatusObj){
+        if(count($oldStatusObj)){
             if($oldStatusObj[0]->status == 4 && $oldStatusObj[1]->status == 4){
                 $check = 1;
             }

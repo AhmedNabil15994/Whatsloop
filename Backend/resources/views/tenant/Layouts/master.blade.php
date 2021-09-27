@@ -15,17 +15,17 @@
 	<body class="main-body tena light-theme app sidebar-mini active leftmenu-color">
 		<!-- Begin page -->
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
-		@if(Request::segment(1) != 'menu' && Request::segment(1) != 'packages' && Request::segment(1) != 'checkout' && Request::segment(1) != 'postBundle')
+		@if(!in_array(Request::segment(1),['menu','packages','checkout','postBundle']))
 		@include('tenant.Layouts.sidebar')
 		@endif
 		<!-- main-content -->
-		<div class="main-content app-content" {{ Request::segment(1) == 'menu' || Request::segment(1) == 'packages' || Request::segment(1) == 'checkout' || Request::segment(1) == 'postBundle' ? ' style=margin:0 ': '' }}>
+		<div class="main-content app-content" {{ in_array(Request::segment(1),['menu','packages','checkout','postBundle']) ? ' style=margin:0 ': '' }}>
 			@include('tenant.Layouts.header')
 			<!-- container -->
 			<div class="container-fluid mg-t-35 ">
 				@include('tenant.Layouts.breadcrumb')
 				{{-- @include('tenant.Layouts.userStatus') --}}
-				@if(Request::segment(1) != 'QR' && Request::segment(1) != 'checkout'  && Request::segment(1) != 'updateSubscription'  && Request::segment(1) != 'postBundle')
+				@if(!in_array(Request::segment(1),['QR','checkout', 'updateSubscription','postBundle']) && Request::segment(3) != 'transferPayment')
 				@livewire('check-reconnection',[
 					'requestSemgent' => Request::segment(1),
 					'addons' => Session::get('addons')

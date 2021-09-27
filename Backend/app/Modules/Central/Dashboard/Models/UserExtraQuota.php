@@ -101,6 +101,18 @@ class UserExtraQuota extends Model{
         return [$dataObj->pluck('extra_quota_id'),$list];
     }
 
+    static function getActivated($user_id){
+        $source = self::NotDeleted()->where([
+            ['user_id',$user_id],
+            ['status','==','IN(1,3)'],
+        ])->orWhere([
+            ['user_id',$user_id],
+            ['end_date','>=',date('Y-m-d')]
+        ])->get();
+        return reset($source);
+    }
+
+
     // Status == 1 => Active
     // Status == 0 => Not Active
     // Status == 2 ==> Disabled

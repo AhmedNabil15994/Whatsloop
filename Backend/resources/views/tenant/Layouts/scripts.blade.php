@@ -1,4 +1,3 @@
-JQuery min js -->
 <script src="{{ asset('plugins/jquery/jquery-3.5.1.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
 <!-- Bootstrap4 js-->
@@ -105,6 +104,4 @@ JQuery min js -->
 
 <script src="{{ asset('components/globals.js') }}"></script>
 
-<!-- third party js -->
 @yield('scripts')
-<!-- third party js ends

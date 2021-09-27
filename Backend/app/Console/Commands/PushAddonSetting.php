@@ -96,7 +96,7 @@ class PushAddonSetting extends Command
 
             }elseif($userAddon->addon_id == 5){
                 // Salla Webhooks
-                $webhookUrl = str_replace('://', '://'.$domain.'.', 'http://wloop.net').'/whatsloop/webhooks/salla-webhook';
+                $webhookUrl = str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/salla-webhook';
                 $actions = ['order.created','order.updated','product.created','product.updated','customer.created','customer.updated'];
 
                 tenancy()->initialize($tenant);

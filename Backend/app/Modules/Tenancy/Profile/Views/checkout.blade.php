@@ -155,7 +155,19 @@
                         
                         <h3 id="wizard1-h-3" tabindex="-1" class="title mb-5">{{ trans('main.financial_setting') }}</h3>
                         <section id="wizard1-p-3" role="tabpanel" aria-labelledby="wizard1-h-3" class="body text-center" aria-hidden="true" style="display: none;">
-                            <form class="completeOrder" action="{{ Request::segment(1) == 'invoices' ? URL::current() : URL::to('/completeOrder') }}" method="post" accept-charset="utf-8">
+                            @php
+                            $action = '';
+                            if(Request::segment(1) == 'invoices'){
+                                $action = URL::current();
+                            }else{
+                                if(Request::segment(3) == 'transferPayment'){
+                                    $action = URL::to('/profile/subscription/renewToFirst');
+                                }else{
+                                    $action = URL::to('/completeOrder');
+                                }
+                            }
+                            @endphp
+                            <form class="completeOrder" action="{{ $action }}" method="post" accept-charset="utf-8">
                                 @csrf
                                 <div class="text-left">
                                     <div class="row">

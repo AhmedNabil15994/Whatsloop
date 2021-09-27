@@ -49,6 +49,8 @@ Route::group(['prefix' => '/profile'] , function () {
     Route::get('/subscription/syncAll', [$controller,'syncAll']);
     Route::get('/subscription/restoreAccountSettings', [$controller,'restoreAccountSettings']);
     Route::get('/subscription/read/{status}', [$controller,'read']);
+    Route::get('/subscription/transferPayment',[$controller,'transferPayment']);
+    Route::post('/subscription/renewToFirst',[$controller,'renewToFirst']);
 
 
     Route::get('/apiSetting', [$controller,'apiSetting']);

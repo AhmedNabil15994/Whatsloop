@@ -18,7 +18,7 @@
                         @if($data->data->status == 1)
                         <p>
                             <span class="float-left">{{ trans('main.paymentMethod') }} :</span>
-                            <span class="float-left text-muted">{{ $data->paymentInfo->payment_method_text }}</span> 
+                            <span class="float-left text-muted">{{ $data->data->payment_gateaway }}</span> 
                             <div class="clearfix"></div> 
                         </p>
                         @endif
@@ -57,12 +57,12 @@
                         <p class="tx-font-14">
                             {{ $data->data->company }}<br>
                             {{ $data->data->client }}<br>
-                            {{ $data->paymentInfo->address }}<br>
-                            {{ $data->paymentInfo->city . ', ' . $data->paymentInfo->region . ', ' . $data->paymentInfo->postal_code  }}<br>
-                            {{ $data->paymentInfo->country  }}<br>
-                            @if($data->paymentInfo->tax_id)
+                            {{ count($data->paymentInfo) ? $data->paymentInfo->address : '' }}<br>
+                            {{ (count($data->paymentInfo) ? $data->paymentInfo->city  : ''). ', ' . (count($data->paymentInfo) ? $data->paymentInfo->region  : ''). ', ' .( count($data->paymentInfo) ? $data->paymentInfo->postal_code  : '') }}<br>
+                            {{ count($data->paymentInfo) ? $data->paymentInfo->country  : '' }}<br>
+                            @if(count($data->paymentInfo) ? $data->paymentInfo->tax_id : '')
                             <span class="float-left mt-2 w-auto m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-2">{{ trans('main.tax_id') }} : </span>  
-                            <span class="float-left text-muted mt-2"> {{ $data->paymentInfo->tax_id }}</span>
+                            <span class="float-left text-muted mt-2"> {{ count($data->paymentInfo) ? $data->paymentInfo->tax_id : '' }}</span>
                             <div class="clearfix"></div>
                             @endif
                         </p>

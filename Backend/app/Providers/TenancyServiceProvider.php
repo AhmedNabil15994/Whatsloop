@@ -106,6 +106,10 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        InitializeTenancyByDomain::$onFail = function ($exception, $request, $next) {
+            return redirect(config('app.BASE_URL'));
+        };
+
         $this->bootEvents();
         $this->mapRoutes();
 

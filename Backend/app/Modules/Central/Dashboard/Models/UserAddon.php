@@ -44,6 +44,17 @@ class UserAddon extends Model{
             ['user_id',$user_id],
             ['end_date','<',date('Y-m-d')]
         ])->pluck('addon_id');
+        return array_unique(reset($source));
+    }
+
+    static function getActivated($user_id){
+        $source = self::NotDeleted()->where([
+            ['user_id',$user_id],
+            ['status','==','IN(1,3)'],
+        ])->orWhere([
+            ['user_id',$user_id],
+            ['end_date','>=',date('Y-m-d')]
+        ])->get();
         return reset($source);
     }
 
@@ -60,9 +71,9 @@ class UserAddon extends Model{
                     ['user_id',$user_id],
                     ['end_date','<',date('Y-m-d')]
                 ])->pluck('addon_id');
-            $data[0] = reset($allData);
-            $data[1] = reset($dataId);
-            $data[2] = reset($disabled);
+            $data[0] = array_unique(reset($allData));
+            $data[1] = array_unique(reset($dataId));
+            $data[2] = array_unique(reset($disabled));
             return $data;
         }else{
             $source = self::NotDeleted()->whereIn('status',$statusArr);

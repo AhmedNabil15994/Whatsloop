@@ -367,8 +367,8 @@ class ClientControllers extends Controller {
             return back()->withInput();
         }
 
-        $channelObj->update(['end_date'=> date('Y-m-d' ,strtotime("+".$input['days']. " days" ,strtotime($channelObj->end_date) ))]);
-        CentralChannel::where('id',$channelObj->id)->update(['end_date'=> $channelObj->end_date]);
+        // $channelObj->update(['end_date'=> date('Y-m-d' ,strtotime("+".$input['days']. " days" ,strtotime($channelObj->end_date) ))]);
+        // CentralChannel::where('id',$channelObj->id)->update(['end_date'=> $channelObj->end_date]);
 
         \Session::flash('success', trans('main.editSuccess'));
         return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));

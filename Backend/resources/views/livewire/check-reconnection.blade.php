@@ -1,11 +1,11 @@
 @if($requestSemgent != 'QR' && $requestSemgent != 'menu')
-    <div class="container-fluid"  wire:poll.10s="checkStatus" wire:model="CheckReconnection">
+    <div class="container-fluid"  wire:poll.2s wire:model="CheckReconnection">
         <div class="row">
     
 @else
-    <div class="row"  wire:poll.10s="checkStatus" wire:model="CheckReconnection">
+    <div class="row"  wire:poll.2s wire:model="CheckReconnection">
 @endif
-    @if((isset($haveImage) && $haveImage == 1) || (isset($tutorials) && !empty($tutorials)))
+    @if((isset($data->haveImage) && $data->haveImage == 1) || (isset($data->tutorials) && !empty($data->tutorials)))
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -15,7 +15,7 @@
                                 <i class="si si-close text-danger"></i>
                             </div>
                             <div class="cols second">
-                                @if($haveImage != 1)
+                                @if($data->haveImage != 1)
                                     <span class="text-danger">{{ trans('main.addonsConfigure') }}</span>
                                     <a href="/QR" class="btn btn-success float-right">{{ trans('main.reconfigure') }}</a>
                                 @else

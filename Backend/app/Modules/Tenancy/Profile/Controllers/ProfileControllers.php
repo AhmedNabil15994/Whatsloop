@@ -23,6 +23,7 @@ use App\Models\ExtraQuota;
 use App\Models\Membership;
 use App\Models\UserExtraQuota;
 use App\Models\CentralUser;
+use App\Models\BankAccount;
 use Storage;
 use DataTables;
 use Validator;
@@ -348,6 +349,247 @@ class ProfileControllers extends Controller {
         return \Redirect::back()->withInput();
     }
 
+    public function getDiffs($end_date,$oldDuration,$monthly_after_vat,$annual_after_vat){
+        $nextStartMonth = date('Y-m-d',strtotime('first day of +1 month',strtotime($end_date)));
+
+        $endDate = strtotime($end_date);
+        $datediff = strtotime($nextStartMonth) - $endDate;
+        $daysLeft = (int) round($datediff / (60 * 60 * 24));
+        
+        
+        $newPriceAfterVat = $monthly_after_vat;
+
+        if($oldDuration == 1){
+            $usedCost = ($monthly_after_vat / 30);
+        }else if($oldDuration == 2){
+            $usedCost = ($annual_after_vat / 365);
+            $newPriceAfterVat = $annual_after_vat;
+        }
+        $membershipMustPaid = round( $daysLeft * $usedCost ,2);
+        return [
+            'mustPaid' => $membershipMustPaid,
+            'daysLeft' => $daysLeft,
+            'nextStartMonth' => $nextStartMonth,
+        ];
+    }
+
+    public function transferPayment(){
+        $mustPaid = 0;
+        $dataObj = Membership::getData(Membership::getOne(Session::get('membership')));
+        if(!$dataObj || $dataObj->id == 4){
+            Session::flash('error',trans('main.membershipValidate'));
+            return redirect()->to('/dashboard');
+        }
+
+        $userChannelObj = UserChannels::getUserChannels()['data'][0];
+        $mainUserObj = User::first();
+        $oldDuration = $mainUserObj->duration_type;
+
+        $diffData = $this->getDiffs($userChannelObj->end_date,$oldDuration,$dataObj->monthly_after_vat,$dataObj->annual_after_vat);
+        Variable::firstOrCreate([
+            'var_key' => 'endDate',
+            'var_value' => $diffData['nextStartMonth'], 
+        ]);
+
+        $testData = [];
+
+        $mustPaid += $diffData['mustPaid'];
+        $testData[] = [
+            $dataObj->id,
+            'membership',
+            $dataObj->title,
+            1,
+            $userChannelObj->start_date,
+            date('Y-m-d',strtotime('+'.$diffData['daysLeft'].' days',strtotime($userChannelObj->end_date))),
+            $diffData['mustPaid'],
+            1,
+        ];
+
+        $userAddons = UserAddon::getActivated($mainUserObj->id);
+        foreach($userAddons as $userAddon){
+            if(!in_array(date('d',strtotime($userAddon->end_date)),[1,28,29,30,31])){
+                $addonObj = Addons::getData(Addons::getOne($userAddon->addon_id));
+                $addonDiffData = $this->getDiffs($userAddon->end_date,$userAddon->duration_type,$addonObj->monthly_after_vat,$addonObj->annual_after_vat);
+                $mustPaid += $addonDiffData['mustPaid'];
+                $testData[] = [
+                    $addonObj->id,
+                    'addon',
+                    $addonObj->title,
+                    1,
+                    $userAddon->start_date,
+                    date('Y-m-d',strtotime('+'.$addonDiffData['daysLeft'].' days',strtotime($userAddon->end_date))),
+                    $addonDiffData['mustPaid'],
+                    1,
+                ];
+            }   
+        }
+
+        $userExtraQuotas = UserExtraQuota::getActivated($mainUserObj->id);
+        $duplicated = [];
+        foreach($userExtraQuotas as $userExtraQuota){
+            if(!in_array(date('d',strtotime($userExtraQuotas->end_date)),[1,28,29,30,31])){
+                if(isset($duplicated[$userExtraQuota->addon_id])){
+                    $duplicated[$userExtraQuota->addon_id] = $duplicated[$userExtraQuota->addon_id] + 1;
+                }else{
+                    $duplicated[$userExtraQuota->addon_id] = 1;
+                }
+
+                $extraQuotaObj = ExtraQuota::getData(ExtraQuota::getOne($userExtraQuota->extra_quota_id));
+                $extraQuotaDiffData = $this->getDiffs($userExtraQuota->end_date,$userExtraQuota->duration_type,$extraQuotaObj->monthly_after_vat,$extraQuotaObj->annual_after_vat);
+                $mustPaid += $extraQuotaDiffData['mustPaid'] * $duplicated[$userExtraQuota->addon_id];
+                $testData[] = [
+                    $extraQuotaObj->id,
+                    'extra_quota',
+                    $extraQuotaObj->title,
+                    1,
+                    $userExtraQuota->start_date,
+                    date('Y-m-d',strtotime('+'.$extraQuotaDiffData['daysLeft'].' days',strtotime($userExtraQuota->end_date))),
+                    $extraQuotaDiffData['mustPaid'],
+                    $duplicated[$userExtraQuota->addon_id],
+                ];        
+            }
+        }
+
+
+        $data['data'] = $testData;
+        $mustPaid = round($mustPaid,2);
+        $tax = \Helper::calcTax($mustPaid);
+        $data['totals'] = [
+            $mustPaid-$tax,
+            0,
+            $tax,
+            $mustPaid,
+        ];
+
+        $data['user'] = User::getOne(USER_ID);
+        $data['countries'] = countries();
+        $data['regions'] = [];
+        $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        $data['bankAccounts'] = BankAccount::dataList(1)['data'];
+        return view('Tenancy.Profile.Views.checkout')->with('data',(object) $data);
+    }
+
+    public function calcData($total,$cartData,$userObj){
+        $total = json_decode($total);
+        $totals = $total[3];
+
+
+        Variable::firstOrCreate([
+            'var_key' => 'cartObj',
+            'var_value' => json_encode($cartData),
+        ]);
+        
+
+        $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
+        if(!$paymentInfoObj){
+            $paymentInfoObj = new PaymentInfo;
+        }
+        if(isset($request->address) && !empty($request->address)){
+            $paymentInfoObj->user_id = $userObj->id;
+            $paymentInfoObj->address = $request->address;
+            $paymentInfoObj->address2 = $request->address2;
+            $paymentInfoObj->city = $request->city;
+            $paymentInfoObj->country = $request->country;
+            $paymentInfoObj->region = $request->region;
+            $paymentInfoObj->postal_code = $request->postal_code;
+            $paymentInfoObj->tax_id = $request->tax_id;
+            $paymentInfoObj->created_at = DATE_TIME;
+            $paymentInfoObj->created_by = $userObj->id;
+            $paymentInfoObj->save();
+        }
+    }
+
+    public function renewToFirst(){
+        $input = \Request::all();
+        if(!IS_ADMIN){
+            return redirect()->to('/dashboard');
+        }
+        
+        $userObj = User::first();
+        $centralUser = CentralUser::getOne($userObj->id);
+
+        if(isset($input['name']) && !empty($input['name'])){
+
+            $names = explode(' ',$input['name']);
+            if(count($names) < 2){
+                Session::flash('error', trans('main.name2Validate'));
+                return redirect()->back()->withInput();
+            }
+
+            $userObj->name = $input['name'];
+            $userObj->save();
+
+            $centralUser->name = $input['name'];
+            $centralUser->save();
+        }
+
+        if(isset($input['company_name']) && !empty($input['company_name'])){
+            $userObj->company = $input['company_name'];
+            $userObj->save();
+
+            $centralUser->company = $input['company_name'];
+            $centralUser->save();
+        }
+
+        $cartData = $input['data'];
+        
+        $this->calcData($input['totals'],$cartData,$userObj);
+        // dd(json_decode($input['totals'])[3]);
+        if($input['payType'] == 2){// Noon Integration
+            $urlSecondSegment = '/noon';
+            $noonData = [
+                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice')),
+                // 'returnURL' => \URL::to('/pushInvoice2'),  // For Local 
+                'cart_id' => 'whatsloop-'.rand(1,100000),
+                'cart_amount' => json_decode($input['totals'])[3],
+                'cart_description' => 'Transfer Payment To 1st of month',
+                'paypage_lang' => LANGUAGE_PREF,
+                'description' => 'WhatsLoop Membership For User '.$userObj->id,
+            ];
+
+            $paymentObj = new \PaymentHelper(); 
+            $resultData = $paymentObj->initNoon($noonData);            
+                   
+            $result = $paymentObj->hostedPayment($resultData['dataArr'],$urlSecondSegment,$resultData['extraHeaders']);
+            $result = json_decode($result);
+            // dd($result);
+            if(($result->data) && $result->data->result->redirect_url){
+                return redirect()->away($result->data->result->redirect_url);
+            }
+        }
+    }
+
+    public function pushInvoice2(){
+        $input = \Request::all();
+        $data['data'] = json_decode($input['data']);
+        $data['status'] = json_decode($input['status']);
+        // dd($data);
+        if($data['status']->status == 1){
+            return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
+        }else{
+            \Session::flash('error',$data['status']->message);
+            return redirect()->to('/');
+        }
+    }
+
+    public function activate($transaction_id = null , $paymentGateaway = null){
+        $cartObj = Variable::getVar('cartObj');
+        $endDate = Variable::getVar('endDate');
+        $cartObj = json_decode(json_decode($cartObj));
+
+        $paymentObj = new \SubscriptionHelper(); 
+        $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,null,null,null,null,$endDate);   
+        if($resultData[0] == 0){
+            Session::flash('error',$resultData[1]);
+            return back()->withInput();
+        }         
+
+        $userObj = User::first();
+        User::setSessions($userObj);
+        return redirect()->to('/dashboard');
+    }
+
+
     public function services(){
         $data['designElems']['mainData'] = [
             'title' => trans('main.service_tethering'),
@@ -572,7 +814,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
         Session::flash('success',trans('main.logoutDone'));
-        return redirect()->to('/menu');
+        return redirect()->back();
     }
 
     public function sync(){

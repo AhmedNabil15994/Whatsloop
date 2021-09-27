@@ -43,8 +43,9 @@
                     <p class="text-muted mb-2 font-13"><strong>{{ trans('main.email') }} :</strong> <span class="ml-2 ">{{ $data->data->email }}</span></p>
 
                     <p class="text-muted mb-2 font-13"><strong>{{ trans('main.company_name') }} :</strong> <span class="ml-2 ">{{ $data->data->company }}</span></p>
+                    <p class="text-muted mb-2 font-13"><strong>{{ trans('main.domain') }} :</strong> <span class="ml-2 ">{{ $data->data->domain }}</span></p>
 
-                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ @$data->data->channels[0]->id }}</span></p>
+                    <p class="text-muted mb-1 font-13"><strong>{{ trans('main.channel') }} :</strong> <span class="ml-2"># {{ @$data->data->channels[0]->id  . ' - ' . @$data->data->channels[0]->instanceId }}</span></p>
                     <p class="text-muted mb-1 font-13"><strong>{{ trans('main.subscriptionPeriod') }} :</strong> <span class="ml-2"> {{ @$data->data->channels[0]->start_date }} - {{ @$data->data->channels[0]->end_date }}</span></p>
                     <p class="text-muted mb-1 font-13"><strong>{{ trans('main.leftDays') }} :</strong> <span class="ml-2"> {{ isset($data->data->channels[0]) ? \App\Models\CentralChannel::getData($data->data->channels[0])->leftDays : 0 }} {{ trans('main.day') }}</span> </p>
                 </div>
@@ -575,7 +576,7 @@
                                                         <div class="row">
                                                             <div class="col-sm-4">
                                                                 <a class="text-dark-50 text-hover-primary font-weight-bold">
-                                                                    {{ trans('main.channel') }} : <b># {{ @$data->channel->id }}</b>
+                                                                    {{ trans('main.channel') }} : <b># {{ @$data->data->channels[0]->instanceId }}</b>
                                                                 </a>
                                                             </div>
                                                             <div class="col-sm-4">

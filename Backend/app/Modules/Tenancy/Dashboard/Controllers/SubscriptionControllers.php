@@ -399,7 +399,7 @@ class SubscriptionControllers extends Controller {
         $input = \Request::all();
         $data['data'] = json_decode($input['data']);
         $data['status'] = json_decode($input['status']);
-        dd($data);
+        // dd($data);
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
@@ -420,7 +420,8 @@ class SubscriptionControllers extends Controller {
         }         
 
         Session::forget('userCredits');
-        Variable::whereIn('var_key',['userCredits','start_date'])->delete();
+
+        $userObj = User::first();
         User::setSessions($userObj);
         return redirect()->to('/dashboard');
     }

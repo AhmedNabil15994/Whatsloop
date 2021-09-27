@@ -76,6 +76,8 @@ return [
     'ProfileControllers@syncAll' => 'subscription',
     'ProfileControllers@restoreAccountSettings' => 'subscription',
     'ProfileControllers@read' => 'subscription',
+    'ProfileControllers@transferPayment' => 'subscription',
+    'ProfileControllers@renewToFirst' => 'subscription',
 
     'ProfileControllers@apiSetting' => 'apiSetting',
     'ProfileControllers@apiGuide' => 'apiGuide',

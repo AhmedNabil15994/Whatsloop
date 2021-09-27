@@ -214,7 +214,7 @@
                                     </div>
                                     @if(!in_array(date('d',strtotime($data->subscription->end_date)) , [1,28,29,30,31]) && IS_ADMIN)
                                     <div class="col-6 text-right">
-                                        <a href="#" class="btn btn-dark"> <i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a> 
+                                        <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="btn btn-dark"> <i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a> 
                                     </div>
                                     @endif
                                 </div>
@@ -387,8 +387,6 @@
 @section('modals')
 @include('tenant.Partials.screen_modal')
 @endsection
-
-{{-- Scripts Section --}}
 
 @section('scripts')
 <script src="{{ asset('components/subscription.js') }}" type="text/javascript"></script>

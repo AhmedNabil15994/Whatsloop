@@ -27,7 +27,7 @@
             <a href="{{ URL::current().'/checkout' }}" class="btn btn-success"><i class="fas fa-credit-card"></i> {{ trans('main.checkout') }}</a>
             @endif
             @if(IS_ADMIN && $data->data->status == 1 && !in_array( date('d',strtotime($data->data->due_date)) , [1,28,29,30,31]) )
-            <a href="#" class="btn btn-info"><i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a>
+            <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="btn btn-info"><i class="mdi mdi-transfer"></i> {{ trans('main.transferPayment') }}</a>
             @endif
         </div>
         <div class="card invoice pd-25">
@@ -47,7 +47,7 @@
                         @if($data->data->status == 1)
                         <p>
                             <span class="float-left">{{ trans('main.paymentMethod') }} :</span>
-                            <span class="float-left text-muted">{{ $paymentObj->payment_method_text }}</span> 
+                            <span class="float-left text-muted">{{ $data->data->payment_gateaway }}</span> 
                             <div class="clearfix"></div> 
                         </p>
                         @endif
@@ -86,10 +86,10 @@
                         <p class="tx-font-14">
                             {{ $data->data->company }}<br>
                             {{ $data->data->client }}<br>
-                            {{ $paymentObj->address }}<br>
-                            {{ $paymentObj->city . ', ' . $paymentObj->region . ', ' . $paymentObj->postal_code  }}<br>
-                            {{ $paymentObj->country  }}<br>
-                            @if($paymentObj->tax_id)
+                            {{ (isset($paymentObj) ? $paymentObj->address : '') }}<br>
+                            {{ (isset($paymentObj) ? $paymentObj->city : '') . ', ' . (isset($paymentObj) ? $paymentObj->region : '') . ', ' . (isset($paymentObj) ? $paymentObj->postal_code : '')  }}<br>
+                            {{ (isset($paymentObj) ? $paymentObj->country : '')  }}<br>
+                            @if((isset($paymentObj) ? $paymentObj->tax_id : ''))
                             <span class="float-left mt-2 w-auto m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-2">{{ trans('main.tax_id') }} : </span>  
                             <span class="float-left text-muted mt-2"> {{ $paymentObj->tax_id }}</span>
                             <div class="clearfix"></div>

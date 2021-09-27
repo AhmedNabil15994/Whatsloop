@@ -266,12 +266,13 @@ class Helper
                     $externalPermissions = [];
                 }elseif($addon->module == 'whiteLogo'){
                     $externalPermissions = [];
-                }elseif($addon->module == 'whatsappOrder'){
-                    $externalPermissions = [
-                        'WhatsappOrdersControllers@products' => 'whatsapp-products',
-                        'WhatsappOrdersControllers@orders' => 'whatsapp-orders',
-                    ];
                 }
+                // elseif($addon->module == 'whatsappOrder'){
+                //     $externalPermissions = [
+                //         'WhatsappOrdersControllers@products' => 'whatsapp-products',
+                //         'WhatsappOrdersControllers@orders' => 'whatsapp-orders',
+                //     ];
+                // }
             }
 
             $controllers = array_merge($controllers,$externalPermissions);

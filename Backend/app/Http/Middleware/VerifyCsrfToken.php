@@ -42,6 +42,7 @@ class VerifyCsrfToken extends Middleware
         '/clients/edit/*/editImage',
 
         '/pushInvoice',
+        '/pushInvoice2',
         '/invoices/*/pushInvoice',
         '/checkout/bankTransfer',
 

@@ -14,6 +14,9 @@ class HomeControllers extends Controller {
     public function formatResponse($serverResult,$status=null){
     	if(!$serverResult->ok()){
         	$result = $serverResult->json();
+            if(isset($result['result']) && $result['result'] == "error"){
+                return [0,str_replace('app.chat-api.com','wloop.net',@$result['message'])];
+            }
             return [0,str_replace('app.chat-api.com','wloop.net',@$result['error'])];
         }else{
         	$result = $serverResult->json();
@@ -33,6 +36,8 @@ class HomeControllers extends Controller {
         	if(isset($result['result']) && $result['result'] == "Couldn't delete chat or leaving group. Invalid number"){
             	return [0,"Couldn't delete chat or leaving group. Invalid number"];
         	}
+
+           
         	return [1,'success'];
         }
     }

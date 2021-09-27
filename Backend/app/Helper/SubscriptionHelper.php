@@ -12,10 +12,12 @@ use App\Models\UserExtraQuota;
 use App\Models\UserChannels;
 use App\Models\CentralChannel;
 use App\Models\Tenant;
+use App\Models\ModTemplate;
 
 class SubscriptionHelper {
 
-    public function newSubscription($cartObj,$type,$transaction_id,$paymentGateaway,$start_date,$invoiceObj=null,$transferObj=null,$arrType=null){
+    public function newSubscription($cartObj,$type,$transaction_id,$paymentGateaway,$start_date=null,$invoiceObj=null,$transferObj=null,$arrType=null,$myEndDate){
+        $tenant = null;
         if($transferObj){
             $tenant = Tenant::find($transferObj->tenant_id);
         }
@@ -121,7 +123,7 @@ class SubscriptionHelper {
             }
         }else{
             foreach($cartObj as $key => $one){
-                $end_date =  $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date));
+                $end_date =  $myEndDate != null ? $myEndDate : ($one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date)));
                 if($one[1] == 'membership'){
                     $disableUpdate = 0;
                     $hasMembership = 1;
@@ -138,37 +140,59 @@ class SubscriptionHelper {
                 }else if($one[1] == 'addon'){
                     $dataObj = Addons::getOne($one[0]);
                     $addon[] = $one[0];
-                    $addonData[] = [
-                        'tenant_id' => $tenant_id,
-                        'global_user_id' => $userObj->global_id,
-                        'user_id' => $userObj->id,
-                        'addon_id' => $one[0],
-                        'status' => 1,
-                        'duration_type' => $one[3],
-                        'start_date' => $start_date,
-                        'end_date' => $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date)), 
-                    ];
-                }else if($one[1] == 'extra_quota'){
-                    $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
-                    for ($i = 0; $i < $one[7] ; $i++) {
-                        $extraQuotaData[] = [
+                    if($myEndDate != null){
+                        $addonData[] = [
                             'tenant_id' => $tenant_id,
                             'global_user_id' => $userObj->global_id,
                             'user_id' => $userObj->id,
-                            'extra_quota_id' => $one[0],
-                            'duration_type' => $one[3],
+                            'addon_id' => $one[0],
                             'status' => 1,
+                            'duration_type' => $one[3],
+                            'end_date' => $myEndDate, 
+                        ];
+                    }else{
+                        $addonData[] = [
+                            'tenant_id' => $tenant_id,
+                            'global_user_id' => $userObj->global_id,
+                            'user_id' => $userObj->id,
+                            'addon_id' => $one[0],
+                            'status' => 1,
+                            'duration_type' => $one[3],
                             'start_date' => $start_date,
-                            'end_date' => $one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date)), 
+                            'end_date' => $end_date, 
                         ];
                     }
+                    
+                }else if($one[1] == 'extra_quota'){
+                    $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
+                    for ($i = 0; $i < $one[7] ; $i++) {
+                        if($myEndDate != null){
+                            $extraQuotaData[] = [
+                                'tenant_id' => $tenant_id,
+                                'global_user_id' => $userObj->global_id,
+                                'user_id' => $userObj->id,
+                                'extra_quota_id' => $one[0],
+                                'duration_type' => $one[3],
+                                'status' => 1,
+                                'end_date' => $myEndDate, 
+                            ];
+                        }else{
+                            $extraQuotaData[] = [
+                                'tenant_id' => $tenant_id,
+                                'global_user_id' => $userObj->global_id,
+                                'user_id' => $userObj->id,
+                                'extra_quota_id' => $one[0],
+                                'duration_type' => $one[3],
+                                'status' => 1,
+                                'start_date' => $start_date,
+                                'end_date' => $end_date, 
+                            ];
+                        }
+                    }
                 }
-                $price = $dataObj->monthly_price;
-                $price_after_vat = $dataObj->monthly_after_vat;
-                if($one[3] == 2){
-                    $price = $dataObj->annual_price;
-                    $price_after_vat = $dataObj->annual_after_vat;
-                }
+                $price = $one[6];
+                $price_after_vat = $one[6];
+               
                 $item = [
                     'type' => $one[1],
                     'data' => [
@@ -189,6 +213,7 @@ class SubscriptionHelper {
         if(!empty($addon)){
             $oldData = unserialize($userObj->addons) != null ? unserialize($userObj->addons) : [];
             $newData = array_merge($oldData,$addon);
+            $newData = array_unique($newData);
 
             if($tenant){
                 tenancy()->initialize($tenant);
@@ -211,7 +236,7 @@ class SubscriptionHelper {
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
             $invoiceObj->total = $total - $userCredits ;
-            $invoiceObj->due_date = $start_date;
+            $invoiceObj->due_date = $myEndDate != null ?  date('Y-m-d') : $start_date;
             $invoiceObj->paid_date = DATE_TIME;
             $invoiceObj->items = serialize($items);
             $invoiceObj->status = 1;
@@ -232,7 +257,7 @@ class SubscriptionHelper {
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
             $invoiceObj->total = $total - $userCredits ;
-            $invoiceObj->due_date = $start_date;
+            $invoiceObj->due_date = $myEndDate != null ?  date('Y-m-d') : $start_date;;
             $invoiceObj->paid_date = DATE_TIME;
             $invoiceObj->items = serialize($items);
             $invoiceObj->status = 1;
@@ -246,47 +271,31 @@ class SubscriptionHelper {
         $disableTransfer = 0;
 
         foreach($addonData as $oneAddonData){
-            $userAddonObj = UserAddon::where([
-                ['user_id',$oneAddonData['user_id']],
-                ['addon_id',$oneAddonData['addon_id']],
-                ['status',2],
-            ])->orWhere([
-                ['user_id',$oneAddonData['user_id']],
-                ['addon_id',$oneAddonData['addon_id']],
-                ['end_date','<',date('Y-m-d')],
-            ])->first();
+            $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->first();
             if($userAddonObj){
                 $userAddonObj->update($oneAddonData);
-                $disableUpdate = 1;
             }else{
                 UserAddon::insert($oneAddonData);
-                if(!$hasMembership){
-                    $disableUpdate = 1;
-                }
+            }
+            if(!$hasMembership){
+                $disableUpdate = 1;
             }
 
         }
 
         foreach($extraQuotaData as $oneItemData){
-            $userExtraQuotaObj = UserExtraQuota::where([
-                ['user_id',$oneItemData['user_id']],
-                ['extra_quota_id',$oneItemData['extra_quota_id']],
-                ['status',2],
-            ])->orWhere([
-                ['user_id',$oneItemData['user_id']],
-                ['extra_quota_id',$oneItemData['extra_quota_id']],
-                ['end_date','<',date('Y-m-d')],
-            ])->first();
+            $userExtraQuotaObj = UserExtraQuota::where('user_id',$oneItemData['user_id'])->where('extra_quota_id',$oneItemData['extra_quota_id'])->first();
             if($userExtraQuotaObj){
                 $userExtraQuotaObj->update($oneItemData);
-                $disableUpdate = 1;
             }else{
-                UserExtraQuota::insert($oneItemData);
-                if(!$hasMembership){
-                    $disableUpdate = 1;
-                }
+                UserExtraQuota::insert($oneItemData);                
+            }
+            if(!$hasMembership){
+                $disableUpdate = 1;
             }
         }
+
+
  
         if($tenant){
             tenancy()->initialize($tenant);
@@ -296,6 +305,7 @@ class SubscriptionHelper {
             tenancy()->end($tenant);
         }
         $channelObj = CentralChannel::first();
+        $instanceId = '';
         if(!$mainUserChannel){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
             $updateResult = $mainWhatsLoopObj->createChannel();
@@ -319,13 +329,14 @@ class SubscriptionHelper {
             $extraChannelData['global_user_id'] = $userObj->global_id;
             $generatedData = CentralChannel::generateNewKey($result['data']['channel']['id']); // [ generated Key , generated Token]
             $extraChannelData['instanceId'] = $generatedData[0];
+            $instanceId = $extraChannelData['instanceId'];
             $extraChannelData['instanceToken'] = $generatedData[1];
 
             CentralChannel::create($extraChannelData);
             if($tenant){
                 tenancy()->initialize($tenant);
             }
-            UserChannels::create($channel);
+            $mainUserChannel = UserChannels::create($channel);
             if($tenant){
                 tenancy()->end($tenant);
             }
@@ -335,20 +346,31 @@ class SubscriptionHelper {
                 $disableTransfer = 1;
             }
 
+            $centralChannelObj = CentralChannel::where('id',$mainUserChannel->id)->first();
+            $instanceId = $centralChannelObj->instanceId;
             if(!$disableUpdate){
                 if($tenant){
                     tenancy()->initialize($tenant);
                 }
-                $mainUserChannel->start_date = $start_date;
-                $mainUserChannel->end_date = $end_date;
+                if($myEndDate != null){
+                    $mainUserChannel->end_date = $myEndDate;
+                }else{
+                    $mainUserChannel->start_date = $start_date;
+                    $mainUserChannel->end_date = $end_date;
+                }
                 $mainUserChannel->save();
                 if($tenant){
                     tenancy()->end($tenant);
                 }
-                CentralChannel::where('id',$mainUserChannel->id)->update([
-                    'start_date' => $start_date,
-                    'end_date' => $end_date
-                ]);
+
+                if($myEndDate != null){
+                    $centralChannelObj->end_date = $myEndDate;
+                    $disableTransfer = 1;
+                }else{
+                    $centralChannelObj->start_date = $start_date;
+                    $centralChannelObj->end_date = $end_date;
+                }
+                $centralChannelObj->save();
             }
 
             $channel = [
@@ -368,6 +390,7 @@ class SubscriptionHelper {
                 'source' => $channelObj->id,
             ];
 
+            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
             $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
             $result = $updateResult->json();
         }
@@ -378,8 +401,8 @@ class SubscriptionHelper {
         $userObj->update([
             'channels' => serialize([$channel['id']]),
         ]);
+        Variable::whereIn('var_key',['userCredits','start_date','cartObj','endDate'])->delete();
         if($tenant){
-            Variable::whereIn('var_key',['userCredits','start_date'])->delete();
             tenancy()->end($tenant);
         }
 
@@ -387,35 +410,200 @@ class SubscriptionHelper {
             'channels' => serialize([$channel['id']]),
         ]);
 
-        if(!empty($addon) && in_array(4,$addon)){
-            if($tenant){
-                tenancy()->initialize($tenant);
-            }
-            $varObj = Variable::where('var_key','ZidURL')->first();
-            if($tenant){
-                tenancy()->end($tenant);
-            }
-            if(!$varObj){
-                if($tenant){
-                    tenancy()->initialize($tenant);
-                }
-                Variable::insert([
-                    [
-                        'var_key' => 'ZidURL',
-                        'var_value' => 'https://api.zid.dev/app/v2',
-                    ],
-                ]);
-                if($tenant){
-                    tenancy()->end($tenant);
-                }
-            }
-        }
-
         if(!empty($addon) && in_array(5,$addon)){
             if($tenant){
                 tenancy()->initialize($tenant);
             }
             $varObj = Variable::where('var_key','SallaURL')->first();
+            $modCount = ModTemplate::where('mod_id',1)->count();
+            if($modCount == 0){
+                ModTemplate::insert([
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'ترحيب بالعميل',
+                        'content_ar' => 'يا اهلا بـ {CUSTOMERNAME} 😍
+                                        
+                                        اهلا وسهلا بك نورتنا وشرفتنا في متجرنا 🤩
+                                        
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يا اهلا بـ {CUSTOMERNAME} 😍
+                                        
+                                        اهلا وسهلا بك نورتنا وشرفتنا في متجرنا 🤩
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'بإنتظار الدفع',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'بإنتظار المراجعة',
+                        'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        نشكرك على طلبك من متجر {STORENAME} 🤩 رقم طلبك هو ( {ORDERID} ) وحالته ( {ORDERSTATUS} ).
+
+                                        ولاتشيل هم راح نراجع طلبك ونعتمده في أسرع وقت.
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        نشكرك على طلبك من متجر {STORENAME} 🤩 رقم طلبك هو ( {ORDERID} ) وحالته ( {ORDERSTATUS} ).
+
+                                        ولاتشيل هم راح نراجع طلبك ونعتمده في أسرع وقت.
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'قيد التنفيذ',
+                        'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        طلبك رقم  ( {ORDERID} ) نعمل على تجهيزه في اقرب وقت ممكن 😎 ( {ORDERSTATUS} ).
+
+                                        اذا ما عليك امر تفيدنا بتقيمك للخدمه 😊 من خلال الرابط التالي :
+
+                                        https://survey.whatsloop.net/q/1.html
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        طلبك رقم  ( {ORDERID} ) نعمل على تجهيزه في اقرب وقت ممكن 😎 ( {ORDERSTATUS} ).
+
+                                        اذا ما عليك امر تفيدنا بتقيمك للخدمه 😊 من خلال الرابط التالي :
+
+                                        https://survey.whatsloop.net/q/1.html
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'تم التنفيذ',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'جاري التوصيل',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'تم التوصيل',
+                        'content_ar' => 'يااهلا بـ  {CUSTOMERNAME} 😍
+
+                                        سعيدين بانه طلبك رقم  ( {ORDERID} ) صارت حالته ( {ORDERSTATUS} ) 🤩 
+
+                                        نتمنى لك تجربة ممتعه ويسعدنا تقييمك لنا على الرابط التالي :
+                                        https://survey.whatsloop.net/q/1.html
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يااهلا بـ  {CUSTOMERNAME} 😍
+
+                                        سعيدين بانه طلبك رقم  ( {ORDERID} ) صارت حالته ( {ORDERSTATUS} ) 🤩 
+
+                                        نتمنى لك تجربة ممتعه ويسعدنا تقييمك لنا على الرابط التالي :
+                                        https://survey.whatsloop.net/q/1.html
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'تم الشحن',
+                        'content_ar' => 'يا اهلا بـ  {CUSTOMERNAME} 😍
+
+                                        طلبك رقم ( {ORDERID} ) طلع من عندنا الى شركة الشحن 🤩
+
+                                         وصارت حالته ( {ORDERSTATUS} ). سيصلك قربيا باذن الله
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يا اهلا بـ  {CUSTOMERNAME} 😍
+
+                                        طلبك رقم ( {ORDERID} ) طلع من عندنا الى شركة الشحن 🤩
+
+                                         وصارت حالته ( {ORDERSTATUS} ). سيصلك قربيا باذن الله
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'ملغي',
+                        'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😭 
+
+                                        يؤسفنا ابلاغكم بانه تم الغاء طلبكم رقم ( {ORDERID} ) وصارت حالته ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😭 
+
+                                        يؤسفنا ابلاغكم بانه تم الغاء طلبكم رقم ( {ORDERID} ) وصارت حالته ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 1,
+                        'status' => 1,
+                        'statusText' => 'مسترجع',
+                        'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        نفيدكم انه طلبكم رقم  ( {ORDERID} ) تم تغير حالته إلى ( {ORDERSTATUS} ).😥
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                        'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        نفيدكم انه طلبكم رقم  ( {ORDERID} ) تم تغير حالته إلى ( {ORDERSTATUS} ).😥
+
+                                        مع تحيات فريق عمل {STORENAME} ❤️',
+                    ],
+
+                ]);
+            }
+
             if($tenant){
                 tenancy()->end($tenant);
             }
@@ -427,6 +615,163 @@ class SubscriptionHelper {
                     [
                         'var_key' => 'SallaURL',
                         'var_value' => 'https://api.salla.dev/admin/v2',
+                    ],
+                ]);
+                if($tenant){
+                    tenancy()->end($tenant);
+                }
+            }
+        }
+
+        if(!empty($addon) && in_array(4,$addon)){
+            if($tenant){
+                tenancy()->initialize($tenant);
+            }
+            $varObj = Variable::where('var_key','ZidURL')->first();
+            $modCount = ModTemplate::where('mod_id',2)->count();
+            if($modCount == 0){
+                ModTemplate::insert([
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 2,
+                        'status' => 1,
+                        'statusText' => 'جديد',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم انشاء طلبكم برقم ( {ORDERID} ) وحالته ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم انشاء طلبكم برقم ( {ORDERID} ) وحالته ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 2,
+                        'status' => 1,
+                        'statusText' => 'جاري التجهيز',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 2,
+                        'status' => 1,
+                        'statusText' => 'جاهز',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 2,
+                        'status' => 1,
+                        'statusText' => 'جارى التوصيل',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 2,
+                        'status' => 1,
+                        'statusText' => 'تم التوصيل',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        كما يسعدنا تقييمكم من خلال الرابط التالي :
+
+                                        ضع رابط التقيم هنا
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ).
+
+                                        كما يسعدنا تقييمكم من خلال الرابط التالي :
+
+                                        ضع رابط التقيم هنا
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                    ],
+                    [
+                        'channel' => $instanceId,
+                        'mod_id' => 2,
+                        'status' => 1,
+                        'statusText' => 'تم الالغاء',
+                        'content_ar' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ). 😞
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                        'content_en' => 'عميلنا العزيز، {CUSTOMERNAME}
+
+                                        تم تغيير حالة طلبكم برقم ( {ORDERID} ) إلى ( {ORDERSTATUS} ). 😞
+
+                                        مع تحيات فريق عمل {STORENAME}
+
+                                        {ORDER_URL}',
+                    ],
+                ]);
+            }
+            if($tenant){
+                tenancy()->end($tenant);
+            }
+            if(!$varObj){
+                if($tenant){
+                    tenancy()->initialize($tenant);
+                }
+                Variable::insert([
+                    [
+                        'var_key' => 'ZidURL',
+                        'var_value' => 'https://api.zid.dev/app/v2',
                     ],
                 ]);
                 if($tenant){
