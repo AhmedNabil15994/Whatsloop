@@ -8,14 +8,6 @@ return [
     'DashboardControllers@changeLang' => 'general',
     'DashboardControllers@changeTheme' => 'general',
     'DashboardControllers@changeThemeToDefault' => 'general',
-    'ProfileControllers@index' => 'general',
-    'ProfileControllers@personalInfo' => 'general',
-    'ProfileControllers@updatePersonalInfo' => 'general',
-    'ProfileControllers@uploadImage' => 'general',
-    'ProfileControllers@deleteImage' => 'general',
-    'ProfileControllers@changePassword' => 'general',
-    'ProfileControllers@postChangePassword' => 'general',
-    'ProfileControllers@services' => 'general',
 
     'DashboardControllers@faqs' => 'general',
     'DashboardControllers@helpCenter' => 'general',
@@ -26,13 +18,9 @@ return [
     'SubscriptionControllers@postBundle' => 'general',
     'SubscriptionControllers@postUpdateSubscription' => 'general',
     'SubscriptionControllers@updateAddonStatus' => 'general',
-    'SubscriptionControllers@updateQuotaStatus' => 'general',
-
-
-
-
-    'WhatsappOrdersControllers@getOneOrder' => 'general',
-
+    'SubscriptionControllers@updateAddonStatus' => 'general',
+    'SubscriptionControllers@sync' => 'general',
+    'SubscriptionControllers@postSync' => 'general',
     
     'SubscriptionControllers@checkout' => 'general',
     'SubscriptionControllers@postCheckout' => 'general',
@@ -47,6 +35,17 @@ return [
     'SubscriptionControllers@bankTransfer' => 'general',
 
 
+    'WhatsappOrdersControllers@getOneOrder' => 'general',
+
+
+    'ProfileControllers@index' => 'profile',
+    'ProfileControllers@personalInfo' => 'profile',
+    'ProfileControllers@updatePersonalInfo' => 'profile',
+    'ProfileControllers@uploadImage' => 'profile',
+    'ProfileControllers@deleteImage' => 'profile',
+    'ProfileControllers@changePassword' => 'profile',
+    'ProfileControllers@postChangePassword' => 'profile',
+    'ProfileControllers@services' => 'profile',
 
     'ProfileControllers@paymentInfo' => 'paymentInfo',
     'ProfileControllers@postPaymentInfo' => 'paymentInfo',

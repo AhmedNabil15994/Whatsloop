@@ -725,4 +725,7 @@ return [
 	'abandonedCarts' => 'Abandoned Carts',
 	'deletedProduct' => 'Deleted Product',
 	'cartno' => 'Cart No',
+	'old_user' => 'Old Client',
+	'syncAccount' => 'Account Sync',
+	'sync_p' => 'Select Data To Be Synced',
 ];

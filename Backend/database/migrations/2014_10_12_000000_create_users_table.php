@@ -39,6 +39,8 @@ class CreateUsersTable extends Migration
             $table->text('channels')->nullable();
             $table->integer('membership_id')->nullable();
             $table->text('addons')->nullable();
+            $table->integer('is_old')->nullable();
+            $table->integer('is_synced')->nullable();
             $table->integer('status')->nullable();
             $table->integer('sort')->nullable();
             $table->integer('created_by')->nullable();

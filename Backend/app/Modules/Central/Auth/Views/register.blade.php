@@ -25,11 +25,18 @@
                         </div>
                         <div class="user-form">
                             <input type="hidden" name="country_code" value="{{ $data->code }}">
-                            <form action="{{ URL::to('/register') }}" method="post">
+                            <form class="formStyle" action="{{ URL::to('/register') }}" method="post">
                                 @csrf
                                 <div class="form--title">{{ trans('auth.newClient') }}</div>
                                 <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('main.name2') }}">
                                 <input type="text" name="company" value="{{ old('company') }}" placeholder="{{ trans('main.company_name') }}">
+                                <div class="checkDiv">
+                                    <span class="text">{{ trans('main.old_user') }} </span>
+                                    <label class="switch">
+                                      <input type="checkbox" name="old" {{ isset($data->data) || old('old') == 'on' ? 'checked' : '' }}>
+                                      <span class="sliderSwitch round"></span>
+                                    </label>
+                                </div>
                                 <input type="text" name="domain" value="{{ old('domain') }}" placeholder="{{ trans('main.domain') }}">
                                 <p class="text-white text-left d-block" dir="ltr">
                                     @if(old('domain'))

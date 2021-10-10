@@ -12,7 +12,7 @@ use App\Models\GroupMsg;
 use App\Models\ContactReport;
 use App\Models\ChatMessage;
 // implements ShouldQueue
-class GroupMessageJob
+class GroupMessageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 

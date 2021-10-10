@@ -9,6 +9,7 @@ class Bot extends Model{
 
     protected $table = 'bots';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','channel','message_type','message','reply_type','reply','file_name','https_url','url_title','url_desc','url_image','whatsapp_no','lat','lng','address','webhook_url','status','created_by','created_at'];    
     public $timestamps = false;
 
     static function getPhotoPath($id, $photo) {

@@ -9,6 +9,7 @@ class GroupNumber extends Model{
 
     protected $table = 'group_numbers';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','channel','name_ar','name_en','status','created_by','created_at'];    
     public $timestamps = false;
 
     static function getOne($id){

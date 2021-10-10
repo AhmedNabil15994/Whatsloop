@@ -9,6 +9,7 @@ class GroupMsg extends Model{
 
     protected $table = 'group_messages';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','channel','group_id','messages_count','message_type','later','publish_at','message','file_name','https_url','url_title','url_desc','url_image','whatsapp_no','lat','lng','address','status','created_by','created_at'];    
     public $timestamps = false;
 
     static function getPhotoPath($id, $photo) {
@@ -59,9 +60,7 @@ class GroupMsg extends Model{
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel']);
         }else if(Session::has('channelCode') && empty($input['group_id'])){
-            $source->whereHas('Group',function($groupQuery){
-                $groupQuery->where('channel',Session::get('channelCode'));
-            });
+            $source->where('channel',Session::get('channelCode'));
         }
 
         if($id != null){

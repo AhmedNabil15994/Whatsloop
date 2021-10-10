@@ -9,6 +9,7 @@ class ContactLabel extends Model{
 
     protected $table = 'contact_labels';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','contact','category_id','created_at'];    
     public $timestamps = false;
    
     public function Group(){

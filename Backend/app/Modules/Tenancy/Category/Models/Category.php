@@ -9,6 +9,7 @@ class Category extends Model{
 
     protected $table = 'categories';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','channel','name_ar','name_en','color_id','labelId','status','created_by','created_at'];    
     public $timestamps = false;
 
     static function getOne($id){
@@ -36,7 +37,7 @@ class Category extends Model{
                 });
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel']);
-        }else if(Session::has('channelCode')){
+        }elseif(Session::has('channelCode')){
             $source->where('channel',Session::get('channelCode'));
         }
 
@@ -102,33 +103,51 @@ class Category extends Model{
         return $fullName;
     }
 
+    static function getColorIndex($color){
+        $color_id = 1;
+        if($color == 'success'){
+            $color_id == 1;
+        }elseif($color == 'info'){
+            $color_id == 2;
+        }elseif($color == 'warning'){
+            $color_id == 3;
+        }elseif($color == 'danger'){
+            $color_id == 4;
+        }elseif($color == 'primary'){
+            $color_id == 5;
+        }elseif($color == 'dark'){
+            $color_id == 6;
+        }
+        return $color_id;
+    }
+
     static function getColor($color_id){
         if($color_id == 1){
             $color = trans('main.green');
             $labelClass = 'success';
             $hexColor = '#66ddaa';
             $colorName = 'MediumAquamarine';
-        }else if($color_id == 2){
+        }elseif($color_id == 2){
             $color = trans('main.blue');
             $labelClass = 'info';
             $hexColor = '#00bfff';
             $colorName = 'MayaBlue';
-        }else if($color_id == 3){
+        }elseif($color_id == 3){
             $color = trans('main.yellow');
             $labelClass = 'warning';
             $hexColor = '#ffcc33';
             $colorName = 'Sunglow';
-        }else if($color_id == 4){
+        }elseif($color_id == 4){
             $color = trans('main.red');
             $labelClass = 'danger';
             $hexColor = '#FF9999';
             $colorName = 'MonaLisa';
-        }else if($color_id == 5){
+        }elseif($color_id == 5){
             $color = trans('main.purple');
             $labelClass = 'primary';
             $hexColor = '#E6E6FA';
             $colorName = 'Lavender';
-        }else if($color_id == 6){
+        }elseif($color_id == 6){
             $color = trans('main.black');
             $labelClass = 'dark';
             $hexColor = '#323a46';

@@ -38,7 +38,7 @@ return [
             'driver' => 'database',
             'table' => 'jobs',
             'queue' => 'default',
-            'retry_after' => 90,
+            'retry_after' => 3900,
             'connection' => 'main',
         ],
 
@@ -46,7 +46,7 @@ return [
             'driver' => 'beanstalkd',
             'host' => 'localhost',
             'queue' => 'default',
-            'retry_after' => 90,
+            'retry_after' => 3900,
             'block_for' => 0,
         ],
 
@@ -64,7 +64,7 @@ return [
             'driver' => 'redis',
             'connection' => 'default',
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => 90,
+            'retry_after' => 3900,
             'block_for' => null,
         ],
 

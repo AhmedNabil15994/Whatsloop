@@ -719,4 +719,7 @@ return [
 	'abandonedCarts' => 'السلات المتروكة',
 	'deletedProduct' => 'منتج محذوف',
 	'cartno' => 'سلة رقم ',
+	'old_user' => 'عميل قديم',
+	'syncAccount' => 'مزامنة الحساب',
+	'sync_p' => 'قم باختيار الداتا المراد مزامنتها',
 ];

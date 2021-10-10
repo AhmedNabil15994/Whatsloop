@@ -210,6 +210,8 @@ class User extends Authenticatable implements Syncable
         $data->notifications = $source->notifications;
         $data->offers = $source->offers;
         $data->domain = $source->domain;
+        $data->is_old = $source->is_old;
+        $data->is_synced = $source->is_synced;
         $data->sort = $source->sort;
         $data->pin_code = $source->pin_code;
         $data->emergency_number = $source->emergency_number;
@@ -298,6 +300,7 @@ class User extends Authenticatable implements Syncable
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
             session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
+            session(['phone' => $userObj->phone ]);
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
@@ -305,8 +308,11 @@ class User extends Authenticatable implements Syncable
             session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
             session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
             session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
+            session(['phone' => $mainUser->phone ]);
         }
         session(['tenant_id' => $tenantObj->tenant_id]);
+        session(['is_old' => $userObj->is_old]);
+        session(['is_synced' => $userObj->is_synced]);
 
         // Get Membership and Extra Quotas Features
         if(!empty($userObj->membership_id)){

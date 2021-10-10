@@ -10,6 +10,7 @@ use App\Models\ModTemplate;
 use App\Models\User;
 use App\Models\Variable;
 use App\Models\UserAddon;
+use App\Models\ModNotificationReport;
 use DB;
 use DataTables;
 
@@ -484,8 +485,12 @@ class SallaControllers extends Controller {
             'icon' => 'mdi mdi-file-account-outline',
         ];
 
+        $optionsArr = [];
         if (Schema::hasTable($service.'_order_status')) {
             $options = DB::table($service.'_order_status')->get();
+            foreach($options as $option){
+                $optionsArr[] = ['id'=>$option->name,'name'=>$option->name];
+            }
         }else{
             $options = [];
         }
@@ -497,45 +502,7 @@ class SallaControllers extends Controller {
 
         $extraTableData = [];
         $extraSearchData = [];
-        foreach ($options as $key => $option) {
-            $extraTableData[$option->name] = [
-                'label' => $option->name,
-                'type' => '',
-                'className' => '',
-                'data-col' => '',
-                'anchor-class' => '',
-            ];
-            $extraTableData['date_'.$key] = [
-                'label' => trans('main.date'),
-                'type' => '',
-                'className' => '',
-                'data-col' => '',
-                'anchor-class' => '',
-            ];
 
-            $extraSearchData[$option->name] = [
-                'type' => 'select',
-                'class' => 'form-control',
-                'id' => '',
-                'index' => '',
-                'options' => $sendOptions,
-                'label' => $option->name,
-            ];
-            $extraSearchData['from_'.$key] = [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'id' => '',
-                'index' => '',
-                'label' => $option->name.' '.trans('main.dateFrom'),
-            ];
-            $extraSearchData['to_'.$key] = [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'id' => '',
-                'index' => '',
-                'label' => $option->name.' '.trans('main.dateTo'),
-            ];
-        }
 
         $oldSearchData = [
             'id' => [
@@ -549,6 +516,28 @@ class SallaControllers extends Controller {
                 'class' => 'form-control m-input',
                 'index' => '1',
                 'label' => trans('main.order'),
+            ],
+            'statusText' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'id' => '',
+                'index' => '',
+                'options' => $optionsArr,
+                'label' => trans('main.status'),
+            ],
+            'from' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'id' => '',
+                'index' => '',
+                'label' => trans('main.dateFrom'),
+            ],
+            'to' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'id' => '',
+                'index' => '',
+                'label' => trans('main.dateTo'),
             ],
         ];
 
@@ -566,12 +555,26 @@ class SallaControllers extends Controller {
                 'className' => '',
                 'data-col' => 'order_id',
                 'anchor-class' => '',
+            ],  
+            'statusText' => [
+                'label' => trans('main.status'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'statusText',
+                'anchor-class' => '',
+            ],   
+            'created_at' => [
+                'label' => trans('main.date'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'created_at',
+                'anchor-class' => '',
             ],   
         ];
 
         if($request->ajax()){
-            // $data = User::dataList();
-            return Datatables::of([])->make(true);
+            $data = ModNotificationReport::dataList(1);
+            return Datatables::of($data['data'])->make(true);
         }
 
         $data['designElems']['searchData'] = array_merge($oldSearchData,$extraSearchData); 

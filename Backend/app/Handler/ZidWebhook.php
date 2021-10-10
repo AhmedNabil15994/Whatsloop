@@ -9,6 +9,7 @@ use App\Models\ModTemplate;
 use App\Models\ChatMessage;
 use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
+use App\Models\ModNotificationReport;
 
 class ZidWebhook extends ProcessWebhookJob{
 	public function handle(){
@@ -96,6 +97,14 @@ class ZidWebhook extends ProcessWebhookJob{
         				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
         				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
 			            ChatMessage::newMessage($lastMessage);
+
+			            ModNotificationReport::create([
+        					'mod_id' => 2,
+        					'client' => $sendData['chatId'],
+        					'order_id' => $mainData['id'],
+        					'statusText' => $status,
+        					'created_at' => date('Y-m-d H:i:s'),
+        				]);
 			        }
 	    		}
 

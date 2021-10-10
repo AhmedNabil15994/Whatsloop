@@ -9,6 +9,7 @@ class ChatMessage extends Model{
 
     protected $table = 'messages';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','body','fromMe','isForwarded','author','time','chatId','messageNumber','type','message_type','status','senderName','chatName','caption','sending_status'];    
     public $timestamps = false;
     public $incrementing = false;
 

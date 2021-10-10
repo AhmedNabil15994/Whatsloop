@@ -12,6 +12,8 @@ class Contact extends Model{
     public $timestamps = false;
     protected $fillable = [
         'name',
+        'id',
+        'has_whatsapp',
         'email',
         'city',
         'country',

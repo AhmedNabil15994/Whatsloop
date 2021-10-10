@@ -29,14 +29,109 @@ use App\Models\ModTemplate;
 use App\Models\Bundle;
 use App\Models\BankTransfer;
 use App\Models\BankAccount;
-
+use App\Jobs\SyncOldClient;
+use Http;
 
 class SubscriptionControllers extends Controller {
 
     use \TraitsFunc;
+    // New Data
+    // users
+    // groups
+    // groupNumbers
+    // contacts
+    // chat
+    // bot
+    // group_messages
+    // quick_reply
+    // tags
+    // salla
+    // zid
+
+    public function sync(){  
+        $phone = Session::get('phone');
+
+        $baseUrl = 'https://whatsloop.net/api/v1/';
+
+        // Get User Details
+        $mainURL = $baseUrl.'user-details';
+        $token = '';
+        $doSync = 0;
+
+        $data = ['phone' => '966570116626'];
+        $result =  Http::post($mainURL,$data);
+        if($result->ok() && $result->json()){
+            $data = $result->json();
+            if($data['status'] == true){
+                // Begin Sync
+                $doSync = 1;
+                $token = $data['UserData']['JWTToken'];
+
+                // Get User Instace
+                $moduleData = [];
+                $mainURL = $baseUrl.'migration/user-instance';
+                $result =  Http::withToken($token)->get($mainURL);
+                if($result->ok() && $result->json()){
+                    $data = $result->json();
+                    if($data['status'] == true){
+                        $modules = explode(',',$data['data']['Package']['Mod_Sections']);
+                    }
+                }
+                // dd($modules);
+                foreach($modules as $key){
+                    if($key == 'NumbersGroups'){
+                        $moduleData[] = 'groupNumbers';
+                    }elseif($key == 'BotMsgs'){
+                        $moduleData[] = 'bot';
+                    }elseif($key == 'Contacts'){
+                        $moduleData[] = 'contacts';
+                    }elseif($key == 'LiveChat'){
+                        $moduleData[] = 'chat';
+                    }elseif($key == 'Labels'){
+                        $moduleData[] = 'tags';
+                    }elseif($key == 'Moderators'){
+                        $moduleData[] = 'users';
+                    }elseif($key == 'ModeratorsGroup'){
+                        $moduleData[] = 'groups';
+                    }elseif($key == 'GroupMsgs'){
+                        $moduleData[] = 'group_messages';
+                    }elseif($key == 'QuickReplies'){
+                        $moduleData[] = 'quick_reply';
+                    }elseif($key == '#SALLA'){
+                        $moduleData[] = 'salla';
+                    }elseif($key == '#ZID'){
+                        $moduleData[] = 'zid';
+                    }
+                }
+            }
+        }
+        
+        if($doSync){
+            return view('Tenancy.Dashboard.Views.sync')->with('data', $moduleData);
+        }else{
+            return Redirect('/packages');
+        }
+    }
+    
+    public function postSync(){
+        $input = \Request::all();
+        $userObj = User::getData(User::NotDeleted()->first());
+        $requiredSync  = json_decode($input['data']);
+        if($requiredSync){
+            dispatch(new SyncOldClient($userObj,$requiredSync));
+        }
+
+        Session::flash('success',trans('main.inPrgo'));
+        return redirect()->to('/dashboard');
+    }
 
     public function packages(){   
         $input = \Request::all();
+
+        if(\Session::get('is_old') == 1 && \Session::get('is_synced') == 0){
+            return Redirect('/sync');
+        }
+
         $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->orderBy('id','DESC')->first();
         if($bankTransferObj){
             $data['msg'] = trans('main.transferSuccess');

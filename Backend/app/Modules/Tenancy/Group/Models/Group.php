@@ -8,6 +8,7 @@ class Group extends Model{
 
     protected $table = 'groups';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','name_ar','name_en','rules','status','created_by','created_at'];    
     public $timestamps = false;
 
     static function getOne($id){

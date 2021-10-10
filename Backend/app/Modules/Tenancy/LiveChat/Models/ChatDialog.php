@@ -6,6 +6,7 @@ class ChatDialog extends Model{
 
     protected $table = 'dialogs';
     protected $primaryKey = 'id';
+    protected $fillable = ['id','name','image','metadata','is_pinned','is_read','modsArr'];    
     public $timestamps = false;
     public $incrementing = false;
 

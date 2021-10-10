@@ -193,6 +193,8 @@ class CentralUser extends Model implements SyncMaster
         $data->two_auth = $source->two_auth;
         $data->membership_id = $source->membership_id;
         $data->addons = $source->addons;
+        $data->is_old = $source->is_old;
+        $data->is_synced = $source->is_synced;
         $data->domain = self::getDomain($source); //$tenants->first()->domains()->first()->domain : '';
         $data->sort = $source->sort;
         // $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';

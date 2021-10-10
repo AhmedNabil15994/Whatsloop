@@ -8,6 +8,7 @@ class Reply extends Model{
     use \TraitsFunc;
 
     protected $table = 'quick_replies';
+    protected $fillable = ['id','channel','name_ar','name_en','description_ar','description_en','status','created_by','created_at'];    
     protected $primaryKey = 'id';
     public $timestamps = false;
 

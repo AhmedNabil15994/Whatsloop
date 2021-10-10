@@ -417,7 +417,7 @@ class CentralAuthControllers extends Controller {
             return redirect()->back()->withInput();
         }
             
-        $domainObj = Domain::getOneByDomain('domain',$input['domain']);
+        $domainObj = Domain::getOneByDomain($input['domain']);
         if($domainObj){
             Session::flash('error', trans('main.domainValidate2'));
             return redirect()->back()->withInput();
@@ -461,6 +461,13 @@ class CentralAuthControllers extends Controller {
             'status' => 1,
             'two_auth' => 0,
         ]);
+
+        if(isset($input['old']) && $input['old'] == 'on'){
+            $centralUser->update([
+                'is_old' => 1,
+                'is_synced' => 0,
+            ]);
+        }
         
         \DB::connection('main')->table('tenant_users')->insert([
             'tenant_id' => $tenant->id,
@@ -479,6 +486,8 @@ class CentralAuthControllers extends Controller {
                 'group_id' => 1,
                 'status' => 1,
                 'domain' => $input['domain'],
+                'is_old' => $centralUser->is_old,
+                'is_synced' => $centralUser->is_synced,
                 'two_auth' => 0,
                 'sort' => 1,
                 'password' => Hash::make($input['password']),

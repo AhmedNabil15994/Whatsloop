@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\ChatMessage;
 
-class SyncMessagesJob
+class SyncMessagesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 

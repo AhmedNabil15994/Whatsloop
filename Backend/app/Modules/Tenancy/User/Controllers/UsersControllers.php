@@ -315,14 +315,17 @@ class UsersControllers extends Controller {
                 }
                 $dataObj->image = $images;
                 $dataObj->save();  
-                CentralUser::where('id',$dataObj->id)->update([
-                    'name' => $dataObj->name,
-                    'email' => $dataObj->email,
-                    'extra_rules' => $dataObj->extra_rules,
-                    'updated_at' => $dataObj->updated_at,
-                    'updated_by' => $dataObj->updated_by,
-                    'image' => $dataObj->image,
-                ]);
+                if($dataObj->group_id == 1){
+                    CentralUser::where('id',$dataObj->id)->update([
+                        'name' => $dataObj->name,
+                        'email' => $dataObj->email,
+                        'extra_rules' => $dataObj->extra_rules,
+                        'updated_at' => $dataObj->updated_at,
+                        'updated_by' => $dataObj->updated_by,
+                        'image' => $dataObj->image,
+                    ]);
+                }
+                
             }
         }
 
@@ -415,15 +418,6 @@ class UsersControllers extends Controller {
                 }
                 $dataObj->image = $images;
                 $dataObj->save();  
-                CentralUser::where('id',$dataObj->id)->update([
-                    'name' => $dataObj->name,
-                    'email' => $dataObj->email,
-                    'two_auth' => 0,
-                    'extra_rules' => $dataObj->extra_rules,
-                    'updated_at' => $dataObj->updated_at,
-                    'updated_by' => $dataObj->updated_by,
-                    'image' => $dataObj->image,
-                ]);
             }
         }
 

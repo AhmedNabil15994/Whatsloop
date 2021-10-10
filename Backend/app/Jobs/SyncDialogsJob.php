@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\ChatDialog;
 use App\Models\Contact;
 
-class SyncDialogsJob
+class SyncDialogsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 

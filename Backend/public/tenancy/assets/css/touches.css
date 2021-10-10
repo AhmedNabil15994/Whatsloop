@@ -2110,3 +2110,15 @@ img.me-avatar{
   height: 660px;
   overflow-y: scroll;
 }
+.sync-item .card{
+  transition: all ease-in-out .25s;
+  -webkit-transition: all ease-in-out .25s;
+  -moz-transition: all ease-in-out .25s;
+  -o-transition: all ease-in-out .25s;
+}
+.sync-item .card.selected{
+  border: 2px solid #00d48f !important;
+}
+.sync-item .card:hover{
+  transform: scale(1.1);
+}

@@ -64,8 +64,9 @@ class ExternalServices {
                 if($pagesCount > 1){
                     for ($i = 1; $i <= $pagesCount ; $i++) {
                         $params =  ['page' => $i];
-                        $newResult = $this->reformatURL($token,$url,$myHeaders,$params);
-                        $modelData[] = $newResult['data'];
+                        $newResult = $this->callURL($this->data['storeToken'],$this->data['dataURL'],$this->data['myHeaders'],$params);
+                        $modelData = array_merge($modelData,$newResult->data);
+                        // $modelData[] = $newResult->data;
                     }
                 }elseif ($pagesCount == 1) {
                     $modelData = $result->data;
@@ -150,11 +151,16 @@ class ExternalServices {
             if(count($dataObj) < $tableDataCount){
                 DB::table($tableName)->truncate();
             }
-            foreach ($dataObj as $value) {
-                $checkObj = DB::table($tableName)->where('id',$value['id'])->first();
-                if(!$checkObj){
-                    DB::table($tableName)->insert($value);
-                }   
+            if(count($dataObj) > 0){
+                foreach ($dataObj as $value) {
+                    if(isset($value['id'])){
+                        $checkObj = DB::table($tableName)->where('id',$value['id'])->first();
+                        if(!$checkObj){
+                            DB::table($tableName)->insert($value);
+                        }   
+                    }
+                    
+                }
             }
         }
     }

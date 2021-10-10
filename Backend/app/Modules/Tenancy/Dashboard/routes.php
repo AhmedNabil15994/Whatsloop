@@ -25,6 +25,8 @@ Subscription
 Route::group(['prefix' => '/'] , function () {
 
     Route::get('/packages', [App\Http\Controllers\SubscriptionControllers::class,'packages']);
+    Route::get('/sync', [App\Http\Controllers\SubscriptionControllers::class,'sync']);
+    Route::post('/sync', [App\Http\Controllers\SubscriptionControllers::class,'postSync']);
     
     Route::get('/updateSubscription', [App\Http\Controllers\SubscriptionControllers::class,'updateSubscription']);
     Route::post('/updateSubscription', [App\Http\Controllers\SubscriptionControllers::class,'postUpdateSubscription'])->name('postCheckout');

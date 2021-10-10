@@ -27,8 +27,7 @@ class RoutesGate {
             return $next($request);
         }
 
-
-        if(!\Session::has('membership')){
+        if(!\Session::has('membership') && \Request::segment(1) != 'sync'){
             return Redirect('/packages');
         }
 

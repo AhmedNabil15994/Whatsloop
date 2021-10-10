@@ -10,6 +10,7 @@ use App\Models\ModTemplate;
 use App\Models\User;
 use App\Models\Variable;
 use App\Models\UserAddon;
+use App\Models\ModNotificationReport;
 use DB;
 use DataTables;
 
@@ -549,47 +550,7 @@ class ZidControllers extends Controller {
 
         $extraTableData = [];
         $extraSearchData = [];
-        foreach ($options as $key => $option) {
-            $option = (object) $option;
-            $extraTableData[$option->name] = [
-                'label' => $option->name,
-                'type' => '',
-                'className' => '',
-                'data-col' => '',
-                'anchor-class' => '',
-            ];
-            $extraTableData['date_'.$key] = [
-                'label' => trans('main.date'),
-                'type' => '',
-                'className' => '',
-                'data-col' => '',
-                'anchor-class' => '',
-            ];
-
-            $extraSearchData[$option->name] = [
-                'type' => 'select',
-                'class' => 'form-control',
-                'id' => '',
-                'index' => '',
-                'options' => $sendOptions,
-                'label' => $option->name,
-            ];
-            $extraSearchData['from_'.$key] = [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'id' => '',
-                'index' => '',
-                'label' => $option->name.' '.trans('main.dateFrom'),
-            ];
-            $extraSearchData['to_'.$key] = [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'id' => '',
-                'index' => '',
-                'label' => $option->name.' '.trans('main.dateTo'),
-            ];
-        }
-
+        
         $oldSearchData = [
             'id' => [
                 'type' => 'text',
@@ -602,6 +563,28 @@ class ZidControllers extends Controller {
                 'class' => 'form-control m-input',
                 'index' => '1',
                 'label' => trans('main.order'),
+            ],
+            'statusText' => [
+                'type' => 'select',
+                'class' => 'form-control',
+                'id' => '',
+                'index' => '',
+                'options' => $options,
+                'label' => trans('main.status'),
+            ],
+            'from' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'id' => '',
+                'index' => '',
+                'label' => trans('main.dateFrom'),
+            ],
+            'to' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'id' => '',
+                'index' => '',
+                'label' => trans('main.dateTo'),
             ],
         ];
 
@@ -619,12 +602,27 @@ class ZidControllers extends Controller {
                 'className' => '',
                 'data-col' => 'order_id',
                 'anchor-class' => '',
+            ],  
+            'statusText' => [
+                'label' => trans('main.status'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'statusText',
+                'anchor-class' => '',
+            ],   
+            'created_at' => [
+                'label' => trans('main.date'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'created_at',
+                'anchor-class' => '',
             ],   
         ];
 
+
         if($request->ajax()){
-            // $data = User::dataList();
-            return Datatables::of([])->make(true);
+            $data = ModNotificationReport::dataList(2);
+            return Datatables::of($data['data'])->make(true);
         }
 
         $data['designElems']['searchData'] = array_merge($oldSearchData,$extraSearchData); 

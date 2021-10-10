@@ -13,7 +13,7 @@ use App\Models\ChatDialog;
 use App\Models\ChatEmpLog;
 use App\Events\SentMessage;
 
-class NewDialogJob
+class NewDialogJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
