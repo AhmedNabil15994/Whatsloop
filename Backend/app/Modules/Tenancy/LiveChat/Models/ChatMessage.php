@@ -212,9 +212,11 @@ class ChatMessage extends Model{
         if($url == ""){
             return '';
         }
-        $image = get_headers($url, 1);
-        $bytes = $image["Content-Length"];
-        $mb = $bytes/(1024 * 1024);
-        return number_format($mb,2) . " MB ";
+        if(strpos('http',$url) !== false){
+            $image = get_headers($url, 1);
+            $bytes = $image["Content-Length"];
+            $mb = $bytes/(1024 * 1024);
+            return number_format($mb,2) . " MB ";
+        }
     }
 }

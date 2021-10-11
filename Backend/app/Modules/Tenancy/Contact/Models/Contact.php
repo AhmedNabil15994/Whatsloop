@@ -247,7 +247,7 @@ class Contact extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->group_id = $source->group_id;
-        $data->group = $source->group_id != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
+        $data->group = $source->Group != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
         $data->phone = $source->phone;
         $data->phone2 = str_replace('+', '', $source->phone);
         $data->name = $source->name;

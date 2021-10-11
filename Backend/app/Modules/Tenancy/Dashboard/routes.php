@@ -25,6 +25,7 @@ Subscription
 Route::group(['prefix' => '/'] , function () {
 
     Route::get('/packages', [App\Http\Controllers\SubscriptionControllers::class,'packages']);
+
     Route::get('/sync', [App\Http\Controllers\SubscriptionControllers::class,'sync']);
     Route::post('/sync', [App\Http\Controllers\SubscriptionControllers::class,'postSync']);
     
@@ -38,6 +39,7 @@ Route::group(['prefix' => '/'] , function () {
 
     Route::get('/postBundle/{id}', [App\Http\Controllers\SubscriptionControllers::class,'postBundle']);
     
+    Route::post('/completeJob', [App\Http\Controllers\SubscriptionControllers::class,'completeJob']);
     Route::post('/completeOrder', [App\Http\Controllers\SubscriptionControllers::class,'completeOrder']);
     
     Route::get('/QR', [App\Http\Controllers\SubscriptionControllers::class,'qrIndex']);

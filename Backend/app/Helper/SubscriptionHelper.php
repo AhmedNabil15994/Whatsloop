@@ -16,7 +16,7 @@ use App\Models\ModTemplate;
 
 class SubscriptionHelper {
 
-    public function newSubscription($cartObj,$type,$transaction_id,$paymentGateaway,$start_date=null,$invoiceObj=null,$transferObj=null,$arrType=null,$myEndDate){
+    public function newSubscription($cartObj,$type,$transaction_id,$paymentGateaway,$start_date=null,$invoiceObj=null,$transferObj=null,$arrType=null,$myEndDate=null){
         $tenant = null;
         if($transferObj){
             $tenant = Tenant::find($transferObj->tenant_id);

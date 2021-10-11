@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use App\Jobs\TransferDays;
 
 use DataTables;
 use Storage;
@@ -352,20 +353,21 @@ class ClientControllers extends Controller {
         $channelObj = UserChannels::first();
         tenancy()->end($tenant);
 
-        $mainWhatsLoopObj = new \MainWhatsLoop($channel->id,$channel->token);
-        $transferDaysData = [
-            'receiver' => $channelObj->id,
-            'days' => $input['days'],
-            'source' => $channel->id,
-        ];
+        // $mainWhatsLoopObj = new \MainWhatsLoop($channel->id,$channel->token);
+        // $transferDaysData = [
+        //     'receiver' => $channelObj->id,
+        //     'days' => $input['days'],
+        //     'source' => $channel->id,
+        // ];
 
-        $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-        $result = $updateResult->json();
+        // $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+        // $result = $updateResult->json();
 
-        if($result['status']['status'] != 1){
-            \Session::flash('error', $result['status']['message']);
-            return back()->withInput();
-        }
+        // if($result['status']['status'] != 1){
+        //     \Session::flash('error', $result['status']['message']);
+        //     return back()->withInput();
+        // }
+        dispatch(new TransferDays($channel->id,$channel->token,$channelObj->id,$input['days']));
 
         // $channelObj->update(['end_date'=> date('Y-m-d' ,strtotime("+".$input['days']. " days" ,strtotime($channelObj->end_date) ))]);
         // CentralChannel::where('id',$channelObj->id)->update(['end_date'=> $channelObj->end_date]);
@@ -618,14 +620,15 @@ class ClientControllers extends Controller {
         });
 
         if($input['duration_type'] != $oldDuration){
-            $transferDaysData = [
-                'receiver' => $channel['id'],
-                'days' => 3,
-                'source' => CentralChannel::first()->id,
-            ];
-
-            $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-            $result = $updateResult->json();
+            $firstChannelObj = CentralChannel::first();
+            dispatch(new TransferDays($firstChannelObj->id,$firstChannelObj->token,$channel['id'],1));
+            // $transferDaysData = [
+            //     'receiver' => $channel['id'],
+            //     'days' => 3,
+            //     'source' => CentralChannel::first()->id,
+            // ];
+            // $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+            // $result = $updateResult->json();
         }
 
         Session::forget('photos');
@@ -831,14 +834,15 @@ class ClientControllers extends Controller {
             return $userObj;
         });
 
-        $transferDaysData = [
-            'receiver' => $channel['id'],
-            'days' => 3,
-            'source' => $channelObj->id,
-        ];
+        dispatch(new TransferDays($channelObj->id,$channelObj->token,$channel['id'],1));
+        // $transferDaysData = [
+        //     'receiver' => $channel['id'],
+        //     'days' => 3,
+        //     'source' => $channelObj->id,
+        // ];
 
-        $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-        $result = $updateResult->json();
+        // $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+        // $result = $updateResult->json();
 
         Session::forget('photos');
         CentralWebActions::newType(1,$this->getData()['mainData']['modelName']);

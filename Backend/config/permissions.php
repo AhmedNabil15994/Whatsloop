@@ -33,6 +33,7 @@ return [
     'SubscriptionControllers@editTemplate' => 'general',
     'SubscriptionControllers@getCities' => 'general',
     'SubscriptionControllers@bankTransfer' => 'general',
+    'SubscriptionControllers@completeJob' => 'general',
 
 
     'WhatsappOrdersControllers@getOneOrder' => 'general',

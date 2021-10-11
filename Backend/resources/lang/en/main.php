@@ -728,4 +728,8 @@ return [
 	'old_user' => 'Old Client',
 	'syncAccount' => 'Account Sync',
 	'sync_p' => 'Select Data To Be Synced',
+
+
+	'preparingAccount' => "We're Setting Up Your Account Now Please Be Patient.",
+	'dontClose' => "Please Don't Close or Refresh This Page Before Count Down is Done.",
 ];

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
 use DataTables;
-
+use App\Jobs\NewClient;
 
 class TenantInvoiceControllers extends Controller {
 
@@ -407,12 +407,13 @@ class TenantInvoiceControllers extends Controller {
 
         $cartObj = unserialize($invoiceObj->items);
 
-        $paymentObj = new \SubscriptionHelper(); 
-        $resultData = $paymentObj->newSubscription($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old');   
-        if($resultData[0] == 0){
-            Session::flash('error',$resultData[1]);
-            return back()->withInput();
-        }     
+        dispatch(new NewClient($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'));
+        // $paymentObj = new \SubscriptionHelper(); 
+        // $resultData = $paymentObj->newSubscription($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old');   
+        // if($resultData[0] == 0){
+        //     Session::flash('error',$resultData[1]);
+        //     return back()->withInput();
+        // }     
 
         return redirect()->to('/invoices/view/'.$id);
     }

@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\CentralWebActions;
+use App\Jobs\NewClient;
 use DataTables;
 
 
@@ -150,16 +151,18 @@ class TransferRequestControllers extends Controller {
             $cartObj = json_decode(json_decode($cartObj));
             tenancy()->end($tenant);
 
-            $paymentObj = new \SubscriptionHelper(); 
+            // $paymentObj = new \SubscriptionHelper(); 
             if($endDate != null){
-                $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate);   
+                dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate));
+                // $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate);   
             }else{
-                $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj);   
+                dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj));
+                // $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj);   
             }
-            if($resultData[0] == 0){
-                Session::flash('error',$resultData[1]);
-                return back()->withInput();
-            }  
+            // if($resultData[0] == 0){
+            //     Session::flash('error',$resultData[1]);
+            //     return back()->withInput();
+            // }  
         }
 
         // if($status == 3){

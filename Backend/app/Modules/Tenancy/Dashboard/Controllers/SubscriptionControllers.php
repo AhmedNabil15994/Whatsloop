@@ -30,6 +30,7 @@ use App\Models\Bundle;
 use App\Models\BankTransfer;
 use App\Models\BankAccount;
 use App\Jobs\SyncOldClient;
+use App\Jobs\NewClient;
 use Http;
 
 class SubscriptionControllers extends Controller {
@@ -507,15 +508,27 @@ class SubscriptionControllers extends Controller {
         $cartObj = Variable::getVar('cartObj');
         $cartObj = json_decode(json_decode($cartObj));
 
-        $paymentObj = new \SubscriptionHelper(); 
-        $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d'));   
-        if($resultData[0] == 0){
-            Session::flash('error',$resultData[1]);
-            return back()->withInput();
-        }         
+        dispatch(new NewClient($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d')));
+        // $paymentObj = new \SubscriptionHelper(); 
+        // $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d'));   
+        // if($resultData[0] == 0){
+            // Session::flash('error',$resultData[1]);
+            // return back()->withInput();
+        // }         
 
+
+        // Session::forget('userCredits');
+        // $userObj = User::first();
+        // User::setSessions($userObj);
+
+        Session::put('hasJob',1);
+        return redirect()->to('/dashboard');
+    }
+
+    public function completeJob(){
+        Session::forget('hasJob');
         Session::forget('userCredits');
-
+        
         $userObj = User::first();
         User::setSessions($userObj);
         return redirect()->to('/dashboard');

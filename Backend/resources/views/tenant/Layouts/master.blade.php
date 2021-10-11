@@ -25,7 +25,7 @@
 			<div class="container-fluid mg-t-35 ">
 				@include('tenant.Layouts.breadcrumb')
 				{{-- @include('tenant.Layouts.userStatus') --}}
-				@if(!in_array(Request::segment(1),['QR','checkout', 'updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment')
+				@if(!in_array(Request::segment(1),['QR','checkout', 'updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob'))
 				@livewire('check-reconnection',[
 					'requestSemgent' => Request::segment(1),
 					'addons' => Session::get('addons')
