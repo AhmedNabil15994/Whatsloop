@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Closure;
+use Session;
 
 class RoutesGate {
 
@@ -23,14 +24,10 @@ class RoutesGate {
             'general',
             'auth',
         ];
+
         if(count(array_intersect($availableRules, $rules)) > 0) {
             return $next($request);
         }
-
-        if(!\Session::has('membership') && \Request::segment(1) != 'sync'){
-            return Redirect('/packages');
-        }
-
 
         if(\Request::segment(1) != 'livechat'){
             $checkPermissions = User::userPermission($rules);

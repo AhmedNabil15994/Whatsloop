@@ -224,13 +224,13 @@ class CentralUser extends Model implements SyncMaster
 
      static function checkUserBy($type,$value, $notId = false){
         $dataObj = self::NotDeleted()
-            ->where($type,$value)->where('status',1);
+            ->where($type,$value)->where('status',1)->first();
 
         if ($notId != false) {
-            $dataObj->whereNotIn('id', [$notId]);
+            $dataObj->whereNotIn('id', [$notId])->first();
         }
 
-        return $dataObj->first();
+        return $dataObj;
     }
 
     static function checkUserPermissions($userObj) {

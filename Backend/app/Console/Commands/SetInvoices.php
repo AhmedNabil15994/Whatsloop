@@ -70,10 +70,12 @@ class SetInvoices extends Command
                             $dueDate = strtotime('+1 day',strtotime($value->end_date) );
                         }
                         $invoiceItems['duration_type'] = $userObj->duration_type;
+                        $invoiceItems['quantity'] = 1;
                         $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
                             'data' => [
                                 'total' => $total,
                                 'leftDays' => $value->leftDays,
+                                'main' => 1,
                                 'items' => [[
                                     'type' => 'membership',
                                     'data' => $invoiceItems,
@@ -89,7 +91,7 @@ class SetInvoices extends Command
             // Check New Invoices For Addons
             $userAddons = UserAddon::NotDeleted()->groupBy(['user_id','end_date'])->get();
             foreach ($userAddons as $addon) {
-                $userAddon = UserAddon::dataList(null,$addon->user_id,$addon->end_date)['data'];
+                $userAddon = UserAddon::dataList(null,$addon->user_id,$addon->end_date,[1,3])['data'];
                 
                 $userObj = CentralUser::find($addon->user_id);
 
@@ -113,6 +115,7 @@ class SetInvoices extends Command
                             $dueDate = strtotime('+1 day',strtotime($value->end_date) );
                         }
                         $oneObj['duration_type'] = $value->duration_type;
+                        $oneObj['quantity'] = 1;
 
                         if(isset($invoices[$userObj->id])){
                             if(isset($invoices[$userObj->id][date('Y-m-d',$dueDate)])){
@@ -125,6 +128,7 @@ class SetInvoices extends Command
                                 $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
                                     'total' => $total,
                                     'leftDays' => $value->leftDays,
+                                    'main' => 0,
                                     'items' => [[
                                         'type' => 'addon',
                                         'data' => $oneObj,
@@ -136,6 +140,7 @@ class SetInvoices extends Command
                                 'data' => [
                                     'total' => $oneObj['price_after_vat'],
                                     'leftDays' => $value->leftDays,
+                                    'main' => 0,
                                     'items' => [[
                                         'type' => 'addon',
                                         'data' => $oneObj,
@@ -150,14 +155,19 @@ class SetInvoices extends Command
 
             // Check New Invoices For Extra Quota
             $userExtraQuotas = UserExtraQuota::NotDeleted()->groupBy(['user_id','end_date'])->get();
+            $found = [];
             foreach ($userExtraQuotas as $userExtraQuota) {
                 $userExtra = UserExtraQuota::dataList($userExtraQuota->user_id,$userExtraQuota->end_date)['data'];
                 $userObj = CentralUser::find($userExtraQuota->user_id);
-
                 foreach ($userExtra as $value) {
                     if($value->leftDays <= 7){
 
                         $membershipObj = ExtraQuota::getData($value->ExtraQuota);
+                        if(isset($found[$membershipObj->id])){
+                            $found[$membershipObj->id] = $found[$membershipObj->id] + 1;
+                        }else{
+                            $found[$membershipObj->id] = 1;
+                        }
                         $oneObj = [];
                         $oneObj['id'] = $membershipObj->id;
                         $oneObj['title_ar'] = $membershipObj->extra_count . ' '.$membershipObj->extraTypeText;
@@ -174,6 +184,7 @@ class SetInvoices extends Command
                             $dueDate = strtotime('+1 day',strtotime($value->end_date) );
                         }
                         $oneObj['duration_type'] = $value->duration_type;
+                        $oneObj['quantity'] = $found[$membershipObj->id];
 
                         if(isset($invoices[$userObj->id])){
                             if(isset($invoices[$userObj->id][date('Y-m-d',$dueDate)])){
@@ -186,6 +197,7 @@ class SetInvoices extends Command
                                 $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
                                     'total' => $total,
                                     'leftDays' => $value->leftDays,
+                                    'main' => 0,
                                     'items' => [[
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,
@@ -197,6 +209,7 @@ class SetInvoices extends Command
                                 'data' => [
                                     'total' => $oneObj['price_after_vat'],
                                     'leftDays' => $value->leftDays,
+                                    'main' => 0,
                                     'items' => [[
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,
@@ -216,22 +229,29 @@ class SetInvoices extends Command
 
                     $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('items',serialize($oneItem['data']['items']))->where('due_date',$invoiceDate)->first();
 
+                    $status = 2;
+                    if(date('Y-m-d',strtotime($invoiceDate)) > date('Y-m-d')){
+                        $status = 3;
+                    }
+
                     if(!$invoiceObj){
                         $invoiceObj = new Invoice;
                         $invoiceObj->client_id = $invoiceKey;
                         $invoiceObj->due_date = $invoiceDate;
                         $invoiceObj->total = $oneItem['data']['total'];
                         $invoiceObj->items = serialize($oneItem['data']['items']);
-                        $invoiceObj->status = 3;
+                        $invoiceObj->main = $oneItem['data']['main'];
+                        $invoiceObj->status = $status;
                         $invoiceObj->sort = Invoice::newSortIndex();
                         $invoiceObj->created_at = date('Y-m-d H:i:s');
                         $invoiceObj->created_by = 1;
                         $invoiceObj->save();
                     }else{
-                        if($invoiceObj->status == 3 && $invoiceObj->due_date <= date('Y-m-d')){
-                            $invoiceObj->status = 2;
-                            $invoiceObj->save();
+                        if($invoiceObj->status == 2){
+                            $invoiceObj->status = 3;
                         }
+                        $invoiceObj->main = $oneItem['data']['main'];
+                        $invoiceObj->save();
                     }
 
                     $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);

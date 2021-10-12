@@ -381,7 +381,7 @@ class CentralAuthControllers extends Controller {
             'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
             'email' => 'required',
-            'domain' => 'required',
+            'domain' => 'required|regex:/^([a-zA-Z0-9][a-zA-Z0-9-_]*\.)*[a-zA-Z0-9]*[a-zA-Z0-9-_]*[[a-zA-Z0-9]$/',
         ];
 
         $message = [
@@ -394,6 +394,7 @@ class CentralAuthControllers extends Controller {
             'password_confirmation.required' => trans('auth.passwordValidation3'),
             'email.required' => trans('main.emailValidate'),
             'domain.required' => trans('main.domainValidate'),
+            'domain.regex' => trans('main.domain2Validate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -462,9 +463,25 @@ class CentralAuthControllers extends Controller {
             'two_auth' => 0,
         ]);
 
+        $baseUrl = 'https://whatsloop.net/api/v1/';
+
+        // Get User Details
+        $mainURL = $baseUrl.'user-details';
+        $isOld = 0;
+
+        $data = ['phone' => str_replace('+','',$phone) /*'966570116626'*/];
+        $result =  Http::post($mainURL,$data);
+        if($result->ok() && $result->json()){
+            $data = $result->json();
+            if($data['status'] == true){
+                // Begin Sync
+                $isOld = 1;
+            }
+        }
+
         if(isset($input['old']) && $input['old'] == 'on'){
             $centralUser->update([
-                'is_old' => 1,
+                'is_old' => $isOld,
                 'is_synced' => 0,
             ]);
         }

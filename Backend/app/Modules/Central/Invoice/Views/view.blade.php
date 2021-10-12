@@ -57,12 +57,12 @@
                         <p class="tx-font-14">
                             {{ $data->data->company }}<br>
                             {{ $data->data->client }}<br>
-                            {{ count($data->paymentInfo) ? $data->paymentInfo->address : '' }}<br>
-                            {{ (count($data->paymentInfo) ? $data->paymentInfo->city  : ''). ', ' . (count($data->paymentInfo) ? $data->paymentInfo->region  : ''). ', ' .( count($data->paymentInfo) ? $data->paymentInfo->postal_code  : '') }}<br>
-                            {{ count($data->paymentInfo) ? $data->paymentInfo->country  : '' }}<br>
-                            @if(count($data->paymentInfo) ? $data->paymentInfo->tax_id : '')
+                            {{ isset($data->paymentInfo) && isset($data->paymentInfo->address) ? $data->paymentInfo->address : '' }}<br>
+                            {{ (isset($data->paymentInfo) && isset($data->paymentInfo->city) ? $data->paymentInfo->city  : ''). ', ' . (isset($data->paymentInfo) && isset($data->paymentInfo->region) ? $data->paymentInfo->region  : ''). ', ' .( isset($data->paymentInfo) && isset($data->paymentInfo->postal_code) ? $data->paymentInfo->postal_code  : '') }}<br>
+                            {{ isset($data->paymentInfo) && isset($data->paymentInfo->country) ? $data->paymentInfo->country  : '' }}<br>
+                            @if(isset($data->paymentInfo) && isset($data->paymentInfo->tax_id) ? $data->paymentInfo->tax_id : '')
                             <span class="float-left mt-2 w-auto m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-2">{{ trans('main.tax_id') }} : </span>  
-                            <span class="float-left text-muted mt-2"> {{ count($data->paymentInfo) ? $data->paymentInfo->tax_id : '' }}</span>
+                            <span class="float-left text-muted mt-2"> {{ isset($data->paymentInfo) ? $data->paymentInfo->tax_id : '' }}</span>
                             <div class="clearfix"></div>
                             @endif
                         </p>
@@ -161,6 +161,7 @@
                                     @php $mainPrices = 0; @endphp
                                     @foreach($data->data->items as $key => $item)
                                     @php $mainPrices+=$item['data']['price'] * $item['data']['quantity'] @endphp
+                                    @endforeach
                                     <tr class="mainRow">
                                         <td>{{ $key+1 }}</td>
                                         <td>
@@ -172,7 +173,6 @@
                                         <td>{{ $data->data->transaction_id }}</td>
                                         <td>{{ $data->data->total }} {{ trans('main.sar') }}</td>
                                     </tr>
-                                    @endforeach
                                 </tbody>
                             </table>
                         </div> <!-- end table-responsive -->

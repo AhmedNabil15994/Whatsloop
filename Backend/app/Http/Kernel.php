@@ -71,6 +71,8 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\AuthEngine::class,
             \App\Http\Middleware\LanguageMiddleware::class,
             \App\Http\Middleware\RoutesGate::class,
+            \App\Http\Middleware\HasMembershipConstraints::class,
+            // \App\Http\Middleware\HasMembership::class,
         ],
 
         'tenancyGeneral' => [

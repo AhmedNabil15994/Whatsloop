@@ -26,6 +26,6 @@ $(function(){
         $('form.completeJob').submit();
     }
 
-    CountDown(30, $('span.mCounter'));
+    CountDown(300, $('span.mCounter'));
 
 });

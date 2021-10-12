@@ -33,6 +33,20 @@
                 </div>
             </div>
         </div>
+    @elseif(Session::has('invoice_id') && Session::get('invoice_id') != 0)
+        <div class="row text-center mg-t-100 mg-b-20 d-block">
+            {{-- <div class="col-3"></div> --}}
+            <div class="col-12 w-auto m-auto d-block">
+                <div class="card">
+                    <div class="card-body">
+                        <img src="{{ asset('images/waiting.svg') }}" class="transferSVG" alt="">
+                        <p class="h3 mg-b-50 text-muted tx-bold"> <span class="tx-black">{{ trans('main.resubscribe_p') }}</span></p>
+                        <a href="{{ URL::to('/invoices/view/'.Session::get('invoice_id')) }}" class="btn w-auto mg-auto btn-success tx-white btn-md">{{ trans('main.resubscribe_b1') }}</a>
+                        <a href="{{ URL::to('/profile/subscription') }}" class="btn w-auto mg-auto btn-primary tx-white btn-md">{{ trans('main.resubscribe_b2') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     @else
         <div class="row">
             <div class="col-6">

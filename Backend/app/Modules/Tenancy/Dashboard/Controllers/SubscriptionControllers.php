@@ -59,7 +59,7 @@ class SubscriptionControllers extends Controller {
         $token = '';
         $doSync = 0;
 
-        $data = ['phone' => '966570116626'];
+        $data = ['phone' => str_replace('+','',$phone) /*'966570116626'*/];
         $result =  Http::post($mainURL,$data);
         if($result->ok() && $result->json()){
             $data = $result->json();
@@ -110,6 +110,7 @@ class SubscriptionControllers extends Controller {
         if($doSync){
             return view('Tenancy.Dashboard.Views.sync')->with('data', $moduleData);
         }else{
+            \Session::put('is_old',0);
             return Redirect('/packages');
         }
     }
@@ -128,10 +129,6 @@ class SubscriptionControllers extends Controller {
 
     public function packages(){   
         $input = \Request::all();
-
-        if(\Session::get('is_old') == 1 && \Session::get('is_synced') == 0){
-            return Redirect('/sync');
-        }
 
         $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->orderBy('id','DESC')->first();
         if($bankTransferObj){
@@ -495,7 +492,6 @@ class SubscriptionControllers extends Controller {
         $input = \Request::all();
         $data['data'] = json_decode($input['data']);
         $data['status'] = json_decode($input['status']);
-        // dd($data);
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
@@ -507,6 +503,7 @@ class SubscriptionControllers extends Controller {
     public function activate($transaction_id = null , $paymentGateaway = null){
         $cartObj = Variable::getVar('cartObj');
         $cartObj = json_decode(json_decode($cartObj));
+        // dd($cartObj);
 
         dispatch(new NewClient($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d')));
         // $paymentObj = new \SubscriptionHelper(); 
@@ -518,8 +515,8 @@ class SubscriptionControllers extends Controller {
 
 
         // Session::forget('userCredits');
-        // $userObj = User::first();
-        // User::setSessions($userObj);
+        $userObj = User::first();
+        User::setSessions($userObj);
 
         Session::put('hasJob',1);
         return redirect()->to('/dashboard');
@@ -535,19 +532,9 @@ class SubscriptionControllers extends Controller {
     }
 
     public function qrIndex(){
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $result = $mainWhatsLoopObj->status();
-        $result = $result->json();
-        if(isset($result['data'])){
-            if($result['data']['accountStatus'] == 'got qr code'){
-                if(isset($result['data']['qrCode'])){
-                    $image = '/uploads/instanceImage' . time() . '.png';
-                    $destinationPath = public_path() . $image;
-                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
-                    // $succ = file_put_contents($destinationPath, $qrCode);   
-                    $data['qrImage'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
-                }
-            }
+        $varObj = Variable::getVar('QRIMAGE');
+        if($varObj){
+            $data['qrImage'] = mb_convert_encoding($varObj, 'UTF-8', 'UTF-8');
         }
 
         

@@ -498,7 +498,8 @@ return [
 	'subscriptionPeriod' => 'مدة الاشتراك',
 	'monthly' => 'شهري',
 	'yearly' => 'سنوي',
-	'domainValidate' => 'يريجي ادخال الدومين',
+	'domainValidate' => 'يرجي ادخال النطاق',
+	'domain2Validate' => 'يرجي ادخال النطاق بشكل صحيح من كلمة واحدة مثال:domain1',
 	'membershipValidate' => 'يرجي اختيار الباقة',
 	'addonsValidate' => 'يرجي اختيار الاضافات',
 	'durationTypeValidate' => 'يرجي اختيار مدة الاشتراك',
@@ -726,4 +727,8 @@ return [
 
 	'preparingAccount' => 'نحن علي وشك الانتهاء من اعداد حسابك الآن ، يرجى التحلي بالصبر.',
 	'dontClose' => 'الرجاء عدم إغلاق أو تحديث هذه الصفحة قبل انتهاء العد التنازلي',
+
+	'resubscribe_p' => 'يرجي تجديد اشتراكك حتي يمكنك استخدام النظام.',
+	'resubscribe_b1' => 'تجديد الاشتراك',
+	'resubscribe_b2' => 'تغيير الاشتراك',
 ];

@@ -9,6 +9,7 @@ use App\Models\ExtraQuota;
 use App\Models\UserAddon;
 use App\Models\UserExtraQuota;
 use App\Models\UserChannels;
+use App\Models\BankAccount;
 use App\Models\CentralChannel;
 use App\Models\Variable;
 use App\Models\PaymentInfo;
@@ -259,7 +260,7 @@ class TenantInvoiceControllers extends Controller {
         }
         
         $data['data'] = $testData;
-        $data['data'] = $testData;
+        $data['user'] = User::getOne(USER_ID);
         $tax = \Helper::calcTax($total);
         $data['totals'] = [
             $total-$tax,
@@ -267,7 +268,10 @@ class TenantInvoiceControllers extends Controller {
             $tax,
             $total,
         ];
+        $data['countries'] = countries();
+        $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
+        $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
     }
 

@@ -37,33 +37,17 @@ class DashboardControllers extends Controller {
     use \TraitsFunc;
 
     public function menu(){
-        if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
-            return redirect('/packages');
-        }
-
         $data = []; 
         Session::forget('check_user_id');
         return view('Tenancy.Dashboard.Views.menu')->with('data',(object) $data);
     }
 
     public function Dashboard(){   
-        if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
-           return redirect('/packages');
-        }
-
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $result = $mainWhatsLoopObj->status();
-        $result = $result->json();     
-
-        $sendStatus = 0;   
-        if(isset($result['data'])){
-            if($result['data']['accountStatus'] == 'got qr code'){
-                if(isset($result['data']['qrCode'])){
-                    $sendStatus = 0;
-                }
-            }elseif($result['data']['accountStatus'] == 'authenticated'){
-                $sendStatus = 100;
-            }
+        $varObj = Variable::getVar('QRIMAGE');
+        if($varObj){
+            $sendStatus = 100;
+        }else{
+            $sendStatus = 0;
         }
 
         $messages = (object) ChatMessage::lastMessages();
@@ -82,10 +66,8 @@ class DashboardControllers extends Controller {
     }
 
     public function packages(){
-        if( (!Session::has('membership') || Session::get('membership') == null)  && Session::get('group_id') == 1){
-            $data['bundles'] = Bundle::dataList(1)['data'];
-            return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
-        }
+        $data['bundles'] = Bundle::dataList(1)['data'];
+        return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
     }
 
     public function getChartData($start=null,$end=null,$moduleName){

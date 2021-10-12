@@ -427,7 +427,7 @@ class ProfileControllers extends Controller {
         $userExtraQuotas = UserExtraQuota::getActivated($mainUserObj->id);
         $duplicated = [];
         foreach($userExtraQuotas as $userExtraQuota){
-            if(!in_array(date('d',strtotime($userExtraQuotas->end_date)),[1,28,29,30,31])){
+            if(!in_array(date('d',strtotime($userExtraQuota->end_date)),[1,28,29,30,31])){
                 if(isset($duplicated[$userExtraQuota->addon_id])){
                     $duplicated[$userExtraQuota->addon_id] = $duplicated[$userExtraQuota->addon_id] + 1;
                 }else{
@@ -440,7 +440,7 @@ class ProfileControllers extends Controller {
                 $testData[] = [
                     $extraQuotaObj->id,
                     'extra_quota',
-                    $extraQuotaObj->title,
+                    $extraQuotaObj->extraTypeText,
                     1,
                     $userExtraQuota->start_date,
                     date('Y-m-d',strtotime('+'.$extraQuotaDiffData['daysLeft'].' days',strtotime($userExtraQuota->end_date))),

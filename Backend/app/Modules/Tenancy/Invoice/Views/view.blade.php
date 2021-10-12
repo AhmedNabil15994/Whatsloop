@@ -190,6 +190,7 @@
                                     @php $mainPrices = 0; @endphp
                                     @foreach($data->data->items as $key => $item)
                                     @php $mainPrices+=$item['data']['price'] * $item['data']['quantity'] @endphp
+                                    @endforeach
                                     <tr class="mainRow">
                                         <td>{{ $key+1 }}</td>
                                         <td>
@@ -201,7 +202,6 @@
                                         <td>{{ $data->data->transaction_id }}</td>
                                         <td>{{ $data->data->total }} {{ trans('main.sar') }}</td>
                                     </tr>
-                                    @endforeach
                                 </tbody>
                             </table>
                         </div> <!-- end table-responsive -->

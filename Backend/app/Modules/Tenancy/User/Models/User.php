@@ -246,13 +246,13 @@ class User extends Authenticatable implements Syncable
 
     static function checkUserBy($type,$value, $notId = false){
         $dataObj = self::NotDeleted()
-            ->where($type,$value)->where('status',1);
+            ->where($type,$value)->where('status',1)->first();
 
         if ($notId != false) {
-            $dataObj->whereNotIn('id', [$notId]);
+            $dataObj->whereNotIn('id', [$notId])->first();
         }
 
-        return $dataObj->first();
+        return $dataObj;
     }
 
     static function checkUserPermissions($userObj) {
@@ -294,25 +294,24 @@ class User extends Authenticatable implements Syncable
         session(['channel' => !empty($channels) ? $channels[0]->id : null]);
         session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0]->id)->first()->instanceId : null ]);
         session(['membership' => $userObj->membership_id]);
+
         if($isAdmin){
-            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
-            session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
-            session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
-            session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
-            session(['phone' => $userObj->phone ]);
+            $mainUser = $userObj;
         }else{
-            $mainUser = User::first();
-            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
-            session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
-            session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
-            session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
-            session(['phone' => $mainUser->phone ]);
+            $mainUser = User::first();  
         }
+        
+        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
+        $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
+        session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
+        session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
+        session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
+        session(['phone' => $mainUser->phone ]);
         session(['tenant_id' => $tenantObj->tenant_id]);
-        session(['is_old' => $userObj->is_old]);
-        session(['is_synced' => $userObj->is_synced]);
+        session(['is_old' => $mainUser->is_old]);
+        session(['is_synced' => $mainUser->is_synced]);
+        $invoiceObj = Invoice::getDisabled($mainUser->id);
+        session(['invoice_id' => $invoiceObj == null ? 0 : $invoiceObj->id]);
 
         // Get Membership and Extra Quotas Features
         if(!empty($userObj->membership_id)){

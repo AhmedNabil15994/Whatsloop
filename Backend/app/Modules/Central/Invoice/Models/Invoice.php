@@ -78,6 +78,7 @@ class Invoice extends Model{
         $data->payment_gateaway = $source->payment_gateaway;
         $data->items = $source->items != null ? unserialize($source->items) : [];
         $data->sort = $source->sort;
+        $data->main = $source->main;
         $data->status = $source->status;
         $data->statusText = trans('main.invoice_status_'.$source->status);
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);
@@ -88,4 +89,7 @@ class Invoice extends Model{
         return self::count() + 1;
     }
 
+    static function getDisabled($user_id){
+        return self::NotDeleted()->where('main',1)->where('client_id',$user_id)->where('status',2)->first();
+    }
 }

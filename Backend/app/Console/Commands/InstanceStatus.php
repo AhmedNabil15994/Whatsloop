@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\UserStatus;
 use App\Models\User;
+use App\Models\Variable;
 
 class InstanceStatus extends Command
 {
@@ -56,6 +57,17 @@ class InstanceStatus extends Command
                 $statusInt = 3;
             }else if($status == 'got qr code'){
                 $statusInt = 4;
+                if(isset($result['data']['qrCode'])){
+                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $destinationPath = public_path() . $image;
+                    $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
+                    $data['url'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
+                }
+                Variable::insert([
+                    'var_key' => 'QRIMAGE',
+                    'var_value' => $result['data']['qrCode'],
+                ]);
+
             }
         }
 

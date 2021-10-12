@@ -499,6 +499,7 @@ return [
 	'monthly' => 'Monthly',
 	'yearly' => 'Yearly',
 	'domainValidate' => 'Domain Field is required',
+	'domain2Validate' => 'Domain Field in invalid. ex:domain1',
 	'membershipValidate' => 'Package Field is required',
 	'addonsValidate' => 'Addons Field is required',
 	'durationTypeValidate' => 'Duration Type is required',
@@ -732,4 +733,9 @@ return [
 
 	'preparingAccount' => "We're Setting Up Your Account Now Please Be Patient.",
 	'dontClose' => "Please Don't Close or Refresh This Page Before Count Down is Done.",
+
+	'resubscribe_p' => 'Please renew your subscription to use the system.',
+	'resubscribe_b1' => 'Subscription Renewal',
+	'resubscribe_b2' => 'Change Subscription',
+
 ];

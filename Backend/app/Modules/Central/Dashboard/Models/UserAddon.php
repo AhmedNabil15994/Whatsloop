@@ -122,8 +122,8 @@ class UserAddon extends Model{
 
     // Status == 1 => Active
     // Status == 0 => Not Active
-    // Status == 2 ==> Deactivated
-    // Status == 3 ==> Disabled
+    // Status == 2 ==> Deactivated Due To Payment
+    // Status == 3 ==> Disabled By User 
     static function getData($source){
         $dataObj = new \stdClass();
         $dataObj->id = $source->id;

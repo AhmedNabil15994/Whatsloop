@@ -14,29 +14,24 @@ class CheckReconnection extends Component
     protected $tutorials = '';
     public $requestSemgent;
     public $addons;
+    public $tenant_id;
 
-    public function mount($requestSemgent,$addons){ 
+    public function mount($requestSemgent,$addons,$tenant_id){ 
         $this->requestSemgent = $requestSemgent;
         $this->addons = $addons;
+        $this->tenant_id = $tenant_id;
     }
 
     public function render(){   
         $userStatusObj = UserStatus::orderBy('id','DESC')->first();
+        \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
 
         $data = [];
         $data['haveImage'] = 0;
+        $varObj = Variable::getVar('QRIMAGE') ;
 
-        if(($userStatusObj && $userStatusObj->status != 1) || !$userStatusObj ){
-            $mainWhatsLoopObj = new \MainWhatsLoop();
-            $result = $mainWhatsLoopObj->status();
-            $result = $result->json();
-            if(isset($result['data'])){
-                if($result['data']['accountStatus'] == 'got qr code'){
-                    if(isset($result['data']['qrCode'])){
-                        $data['haveImage'] = 1;
-                    }
-                }
-            }
+        if(isset($userStatusObj) && $userStatusObj->status == 4 && $varObj != null){            
+            $data['haveImage'] = 1;
         }
             
         $userAddonsTutorial = [];

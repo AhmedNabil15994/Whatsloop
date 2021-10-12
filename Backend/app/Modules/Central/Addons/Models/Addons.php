@@ -84,7 +84,7 @@ class Addons extends Model{
         $data->module = $source->module;
         $data->title_ar = $source->title_ar != null ? $source->title_ar : '';
         $data->title_en = $source->title_en != null ? $source->title_en : '';
-        $data->title = $source->{'title_'.LANGUAGE_PREF};
+        $data->title = $source->{'title_'. \App::getLocale()};
         $data->monthly_price = $source->monthly_price != 0 ? $source->monthly_price : '';
         $data->annual_price = $source->annual_price != 0 ? $source->annual_price : '';
         $data->sort = $source->sort;
