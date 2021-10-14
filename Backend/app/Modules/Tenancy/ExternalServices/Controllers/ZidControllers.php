@@ -9,6 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use App\Models\ModTemplate;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\CentralVariable;
 use App\Models\UserAddon;
 use App\Models\ModNotificationReport;
 use DB;
@@ -32,9 +33,9 @@ class ZidControllers extends Controller {
         $modelName = 'customers';
         $service = $this->service;
 
-        $baseUrl = Variable::getVar('ZidURL');
+        $baseUrl = CentralVariable::getVar('ZidURL');
         $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = Variable::getVar('ZidMerchantToken');
+        $storeToken = CentralVariable::getVar('ZidMerchantToken');
         $managerToken = Variable::getVar('ZidStoreToken');
         
         $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
@@ -55,6 +56,7 @@ class ZidControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -76,10 +78,10 @@ class ZidControllers extends Controller {
         $modelName = 'products';
         $service = $this->service;
 
-        $baseUrl = Variable::getVar('ZidURL');
+        $baseUrl = CentralVariable::getVar('ZidURL');
         $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = Variable::getVar('ZidStoreToken');
-        $managerToken = Variable::getVar('ZidMerchantToken');
+        $storeToken = CentralVariable::getVar('ZidMerchantToken');
+        $managerToken = Variable::getVar('ZidStoreToken');
         
         $dataURL = $baseUrl.'/'.$modelName.'/'; 
 
@@ -99,6 +101,7 @@ class ZidControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -120,9 +123,9 @@ class ZidControllers extends Controller {
         $modelName = 'orders';
         $service = $this->service;
 
-        $baseUrl = Variable::getVar('ZidURL');
+        $baseUrl = CentralVariable::getVar('ZidURL');
         $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = Variable::getVar('ZidMerchantToken');
+        $storeToken = CentralVariable::getVar('ZidMerchantToken');
         $managerToken = Variable::getVar('ZidStoreToken');
         
         $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
@@ -143,6 +146,7 @@ class ZidControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -164,9 +168,9 @@ class ZidControllers extends Controller {
         $modelName = 'abandonedCarts';
         $service = $this->service;
 
-        $baseUrl = Variable::getVar('ZidURL');
+        $baseUrl = CentralVariable::getVar('ZidURL');
         $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = Variable::getVar('ZidMerchantToken');
+        $storeToken = CentralVariable::getVar('ZidMerchantToken');
         $managerToken = Variable::getVar('ZidStoreToken');
         
         $dataURL = $baseUrl.'/managers/store/abandoned-carts'; 
@@ -187,6 +191,10 @@ class ZidControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [
+                'page' => 1,
+                'page_size' => 100,
+            ],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -410,7 +418,6 @@ class ZidControllers extends Controller {
 
             $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
             $formattedData = $this->formatData($modelData,$model);
-            
             $data['mainData'] = [
                 'title' => trans('main.abandonedCarts'),
                 'url' => 'abandonedCarts',
@@ -442,8 +449,8 @@ class ZidControllers extends Controller {
         $objs = [];
         foreach ($data as $key => $value) {
             $dataObj = new \stdClass();
-            $dataObj->id = $value->id;
             if($table == 'products'){
+                $dataObj->id = $value->id;
                 $name_ar = @unserialize($value->name)['ar'];
                 $name_en = @unserialize($value->name)['en'];
                 
@@ -476,12 +483,13 @@ class ZidControllers extends Controller {
                 $dataObj->created_at = date('Y-m-d H:i:s',strtotime($created_at));
                 $dataObj->updated_at = date('Y-m-d H:i:s',strtotime($value->updated_at));
             }elseif($table == 'customers'){
+                $dataObj->id = $value->id;
                 $dataObj->name = $value->name;
                 $dataObj->phone = $value->mobile;
                 $dataObj->email = $value->email;
                 $dataObj->image = asset('images/not-available.jpg');
-                $dataObj->city = unserialize($value->city)['name'];
-                $dataObj->country = unserialize($value->city)['country_name'];
+                $dataObj->city = isset($value->city) && !empty($value->city) ? unserialize($value->city)['name'] : '';
+                $dataObj->country = isset($value->city) && !empty($value->city) ? unserialize($value->city)['country_name'] : '';
             }elseif($table == 'orders'){
                 $status = unserialize($value->order_status);
                 $dataObj->created_at = date('Y-m-d H:i:s', strtotime($value->created_at));
@@ -492,26 +500,27 @@ class ZidControllers extends Controller {
                 $dataObj->statusID = $status['code'];
                 $dataObj->items = [['name'=>$value->store_name,'quantity'=>1]];
             }elseif($table == 'abandonedCarts'){
-                // $price = unserialize($value->total);
-                // $customer = unserialize($value->customer);
-                // $items = unserialize($value->items);
-                
-                // $itemsData = [];
-                // foreach($items as $item){
-                //     $productObj = DB::table($this->service.'_products')->where('id',$item['product_id'])->first();
-                //     $item['name'] = $productObj ? $productObj->name : trans('main.deletedProduct');
-                //     $itemsData[] = $item;
-                // }
+                $price = $value->cart_total;
+                $customer = [
+                    'name' => $value->customer_name,
+                    'mobile' => $value->customer_mobile,
+                    'email' => $value->customer_email,
+                    'country' => '',
+                ];
 
-                // $dataObj->reference_id = $value->id;
-                // $dataObj->total = $price['amount'] . ' '.$price['currency'];
-                // $dataObj->order_url = $value->checkout_url;
-                // $dataObj->age_in_minutes = $value->age_in_minutes;
-                // $dataObj->coupon = $value->coupon;
-                // $dataObj->customer = $customer;
-                // $dataObj->items = $itemsData;
-                // $dataObj->created_at = date('Y-m-d H:i:s',strtotime($value->created_at));
-                // $dataObj->updated_at = date('Y-m-d H:i:s',strtotime($value->updated_at));
+                $dataObj->id = $value->cart_id;
+                $dataObj->reference_id = $value->id;
+                $dataObj->store_id = $value->store_id;
+                $dataObj->session_id = $value->session_id;
+                $dataObj->order_id = $value->order_id;
+                $dataObj->phase = $value->phase;
+                $dataObj->customer = $customer;
+                $dataObj->total = $value->cart_total_string;
+                $dataObj->reminders_count = $value->reminders_count;
+                $dataObj->products_count = $value->products_count;
+                $dataObj->items = trans('main.products_count') . $value->products_count;
+                $dataObj->created_at = date('Y-m-d H:i:s',strtotime($value->created_at));
+                $dataObj->updated_at = date('Y-m-d H:i:s',strtotime($value->updated_at));
             }
             $objs[] = $dataObj;
         }

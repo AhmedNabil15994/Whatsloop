@@ -647,13 +647,11 @@ class ProfileControllers extends Controller {
         $rules = [
             'store_token' => 'required',
             'store_id' => 'required',
-            'merchant_token' => 'required',
         ];
 
         $message = [
             'store_token.required' => trans('main.storeTokenValidation'),
             'store_id.required' => trans('main.storeIDValidation'),
-            'merchant_token.required' => trans('main.merchantTokenValidation'),
         ];
 
         $validate = Validator::make($input, $rules, $message);
@@ -694,21 +692,6 @@ class ProfileControllers extends Controller {
             $zidStoreID->updated_at = DATE_TIME;
             $zidStoreID->updated_by = USER_ID;
             $zidStoreID->save();
-        }
-
-        $zidMerchantToken = Variable::NotDeleted()->where('var_key','ZidMerchantToken')->first();
-        if($zidMerchantToken == null){
-            $zidMerchantToken = new Variable;
-            $zidMerchantToken->var_key = 'ZidMerchantToken';
-            $zidMerchantToken->var_value = $input['merchant_token'];
-            $zidMerchantToken->created_at = DATE_TIME;
-            $zidMerchantToken->created_by = USER_ID;
-            $zidMerchantToken->save();
-        }else{
-            $zidMerchantToken->var_value = $input['merchant_token'];
-            $zidMerchantToken->updated_at = DATE_TIME;
-            $zidMerchantToken->updated_by = USER_ID;
-            $zidMerchantToken->save();
         }
 
         if($request->ajax()){

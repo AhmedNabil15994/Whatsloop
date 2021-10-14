@@ -11,7 +11,7 @@ class ExternalServices {
 
     function startFuncs(){
         // Fetch Data Array
-        $dataObj = $this->getAllDataBaseOnURL($this->data['storeToken'],$this->data['dataURL'],$this->data['myHeaders'],$this->data['service']);
+        $dataObj = $this->getAllDataBaseOnURL($this->data['storeToken'],$this->data['dataURL'],$this->data['myHeaders'],$this->data['service'],$this->data['params']);
         $idType = 'increments';
         if(isset($dataObj[0]['id']) && !empty($dataObj[0]['id'])){
             $count = strlen($dataObj[0]['id']);
@@ -31,8 +31,7 @@ class ExternalServices {
         }
     }
 
-    function getAllDataBaseOnURL($token,$url,$myHeaders=[],$service){
-        $params = [];
+    function getAllDataBaseOnURL($token,$url,$myHeaders=[],$service,$params=[]){
         $result = $this->callURL($token,$url,$myHeaders,$params);
         return $this->formatResponse($result,$service);
     }
@@ -88,6 +87,19 @@ class ExternalServices {
         }
         if( isset($result->orders) && !empty($result->orders) ){
             $modelData = $result->orders;
+        }
+        if( isset($result->{'abandoned-carts'}) && !empty($result->{'abandoned-carts'}) ){
+            $modelData = $result->{'abandoned-carts'};
+            if(isset($result->pagination)){
+                $pagesCount = $result->pagination['last_page'];
+                if($pagesCount > 1){
+                    for ($i = 2; $i <= $pagesCount ; $i++) {
+                        $params =  ['page' => $i , 'page_size' => 100];
+                        $newResult = $this->callURL($this->data['storeToken'],$this->data['dataURL'],$this->data['myHeaders'],$params);
+                        $modelData = array_merge($modelData,$newResult->{'abandoned-carts'});
+                    }
+                }
+            }
         }
         return $modelData;
     }

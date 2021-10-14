@@ -108,13 +108,7 @@
                                 <div class="col-9">
                                     <input class="form-control" name="store_id" value="{{ \App\Models\Variable::getVar('ZidStoreID') }}" placeholder="{{ trans('main.store_id') }}">
                                 </div>
-                            </div> 
-                            <div class="form-group row mains">
-                                <label class="col-3 col-form-label">{{ trans('main.merchant_token') }} :</label>
-                                <div class="col-9">
-                                    <textarea class="form-control" name="merchant_token" placeholder="{{ trans('main.merchant_token') }}">{{ \App\Models\Variable::getVar('ZidMerchantToken') }}</textarea>
-                                </div>
-                            </div>                             
+                            </div>                                                      
                         </form>
                         @elseif($data->data[0] == 5)
                         <form action="{{ URL::to('/profile/updateSalla') }}" method="post">

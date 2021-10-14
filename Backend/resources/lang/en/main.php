@@ -738,4 +738,5 @@ return [
 	'resubscribe_b1' => 'Subscription Renewal',
 	'resubscribe_b2' => 'Change Subscription',
 
+	'products_count' => 'Total Products In Cart: ',
 ];

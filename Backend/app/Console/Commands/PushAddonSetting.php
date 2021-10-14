@@ -10,6 +10,7 @@ use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\CentralVariable;
 
 class PushAddonSetting extends Command
 {
@@ -57,10 +58,10 @@ class PushAddonSetting extends Command
                 $actions = ['order.create','order.status.update','product.create','product.update','product.publish','product.delete'];
                 
                 tenancy()->initialize($tenant);
-                $url = Variable::getVar('ZidURL').'/managers/webhooks';
+                $url = CentralVariable::getVar('ZidURL').'/managers/webhooks';
                 $storeId = Variable::getVar('ZidStoreID');
                 $managerToken = Variable::getVar('ZidStoreToken');
-                $merchantToken = Variable::getVar('ZidMerchantToken');
+                $merchantToken = CentralVariable::getVar('ZidMerchantToken');
                 tenancy()->end($tenant);
                 
                 foreach($actions as $key => $action){
@@ -100,7 +101,7 @@ class PushAddonSetting extends Command
                 $actions = ['order.created','order.updated','product.created','product.updated','customer.created','customer.updated'];
 
                 tenancy()->initialize($tenant);
-                $url = Variable::getVar('SallaURL').'/webhooks/subscribe';
+                $url = CentralVariable::getVar('SallaURL').'/webhooks/subscribe';
                 $managerToken = Variable::getVar('SallaStoreToken');
                 tenancy()->end($tenant);
 

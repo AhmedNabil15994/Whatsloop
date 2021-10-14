@@ -414,7 +414,6 @@ class SubscriptionHelper {
             if($tenant){
                 tenancy()->initialize($tenant);
             }
-            $varObj = Variable::where('var_key','SallaURL')->first();
             $modCount = ModTemplate::where('mod_id',1)->count();
             if($modCount == 0){
                 ModTemplate::insert([
@@ -607,27 +606,12 @@ class SubscriptionHelper {
             if($tenant){
                 tenancy()->end($tenant);
             }
-            if(!$varObj){
-                if($tenant){
-                    tenancy()->initialize($tenant);
-                }
-                Variable::insert([
-                    [
-                        'var_key' => 'SallaURL',
-                        'var_value' => 'https://api.salla.dev/admin/v2',
-                    ],
-                ]);
-                if($tenant){
-                    tenancy()->end($tenant);
-                }
-            }
         }
 
         if(!empty($addon) && in_array(4,$addon)){
             if($tenant){
                 tenancy()->initialize($tenant);
             }
-            $varObj = Variable::where('var_key','ZidURL')->first();
             $modCount = ModTemplate::where('mod_id',2)->count();
             if($modCount == 0){
                 ModTemplate::insert([
@@ -764,20 +748,7 @@ class SubscriptionHelper {
             if($tenant){
                 tenancy()->end($tenant);
             }
-            if(!$varObj){
-                if($tenant){
-                    tenancy()->initialize($tenant);
-                }
-                Variable::insert([
-                    [
-                        'var_key' => 'ZidURL',
-                        'var_value' => 'https://api.zid.dev/app/v2',
-                    ],
-                ]);
-                if($tenant){
-                    tenancy()->end($tenant);
-                }
-            }
+            
         }
 
         if($tenant && $transferObj){

@@ -49,9 +49,12 @@ class SubscriptionControllers extends Controller {
     // salla
     // zid
 
-    public function sync(){  
-        $phone = Session::get('phone');
+    public function sync(){
+        if(Session::get('is_old') != 1){
+            return redirect('/dashboard');
+        }  
 
+        $phone = Session::get('phone');
         $baseUrl = 'https://whatsloop.net/api/v1/';
 
         // Get User Details
@@ -59,7 +62,7 @@ class SubscriptionControllers extends Controller {
         $token = '';
         $doSync = 0;
 
-        $data = ['phone' => str_replace('+','',$phone) /*'966570116626'*/];
+        $data = ['phone' =>  str_replace('+','',$phone)/*'966570116626'*/];
         $result =  Http::post($mainURL,$data);
         if($result->ok() && $result->json()){
             $data = $result->json();
@@ -110,8 +113,8 @@ class SubscriptionControllers extends Controller {
         if($doSync){
             return view('Tenancy.Dashboard.Views.sync')->with('data', $moduleData);
         }else{
-            \Session::put('is_old',0);
-            return Redirect('/packages');
+            Session::put('is_old',0);
+            return Redirect('/dashboard');
         }
     }
     
@@ -122,13 +125,17 @@ class SubscriptionControllers extends Controller {
         if($requiredSync){
             dispatch(new SyncOldClient($userObj,$requiredSync));
         }
-
+        Session::put('is_old',0);
         Session::flash('success',trans('main.inPrgo'));
-        return redirect()->to('/dashboard');
+        return redirect()->to('/menu');
     }
 
     public function packages(){   
         $input = \Request::all();
+
+        if(Session::get('membership') != null){
+            return redirect('/dashboard');
+        }
 
         $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->orderBy('id','DESC')->first();
         if($bankTransferObj){

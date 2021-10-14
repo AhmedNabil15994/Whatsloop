@@ -51,6 +51,7 @@ class InstanceStatus extends Command
             $status = $result['data']['accountStatus'];
             if($status == 'authenticated'){
                 $statusInt = 1;
+                Variable::where('var_key','QRIMAGE')->delete();
             }else if($status == 'init'){
                 $statusInt = 2;
             }else if($status == 'loading'){
@@ -63,6 +64,7 @@ class InstanceStatus extends Command
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
                     $data['url'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
                 }
+                Variable::where('var_key','QRIMAGE')->delete();
                 Variable::insert([
                     'var_key' => 'QRIMAGE',
                     'var_value' => $result['data']['qrCode'],
@@ -83,7 +85,7 @@ class InstanceStatus extends Command
 
         $oldStatusObj = UserStatus::orderBy('id','DESC')->take(2)->get();
         $check = 0;
-        if(count($oldStatusObj)){
+        if(count($oldStatusObj) && isset($oldStatusObj[1])){
             if($oldStatusObj[0]->status == 4 && $oldStatusObj[1]->status == 4){
                 $check = 1;
             }

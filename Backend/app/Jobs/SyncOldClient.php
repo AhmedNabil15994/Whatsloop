@@ -23,6 +23,7 @@ use App\Models\ContactLabel;
 use App\Models\Reply;
 use App\Models\Bot;
 use App\Models\CentralChannel;
+use App\Models\CentralVariable;
 use App\Models\UserChannels;
 use App\Models\PaymentInfo;
 use App\Models\UserAddon;
@@ -105,6 +106,75 @@ class SyncOldClient implements ShouldQueue
         return $data;
     }
 
+    public function initConnection(){
+        // Get User Details
+        $userObj = $this->userObj;
+        $mainURL = $this->baseUrl.'user-details';
+        $data = ['phone' => str_replace('+','',$userObj->phone) /*'966570116626'*/];
+        if($this->connectionInitiated == 0){
+            $result =  Http::post($mainURL,$data);
+            if($result->ok() && $result->json()){
+                $data = $result->json();
+                if($data['status'] == true){
+                    $moduleData = [];
+                    // Begin Sync
+                    $this->connectionInitiated = 1;
+                    $this->token = $data['UserData']['JWTToken'];
+                }
+            }
+        }
+    }
+
+    public function pullInstanceData(){
+        // Get User Instace
+        $userObj = $this->userObj;
+        $mainURL = $this->baseUrl.'migration/user-instance';
+        $result =  Http::withToken($this->token)->get($mainURL);
+        if($result->ok() && $result->json()){
+            $data = $result->json();
+            if($data['status'] == true){
+                $instanceData = @$data['data']['Instance'][0];
+                $packageData = @$data['data']['Package'];
+
+                $channel = [
+                    'id' => $instanceData['instanceId'],
+                    'token' => $instanceData['instanceToken'],
+                    'name' => $instanceData['WhatsAppName'],
+                    'start_date' => date('Y-m-d',$instanceData['StartDate']),
+                    'end_date' => date('Y-m-d',$instanceData['EndDate']),
+                ];
+
+                $central = CentralChannel::generateNewKey($channel['token']);
+
+                $extraData = [
+                    'instanceId' => $central[0],
+                    'instanceToken' => $central[1],
+                ];
+
+                $extraChannelData = array_merge($channel,$extraData);
+
+                $centralChannel = CentralChannel::where('id',$instanceData['instanceId'])->first();
+                if(!$centralChannel){
+                    CentralChannel::create($extraChannelData);                    
+                }else{
+                    $centralChannel->update($channel);
+                }
+
+                $tenantChannel = UserChannels::where('id',$channel['id'])->first();
+                if(!$tenantChannel){
+                    UserChannels::create($channel);                    
+                }else{
+                    $tenantChannel->update($channel);                    
+                }
+
+                $this->channel = $instanceData['instanceId'];
+                $this->instanceId = $extraData['instanceId'];
+
+                $this->determineMembership($packageData,$instanceData);
+            }
+        }
+    }
+
     public function determineMembership($membershipObj,$instanceData)
     {
         $userObj = $this->userObj;
@@ -177,41 +247,35 @@ class SyncOldClient implements ShouldQueue
         $this->addons = $addons;
 
         if(in_array(4,$addons)){
-            Variable::firstOrCreate([
-                'var_key' => 'ZidURL',
-                'var_value' => 'https://api.zid.sa/v1',//'https://api.zid.dev/app/v2',
-            ]);
-
-            Variable::firstOrCreate([
-                'var_key' => 'ZidMerchantToken',
-                'var_value' => str_replace('Bearer ','',$instanceData['ZID_Authorization']),
-            ]);
-            Variable::firstOrCreate([
-                'var_key' => 'ZidStoreID',
-                'var_value' => $instanceData['ZID_StoreID'],
-            ]);
-            Variable::firstOrCreate([
-                'var_key' => 'ZidStoreToken',
-                'var_value' => $instanceData['ZID_MANAGER_TOKEN'],
-            ]);
-
             $service = 'zid';
-            $baseUrl = 'https://api.zid.sa/v1';
+            $baseUrl = CentralVariable::getVar('ZidURL');
             $storeID = $instanceData['ZID_StoreID'];
-            $storeToken = str_replace('Bearer ','',$instanceData['ZID_Authorization']);
+            $storeToken = CentralVariable::getVar('ZidMerchantToken');
             $managerToken = $instanceData['ZID_MANAGER_TOKEN'];
+
+            Variable::where('var_key','ZidStoreID')->firstOrCreate([
+                'var_key' => 'ZidStoreID',
+                'var_value' => $storeID,
+            ]);
+            Variable::where('var_key','ZidStoreToken')->firstOrCreate([
+                'var_key' => 'ZidStoreToken',
+                'var_value' => $managerToken
+            ]);
 
             $models = ['customers','orders','products','abandoned-carts'];
             foreach($models as $modelName){
+                $params = [];
                 if($modelName == 'products'){
                     $dataURL = $baseUrl.'/'.$modelName.'/'; 
                 }elseif(in_array($modelName,['customers','orders','abandoned-carts'])){
                     $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
                 }
 
-                if($modelName != 'products'){
-                    $storeToken = $instanceData['ZID_MANAGER_TOKEN'];
-                    $managerToken = str_replace('Bearer ','',$instanceData['ZID_Authorization']);
+                if($modelName == 'abandoned-carts'){
+                    $params = [
+                        'page' => 1,
+                        'page_size' => 100,
+                    ];
                 }
 
                 $tableName = $service.'_'.$modelName;
@@ -230,6 +294,7 @@ class SyncOldClient implements ShouldQueue
                     'tableName' => $tableName,
                     'myHeaders' => $myHeaders,
                     'service' => $service,
+                    'params' => $params,
                 ];
                 // dd($dataArr);
                 $externalHelperObj = new \ExternalServices($dataArr);
@@ -242,18 +307,13 @@ class SyncOldClient implements ShouldQueue
         }
         
         if(in_array(5,$addons)){
-            Variable::firstOrCreate([
-                'var_key' => 'SallaURL',
-                'var_value' => 'https://api.salla.dev/admin/v2',
-            ]);
-
-            Variable::firstOrCreate([
+            Variable::where('var_key','SallaStoreToken')->firstOrCreate([
                 'var_key' => 'SallaStoreToken',
                 'var_value' => $instanceData['Salla_APIKey'],
             ]);
 
             $service = 'salla';
-            $baseUrl = 'https://api.salla.dev/admin/v2';
+            $baseUrl = CentralVariable::getVar('SallaURL');
             $storeToken = $instanceData['Salla_APIKey']; 
 
             $models = ['customers','orders','products','abandonedCarts'];
@@ -272,6 +332,7 @@ class SyncOldClient implements ShouldQueue
                     'tableName' => $tableName,
                     'myHeaders' => $myHeaders,
                     'service' => $service,
+                    'params' => [],
                 ];
 
                 if($modelName == 'orders'){
@@ -293,69 +354,6 @@ class SyncOldClient implements ShouldQueue
 
         }    
 
-    }
-
-    public function initConnection(){
-        // Get User Details
-        $userObj = $this->userObj;
-        $mainURL = $this->baseUrl.'user-details';
-        $data = ['phone' =>  str_replace('+','',$userObj->phone)/*'966570116626'*/];
-        if($this->connectionInitiated == 0){
-            $result =  Http::post($mainURL,$data);
-            if($result->ok() && $result->json()){
-                $data = $result->json();
-                if($data['status'] == true){
-                    $moduleData = [];
-                    // Begin Sync
-                    $this->connectionInitiated = 1;
-                    $this->token = $data['UserData']['JWTToken'];
-                }
-            }
-        }
-    }
-
-    public function pullInstanceData(){
-        // Get User Instace
-        $userObj = $this->userObj;
-        $mainURL = $this->baseUrl.'migration/user-instance';
-        $result =  Http::withToken($this->token)->get($mainURL);
-        if($result->ok() && $result->json()){
-            $data = $result->json();
-            if($data['status'] == true){
-                $instanceData = @$data['data']['Instance'][0];
-                $packageData = @$data['data']['Package'];
-
-                $channel = [
-                    'id' => $instanceData['instanceId'],
-                    'token' => $instanceData['instanceToken'],
-                    'name' => $instanceData['WhatsAppName'],
-                    'start_date' => date('Y-m-d',$instanceData['StartDate']),
-                    'end_date' => date('Y-m-d',$instanceData['EndDate']),
-                ];
-
-                $central = CentralChannel::generateNewKey($channel['token']);
-
-                $extraData = [
-                    'instanceId' => $central[0],
-                    'instanceToken' => $central[1],
-                ];
-
-                $extraChannelData = array_merge($channel,$extraData);
-
-                $centralChannel = CentralChannel::where('id',$instanceData['instanceId'])->first();
-                if(!$centralChannel){
-                    CentralChannel::create($extraChannelData);                    
-                }else{
-                    $centralChannel->update($channel);
-                }
-                UserChannels::firstOrCreate($channel);
-
-                $this->channel = $instanceData['instanceId'];
-                $this->instanceId = $extraData['instanceId'];
-
-                $this->determineMembership($packageData,$instanceData);
-            }
-        }
     }
 
     public function pullGroupNumbers()
@@ -414,6 +412,17 @@ class SyncOldClient implements ShouldQueue
                         'created_by' => $userObj->id,
                         'created_at' => date('Y-m-d H:i:s',$oneItemData['Date']),
                     ];
+
+                    $labelId = '';
+                    $mainWhatsLoopObj = new \MainWhatsLoop();
+                    $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
+                    $addResult = $mainWhatsLoopObj->createLabel($data);
+                    $result = $addResult->json();
+                    if($result['status']['status'] == 1){
+                        $labelId = $result['data']['label']['id'];
+                    }
+                    $item['labelId'] = $labelId;
+
                     $dataObj = Category::find($oneItemData['id']);
                     if($dataObj){
                         $dataObj->update($item);

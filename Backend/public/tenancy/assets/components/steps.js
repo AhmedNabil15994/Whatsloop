@@ -106,7 +106,6 @@ function fireAjaxRequest(id,elem){
                         '_token': $('meta[name="csrf-token"]').attr('content'),
                         'store_token': $('input[name="store_token"]').val(),
                         'store_id': $('input[name="store_id"]').val(),
-                        'merchant_token': $('textarea[name="merchant_token"]').val(),
                     },
                     success:function(data){
                         if(data.status.status == 1){

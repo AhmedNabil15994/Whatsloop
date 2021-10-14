@@ -44,7 +44,6 @@
             </div>
         </section>
 
-        @include('tenant.Partials.notf_messages')
 
         <!-- end page -->
         <script src="{{ asset('js/vendor.min.js') }}"></script>
@@ -55,5 +54,6 @@
         <script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/utils.js') }}" type="text/javascript"></script>
         <script src="{{ asset('components/login.js') }}" type="text/javascript"></script>
+        @include('tenant.Partials.notf_messages')
     </body>
 </html>

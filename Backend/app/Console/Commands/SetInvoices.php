@@ -230,7 +230,7 @@ class SetInvoices extends Command
                     $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('items',serialize($oneItem['data']['items']))->where('due_date',$invoiceDate)->first();
 
                     $status = 2;
-                    if(date('Y-m-d',strtotime($invoiceDate)) > date('Y-m-d')){
+                    if(date('Y-m-d',strtotime($invoiceDate)) >= date('Y-m-d')){
                         $status = 3;
                     }
 

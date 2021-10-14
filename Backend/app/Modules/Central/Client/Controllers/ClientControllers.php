@@ -780,17 +780,6 @@ class ClientControllers extends Controller {
 
         $user = $tenant->run(function() use(&$centralUser,$channel,$addonsArr,$input){
             UserChannels::create($channel);
-            Variable::insert([
-                [
-                    'var_key' => 'SallaURL',
-                    'var_value' => 'https://api.salla.dev/admin/v2',
-                ],
-                [
-                    'var_key' => 'ZidURL',
-                    'var_value' => 'https://api.zid.dev/app/v2',
-                ],
-            ]);
-
             $userObj = User::create([
                 'id' => $centralUser->id,
                 'global_id' => $centralUser->global_id,

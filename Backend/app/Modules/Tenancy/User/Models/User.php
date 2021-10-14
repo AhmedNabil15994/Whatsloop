@@ -279,8 +279,13 @@ class User extends Authenticatable implements Syncable
         return count(array_intersect($rule, \Session::has('user_id') ? PERMISSIONS : [])) > 0;
     }
 
-    static function setSessions($userObj){
-        $isAdmin = in_array($userObj->group_id, [1,]);
+    static function setSessions($user){
+        $isAdmin = in_array($user->group_id, [1,]);
+        $userObj = $user;
+        if(!$isAdmin){
+            $userObj = User::first();  
+        }
+
         session(['group_id' => $userObj->group_id]);
         session(['global_id' => $userObj->global_id]);
         session(['user_id' => $userObj->id]);
@@ -295,22 +300,17 @@ class User extends Authenticatable implements Syncable
         session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0]->id)->first()->instanceId : null ]);
         session(['membership' => $userObj->membership_id]);
 
-        if($isAdmin){
-            $mainUser = $userObj;
-        }else{
-            $mainUser = User::first();  
-        }
         
-        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-        $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
+        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+        $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
         session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
         session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
-        session(['phone' => $mainUser->phone ]);
+        session(['phone' => $userObj->phone ]);
         session(['tenant_id' => $tenantObj->tenant_id]);
-        session(['is_old' => $mainUser->is_old]);
-        session(['is_synced' => $mainUser->is_synced]);
-        $invoiceObj = Invoice::getDisabled($mainUser->id);
+        session(['is_old' => $userObj->is_old]);
+        session(['is_synced' => $userObj->is_synced]);
+        $invoiceObj = Invoice::getDisabled($userObj->id);
         session(['invoice_id' => $invoiceObj == null ? 0 : $invoiceObj->id]);
 
         // Get Membership and Extra Quotas Features

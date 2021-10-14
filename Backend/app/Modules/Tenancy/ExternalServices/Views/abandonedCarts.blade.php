@@ -75,12 +75,18 @@
                         </h3>
                         <div class="d-block  mb-3" >
                             <h4 class="h5 d-block w-100 font-weight-bold text-danger mb-3"> {{ trans('main.orderItems') }}:</h4>
-                            @foreach($order->items as $key=> $item)
-                            <div class="row">
-                                <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-auto">{{ $key+1 .'- '}} {{ $item['name'] }}</span>
-                                <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'l' : 'r' }}-auto">{{ trans('main.quantity').': '. $item['quantity'] }}</span>
-                            </div>
-                            @endforeach
+                            @if(is_array($order->items))
+                                @foreach($order->items as $key=> $item)
+                                <div class="row">
+                                    <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-auto">{{ $key+1 .'- '}} {{ $item['name'] }}</span>
+                                    <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'l' : 'r' }}-auto">{{ trans('main.quantity').': '. $item['quantity'] }}</span>
+                                </div>
+                                @endforeach
+                            @else
+                                <div class="row">
+                                    <span class="tx-15 m{{ DIRECTION == 'ltr' ? 'r' : 'l' }}-auto">{{ $order->items }}</span>
+                                </div>
+                            @endif
                         </div>
                         <div class="mt-2 user-info btn-list d-block"> 
                             <h4 class="h5 d-block w-100 font-weight-bold text-danger mb-3"> {{ trans('main.client') }}:</h4>

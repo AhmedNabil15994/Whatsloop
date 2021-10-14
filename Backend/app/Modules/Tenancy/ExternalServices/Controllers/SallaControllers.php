@@ -9,6 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use App\Models\ModTemplate;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\CentralVariable;
 use App\Models\UserAddon;
 use App\Models\ModNotificationReport;
 use DB;
@@ -31,7 +32,7 @@ class SallaControllers extends Controller {
         $input = \Request::all();
         $modelName = 'customers';
         $service = $this->service;
-        $baseUrl = Variable::getVar('SallaURL');
+        $baseUrl = CentralVariable::getVar('SallaURL');
         $storeToken = Variable::getVar('SallaStoreToken'); 
         $dataURL = $baseUrl.'/'.$modelName;
         $tableName = $service.'_'.$modelName;
@@ -44,6 +45,7 @@ class SallaControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -63,7 +65,7 @@ class SallaControllers extends Controller {
         $input = \Request::all();
         $modelName = 'products';
         $service = $this->service;
-        $baseUrl = Variable::getVar('SallaURL');
+        $baseUrl = CentralVariable::getVar('SallaURL');
         $storeToken = Variable::getVar('SallaStoreToken'); 
         $dataURL = $baseUrl.'/'.$modelName;
         $tableName = $service.'_'.$modelName;
@@ -76,6 +78,7 @@ class SallaControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -96,7 +99,7 @@ class SallaControllers extends Controller {
         $input = \Request::all();
         $modelName = 'orders';
         $service = $this->service;
-        $baseUrl = Variable::getVar('SallaURL');
+        $baseUrl = CentralVariable::getVar('SallaURL');
         $storeToken = Variable::getVar('SallaStoreToken'); 
         $dataURL = $baseUrl.'/'.$modelName;
         $tableName = $service.'_'.$modelName;
@@ -109,6 +112,7 @@ class SallaControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $newDataArr = $dataArr;
@@ -138,7 +142,7 @@ class SallaControllers extends Controller {
         $input = \Request::all();
         $modelName = 'abandonedCarts';
         $service = $this->service;
-        $baseUrl = Variable::getVar('SallaURL');
+        $baseUrl = CentralVariable::getVar('SallaURL');
         $storeToken = Variable::getVar('SallaStoreToken'); 
         $dataURL = $baseUrl.'/carts/abandoned';
         $tableName = $service.'_'.$modelName;
@@ -151,6 +155,7 @@ class SallaControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
+            'params' => [],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';

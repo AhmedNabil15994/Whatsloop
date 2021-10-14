@@ -25,7 +25,7 @@
                         </div>
                         <div class="user-form">
                             <input type="hidden" name="country_code" value="{{ $data->code }}">
-                            <form action="">
+                            <form id="loginForm">
                                 @csrf
                                 <div class="form--title">{{ trans('auth.loginToPanel') }}</div>
                                 <input type="tel" id="telephone" name="phone" placeholder="{{ trans('auth.phonePlaceHolder') }}">
@@ -33,7 +33,7 @@
                                 <div class="codes hidden">
                                     <input placeholder="{{ trans('auth.codePlaceHolder') }}" type="tel" name="code">
                                 </div>
-                                <button type="button" class="loginBut">{{ trans('auth.loginButton') }}</button>
+                                <button type="submit" class="loginBut">{{ trans('auth.loginButton') }}</button>
                                 <a href="{{ URL::to('/getResetPassword') }}" class="nav-link theme__dark">{{ trans('auth.forgotPassword') }}</a>
                                 {{-- <a href="#" class="nav-link theme__light">إنساء حساب جديد</a> --}}
                             </form>
@@ -47,7 +47,6 @@
             </div>
         </section>
 
-        @include('tenant.Partials.notf_messages')
 
         <!-- end page -->
         <script src="{{ asset('js/vendor.min.js') }}"></script>
@@ -58,5 +57,6 @@
         <script src="{{ asset('js/intlTelInput-jquery.min.js') }}" type="text/javascript"></script>
         <script src="{{ asset('js/utils.js') }}" type="text/javascript"></script>
         <script src="{{ asset('components/login.js') }}" type="text/javascript"></script>
+        @include('tenant.Partials.notf_messages')
     </body>
 </html>
