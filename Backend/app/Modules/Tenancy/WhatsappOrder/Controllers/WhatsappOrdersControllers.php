@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use App\Models\Order;
+use App\Models\UserAddon;
 use App\Models\Product;
 use DataTables;
 

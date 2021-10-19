@@ -167,7 +167,7 @@ class SubscriptionControllers extends Controller {
         $data['addons'] = Addons::dataList(1)['data'];
         $data['extraQuotas'] = ExtraQuota::dataList(1)['data'];
 
-        $data['membership'] = Membership::getData($membershipObj);
+        $data['membership'] = $membershipObj;
         $data['memberships'] = Membership::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.cart')->with('data',(object) $data);
     }
@@ -535,7 +535,7 @@ class SubscriptionControllers extends Controller {
         
         $userObj = User::first();
         User::setSessions($userObj);
-        return redirect()->to('/dashboard');
+        return redirect()->to('/QR');
     }
 
     public function qrIndex(){

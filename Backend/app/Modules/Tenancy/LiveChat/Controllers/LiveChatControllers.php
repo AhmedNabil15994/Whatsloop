@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Contact;
 use App\Models\ContactLabel;
 use App\Models\Reply;
+use App\Models\UserAddon;
 use App\Models\User;
 use App\Models\UserExtraQuota;
 use App\Models\ChatEmpLog;

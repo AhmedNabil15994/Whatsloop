@@ -25,7 +25,7 @@ class Bundle extends Model{
     static function dataList($status=null,$ids=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted();
+        $source = self::NotDeleted()->with('Membership');
 
         if (isset($input['title']) && !empty($input['title'])) {
             $source->where('title', 'LIKE', '%' . $input['title'] . '%');

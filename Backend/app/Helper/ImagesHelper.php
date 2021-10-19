@@ -28,25 +28,37 @@ class ImagesHelper {
         return self::checkExtensionType(strtolower($extension));
     }
 
-    static function checkExtensionType($extension){
+    static function checkExtensionType($extension,$type=null){
         $images = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
-        $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf',];
+        $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf','plain'];
         $videos = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv'];
         $sounds = ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd'];
 
         if(in_array($extension, $images)){
+            if($type != null){
+                return ['photo',$images];
+            }
             return 'photo';
         }
 
         if(in_array($extension, $files)){
+            if($type != null){
+                return ['file',$files];
+            }
             return 'file';
         }
 
         if(in_array($extension, $videos)){
+            if($type != null){
+                return ['video',$videos];
+            }
             return 'video';
         }
 
         if(in_array($extension, $sounds)){
+            if($type != null){
+                return ['sound',$sounds];
+            }
             return 'sound';
         }
     }
@@ -165,16 +177,10 @@ class ImagesHelper {
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
-
-        if($fileType == '' || $fileType == 'photo' || $fileType == 'image'){
-            $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
-        }elseif($fileType == 'file'){
-            $appliedExtensions = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','vnd.openxmlformats-officedocument.spreadsheetml.sheet','zip','rar','pdf',];
-        }elseif($fileType == 'video'){
-            $appliedExtensions = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv'];
-        }else{
-            $appliedExtensions = $fileType;
-        }
+        
+        $fileData = self::checkExtensionType($extension,'getData');
+        $fileType = $fileData[0];
+        $appliedExtensions = $fileData[1];
 
         if (!in_array($extension, $appliedExtensions)) {
             return false;
@@ -398,15 +404,9 @@ class ImagesHelper {
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
 
-        if($fileType == '' || $fileType == 'photo' || $fileType == 'image'){
-            $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
-        }elseif($fileType == 'file'){
-            $appliedExtensions = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf',];
-        }elseif($fileType == 'video'){
-            $appliedExtensions = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv'];
-        }else{
-            $appliedExtensions = $fileType;
-        }
+        $fileData = self::checkExtensionType($extension,'getData');
+        $fileType = $fileData[0];
+        $appliedExtensions = $fileData[1];
 
         if (!in_array($extension, $appliedExtensions)) {
             return false;

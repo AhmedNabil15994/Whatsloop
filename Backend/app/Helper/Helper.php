@@ -180,11 +180,10 @@ class Helper
     
     static function getAllPerms(){
         $controllers = config('permissions');
-        $addons = \DB::connection('main')->table('addons')->whereIn('id',\Session::has('addons') ? \Session::get('addons') : [])->get(['module','id']);
-        $addons = reset($addons);
+        $addons = Session::has('addons') ? Session::get('addons') : [];//\DB::connection('main')->table('addons')->whereIn('id',)->get(['module','id']);
         foreach ($addons as $addon) {
-            if(!in_array($addon->id,Session::get('deactivatedAddons')) || !in_array($addon->id,Session::get('disabledAddons'))){
-                if($addon->module == 'Bot'){
+            if(!in_array($addon,Session::get('deactivatedAddons')) || !in_array($addon,Session::get('disabledAddons'))){
+                if($addon == 1){
                     $externalPermissions = [
                         'BotControllers@index' => 'list-bots',
                         'BotControllers@edit' => 'edit-bot',
@@ -200,7 +199,7 @@ class Helper
                         'BotControllers@uploadImage' => 'uploadImage-bot',
                         'BotControllers@deleteImage' => 'deleteImage-bot',
                     ];
-                }elseif($addon->module == 'LiveChat'){
+                }elseif($addon == 2){
                     $externalPermissions = [
                         'LiveChatControllers@index' => 'list-livechat',
                         'LiveChatControllers@dialogs' => 'list-livechat',
@@ -221,7 +220,7 @@ class Helper
                         'LiveChatControllers@removeMod' => 'list-livechat',
                         'LiveChatControllers@liveChatLogout' => 'list-livechat',
                     ];
-                }elseif($addon->module == 'GroupMsgs'){
+                }elseif($addon == 3){
                     $externalPermissions = [
                         'GroupMsgsControllers@index' => 'list-group-messages',
                         'GroupMsgsControllers@add' => 'add-group-message' ,
@@ -230,7 +229,7 @@ class Helper
                         'GroupMsgsControllers@charts' => 'charts-group-message',
                         'GroupMsgsControllers@uploadImage' => 'uploadImage-group-message',
                     ];
-                }elseif($addon->module == 'zid'){
+                }elseif($addon == 4){
                     $externalPermissions = [
                         'ZidControllers@customers' => 'zid-customers',
                         'ZidControllers@products' => 'zid-products',
@@ -245,7 +244,7 @@ class Helper
                         'ZidControllers@templatesDelete' => 'delete-zid-template',
                         'ProfileControllers@updateZid' => 'updateZid',
                     ];
-                }elseif($addon->module == 'salla'){
+                }elseif($addon == 5){
                     $externalPermissions = [
                         'SallaControllers@customers' => 'salla-customers',
                         'SallaControllers@products' => 'salla-products',
@@ -260,14 +259,14 @@ class Helper
                         'SallaControllers@templatesDelete' => 'delete-salla-template',
                         'ProfileControllers@updateSalla' => 'updateSalla',
                     ];
-                }elseif($addon->module == 'zapier'){
+                }elseif($addon == 6){
                     $externalPermissions = [];
-                }elseif($addon->module == 'shopify'){
+                }elseif($addon == 7){
                     $externalPermissions = [];
-                }elseif($addon->module == 'whiteLogo'){
+                }elseif($addon == 8){
                     $externalPermissions = [];
                 }
-                // elseif($addon->module == 'whatsappOrder'){
+                // elseif($addon == 9){
                 //     $externalPermissions = [
                 //         'WhatsappOrdersControllers@products' => 'whatsapp-products',
                 //         'WhatsappOrdersControllers@orders' => 'whatsapp-orders',

@@ -16,14 +16,12 @@ class CategoryControllers extends Controller {
     use \TraitsFunc;
 
     public function getData(){
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $data['mainData'] = [
             'title' => trans('main.categories'),
@@ -150,12 +148,10 @@ class CategoryControllers extends Controller {
 
     protected function validateInsertObject($input){
         $rules = [
-            'channel' => 'required',
             'name_'.LANGUAGE_PREF => 'required',
         ];
 
         $message = [
-            'channel.required' => trans('main.channelValidate'),
             'name_'.LANGUAGE_PREF.'.required' => trans('main.title'.ucfirst(LANGUAGE_PREF).'Validate'),
         ];
 

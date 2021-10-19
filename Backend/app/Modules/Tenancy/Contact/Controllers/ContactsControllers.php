@@ -20,7 +20,7 @@ class ContactsControllers extends Controller {
     use \TraitsFunc;
 
     public function getData(){
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::getOne(USER_ID);
         $data['userObj'] = $userObj;
         $groups = GroupNumber::dataList(1)['data'];
         $data['mainData'] = [

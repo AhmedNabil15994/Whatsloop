@@ -204,6 +204,7 @@ return [
 	'manual' => 'يدوي',
 	'excelFile' => 'ملف اكسيل',
 	'lang' => 'اللغة',
+	'langValidate' => 'يرجي اختيار اللغة',
 	'extraInfo' => 'معلومات اضافية',
 	'whatsappNosValidate' => 'يرجي ادخال ارقام الواتس اب',
 

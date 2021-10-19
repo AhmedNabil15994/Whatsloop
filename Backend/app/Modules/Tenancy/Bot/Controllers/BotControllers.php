@@ -20,14 +20,12 @@ class BotControllers extends Controller {
     public $addonId = '1';
 
     public function getData(){
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $messageTypes=[
             [
@@ -152,12 +150,14 @@ class BotControllers extends Controller {
             'message_type' => 'required',
             'message' => 'required',
             'reply_type' => 'required',
+            'lang' => 'required',
         ];
 
         $message = [
             'message_type.required' => trans('main.messageTypeValidate'),
             'message.required' => trans('main.messageValidate'),
             'reply_type.required' => trans('main.replyTypeValidate'),
+            'lang.required' => trans('main.replyTypeValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -181,14 +181,12 @@ class BotControllers extends Controller {
             return Redirect('404');
         }
 
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $data['data'] = Bot::getData($dataObj);
         $data['designElems'] = $this->getData();
@@ -307,14 +305,12 @@ class BotControllers extends Controller {
         if(!$checkAvail){
             return redirect(404);
         }
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.bot') ;

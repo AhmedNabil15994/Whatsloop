@@ -19,7 +19,7 @@ class ChatEmpLog extends Model{
 
     static function dataList() {
         $input = \Request::all();
-        $source = self::orderBy('id','DESC');
+        $source = self::with('User')->orderBy('id','DESC');
         return self::generateObj($source);
     }
 
@@ -40,9 +40,9 @@ class ChatEmpLog extends Model{
         $data->chatId = $source->chatId;
         $data->chatId2 = $source->chatId != null ? self::reformChatId($source->chatId) : '';
         $data->user_id = $source->user_id;
-        $userObj = $source->User != null ? User::getData(($source->User)) : [];
+        $userObj = $source->User != null ? $source->User : [];
         $data->user = $source->User != null ? ucwords($userObj->name) : '';
-        $data->userImage = $source->User != null ? $userObj->photo : '';
+        $data->userImage = $source->User != null ? User::selectImage($userObj) : '';
         $data->type = $source->type;
         $data->typeText = self::getTypeText($source->type);
         $data->ended = $source->ended;

@@ -34,10 +34,10 @@ class AuthEngine
         define('GLOBAL_ID', Session::get('global_id'));
         define('TENANT_ID', Session::get('tenant_id'));
         define('DOMAIN', Session::get('domain'));
-        // Update login date realtime
-        $userObj = User::getOne(USER_ID);
-        
-        $permissions = User::checkUserPermissions($userObj);        
+
+        $userObj = User::find(USER_ID);
+        $permissions = User::checkUserPermissions($userObj);
+                
         define('IS_ADMIN', $userObj->group_id == 1 ? true : false);
         define('PERMISSIONS', $permissions);
 

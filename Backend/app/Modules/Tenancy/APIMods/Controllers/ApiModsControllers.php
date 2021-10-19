@@ -178,14 +178,12 @@ class ApiModsControllers extends Controller {
             return Datatables::of($data['data'])->rawColumns(['status'])->make(true);
         }
 
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $message_types = [
             ['id'=>1,'title'=>trans('main.text')],

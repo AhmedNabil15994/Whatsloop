@@ -203,6 +203,7 @@ return [
 	'manual' => 'Manual',
 	'excelFile' => 'Excel File',
 	'lang' => 'Language',
+	'langValidate' => 'Please Select Language',
 	'extraInfo' => 'Extra Info',
 	'whatsappNosValidate' => 'Whatsapp Numbers Field is required',
 

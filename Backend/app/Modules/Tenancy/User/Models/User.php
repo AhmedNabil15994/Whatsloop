@@ -181,7 +181,7 @@ class User extends Authenticatable implements Syncable
     }
 
     static function authenticatedUser(){
-        return self::getData(self::getOne(USER_ID));
+        return self::getData(self::with(['Group','PaymentInfo','Membership'])->find(USER_ID));
     }
     
     static function selectImage($source){
@@ -217,11 +217,11 @@ class User extends Authenticatable implements Syncable
         $data->emergency_number = $source->emergency_number;
         $data->two_auth = $source->two_auth;
         $data->membership_id = $source->membership_id;
-        $data->membership = $source->membership_id != null ? $source->Membership->{'title_'.LANGUAGE_PREF} : '';
+        $data->membership = $source->Membership != null ? $source->Membership->{'title_'.LANGUAGE_PREF} : '';
         $data->addons = $source->addons;
         $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
-        $data->channels = $source->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($source->channels))->get() : [];
+        $data->channels = $source->channels != null ? unserialize($source->channels) : [];
         $data->channelCodes = !empty($data->channels) ? implode(',', unserialize($source->channels)) : '';
         $data->channelIDS = unserialize($source->channels);
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);

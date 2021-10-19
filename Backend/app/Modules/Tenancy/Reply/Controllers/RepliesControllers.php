@@ -16,14 +16,13 @@ class RepliesControllers extends Controller {
     use \TraitsFunc;
 
     public function getData(){
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
+        
         $data['mainData'] = [
             'title' => trans('main.replies'),
             'url' => 'replies',

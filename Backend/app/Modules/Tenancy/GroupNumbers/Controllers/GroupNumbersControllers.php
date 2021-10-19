@@ -16,14 +16,13 @@ class GroupNumbersControllers extends Controller {
     use \TraitsFunc;
 
     public function getData(){
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
+        
         $data['mainData'] = [
             'title' => trans('main.groupNumbers'),
             'url' => 'groupNumbers',
@@ -296,8 +295,8 @@ class GroupNumbersControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.addGroupNumbers') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
-        $data['channels'] = User::getData(User::getOne(USER_ID))->channels;
-        $data['channels'][0]->id = Session::get('channelCode');
+        $data['channels'] =[];
+        $data['channels'][0] = Session::get('channelCode');
         $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
         return view('Tenancy.GroupNumbers.Views.add')->with('data', (object) $data);
     }

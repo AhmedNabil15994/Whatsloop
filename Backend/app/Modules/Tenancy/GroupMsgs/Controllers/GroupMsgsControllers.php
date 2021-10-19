@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\ChatMessage;
 use App\Models\ContactReport;
 use App\Models\UserExtraQuota;
+use App\Models\UserAddon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -31,15 +32,13 @@ class GroupMsgsControllers extends Controller {
     }
 
     public function getData(){
-        $userObj = User::getData(User::getOne(USER_ID));
         $groups = GroupNumber::dataList(1)['data'];
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->title = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $messageTypes = [
             ['id'=>1,'title'=>trans('main.text')],

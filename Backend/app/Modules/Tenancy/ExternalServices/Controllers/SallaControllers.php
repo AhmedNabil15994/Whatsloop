@@ -590,14 +590,12 @@ class SallaControllers extends Controller {
     public function templates(Request $request){
         $service = $this->service;
 
-        $userObj = User::getData(User::getOne(USER_ID));
+        $userObj = User::find(USER_ID);
         $channels = [];
-        foreach ($userObj->channels as $key => $value) {
-            $channelObj = new \stdClass();
-            $channelObj->id = Session::get('channelCode');
-            $channelObj->name = $value->name;
-            $channels[] = $channelObj;
-        }
+        $channelObj = new \stdClass();
+        $channelObj->id = Session::get('channelCode');
+        $channelObj->title = unserialize($userObj->channels)[0];
+        $channels[] = $channelObj;
 
         $data['designElems']['mainData'] = [
             'title' => trans('main.templates'),
@@ -764,7 +762,6 @@ class SallaControllers extends Controller {
         ];
         $userObj = User::getData(User::getOne(USER_ID));
         $data['channel'] = $userObj->channels[0];
-        $data['channel']->id = Session::get('channelCode');
         $options = [['id'=>'ترحيب بالعميل','name'=>'ترحيب بالعميل']];
         if (Schema::hasTable($service.'_order_status')) {
             $statuses = DB::table($service.'_order_status')->get();

@@ -51,7 +51,7 @@ class DashboardControllers extends Controller {
         }
 
         $messages = (object) ChatMessage::lastMessages();
-
+        
         $data['allMessages'] = ChatMessage::count();
         $data['data'] = $messages->data;
         $data['pagination'] = $messages->pagination;

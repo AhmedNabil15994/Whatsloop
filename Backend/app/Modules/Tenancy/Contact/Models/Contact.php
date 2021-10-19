@@ -65,7 +65,7 @@ class Contact extends Model{
     }
 
     static function lastContacts(){
-        $contactObj = self::NotDeleted()->orderBy('id','DESC')->take(20)->inRandomOrder();
+        $contactObj = self::NotDeleted()->with('Group')->orderBy('id','DESC')->take(20)->inRandomOrder();
         if($contactObj != null){
             return self::generateObj($contactObj);
         }
@@ -74,7 +74,7 @@ class Contact extends Model{
     static function dataList($status=null,$id=null,$group_id=null,$withMessageStatus=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted()->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->with(['Group'])->where(function ($query) use ($input) {
                     if (isset($input['id']) && !empty($input['id'])) {
                         $query->where('id', $input['id']);
                     } 
@@ -121,7 +121,7 @@ class Contact extends Model{
     static function dataList2() {
         $input = \Request::all();
         $pageNo = 15;
-        $source = self::NotDeleted()->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->with(['Group','Reports'])->where(function ($query) use ($input) {
                     if (isset($input['name']) && !empty($input['name'])) {
                         $query->where('name', 'LIKE', '%' . $input['name'] . '%');
                     } 
@@ -183,7 +183,7 @@ class Contact extends Model{
     }
 
     static function getFullContactsInfo($group_id,$group_message_id){
-        $source = self::NotDeleted()->with('Reports')->where('group_id',$group_id);
+        $source = self::NotDeleted()->with(['Reports','Group'])->where('group_id',$group_id);
         if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
                 $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
@@ -194,7 +194,7 @@ class Contact extends Model{
     }
 
     static function getContactsReports(){
-        $source = self::NotDeleted();
+        $source = self::NotDeleted()->with('Group');
         if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
                 $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
