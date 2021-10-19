@@ -295,9 +295,9 @@ class User extends Authenticatable implements Syncable
         session(['is_admin' => $isAdmin]);
         session(['group_name' => $userObj->Group->name_ar]);
         // $channels = User::getData($userObj)->channels;
-        $channels = $userObj->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($userObj->channels))->get() : [];
-        session(['channel' => !empty($channels) ? $channels[0]->id : null]);
-        session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0]->id)->first()->instanceId : null ]);
+        $channels = $userObj->channels != null ? unserialize($userObj->channels) : [];
+        session(['channel' => !empty($channels) ? $channels[0] : null]);
+        session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0])->first()->instanceId : null ]);
         session(['membership' => $userObj->membership_id]);
 
         
