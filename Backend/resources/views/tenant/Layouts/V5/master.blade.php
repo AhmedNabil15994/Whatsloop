@@ -20,7 +20,7 @@
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
 		@include('tenant.Layouts.V5.header')
 
-		@if(!in_array(Request::segment(1),['menu','packages','checkout','postBundle']))
+		@if(!in_array(Request::segment(1),['menu','packages','checkout','postBundle','updateSubscription']))
 		@include('tenant.Layouts.V5.sidebar')
 		@endif
 
@@ -36,7 +36,6 @@
 		
 		@yield('content')
 
-		@include('tenant.Layouts.V5.rightSideBar')
 		
 		@yield('modals')
 
