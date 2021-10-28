@@ -196,10 +196,10 @@
                     <span class="side-menu__label">{{ trans('main.whatsappOrders') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
                 </a>
                 <ul class="slide-menu">
-                    @if(\Helper::checkRules('whatsapp-orders'))
+                    @if(\Helper::checkRules('whatsapp-products'))
                     <li><a class="slide-item" href="{{ URL::to('/whatsappOrders/products') }}">{{ trans('main.products') }}</a></li>
                     @endif
-                    @if(\Helper::checkRules('whatsapp-products'))
+                    @if(\Helper::checkRules('whatsapp-orders'))
                     <li><a class="slide-item" href="{{ URL::to('/whatsappOrders/orders') }}">{{ trans('main.orders') }}</a></li>
                     @endif
                 </ul>
@@ -291,7 +291,7 @@
             </li>
             @endif
 
-            @if(\Helper::checkRules('list-group-messages'))
+            @if(\Helper::checkRules('list-group-messages,add-group-message'))
             <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">
                     <div class="side-angle1"></div>
@@ -304,7 +304,7 @@
                     @if(\Helper::checkRules('list-group-messages'))
                     <li><a class="slide-item" href="{{ URL::to('/groupMsgs') }}">{{ trans('main.groupMsgs') }}</a></li>
                     @endif
-                    @if(\Helper::checkRules('list-messages-archive'))
+                    @if(\Helper::checkRules('add-group-message'))
                     <li><a class="slide-item" href="{{ URL::to('/groupMsgs/add') }}">{{ trans('main.sendNewMessage') }}</a></li>
                     @endif
                 </ul>

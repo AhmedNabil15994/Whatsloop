@@ -1,0 +1,303 @@
+.dark-mode input,
+.dark-mode textarea
+{
+	color:#fff!important
+}
+
+.dark-mode input::input-placeholder,
+.dark-mode textarea::input-placeholder { /* Chrome/Opera/Safari */
+ 	color: #A9B2C4!important;
+}
+.dark-mode input::-webkit-input-placeholder,
+.dark-mode textarea::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  	color: #A9B2C4!important;
+}
+.dark-mode input::-moz-placeholder,
+.dark-mode textarea::-moz-placeholder { /* Firefox 19+ */
+  	color: #A9B2C4!important;
+}
+.dark-mode input:-ms-input-placeholder,
+.dark-mode textarea:-ms-input-placeholder { /* IE 10+ */
+  	color: #A9B2C4!important;
+}
+.dark-mode input:-moz-placeholder,
+.dark-mode textarea:-moz-placeholder { /* Firefox 18- */
+  	color: #A9B2C4!important;
+}
+
+.dark-mode,
+.dark-mode .cpanelStyle,
+.dark-mode .header .profile .profileStyle,
+.dark-mode .payment .products-table tbody tr,
+.dark-mode .cpanelStyle .pagination li a
+{
+	background-color:#192439!important
+}
+
+.dark-mode .nicescroll-cursors
+{
+	background:#6D7E9F!important
+}
+
+.dark-mode .header,
+.dark-mode .footer,
+.dark-mode .stats .itemStats,
+.dark-mode .stats .lastNumbers,
+.dark-mode .stats .msgArchive,
+.dark-mode .formNumbers .form,
+.dark-mode .header .profile .profileStyle .head,
+.dark-mode .transmitters,
+.dark-mode .botStyle,
+.dark-mode .categories .link,
+.dark-mode .categories .subMenu,
+.dark-mode .cart-sell .select-type .selectStyle,
+.dark-mode .payment,
+.dark-mode .form .btnsTabs li
+{
+	background:#253046
+}
+
+.dark-mode .header .profile .profileStyle .head
+{
+	border:2px solid #192439
+}
+
+.dark-mode .stats .itemStats .icon,
+.dark-mode .header .user .icon,
+.dark-mode .numbStyle i,
+.dark-mode .stats .lastNumbers .listNumbers li .icon,
+.dark-mode .header .profile .profileStyle .head .icon,
+.dark-mode .botStyle .stepsBot .step i,
+.dark-mode .qutas-ards,
+.dark-mode .qutas-parent,
+.dark-mode .quta-card,
+.dark-mode .steps .step .icon,
+.dark-mode .form .addTitle i,
+.dark-mode .transmitters .transmitterHead a,
+.dark-mode .transmitters .content .numbers .numbStyl .listNumbs li a
+{
+	background-color:#1A2336
+}
+
+.dark-mode .stats .itemStats:hover .icon,
+.dark-mode .numbStyle i,
+.dark-mode .steps .step:hover .icon
+{
+	border-color:#1A2336
+}
+
+.dark-mode,
+.dark-mode .header .user,
+.dark-mode .header .lang,
+.dark-mode .header .profile .openProfile,
+.dark-mode .stats .itemStats .numb,
+.dark-mode .stats .itemStats .circle strong,
+.dark-mode .stats .lastNumbers .title,
+.dark-mode .header .user .icon,
+.dark-mode .stats .lastNumbers .listNumbers li .titleNumb,
+.dark-mode .numbStyle i,
+.dark-mode .stats .lastNumbers .listNumbers li .date,
+.dark-mode .stats .lastNumbers .listNumbers li .icon,
+.dark-mode .stats .msgArchive .title,
+.dark-mode .stats .msgArchive table tbody tr td,
+.dark-mode .stats .msgArchive table thead tr th,
+.dark-mode .breadCrumb li,
+.dark-mode .breadCrumb li a,
+.dark-mode .formNumbers .form .title,
+.dark-mode .formNumbers .form .upload,
+.dark-mode .formNumbers .form .uploadFile,
+.dark-mode .ui-selectmenu-text,
+.dark-mode .formNumbers .form .upload i,
+.dark-mode .formNumbers .form p,
+.dark-mode .footer .copyrights,
+.dark-mode .header .profile .profileStyle .listProfile li a,
+.dark-mode .header .profile .profileStyle .head .icon,
+.dark-mode .bill .contentBill .stat,
+.dark-mode .bill .dateFixed span,
+.dark-mode .transmitters .content .searchForm input,
+.dark-mode .transmitters .content .views span,
+.dark-mode .bill .listPDF li a,
+.dark-mode .ui-widget-content,
+.dark-mode .botStyle .titleBot,
+.dark-mode .botStyle .stepsBot .step,
+.dark-mode .botStyle .settings .titleSettings,
+.dark-mode .botStyle .stepsBot .step i,
+.dark-mode .botStyle .settings .attention,
+.dark-mode .botStyle .settings .attention i,
+.dark-mode .botStyle .settings .qr .stepQr,
+.dark-mode .categories .link,
+.dark-mode .categories .link .icon,
+.dark-mode .categories .subMenu li a,
+.dark-mode .qutas-ards .mainquta-card .card-slag,
+.dark-mode .offer-card .card-text span,
+.dark-mode .offer-card .card-slag,
+.dark-mode .cart-sell .sell-card .card-body .card-text-2 span,
+.dark-mode .cart-sell .sell-card .delete,
+.dark-mode .quta-card .card-body .card-text,
+.dark-mode .cart-sell .sell-card .card-body .card-text-last,
+.dark-mode .steps .step .icon,
+.dark-mode .steps .step,
+.dark-mode .payment .products-table tbody tr td .details .title,
+.dark-mode .payment .products-table tbody tr td .details .type span,
+.dark-mode .payment .products-table tbody tr td .details .type,
+.dark-mode .payment .products-table tbody tr td,
+.dark-mode .payment .products-table tbody tr td .remove,
+.dark-mode .payment .listTotal li,
+.dark-mode .formPayment label,
+.dark-mode .selectPayment .title,
+.dark-mode .paymentStyle .labelUpload,
+.dark-mode .paymentStyle .titleSelect,
+.dark-mode .form .codeSupport span,
+.dark-mode .formNumbers .form .selectStyle i,
+.dark-mode .form .codeSupport.phoneSupport i,
+.dark-mode .form .addTitle i,
+.dark-mode .form .addTitle,
+.dark-mode .form .btnsTabs li,
+.dark-mode .transmitters .transmitterHead .title,
+.dark-mode .transmitters .transmitterHead a,
+.dark-mode .transmitters .content .numbers .numbStyl .listNumbs li a
+{
+	color:#A9B2C4
+}
+
+.dark-mode .header .iconMenu svg,
+.form .codeSupport span i svg path
+{
+	fill:#A9B2C4
+}
+
+.dark-mode .stats .itemStats .title,
+.dark-mode .stats .numbStyle,
+.dark-mode .payment .products-table thead tr th
+{
+	color:#fff;
+}
+
+.dark-mode .lastNumbers .numbStyle
+{
+	color:#6D7E9F
+}
+
+.dark-mode .stats .lastNumbers .title,
+.dark-mode .stats .lastNumbers .listNumbers li,
+.dark-mode .stats .msgArchive .title,
+.dark-mode .formNumbers .form .title,
+.dark-mode .bill .titleBills,
+.dark-mode .transmitters .content .views input,
+.dark-mode .ui-widget-content,
+.dark-mode .botStyle .settings,
+.dark-mode .botStyle .settings .attention,
+.dark-mode .botStyle .settings .attention i,
+.dark-mode .categories .subMenu li:not(:last-of-type),
+.dark-mode .qutas-parent .box-style .box-header,
+.dark-mode .cart-sell .sell-card,
+.dark-mode .formPayment,
+.dark-mode .selectPayment,
+.dark-mode .paymentStyle,
+.dark-mode .form .addTitle,
+.dark-mode .transmitters .transmitterHead,
+.dark-mode .transmitters .content .numbers .numbStyl
+{
+	border-color:#2E3950
+}
+
+.dark-mode .stats .msgArchive table thead tr,
+.dark-mode .formNumbers .form .selectStyle,
+.dark-mode .formNumbers .form .uploadFile,
+.dark-mode .transmitters .content .searchForm input,
+.dark-mode .bill .listPDF,
+.dark-mode .transmitters .content .views input,
+.dark-mode .transmitters .content .searchTable input,
+.dark-mode .bill .tableBills tbody tr,
+.dark-mode .pagination li a,
+.dark-mode .ui-widget-content,
+.dark-mode .botStyle .settings .channel input,
+.dark-mode .botStyle .settings .qr .stepQr,
+.dark-mode .categories .link .icon,
+.dark-mode .categories .subMenu li a:before,
+.dark-mode .categories .link:hover .openSub, 
+.dark-mode .categories .link.active .openSub,
+.dark-mode .mybreadcrumb,
+.dark-mode .qutas-ards .mainquta-card,
+.dark-mode .offer-card,
+.dark-mode .qutas-parent .box-style,
+.dark-mode .payment .products-table thead tr th,
+.dark-mode .payment .totalConfirm .title,
+.dark-mode .payment .totalConfirm .coupon input,
+.dark-mode .formPayment input,
+.dark-mode .paymentStyle .labelUpload,
+.dark-mode .formNumbers .form input, 
+.dark-mode .formNumbers .form .uploadFile, 
+.dark-mode .ui-selectmenu-button.ui-button, 
+.dark-mode .formNumbers .form textarea
+{
+	background-color:#384560
+}
+
+.dark-mode .payment .totalConfirm .coupon input
+{
+	color:#fff;
+}
+
+.dark-mode .quta-card .card-body,
+.dark-mode .cart-sell .sell-card:hover,
+.dark-mode .adding-card .card-body,
+.dark-mode .adding-card,
+.dark-mode .transmitters .content .numbers .numbStyl:hover
+{
+	background-color:#28344d
+}
+
+.dark-mode .stats .msgArchive table tbody tr
+{
+	background-color:#333F57
+}
+
+.dark-mode .stats .msgArchive table thead tr th:not(:last-of-type), 
+.dark-mode .stats .msgArchive table tbody tr td:not(:last-of-type),
+.dark-mode .header .profile .profileStyle .listProfile li:not(:last-of-type)
+{
+	border-color:#253046
+}
+
+.dark-mode .stats .lastNumbers .listNumbers li .titleNumb span,
+.dark-mode .formNumbers .form .uploadFile span,
+.dark-mode .offer-card .card-text span.price,
+.dark-mode .cart-sell .sell-card .card-body .card-link,
+.dark-mode .adding-card .card-body .card-text
+{
+	color:#F6CD02
+}
+
+
+.dark-mode .header,
+.dark-mode .footer
+{
+	border-right:1px solid #192439
+}
+
+.dark-mode .bill .tableBills thead tr
+{
+	color:#000
+}
+
+.dark-mode .botStyle .stepsBot .step.active i,
+.dark-mode .steps .step.active .icon
+{
+	background-color:#00BFB5;
+	color:#fff;
+}
+
+.dark-mode .payment .products-table tbody tr,
+.dark-mode .payment .listTotal li
+{
+	border-bottom:1px solid #384560
+}
+
+
+
+
+
+
+
+

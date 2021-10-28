@@ -73,9 +73,9 @@ class TemplatesControllers extends Controller {
             'channel' => [
                 'label' => trans('main.channel'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable badge badge-dark',
+                'anchor-class' => 'badge badge-dark',
             ],
             'name_ar' => [
                 'label' => trans('main.titleAr'),

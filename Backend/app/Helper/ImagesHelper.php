@@ -403,7 +403,6 @@ class ImagesHelper {
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
-
         $fileData = self::checkExtensionType($extension,'getData');
         $fileType = $fileData[0];
         $appliedExtensions = $fileData[1];
@@ -429,6 +428,11 @@ class ImagesHelper {
         if ($strAction == 'bank_transfers') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'bank_transfers/' . $id;
+        }
+
+        if ($strAction == 'tickets') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'tickets/' . $id;
         }
 
         if ($strAction == 'bankAccounts') {

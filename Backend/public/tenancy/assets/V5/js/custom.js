@@ -1,0 +1,236 @@
+$(function(){
+resizeMenu();
+	$(".loginPage .left").height($(".loginPage .right").height());
+	
+	$( ".loginPage .right .center .formLogin .inputStyle.telStyle input" ).focus(function() {
+	  $(this).parent().siblings().css("color","#00BFB5");
+	});
+	$( ".loginPage .right .center .formLogin .inputStyle.telStyle input" ).focusout(function() {
+	  $(this).parent().siblings().css("color","#6D7E9F");
+	});
+
+	$(".loginPage .right .center .formLogin .inputStyle input").keyup(function() {
+	    if($(this).val().length > 0) {
+	         $(this).parent().addClass("active");
+	    } else {
+	        $(this).parent().removeClass("active");
+	    }
+	});
+
+	// if($(".phone")[0]) {
+	//   var input = document.querySelector(".phone");
+	//     window.intlTelInput(input, {
+	//        //allowDropdown: false,
+	//        //autoHideDialCode: false,
+	//        //autoPlaceholder: "off",
+	//        //dropdownContainer: document.body,
+	//       // excludeCountries: ["sn"],
+	//       // formatOnDisplay: false,
+	//       // geoIpLookup: function(callback) {
+	//       //   $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+	//       //     var countryCode = (resp && resp.country) ? resp.country : "";
+	//       //     callback(countryCode);
+	//       //   });
+	//       // },
+	//       // hiddenInput: "full_number",
+	//       // initialCountry: "auto",
+	//       // localizedCountries: { 'de': 'Deutschland' },
+	//       // nationalMode: false,
+	//       // onlyCountries: ['us', 'gb', 'ch', 'ca', 'do'],
+	//        //placeholderNumberType: "none",
+	//       // preferredCountries: ['cn', 'jp'],
+	//       // separateDialCode: true,
+	//     });
+ //    }
+    
+/************************************************************************/
+	$(".header .iconMenuPc").click(function () {
+
+		$(".header .menuPc").slideToggle();
+
+	});
+
+	$('body,html').on('click', function (e) {
+		var container = $(".header .iconMenuPc,.header .iconMenuPc *"),
+			Sub = $(".header .menuPc");
+
+
+		if (!$(e.target).is(container)) {
+			Sub.slideUp();
+		}
+
+	});
+	
+	$(".menuCpanel .iconMenuCpanel,.cpanelStyle.activeMenu .bgOpacity").click(function () {
+		if($(".menuCpanel").hasClass("active")) {
+			$(".menuCpanel .linksCpanel li .subMenu").css("display","none");
+			$(".menuCpanel.active .linksCpanel li .subToggle").removeClass("active");
+		}
+		$(".menuCpanel").toggleClass("active");
+		$(".cpanelStyle").toggleClass("activeMenu");
+		$("body").toggleClass("overflowH");
+
+	});
+    
+	$(".linksCpanel").niceScroll({
+		cursorwidth: 6,
+		cursorborder: 0,
+		cursorcolor: '#707d94',
+		zindex: 1500,
+		horizrailenabled: false
+
+	}).resize();
+    
+	$(window).load(resizeMenu);
+	
+	function resizeMenu() {
+
+		if ($(window).width() < 1200) {
+			$(".menuCpanel .linksCpanel li .subMenu").css("display","none");
+			$(".menuCpanel").removeClass("active");
+			$(".cpanelStyle").removeClass("activeMenu");
+			$("body").removeClass("overflowH");
+
+		} else {
+			$(".menuCpanel").addClass("active");
+			$(".cpanelStyle").addClass("activeMenu");
+			$("body").addClass("overflowH");
+		}
+
+	}
+    
+    $(".menuCpanel.active .linksCpanel li .subToggle").click(function() {
+		if($(".menuCpanel").hasClass("active")) {
+			$(this).siblings().slideToggle();
+    		$(this).toggleClass("active");
+		}
+    	
+    });
+
+    $(".menuCpanel .linksCpanel li").hover(function() {
+    	var offset = $(this).position();
+    	var id = $(this).attr("titlehover");
+    	$(".menuCpanel .hovers  #"+id  +".titleHover").css("top",offset.top + 5);
+    	$(".menuCpanel .hovers #"+id  +".titleHover").addClass("active");
+    },function() {
+    	var id = $(this).attr("titlehover");
+    	$(".menuCpanel .hovers #"+id  +".titleHover").removeClass("active");
+    });
+    
+/***************************************************************************/    
+    
+    $(".header .profile .openProfile").click(function() {
+    	
+    	$(this).siblings().slideToggle();
+    	
+    });
+    
+	$('body,html').on('click', function(e) {
+		var container = $(".header .profile .openProfile,.header .profile .profileStyle *,.header .profile .profileStyle"),
+		Sub = $(".header .profile .profileStyle");
+		
+
+	    if( !$(e.target).is(container)  ){
+	        Sub.slideUp();
+	    }
+
+	});
+    
+    $(".header .btnDark").click(function() {
+    	$(this).toggleClass("active");
+    });
+    
+    
+ 	$(".stats .listNumbers").niceScroll({
+		cursorwidth: 6,
+		cursorborder: 0,
+		railalign:"left",
+		cursorcolor: '#DEDEDE',
+		zindex: 1500,
+		horizrailenabled: false
+
+	}).resize();
+    
+	/****** Start scroll Top ******/
+	
+	var scrollButton = $(".back-top");
+	
+	$(window).scroll(function () {
+		$(this).scrollTop() >= 100 ? scrollButton.addClass("active") : scrollButton.removeClass("active");
+	});
+	
+    scrollButton.click(function () {
+		$("html,body").animate({scrollTop : 0}, 800);
+	});
+	
+	/****** End scroll Top ******/
+    
+	/********************************************/
+
+	$('.circle1').circleProgress({
+		thickness:10
+	}).on('circle-animation-progress', function (event, progress) {
+		$(this).find('strong').html('<i>%</i>' + Math.round(100 * progress));
+	});
+	
+	$('.circle2').circleProgress({
+		thickness:10
+	}).on('circle-animation-progress', function (event, progress) {
+		$(this).find('strong').html('<i>%</i>' + Math.round(100 * progress));
+	});
+
+	/********************************************/
+    
+    $(".categories .link").click(function() {
+    	$(".categories .link").not($(this)).removeClass("active");
+    	$(".categories .linkStyle .subMenu").not($(this).siblings()).slideUp("active");
+    	$(this).toggleClass("active");
+    	$(this).siblings().slideToggle();
+    	
+    });
+    
+    $( ".selectmenu" ).selectmenu();
+    
+ 	/****** Start Tabs ******/
+	
+	$(".btnsTabs li").click(function () {
+		
+		var myButton = $(this).attr("id"),
+			parent = $(this).parent().attr("id");
+		
+		$(this).addClass("active").siblings().removeClass("active");
+		
+		$("."+parent+" .tab").hide();
+		
+		$("."+parent+" ." + myButton).fadeIn();
+		
+	});
+	
+	/****** End Tabs ******/
+	
+	
+	$(".qutas-ards .mainquta-card .card-link").click(function() {
+		$(this).parents(".mainquta-card").addClass("active")
+	});
+	
+	
+	$(".header .btnDark").click(function() {
+		$("body").toggleClass("dark-mode");
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+});

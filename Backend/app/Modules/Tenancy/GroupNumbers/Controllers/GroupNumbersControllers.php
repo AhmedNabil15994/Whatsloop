@@ -73,9 +73,9 @@ class GroupNumbersControllers extends Controller {
             'channel' => [
                 'label' => trans('main.channel'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable badge badge-dark',
+                'anchor-class' => 'badge badge-dark',
             ],
             'name_ar' => [
                 'label' => trans('main.titleAr'),
@@ -298,7 +298,7 @@ class GroupNumbersControllers extends Controller {
         $data['channels'] =[];
         $data['channels'][0] = Session::get('channelCode');
         $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
-        return view('Tenancy.GroupNumbers.Views.add')->with('data', (object) $data);
+        return view('Tenancy.GroupNumbers.Views.V5.add')->with('data', (object) $data);
     }
 
     public function postAddGroupNumbers(){
@@ -318,6 +318,7 @@ class GroupNumbersControllers extends Controller {
         unset($userInputs['status']);
         unset($userInputs['group_id']);
         unset($userInputs['_token']);
+        unset($userInputs['file']);
 
         // dd($userInputs);
         $storeData = [];

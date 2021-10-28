@@ -261,7 +261,7 @@ class GroupMsgsControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
         $data['contacts'] = Contact::dataList(1)['data'];
-        return view('Tenancy.GroupMsgs.Views.add')->with('data', (object) $data);
+        return view('Tenancy.GroupMsgs.Views.V5.add')->with('data', (object) $data);
     }
 
     public function create() {
@@ -454,7 +454,7 @@ class GroupMsgsControllers extends Controller {
         $data['designElems']['mainData'] = $this->getData()['mainData'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
-        return view('Tenancy.GroupMsgs.Views.view')->with('data', (object) $data);
+        return view('Tenancy.GroupMsgs.Views.V5.view')->with('data', (object) $data);
     }
 
     public function charts() {

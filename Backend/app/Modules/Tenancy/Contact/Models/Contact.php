@@ -121,6 +121,7 @@ class Contact extends Model{
     static function dataList2() {
         $input = \Request::all();
         $pageNo = 15;
+
         $source = self::NotDeleted()->with(['Group','Reports'])->where(function ($query) use ($input) {
                     if (isset($input['name']) && !empty($input['name'])) {
                         $query->where('name', 'LIKE', '%' . $input['name'] . '%');
@@ -147,10 +148,6 @@ class Contact extends Model{
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
 
-                    if(isset($input['recordNumber']) && !empty($input['recordNumber'])){
-                        $pageNo = $input['recordNumber'];
-                    }
-
                     if(isset($input['keyword']) && !empty($input['keyword'])){
                         $query->where('name', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('email', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('city', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('country', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('phone', 'LIKE', '%' . $input['keyword'] . '%')->orWhere('created_at', 'LIKE', '%' . $input['keyword'] . '%');
                     }
@@ -161,6 +158,11 @@ class Contact extends Model{
             $source->whereHas('Group',function($groupQuery){
                 $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
+        }
+
+
+        if(isset($input['recordNumber']) && !empty($input['recordNumber'])){
+            $pageNo = $input['recordNumber'];
         }
 
         $source->orderBy('sort','ASC');

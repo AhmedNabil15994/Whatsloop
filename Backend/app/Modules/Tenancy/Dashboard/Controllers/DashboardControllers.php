@@ -39,7 +39,7 @@ class DashboardControllers extends Controller {
     public function menu(){
         $data = []; 
         Session::forget('check_user_id');
-        return view('Tenancy.Dashboard.Views.menu')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.menu')->with('data',(object) $data);
     }
 
     public function Dashboard(){   
@@ -62,12 +62,7 @@ class DashboardControllers extends Controller {
         $data['serverStatus'] = 100;
         $data['lastContacts'] = Contact::lastContacts()['data'];
         $data['logs'] = ChatEmpLog::dataList()['data'];
-        return view('Tenancy.Dashboard.Views.dashboard')->with('data',(object) $data);
-    }
-
-    public function packages(){
-        $data['bundles'] = Bundle::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.dashboard')->with('data',(object) $data);
     }
 
     public function getChartData($start=null,$end=null,$moduleName){
@@ -161,7 +156,7 @@ class DashboardControllers extends Controller {
 
     public function faqs(){   
         $data = FAQ::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.faqs')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.faqs')->with('data',(object) $data);
     }
 
     public function helpCenter(){   
@@ -173,7 +168,7 @@ class DashboardControllers extends Controller {
         $data['pin_code'] = $this->genNewPinCode(USER_ID);
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
         $data['departments'] = Department::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.helpCenter')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.helpCenter')->with('data',(object) $data);
     }
 
     public function genNewPinCode($user_id){

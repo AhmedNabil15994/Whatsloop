@@ -50,7 +50,7 @@ class ProfileControllers extends Controller {
         ];
         $data['data'] = $userObj;
         $data['paymentInfo'] = $userObj->paymentInfo ;
-        return view('Tenancy.Profile.Views.personalInfo')->with('data', (object) $data);
+        return view('Tenancy.Profile.Views.V5.personalInfo')->with('data', (object) $data);
     }
 
     public function updatePersonalInfo(){
@@ -595,7 +595,7 @@ class ProfileControllers extends Controller {
             'title' => trans('main.service_tethering'),
             'icon' => 'mdi mdi-lan-connect',
         ];
-        return view('Tenancy.Profile.Views.services')->with('data', (object) $data);
+        return view('Tenancy.Profile.Views.V5.services')->with('data', (object) $data);
     }
 
     public function updateSalla(Request $request){
@@ -1021,7 +1021,7 @@ class ProfileControllers extends Controller {
             'icon' => 'mdi mdi-webhook',
         ];
         $data['data'] = [];
-        return view('Tenancy.Profile.Views.webhookSetting')->with('data', (object) $data);
+        return view('Tenancy.Profile.Views.V5.webhookSetting')->with('data', (object) $data);
     }
 
     public function postWebhookSetting(){

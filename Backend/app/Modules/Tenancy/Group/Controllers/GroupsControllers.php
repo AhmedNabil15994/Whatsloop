@@ -136,7 +136,7 @@ class GroupsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.groups') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['permissions'] = \Helper::getPermissions(true);
-        return view('Tenancy.Group.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.Group.Views.V5.edit')->with('data', (object) $data);      
     }
 
     public function update($id) {
@@ -182,7 +182,7 @@ class GroupsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groups') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['permissions'] = \Helper::getPermissions(true);
-        return view('Tenancy.Group.Views.add')->with('data', (object) $data);
+        return view('Tenancy.Group.Views.V5.add')->with('data', (object) $data);
     }
 
     public function create() {

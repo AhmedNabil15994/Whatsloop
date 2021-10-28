@@ -23,12 +23,13 @@ class AuthControllers extends Controller {
             return redirect('/menu');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        return view('Tenancy.Auth.Views.login')->with('data',(object) $data);
+        // return view('Tenancy.Auth.Views.login')->with('data',(object) $data);
+        return view('Tenancy.Auth.Views.V5.login')->with('data',(object) $data);
     }
 
     public function loginByCode() {
         Session::put('check_user_id',\Request::get('user_id'));
-        return view('Tenancy.Auth.Views.loginByCode');
+        return view('Tenancy.Auth.Views.V5.loginByCode');
     }
 
     public function doLogin() {
@@ -126,7 +127,7 @@ class AuthControllers extends Controller {
             return redirect('/dashboard');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        return view('Tenancy.Auth.Views.resetPassword')->with('data',(object) $data);
+        return view('Tenancy.Auth.Views.V5.resetPassword')->with('data',(object) $data);
     }
 
     public function resetPassword(){
@@ -198,7 +199,7 @@ class AuthControllers extends Controller {
         if(!Session::has('check_user_id')){
             return redirect('/getResetPassword');
         }
-        return view('Tenancy.Auth.Views.changePassword');
+        return view('Tenancy.Auth.Views.V5.changePassword');
     }
 
     public function completeReset() {

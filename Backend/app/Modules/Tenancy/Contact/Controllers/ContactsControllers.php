@@ -107,9 +107,9 @@ class ContactsControllers extends Controller {
                 'label' => trans('main.group'),
                 'index' => '1',
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'group_id',
-                'anchor-class' => 'editable badge badge-primary',
+                'anchor-class' => 'badge badge-primary',
             ],
             'name' => [
                 'label' => trans('main.name'),
@@ -188,13 +188,13 @@ class ContactsControllers extends Controller {
                 $data = Contact::dataList2();
                 $data['designElems'] = $this->getData();
                 $data['type'] = 'customers';
-                $returnHTML = view('Tenancy.ExternalServices.Views.ajaxData')->with('data', (object) $data)->render();
+                $returnHTML = view('Tenancy.Contact.Views.ajaxData')->with('data', (object) $data)->render();
                 return response()->json( array('success' => true, 'html'=>$returnHTML) );
             }
         }
         $data = Contact::dataList2();
         $data['designElems'] = $this->getData();
-        return view('Tenancy.Contact.Views.index')->with('data', (object) $data);
+        return view('Tenancy.Contact.Views.V5.index')->with('data', (object) $data);
     }
 
     public function edit($id) {
@@ -210,7 +210,7 @@ class ContactsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.contacts') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
-        return view('Tenancy.Contact.Views.edit')->with('data', (object) $data);
+        return view('Tenancy.Contact.Views.V5.edit')->with('data', (object) $data);
     }
 
     public function update($id) {
@@ -241,7 +241,7 @@ class ContactsControllers extends Controller {
             return redirect()->back();
         }
 
-        $dataObj->name = !isset($input['name']) || empty($input['name']) ? $phone : $input['name'];
+        $dataObj->name = !isset($input['client_name']) || empty($input['client_name']) ? $phone : $input['client_name'];
         $dataObj->phone = $phone;
         $dataObj->city = $input['city'];
         $dataObj->email = $input['email'];
@@ -269,7 +269,7 @@ class ContactsControllers extends Controller {
         $data['channels'] = $data['designElems']['userObj']->channels;
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
         $data['modelProps'] = ['name'=>trans('main.name'),'email'=>trans('main.email'),'country'=>trans('main.country'),'city'=>trans('main.city'),'phone'=>trans('main.whats')];
-        return view('Tenancy.Contact.Views.add')->with('data', (object) $data);
+        return view('Tenancy.Contact.Views.V5.add')->with('data', (object) $data);
     }
 
     public function create() {

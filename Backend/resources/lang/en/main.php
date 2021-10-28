@@ -551,6 +551,7 @@ return [
 	'print' => 'Print',
 	'checkout' => 'Checkout',
 	'transferPayment' => 'Transfer payment to 1st of month',
+	'pay' => 'Pay',
 
 	'month' => 'Month',
 	'year' => 'Year',
@@ -558,6 +559,7 @@ return [
 	'page' => 'Page',
 	'pages' => 'Pages',
 	'records' => 'Number of records',
+	'records2' => 'Records',
 	'show_records' => 'Showing :begin to :end of :total entries',
 	'info' => 'Details',
 	'all' => 'All',
@@ -612,6 +614,7 @@ return [
 
 	'ePayment' => 'E-Payment',
 	'transferImage' => 'Transfer Image',
+	'attachTransferImage' => 'Please Attach Transfer Image',
 	'payViaPayTabs' => 'Pay Via Paytabs',
 	'payViaNoon' => 'Pay Via Noon',
 	'singlePayment' => 'Single Payment',
@@ -740,4 +743,7 @@ return [
 	'resubscribe_b2' => 'Change Subscription',
 
 	'products_count' => 'Total Products In Cart: ',
+
+	'specsMemb' => 'You can create your own customized package with multiple features and reasonable prices',
+	'startsFrom' => 'Starts From',
 ];

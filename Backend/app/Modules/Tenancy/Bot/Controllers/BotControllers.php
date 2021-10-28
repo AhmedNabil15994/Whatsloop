@@ -108,16 +108,16 @@ class BotControllers extends Controller {
             'channel' => [
                 'label' => trans('main.channel'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'channel',
-                'anchor-class' => 'editable badge badge-dark',
+                'anchor-class' => ' badge badge-dark',
             ],
             'message_type_text' => [
                 'label' => trans('main.messageType'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'message_type',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'message' => [
                 'label' => trans('main.clientMessage'),
@@ -129,9 +129,9 @@ class BotControllers extends Controller {
             'reply_type_text' => [
                 'label' => trans('main.replyType'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'reply_type',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'actions' => [
                 'label' => trans('main.actions'),
@@ -195,7 +195,7 @@ class BotControllers extends Controller {
         $data['channels'] = $channels;
         $data['bots'] = Bot::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
-        return view('Tenancy.Bot.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.Bot.Views.V5.edit')->with('data', (object) $data);      
     }
 
     public function copy($id) {
@@ -318,7 +318,7 @@ class BotControllers extends Controller {
         $data['channels'] = $channels;
         $data['bots'] = Bot::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
-        return view('Tenancy.Bot.Views.add')->with('data', (object) $data);
+        return view('Tenancy.Bot.Views.V5.add')->with('data', (object) $data);
     }
 
     public function create() {

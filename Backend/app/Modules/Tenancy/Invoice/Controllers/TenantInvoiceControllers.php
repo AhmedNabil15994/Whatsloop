@@ -150,7 +150,7 @@ class TenantInvoiceControllers extends Controller {
             'end_date' => $channelObj ? $channelObj->end_date : '',
             'leftDays' => $channelObj ? $channelObj->leftDays : '',
         ];
-        return view('Tenancy.Invoice.Views.index')->with('data', (object) $data);
+        return view('Tenancy.Invoice.Views.V5.index')->with('data', (object) $data);
     }
 
     public function edit($id) {

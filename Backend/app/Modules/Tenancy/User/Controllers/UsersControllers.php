@@ -110,9 +110,9 @@ class UsersControllers extends Controller {
             'group' => [
                 'label' => trans('main.group'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'group_id',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'actions' => [
                 'label' => trans('main.actions'),

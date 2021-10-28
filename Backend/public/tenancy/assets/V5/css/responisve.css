@@ -1,0 +1,662 @@
+@media (min-width: 1200px) and (max-width: 1530px)
+{
+	.stats .row .col-lg-6.col-md-12
+	{
+		width:100%;
+	}
+}
+
+/*Big Size Screens*/
+@media (max-width: 1300px)
+{
+	
+	.quta-card .quta-info li.feature
+	{
+		padding-top:5px;
+	}
+
+}
+/*Big Size Screens*/
+@media (max-width: 1200px)
+{
+	
+	.cpanelStyle
+	{
+		padding-bottom:0;
+		padding-right:90px;
+	}
+	
+	.cpanelStyle.activeMenu
+	{
+		padding-right:0;
+    	-webkit-transform: translateX(-275px);
+    	transform: translateX(-275px);
+	}
+	
+	.cpanelStyle .bgOpacity
+	{
+		content:"";
+		width:100%;
+		height:100%;
+		position: absolute;
+		top:0;
+		right:0;
+		z-index: 9999;
+		background-color: #00000012;
+		visibility: hidden;
+		opacity: 0;
+		cursor: pointer
+	}
+	
+	.cpanelStyle.activeMenu .bgOpacity
+	{
+		opacity: 1;
+		visibility:visible
+	}
+
+	.menuCpanel .linksCpanel 
+	{
+	    height: calc(100vh - 65px);
+	}
+		
+	.overflowH
+	{
+		overflow: hidden
+	}
+	
+	.form .btnsTabs li
+	{
+		width:133px;
+	}
+	
+	.quta-card .quta-info li.feature
+	{
+		padding-top:10px;
+	}
+	
+	.adding-card .card-body .tooltip
+	{
+		max-width:300px;
+		left:-12px;
+	}
+	
+}
+
+/* small Screens & tablets & Smart phone */
+@media (max-width: 991px) 
+{
+	.loginPage .left
+	{
+		display:none;
+	}
+	
+	.loginPage .right
+	{
+		float:none;
+		width:100%;
+		align-items: center;
+	}
+	
+	.menuCpanel .hovers
+	{
+		display:none;
+	}
+	
+	.nicescroll-rails
+	{
+		right:auto!important;
+		left:0!important
+	}
+	
+	.botStyle .settings .qr
+	{
+		padding-top:0;
+	}
+	
+	.botStyle .settings .qr .imgPhone
+	{
+		margin-top:0;
+	}
+	
+	.transmitters .transmitterHead .title
+	{
+		width:100%;
+		margin-bottom:25px;
+	}
+	
+	.transmitters .transmitterHead .edit
+	{
+		margin-bottom:10px;
+	}
+	
+	.bill .contentBill .stat
+	{
+		position:static;
+		margin-top:25px;
+		display:inline-block
+	}
+	
+	.bill .dateFixed
+	{
+		position:static;
+		margin-bottom:20px;
+		padding-top:0;
+	}
+	
+	.bill .dateStart:not(:last-of-type)
+	{
+		margin-left:0;
+		margin-bottom:20px;
+	}
+	
+	.bill .listPDF
+	{
+		margin-left:0;
+		width:100%;
+		margin-top:15px;
+		text-align: center
+	}
+	
+	.bill .listPDF li
+	{
+		display:inline-block;
+		float:none;
+	}
+	
+	.adding-card .card-body .tooltip
+	{
+		left:15px;
+		text-align: right
+	}
+	
+}
+
+/* Small Screens */
+@media (min-width: 768px) and (max-width: 991px) 
+{
+	
+	
+}
+
+/* Mobile & Tablets */
+@media (max-width: 767px) 
+{
+	
+	.menuCpanel
+	{
+		width:60px;
+	}
+	
+	.cpanelStyle
+	{
+		padding-right:60px;
+	}
+	
+	.menuCpanel .iconMenuCpanel
+	{
+		left:17px;
+	}
+	
+	.menuCpanel .linksCpanel li a i:not(.flaticon-left-arrow)
+	{
+		right: calc(50% - 31px);
+	}
+	
+	.header
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.header .user
+	{
+    	width: calc(100% - 23px);
+		margin-left:0;
+		margin-bottom:10px;
+	}
+	
+	.header .profile .profileStyle
+	{
+		right:auto;
+		left:0;
+		width:230px;
+		z-index: 9999
+	}
+	
+	.containerCpanel
+	{
+		padding:20px 15px
+	}
+	
+	.Additions
+	{
+		padding:20px 15px;
+		display:block;
+		text-align: center
+	}
+	
+	.Additions .title
+	{
+		margin-bottom:20px;
+	}
+	
+	.Additions .btnAdd
+	{
+		width:100%;
+	}
+	
+	.stats .msgArchive
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.stats .msgArchive .title
+	{
+		margin-left:-15px;
+		margin-right:-15px;
+	}
+	
+	.stats .lastNumbers .listNumbers li
+	{
+		text-align:center;
+		padding:15px;
+	}
+	
+	.stats .lastNumbers .listNumbers li img
+	{
+		position:static;
+		margin:0 auto 15px;
+		display:block
+	}
+	
+	.stats .lastNumbers .listNumbers li .date
+	{
+		position:static;
+		display:block;
+		margin-top:10px;
+	}
+	
+	.stats .lastNumbers .listNumbers li .titleNumb span
+	{
+		display:block;
+		margin:15px auto 0;
+	}
+	
+	.footer
+	{
+		padding-left:90px;
+	}
+	
+	.footer .top
+	{
+		left:15px;
+	}
+	
+	.payment .totalConfirm .coupon
+	{
+		width:100%;
+		margin-bottom:30px;
+	}
+	
+	.payment .totalConfirm .coupon input
+	{
+		width:100%;
+	}
+	
+	.payment .totalConfirm .nextPrev
+	{
+		display:inline-block;
+		float:none;
+	}
+	
+	.steps,
+	.botStyle .stepsBot
+	{
+		display:block
+	}
+	
+	.steps .step,
+	.botStyle .stepsBot .step
+	{
+		margin-bottom:20px;
+	}
+	
+	.botStyle .settings
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.payment .listTotal li span
+	{
+		float:none;
+		width:100%;
+		display:block;
+		margin-top:15px;
+	}
+	
+	.payment .products-table thead tr th,
+	.payment .products-table tbody tr td
+	{
+		padding:20px 15px;
+	}
+	
+	.payment .listTotal li
+	{
+		padding:20px;
+	}
+	
+	.selectPayment,
+	.formPayment,
+	.paymentStyle
+	{
+		padding:30px 20px;
+	}
+	
+	.paymentStyle
+	{
+		min-height:auto;
+	}
+	.plans
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.plan
+	{
+		overflow: hidden
+	}
+	
+	.plan .title
+	{
+		font-size:28px;
+	}
+	
+	.plan .planFeatures li:first-of-type
+	{
+		margin-left:40px;
+	}
+	
+	.plan .planFeatures li:first-of-type:before
+	{
+		left: -23px;
+	}
+	
+	.plan .sizePlan
+	{
+		transform:scale(0.8);
+	}
+	
+	.containerCpanel .breadCrumb
+	{
+		margin-top:0;
+		margin-right:0
+	}
+	
+	.formNumbers .form .content
+	{
+		padding:20px 25px;
+	}
+	
+	.formNumbers .form .title
+	{
+		padding:15px;
+		font-size:16px;
+	}
+	
+	.formNumbers .form .titleLabel
+	{
+		line-height:normal;
+		font-size:16px;
+		margin-bottom:15px!important;
+		height:auto;
+	}
+	
+	.formNumbers .form .uploadFile
+	{
+		line-height:normal
+	}
+	
+	.formNumbers .nextPrev
+	{
+		width:100%;
+	}
+	
+	.formNumbers .nextPrev .btnNext
+	{
+		width:100%;
+		margin-bottom:20px;
+	}
+	
+	.formNumbers .nextPrev .btnNext:not(:last-of-type)
+	{
+		margin-left:0;
+	}
+	
+	.form .btnsTabs
+	{
+		position:static
+	}
+	.form .btnsTabs li
+	{
+		border-radius: 0;
+		width:100%;
+		float:none;
+		text-align: right;
+		padding:0 20px;
+	}
+	
+	.botStyle .settings .attention
+	{
+		padding-right:15px;
+		padding-top:65px;
+	}
+	
+	.botStyle .settings .qr
+	{
+		padding-bottom:0
+	}
+	
+	.transmitters .content
+	{
+		padding:20px 15px;
+	}
+	
+	.transmitters .content .views
+	{
+		width:100%;
+		text-align: center;
+		margin-bottom:15px;
+	}
+	
+	.transmitters .content .views input
+	{
+		width:60px;
+	}
+	
+	.transmitters .content .searchTable
+	{
+		margin:0 auto;
+		display:block;
+		float:none;
+		max-width: 235px;
+	}
+	
+	.transmitters .content .searchTable input
+	{
+		width:145px;
+	}
+	
+	.transmitters .content .numbers .numbStyl
+	{
+		padding-left:15px;
+		padding-right:15px;
+		text-align: center;
+	}
+	
+	.transmitters .content .numbers .numbStyl .icon
+	{
+		position:static;
+		display:block;
+		margin:0 auto 25px;
+	}
+	
+	.transmitters .content .numbers .numbStyl .num
+	{
+		width:100%;
+		display:block;
+		margin-bottom:20px;
+		font-size:18px;
+	}
+	
+	.transmitters .content .numbers .numbStyl .listNumbs
+	{
+		display:inline-block;
+		float:none;
+	}
+	.transmitters .content .numbers .numbStyl .listNumbs li:not(:last-of-type)
+	{
+		margin-right:3px;
+	}
+	
+	.mybreadcrumb 
+	{
+		padding-top:90px;
+	}
+	
+	.mybreadcrumb .breadcrumb-content p
+	{
+		text-align: center
+	}
+	
+	.offer-card .offerImg
+	{
+		display:none;
+	}
+	
+	.qutas-ards .mainquta-card .card-title
+	{
+		font-size:20px;
+	}
+	
+	.qutas-ards .mainquta-card .card-back
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.adding-card .card-body .tooltip
+	{
+		bottom:100%;
+		width:100%;
+		left:0;
+	}
+	
+}
+
+/* Tablets */
+@media (min-width:480px) and (max-width: 767px)
+{
+
+}
+
+/* Mobile */
+@media (max-width: 479px) 
+{
+	.loginPage .right .center .formLogin
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.paymentStyle .listPayment li
+	{
+		margin:0 auto 15px!important;
+		width:100%;
+	}
+	
+	.paymentStyle .labelUpload
+	{
+		padding-right:15px;
+		font-size:14px;
+	}
+	
+	.form .codeSupport
+	{
+		margin-top:50px;
+	}
+	
+	.form .codeSupport span
+	{
+		top:-35px;
+		right:0;
+	}
+	
+	.form .codeSupport input
+	{
+		padding:0 20px;
+	}
+	
+	.form .codeSupport.phoneSupport
+	{
+		margin-top:0;
+	}
+	
+	.botStyle .settings .terms li
+	{
+		margin-bottom:10px;
+	}
+	
+	.botStyle .settings .terms li:not(:last-of-type):before
+	{
+		display:none;
+	}
+	
+	.botStyle  .nextPrev
+	{
+		float:none;
+	}
+	
+	
+	.botStyle  .nextPrev .btnNext
+	{
+		margin-left:0;
+		margin-bottom:15px;
+		width:100%;
+	}
+	.transmitters .content .numbers .numbStyl .listNumbs li a 
+	{
+    	width: 36px;
+    	height: 36px;
+    	line-height: 42px;
+    	font-size:16px;
+   	}
+	
+	.quta-card .quta-info
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.quta-card .quta-info li.feature
+	{
+		padding-top:5px;
+		
+	}
+	
+	.quta-card .quta-info li.price
+	{
+	    width: 70px;
+    	height: 70px;
+    	font-size: 21px;
+	}
+	
+	.qutas-parent .box-style .box-content
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+}

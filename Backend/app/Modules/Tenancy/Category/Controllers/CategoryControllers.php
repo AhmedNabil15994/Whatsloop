@@ -95,9 +95,9 @@ class CategoryControllers extends Controller {
             'color' => [
                 'label' => trans('main.color'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'color_id',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'name_ar' => [
                 'label' => trans('main.titleAr'),

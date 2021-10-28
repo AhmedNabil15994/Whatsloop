@@ -111,7 +111,7 @@ class SubscriptionControllers extends Controller {
         }
         
         if($doSync){
-            return view('Tenancy.Dashboard.Views.sync')->with('data', $moduleData);
+            return view('Tenancy.Dashboard.Views.V5.sync')->with('data', $moduleData);
         }else{
             Session::put('is_old',0);
             return Redirect('/dashboard');
@@ -145,7 +145,7 @@ class SubscriptionControllers extends Controller {
         }
         // $data['memberships'] = Membership::dataList(1)['data'];
         $data['bundles'] = Bundle::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.packages')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.packages')->with('data',(object) $data);
     }
 
     public function checkout(){
@@ -169,7 +169,7 @@ class SubscriptionControllers extends Controller {
 
         $data['membership'] = $membershipObj;
         $data['memberships'] = Membership::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.cart')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.cart')->with('data',(object) $data);
     }
 
     public function postBundle($id){
@@ -231,7 +231,7 @@ class SubscriptionControllers extends Controller {
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
     }
 
     public function postCheckout(){
@@ -275,7 +275,7 @@ class SubscriptionControllers extends Controller {
             $data['regions'] = $egypt->getDivisions(); 
         }
         
-        return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
     }
 
     public function getCities(){
@@ -409,7 +409,7 @@ class SubscriptionControllers extends Controller {
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
-                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice')),
+                'returnURL' => \URL::to('/pushInvoice'),
                 // 'returnURL' => \URL::to('/pushInvoice'),  // For Local 
                 'cart_id' => 'whatsloop-'.rand(1,100000),
                 'cart_amount' => json_decode($input['totals'])[3],
@@ -571,14 +571,14 @@ class SubscriptionControllers extends Controller {
         $data['data'] = array_values($userAddonsTutorial);
         $names = Addons::NotDeleted()->whereIn('id',$data['data'])->pluck('title_'.LANGUAGE_PREF);
         $data['dataNames'] = reset($names);
-        $data['channelName'] = trans('main.channel'). ' # '.Session::get('channelCode');
+        $data['channelName'] = UserChannels::first()->name;
         $data['dis'] = 0;
         if(count($data['data']) > 0){
             $data['templates'] = ModTemplate::dataList(null, ($data['data'][0] == 5 ? 1 : 2 )  )['data'];
         }else{
             $data['dis'] = 1;
         }
-        return view('Tenancy.Dashboard.Views.qrData')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.qrData')->with('data',(object) $data);
     }
 
     public function updateName(){
@@ -713,7 +713,7 @@ class SubscriptionControllers extends Controller {
             $data['extraQuotas'] = ExtraQuota::dataList(1,null)['data'];
         }
 
-        return view('Tenancy.Profile.Views.cart')->with('data',(object) $data);
+        return view('Tenancy.Profile.Views.V5.cart')->with('data',(object) $data);
     }
 
     public function postUpdateSubscription(Request $request,$dataArr=null,$totalArr=null){
@@ -760,7 +760,7 @@ class SubscriptionControllers extends Controller {
             $data['regions'] = $egypt->getDivisions(); 
         }
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
-        return view('Tenancy.Profile.Views.checkout')->with('data',(object) $data);
+        return view('Tenancy.Profile.Views.V5.checkout')->with('data',(object) $data);
     }
 
     public function updateAddonStatus(Request $request,$addon_id,$status){

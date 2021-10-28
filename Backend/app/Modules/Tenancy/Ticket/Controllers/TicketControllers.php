@@ -77,9 +77,9 @@ class TicketControllers extends Controller {
             'department' => [
                 'label' => trans('main.department'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => '',
                 'data-col' => 'department_id',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'subject' => [
                 'label' => trans('main.subject'),
@@ -117,14 +117,12 @@ class TicketControllers extends Controller {
     protected function validateInsertObject($input){
         $rules = [
             'subject' => 'required',
-            'user_id' => 'required',
             'department_id' => 'required',
             'description' => 'required',
         ];
 
         $message = [
             'subject.required' => trans('main.subjectValidate'),
-            'user_id.required' => trans('main.clientValidate'),
             'department_id.required' => trans('main.departmentValidate'),
             'description.required' => trans('main.descriptionValidate'),
         ];
@@ -240,10 +238,10 @@ class TicketControllers extends Controller {
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
         $data['departments'] = Department::dataList(1)['data'];
         Session::forget('photos');
-        return view('Tenancy.Ticket.Views.add')->with('data', (object) $data);
+        return view('Tenancy.Ticket.Views.V5.add')->with('data', (object) $data);
     }
 
-    public function create() {
+    public function create(Request $request) {
         $input = \Request::all();
 
         $validate = $this->validateInsertObject($input);
@@ -251,7 +249,6 @@ class TicketControllers extends Controller {
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
-        
         $dataObj = new Ticket;
         $dataObj->subject = $input['subject'];
         $dataObj->user_id = USER_ID;
@@ -278,6 +275,17 @@ class TicketControllers extends Controller {
             }
             $dataObj->files = serialize($imagesArr);
             $dataObj->save();  
+        }else{
+            if($request->hasFile('files')){
+                $images =  \ImagesHelper::uploadFileFromRequest($this->getData()['mainData']['name'], $request->file('files'), $dataObj->id);
+                if ($images == false) {
+                    Session::flash('error', trans('main.uploadProb'));
+                    return redirect()->back()->withInput();
+                }
+                $imagesArr[] = $images;
+                $dataObj->files = serialize($imagesArr);
+                $dataObj->save();  
+            }
         }
 
         Session::forget('photos');
