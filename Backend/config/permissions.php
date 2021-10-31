@@ -38,10 +38,12 @@ return [
 
     'WhatsappOrdersControllers@getOneOrder' => 'general',
 
+    'ProfileControllers@personalInfo' => 'general',
+    'ProfileControllers@updatePersonalInfo' => 'general',
 
+    
     'ProfileControllers@index' => 'profile',
-    'ProfileControllers@personalInfo' => 'profile',
-    'ProfileControllers@updatePersonalInfo' => 'profile',
+    
     'ProfileControllers@uploadImage' => 'profile',
     'ProfileControllers@deleteImage' => 'profile',
     'ProfileControllers@changePassword' => 'profile',

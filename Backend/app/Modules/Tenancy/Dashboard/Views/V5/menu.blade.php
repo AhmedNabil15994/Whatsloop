@@ -122,7 +122,7 @@
             </a>
         </div>
         @endif
-        @if(\Helper::checkRules('list-group-numbers,add-number-to-group,list-contacts'))
+        @if(\Helper::checkRules('list-contacts'))
         <div class="linkStyle">
             <a href="{{ URL::to('/contacts') }}" class="link">
                 <i class="icon flaticon-add-group"></i> {{ trans('main.contacts') }}
@@ -136,6 +136,13 @@
             </a>
         </div>
         @endif
+        @if(\Helper::checkRules('list-group-numbers,add-number-to-group'))
+        <div class="linkStyle">
+            <a href="{{ URL::to('/groupNumbers') }}" class="link">
+                <i class="icon flaticon-add-group"></i> {{ trans('main.groupNumbers') }}
+            </a>
+        </div>
+        @endif
         @if(\Helper::checkRules('list-statuses'))
         <div class="linkStyle">
             <a href="{{ URL::to('/statuses') }}" class="link">
@@ -146,7 +153,7 @@
         @if(\Helper::checkRules('list-messages-archive'))
         <div class="linkStyle">
             <a href="{{ URL::to('/msgsArchive') }}" class="link">
-                <i class="icon flaticon-inbox"></i> {{ trans('main.msgsArchive') }}
+                <i class="icon flaticon-inbox"></i> {{ trans('main.groupMsgsArc') }}
             </a>
         </div>
         @endif

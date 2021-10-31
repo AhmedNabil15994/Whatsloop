@@ -56,32 +56,41 @@ class GroupMessageJob implements ShouldQueue
     public function sendData($contact,$messageObj){
         $sendData['chatId'] = $contact.'@c.us';
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        
-        if($messageObj['message_type'] == 1){
-            $sendData['body'] = $messageObj['message'];
-            $result = $mainWhatsLoopObj->sendMessage($sendData);
-        }elseif($messageObj['message_type'] == 2){
-            $sendData['filename'] = $messageObj['file_name'];
-            $sendData['body'] = $messageObj['file'];
-            $sendData['caption'] = $messageObj['reply'];
-            $result = $mainWhatsLoopObj->sendFile($sendData);
-        }elseif($messageObj['message_type'] == 3){
-            $sendData['audio'] = $messageObj['file'];
-            $result = $mainWhatsLoopObj->sendPTT($sendData);
-        }elseif($messageObj['message_type'] == 4){
-            $sendData['body'] = $messageObj['https_url'];
-            $sendData['title'] = $messageObj['url_title'];
-            $sendData['description'] = $messageObj['url_desc'];
-            $sendData['previewBase64'] = base64_encode(file_get_contents($messageObj['photo']));
-            $result = $mainWhatsLoopObj->sendFile($sendData);
-        }elseif($messageObj['message_type'] == 5){
-            $sendData['contactId'] = $messageObj['whatsapp_no'];
-            $result = $mainWhatsLoopObj->sendContact($sendData);
+        $check = $mainWhatsLoopObj->checkPhone(['phone' => $contact]);
+        $check = $check->json();
+        if($check['data']['result'] == 'exists'){
+            $status = 1;
+        }else{
+            $status = 0;
         }
 
-        $status = 1;
-        if($result['status']['status'] != 1){
-            $status = 0;
+        if($status){
+            if($messageObj['message_type'] == 1){
+                $sendData['body'] = $messageObj['message'];
+                $result = $mainWhatsLoopObj->sendMessage($sendData);
+            }elseif($messageObj['message_type'] == 2){
+                $sendData['filename'] = $messageObj['file_name'];
+                $sendData['body'] = $messageObj['file'];
+                $sendData['caption'] = $messageObj['reply'];
+                $result = $mainWhatsLoopObj->sendFile($sendData);
+            }elseif($messageObj['message_type'] == 3){
+                $sendData['audio'] = $messageObj['file'];
+                $result = $mainWhatsLoopObj->sendPTT($sendData);
+            }elseif($messageObj['message_type'] == 4){
+                $sendData['body'] = $messageObj['https_url'];
+                $sendData['title'] = $messageObj['url_title'];
+                $sendData['description'] = $messageObj['url_desc'];
+                $sendData['previewBase64'] = base64_encode(file_get_contents($messageObj['photo']));
+                $result = $mainWhatsLoopObj->sendFile($sendData);
+            }elseif($messageObj['message_type'] == 5){
+                $sendData['contactId'] = $messageObj['whatsapp_no'];
+                $result = $mainWhatsLoopObj->sendContact($sendData);
+            }
+            $result = $result->json();
+            $status = 1;
+            if($result['status']['status'] != 1){
+                $status = 0;
+            }
         }
 
         $messageId = '';

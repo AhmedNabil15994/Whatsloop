@@ -69,7 +69,7 @@ $(function(){
 		var dateID = $(this).val();
 		$('input[name="reply"]').val('');
 		$('.reply[data-id="'+dateID+'"]').children('.hidden').removeClass('hidden');
-		$('.reply[data-id="'+dateID+'"]').siblings('.reply').children('.form-group.row').addClass('hidden');
+		$('.reply[data-id="'+dateID+'"]').siblings('.reply').children('.row').addClass('hidden');
 	});
 
 
@@ -78,7 +78,7 @@ $(function(){
 	});
 
 	$('#datetimepicker').datetimepicker({
-		format: 'YYYY-MM-DD hh:mm',
+		format: 'YYYY-MM-DD HH:mm',
 		// minuteStep: 1,
 	});
 
@@ -96,7 +96,7 @@ $(function(){
 		e.preventDefault();
 		e.stopPropagation();
 		
-		if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.form-group.row').hasClass('hidden')) {
+		if (!$(".teles").intlTelInput("isValidNumber") && !$('.teles').parents('.row').hasClass('hidden')) {
 		    if(lang == 'en'){
 		        return errorNotification("This Phone Number Isn't Valid!");
 		    }else{

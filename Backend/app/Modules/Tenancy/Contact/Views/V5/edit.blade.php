@@ -129,7 +129,7 @@
                             <div class="col-xs-12 text-right">
                                 <div class="nextPrev clearfix ">
                                     <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                    <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
+                                    <button name="Submit" type="button" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.edit') }}</button>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>

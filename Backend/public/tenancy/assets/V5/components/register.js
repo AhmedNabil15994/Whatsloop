@@ -2,17 +2,22 @@ $(function(){
    
     var lang = $('html').attr('lang');
 
-    $("#telephone").intlTelInput({
-        initialCountry: $('input[name="country_code"]').val(),
-        preferredCountries: ["sa","ae","bh","kw","om","eg"],
+    $('input[name="domain"]').on('focusout',function(){
+        if(!$(this).val()){
+            $(this).siblings('span.test').empty();
+            $('span.test').css('opacity',0);
+            $(this).css('fontSize','unset');
+        }else{
+            $(this).siblings('span.test').html($(this).val()+'.' +'wloop.net');
+            $('span.test').css('opacity',1);
+            $(this).css('fontSize','0');
+        }
     });
 
-    $('input[name="domain"]').on('keyup',function(){
-        if(!$(this).val()){
-            $(this).siblings('p').empty();
-        }else{
-            $(this).siblings('p').html($(this).val()+'.' + 'wloop.net')
-        }
+    $('input[name="domain"]').on('focusin',function(){
+        $(this).siblings('span.test').empty();
+        $('span.test').css('opacity',0);
+        $(this).css('fontSize','unset');
     });
 
     $('input[name="domain"]').keypress(function(event){

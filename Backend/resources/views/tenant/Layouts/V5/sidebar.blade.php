@@ -165,7 +165,7 @@
 
 		@if(\Helper::checkRules('list-messages-archive'))
 		<li titlehover="link14">
-			<a href="{{ URL::to('/msgsArchive') }}"><i class="flaticon-inbox"></i> {{ trans('main.msgsArchive') }}</a>
+			<a href="{{ URL::to('/msgsArchive') }}"><i class="flaticon-inbox"></i> {{ trans('main.groupMsgsArc') }}</a>
 		</li>
 		@endif
 

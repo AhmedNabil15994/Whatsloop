@@ -28,7 +28,7 @@ class CentralAuthControllers extends Controller {
             return redirect('/dashboard');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        return view('Central.Auth.Views.login')->with('data',(object) $data);
+        return view('Central.Auth.Views.V5.login')->with('data',(object) $data);
     }
 
     public function register() {
@@ -38,7 +38,7 @@ class CentralAuthControllers extends Controller {
             return redirect('/checkAvailability');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        return view('Central.Auth.Views.register')->with('data',(object) $data);
+        return view('Central.Auth.Views.V5.register')->with('data',(object) $data);
     }
 
     public function doLogin() {
@@ -185,7 +185,7 @@ class CentralAuthControllers extends Controller {
             return redirect('/dashboard');
         }
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        return view('Central.Auth.Views.resetPassword')->with('data',(object) $data);
+        return view('Central.Auth.Views.V5.resetPassword')->with('data',(object) $data);
     }
 
     public function resetPassword(){
@@ -257,7 +257,7 @@ class CentralAuthControllers extends Controller {
         if(!Session::has('check_user_id')){
             return redirect('/getResetPassword');
         }
-        return view('Central.Auth.Views.changePassword');
+        return view('Central.Auth.Views.V5.changePassword');
     }
 
     public function completeReset() {
@@ -299,7 +299,12 @@ class CentralAuthControllers extends Controller {
         session(['is_admin' => $isAdmin]);
         session(['group_name' => $userObj->Group->name_ar]);
         $channels = CentralUser::getData($userObj)->channels;
-        session(['channel' => $channels[0]->id]);
+        if(!empty($channels)){
+            session(['channel' => $channels[0]->id]);
+        }
+        if($isAdmin){
+            session(['central' => 1]);
+        }
 
         Session::flash('success', trans('auth.passwordChanged'));
         return redirect('/dashboard');
@@ -307,7 +312,7 @@ class CentralAuthControllers extends Controller {
 
     public function checkAvailability(){
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        return view('Central.Auth.Views.checkAvailability')->with('data',(object) $data);
+        return view('Central.Auth.Views.V5.checkAvailability')->with('data',(object) $data);
     }
 
     public function postCheckAvailability(Request $request){
@@ -327,7 +332,7 @@ class CentralAuthControllers extends Controller {
         // dd($clientRequestObj);
         if($clientRequestObj){
             $dataArr['userCode'] = $clientRequestObj->code;
-            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+            return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
         }else{
             $channelObj = \DB::connection('main')->table('channels')->first();
             $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
@@ -350,7 +355,7 @@ class CentralAuthControllers extends Controller {
             $clientRequestObj->ip_address = $request->ip();
             $clientRequestObj->created_at = DATE_TIME;
             $clientRequestObj->save();
-            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+            return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
         }
     }
 
@@ -361,12 +366,12 @@ class CentralAuthControllers extends Controller {
         $dataArr['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         if(!$clientRequestObj){
             Session::flash('error', trans('main.userNotFound'));
-            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+            return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
         }
 
         if(isset($clientRequestObj) && $clientRequestObj->code != $input['code']){
             Session::flash('error', trans('auth.codeError'));
-            return view('Central.Auth.Views.checkCode')->with('data',(object) $dataArr);
+            return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
         }
 
         Session::put('checked_user_phone',$input['phone']);
@@ -469,8 +474,8 @@ class CentralAuthControllers extends Controller {
         $mainURL = $baseUrl.'user-details';
         $isOld = 0;
 
-        $data = ['phone' => str_replace('+','',$phone) /*'966570116626'*/];
-        $result =  Http::post($mainURL,$data);
+        $data = ['phone' => str_replace('+','',$input['phone']) /*'966570116626'*/];
+        $result =  \Http::post($mainURL,$data);
         if($result->ok() && $result->json()){
             $data = $result->json();
             if($data['status'] == true){

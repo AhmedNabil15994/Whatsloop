@@ -30,8 +30,10 @@
                                 <label class="titleLabel">{{ $propValue['label'] }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input class="{{ $propValue['class'] }}" {{ $propValue['specialAttr'] }} type="{{ $propValue['type'] }}" name="{{ $propKey }}" value="{{ $propValue['type'] != 'password' ? $data->data->$propKey : '' }}" placeholder="{{ $propValue['label'] }}"  {{ $propValue['type'] == 'tel' ? "dir=ltr" : '' }}>
-                                <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                <div class="inputStyle">
+                                    <input class="{{ $propValue['class'] }} {{ $propValue['type'] == 'tel' ? 'telStyle' : '' }}" {{ $propValue['specialAttr'] }} type="{{ $propValue['type'] }}" name="{{ $propKey }}" value="{{ $propValue['type'] != 'password' ? $data->data->$propKey : '' }}" placeholder="{{ $propValue['label'] }}"  {{ $propValue['type'] == 'tel' ? "dir=ltr" : '' }}>
+                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -42,8 +44,10 @@
                                 <label class="titleLabel">{{ $propValue['label'] }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <textarea {{ $propValue['specialAttr'] }} name="{{ $propKey }}" class="{{ $propValue['class'] }}" placeholder="{{ $propValue['label'] }}">{{ old($propKey) }}</textarea>
-                                <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                <div class="inputStyle">
+                                    <textarea {{ $propValue['specialAttr'] }} name="{{ $propKey }}" class="{{ $propValue['class'] }}" placeholder="{{ $propValue['label'] }}">{{ $data->data->$propKey }}</textarea>
+                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -55,14 +59,16 @@
                                     <label class="titleLabel">{{ $propValue['label'] }} :</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
-                                        <option value="">{{ trans('main.choose') }}</option>
-                                        @foreach($propValue['options'] as $group)
-                                        @php $group = (object) $group; @endphp
-                                        <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
-                                        @endforeach
-                                    </select>
-                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                    <div class="selectStyle">
+                                        <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
+                                            <option value="">{{ trans('main.choose') }}</option>
+                                            @foreach($propValue['options'] as $group)
+                                            @php $group = (object) $group; @endphp
+                                            <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                    </div>
                                 </div>
                             </div> 
                             @elseif($data->designElems['mainData']['url'] == 'users' && $propKey == 'channels')
@@ -71,14 +77,16 @@
                                     <label class="titleLabel">{{ $propValue['label'] }} :</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
-                                        <option value="">{{ trans('main.choose') }}</option>
-                                        @foreach($propValue['options'] as $group)
-                                        @php $group = (object) $group; @endphp
-                                        <option value="{{ $group->id }}" {{ in_array($group->id,$data->data->channelIDS) ? 'selected' : '' }}>{{ $group->title }}</option>
-                                        @endforeach
-                                    </select>
-                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                    <div class="selectStyle">
+                                        <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
+                                            <option value="">{{ trans('main.choose') }}</option>
+                                            @foreach($propValue['options'] as $group)
+                                            @php $group = (object) $group; @endphp
+                                            <option value="{{ $group->id }}" {{ in_array($group->id,$data->data->channelIDS) ? 'selected' : '' }}>{{ $group->title }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                    </div>
                                 </div>
                             </div>
                             @else 
@@ -87,14 +95,16 @@
                                     <label class="titleLabel">{{ $propValue['label'] }} :</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
-                                        <option value="">{{ trans('main.choose') }}</option>
-                                        @foreach($propValue['options'] as $group)
-                                        @php $group = (object) $group; @endphp
-                                        <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
-                                        @endforeach
-                                    </select>
-                                    <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                    <div class="selectStyle">
+                                        <select class="form-control" data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
+                                            <option value="">{{ trans('main.choose') }}</option>
+                                            @foreach($propValue['options'] as $group)
+                                            @php $group = (object) $group; @endphp
+                                            <option value="{{ $group->id }}" {{ $data->data->$propKey == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="m-form__help LastUpdate float-right mt-1 mb-0">{{ trans('main.created_at') }} :  {{ $data->data->created_at }}</span>
+                                    </div>
                                 </div>
                             </div> 
                             @endif

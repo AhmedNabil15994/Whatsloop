@@ -21,7 +21,7 @@
         <div class="col-md-3">
             <div class="itemStats color1">
                 <h2 class="title">{{ trans('main.msgs_no') }}</h2>
-                <span class="numb">{{ $data->data->messages_count * $data->data->contacts_count }}</span>
+                <span class="numb">{{ $data->data->messages_count }}</span>
                 <i class="icon flaticon-email-1"></i>
             </div>
         </div>

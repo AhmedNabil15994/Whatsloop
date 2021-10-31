@@ -295,7 +295,9 @@ class UsersControllers extends Controller {
         }
 
         $dataObj->name = $input['name'];
-        $dataObj->group_id = $input['group_id'];
+        if($dataObj->group_id != 1){
+            $dataObj->group_id = $input['group_id'];
+        }
         $dataObj->email = $input['email'];
         $dataObj->phone = $input['phone'];
         $dataObj->extra_rules = serialize($permissionsArr);
@@ -391,6 +393,8 @@ class UsersControllers extends Controller {
             }
         }
 
+        $mainUser = User::first();
+
         $dataObj = new User;
         $dataObj->name = $input['name'];
         $dataObj->group_id = $input['group_id'];
@@ -399,6 +403,13 @@ class UsersControllers extends Controller {
         $dataObj->two_auth = 0;
         $dataObj->phone = $input['phone'];
         $dataObj->password = \Hash::make($input['password']);
+        $dataObj->is_active = 1;
+        $dataObj->is_approved = 1;
+        $dataObj->notifications = 0;
+        $dataObj->offers = 0;
+        $dataObj->domain = $mainUser->domain;
+        $dataObj->global_id = $mainUser->global_id;
+        $dataObj->company = $mainUser->company;
         $dataObj->extra_rules = serialize($permissionsArr);
         $dataObj->sort = User::newSortIndex();
         $dataObj->status = $input['status'];

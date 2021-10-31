@@ -12,8 +12,8 @@ class Bot extends Model{
     protected $fillable = ['id','channel','message_type','message','reply_type','reply','file_name','https_url','url_title','url_desc','url_image','whatsapp_no','lat','lng','address','webhook_url','status','created_by','created_at'];    
     public $timestamps = false;
 
-    static function getPhotoPath($id, $photo) {
-        return \ImagesHelper::GetImagePath('bots', $id, $photo,false);
+    static function getPhotoPath($id, $photo,$tenantId=null) {
+        return \ImagesHelper::GetImagePath('bots', $id, $photo,false,$tenantId);
     }
 
     static function getOne($id){
@@ -67,7 +67,7 @@ class Bot extends Model{
         return $data;
     }
 
-    static function getData($source) {
+    static function getData($source,$tenantId=null) {
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->channel = $source->channel;
@@ -82,10 +82,10 @@ class Bot extends Model{
         $data->url_title = $source->url_title;
         $data->url_desc = $source->url_desc;
         $data->url_image = $source->url_image;
-        $data->photo = $source->url_image != null ? self::getPhotoPath($source->id, $source->url_image) : "";
+        $data->photo = $source->url_image != null ? self::getPhotoPath($source->id, $source->url_image,$tenantId) : "";
         $data->photo_name = $source->url_image;
         $data->photo_size = $data->photo != '' ? \ImagesHelper::getPhotoSize($data->photo) : '';
-        $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name) : "";
+        $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name,$tenantId) : "";
         $data->file_name = $source->file_name;
         $data->file_size = $data->file != '' ? \ImagesHelper::getPhotoSize($data->file) : '';
         $data->file_type = $data->file != '' ? \ImagesHelper::checkFileExtension($data->file_name) : '';

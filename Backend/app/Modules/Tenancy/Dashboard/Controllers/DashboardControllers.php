@@ -165,7 +165,7 @@ class DashboardControllers extends Controller {
         $data['categories'] = CentralCategory::dataList(1)['data'];
         $data['email'] = CentralVariable::getVar('TECH_EMAIL');
         $data['phone'] = CentralVariable::getVar('TECH_PHONE');
-        $data['pin_code'] = $this->genNewPinCode(USER_ID);
+        $data['pin_code'] = $this->genNewPinCode(IS_ADMIN ? USER_ID : User::first()->id);
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
         $data['departments'] = Department::dataList(1)['data'];
         return view('Tenancy.Dashboard.Views.V5.helpCenter')->with('data',(object) $data);

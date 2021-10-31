@@ -101,7 +101,10 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			$sendData['chatId'] = $sender;
 
 	    			if($botObj && !$dis){
-	    				$botObj = Bot::getData($botObj);
+	    				$botObj = Bot::getData($botObj,$tenantObj->tenant_id);
+	    				$botObj->file = str_replace('http://localhost','https://c16e-154-182-239-112.ngrok.io',$botObj->file);
+	    				$botObj->photo = str_replace('http://localhost','https://c16e-154-182-239-112.ngrok.io',$botObj->photo);
+	    				Logger((array)$botObj);
 	    				$reply = $botObj->reply;
 	    				$myMessage = $reply;
 	    				$message_type = '';
@@ -116,7 +119,9 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    					$whats_message_type = $message_type == 'photo' ? 'image' : 'document' ;
 		    				$sendData['filename'] = $botObj->file_name;
 		    				$sendData['body'] = $botObj->file;
-		    				$sendData['caption'] = $botObj->reply2;
+		    				if($message_type == 'photo'){
+			    				$sendData['caption'] = $botObj->reply;
+		    				}
 			    			$result = $mainWhatsLoopObj->sendFile($sendData);
 		    			}elseif($botObj->reply_type == 3){
 	    					$message_type = 'video';
@@ -135,12 +140,12 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				$sendData['body'] = $botObj->https_url;
 	        				$sendData['title'] = $botObj->url_title;
 	        				$sendData['description'] = $botObj->url_desc;
-	        				$sendData['previewBase64'] = base64_encode(file_get_contents($botObj->photo));
+	        				$sendData['previewBase64'] = $botObj->photo;
 			    			$result = $mainWhatsLoopObj->sendLink($sendData);
 		    			}elseif($botObj->reply_type == 6){
 	    					$message_type = 'contact';
 	    					$whats_message_type = 'contact';
-		    				$sendData['contactId'] = $botObj->whatsapp_no;
+		    				$sendData['contactId'] = str_replace('+','',$botObj->whatsapp_no);
 			    			$result = $mainWhatsLoopObj->sendContact($sendData);
 		    			}elseif($botObj->reply_type == 7){
 	    					$message_type = 'location';
@@ -153,9 +158,9 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    					$message_type = 'webhook';
 	    					$whats_message_type = 'webhook';
 		    				$sendData['body'] = $botObj->webhook_url;
-			    			$result = $mainWhatsLoopObj->sendContact($sendData);
+			    			$result = $mainWhatsLoopObj->sendMessage($sendData);
 		    			}
-
+		    			Logger($result);
 				        if(isset($result['data']) && isset($result['data']['id'])){
 				            $messageId = $result['data']['id'];
 				            $lastMessage['status'] = 'BOT';

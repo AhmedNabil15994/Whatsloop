@@ -246,13 +246,13 @@ class User extends Authenticatable implements Syncable
 
     static function checkUserBy($type,$value, $notId = false){
         $dataObj = self::NotDeleted()
-            ->where($type,$value)->where('status',1)->first();
+            ->where($type,$value)->where('status',1);
 
         if ($notId != false) {
-            $dataObj->whereNotIn('id', [$notId])->first();
+            $dataObj->whereNotIn('id', [$notId]);
         }
 
-        return $dataObj;
+        return $dataObj->first();
     }
 
     static function checkUserPermissions($userObj) {
@@ -279,13 +279,8 @@ class User extends Authenticatable implements Syncable
         return count(array_intersect($rule, \Session::has('user_id') ? PERMISSIONS : [])) > 0;
     }
 
-    static function setSessions($user){
-        $isAdmin = in_array($user->group_id, [1,]);
-        $userObj = $user;
-        if(!$isAdmin){
-            $userObj = User::first();  
-        }
-
+    static function setSessions($userObj){
+        $isAdmin = in_array($userObj->group_id, [1,]);
         session(['group_id' => $userObj->group_id]);
         session(['global_id' => $userObj->global_id]);
         session(['user_id' => $userObj->id]);
@@ -299,10 +294,16 @@ class User extends Authenticatable implements Syncable
         session(['channel' => !empty($channels) ? $channels[0] : null]);
         session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0])->first()->instanceId : null ]);
         session(['membership' => $userObj->membership_id]);
-
-        
-        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-        $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
+        if($isAdmin){
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
+            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
+            $invoiceObj = Invoice::getDisabled($userObj->id);
+        }else{
+            $mainUser = User::first();
+            $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
+            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
+            $invoiceObj = Invoice::getDisabled($mainUser->id);
+        }
         session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
         session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
         session(['disabledAddons' => !empty($userAddons) ? $userAddons[2] : [] ]);
@@ -310,7 +311,6 @@ class User extends Authenticatable implements Syncable
         session(['tenant_id' => $tenantObj->tenant_id]);
         session(['is_old' => $userObj->is_old]);
         session(['is_synced' => $userObj->is_synced]);
-        $invoiceObj = Invoice::getDisabled($userObj->id);
         session(['invoice_id' => $invoiceObj == null ? 0 : $invoiceObj->id]);
 
         // Get Membership and Extra Quotas Features

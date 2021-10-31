@@ -29,11 +29,11 @@
             <div class="col-md-12">
                 <form class="form supportForm" method="POST" action="{{ URL::to('/contacts/create') }}">
                     @csrf
-                    <ul class="btnsTabs" id="tabs1">
-                        <li id="tab1" class="active">{{ trans('main.mainSettings') }}</li>
-                        <li id="tab2">{{ trans('main.manual') }}</li>
-                        <li id="tab3">{{ trans('main.whatsappNos') }}</li>
-                        <li id="tab4">{{ trans('main.excelFile') }}</li>
+                    <ul class="btnsTabs contacts" id="tabs1">
+                        <li id="tab1" class="active" data-contact="1">{{ trans('main.mainSettings') }}</li>
+                        <li id="tab2" data-contact="2">{{ trans('main.manual') }}</li>
+                        <li id="tab3" data-contact="3">{{ trans('main.whatsappNos') }}</li>
+                        <li id="tab4" data-contact="4">{{ trans('main.excelFile') }}</li>
                     </ul>
                     <div class="tabs tabs1">
                         <div class="tab tab1">
@@ -206,7 +206,7 @@
                         <div class="col-xs-12 text-right actions">
                             <div class="nextPrev clearfix ">
                                 <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                <button name="Submit" type="button" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
                             </div>
                         </div>
                         <div class="clearfix"></div>

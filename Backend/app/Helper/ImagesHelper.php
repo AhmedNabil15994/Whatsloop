@@ -31,8 +31,8 @@ class ImagesHelper {
     static function checkExtensionType($extension,$type=null){
         $images = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
         $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf','plain'];
-        $videos = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv'];
-        $sounds = ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd'];
+        $videos = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv','x-m4v'];
+        $sounds = ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd','ogg','ppt','ptt'];
 
         if(in_array($extension, $images)){
             if($type != null){
@@ -63,7 +63,7 @@ class ImagesHelper {
         }
     }
 
-    static function GetImagePath($strAction, $id, $filename,$withDefault=true) {
+    static function GetImagePath($strAction, $id, $filename,$withDefault=true,$tenantId=null) {
 
         if($withDefault){
             $default = asset('images/not-available.jpg');
@@ -79,6 +79,8 @@ class ImagesHelper {
         if(!\Session::has('central')){
             if(\Session::has('user_id')){
                 $tenant = TENANT_ID;
+            }else{
+                $tenant = $tenantId;
             }
         }else{
             if($default != ''){
@@ -169,7 +171,7 @@ class ImagesHelper {
             $fileObj = Storage::url($fieldInput);
         }
 
-        if (Storage::size($fieldInput) >= 2000000) {
+        if (Storage::size($fieldInput) >= 10000000) {
             return false;
         }
         $oldExtension = explode('.', explode('/', $fieldInput)[1])[1];
@@ -177,8 +179,9 @@ class ImagesHelper {
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
-        
+
         $fileData = self::checkExtensionType($extension,'getData');
+
         $fileType = $fileData[0];
         $appliedExtensions = $fileData[1];
 

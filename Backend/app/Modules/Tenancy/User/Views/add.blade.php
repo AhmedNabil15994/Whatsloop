@@ -30,7 +30,9 @@
                                 <label class="titleLabel">{{ $propValue['label'] }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input class="{{ $propValue['class'] }}" {{ $propValue['specialAttr'] }} type="{{ $propValue['type'] }}" name="{{ $propKey }}" value="{{ old($propKey) }}" placeholder="{{ $propValue['label'] }}" {{ $propValue['type'] == 'tel' ? "dir=ltr" : '' }}>
+                                <div class="inputStyle {{ $propValue['type'] == 'tel' ? 'telStyle' : '' }}">
+                                    <input class="{{ $propValue['class'] }}" {{ $propValue['specialAttr'] }} type="{{ $propValue['type'] }}" name="{{ $propKey }}" value="{{ old($propKey) }}" placeholder="{{ $propValue['label'] }}" {{ $propValue['type'] == 'tel' ? "dir=ltr" : '' }}>
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -41,7 +43,9 @@
                                 <label class="titleLabel">{{ $propValue['label'] }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <textarea {{ $propValue['specialAttr'] }} name="{{ $propKey }}" class="{{ $propValue['class'] }}" placeholder="{{ $propValue['label'] }}">{{ old($propKey) }}</textarea>
+                                <div class="inputStyle">
+                                    <textarea {{ $propValue['specialAttr'] }} name="{{ $propKey }}" class="{{ $propValue['class'] }}" placeholder="{{ $propValue['label'] }}">{{ old($propKey) }}</textarea>
+                                </div>
                             </div>
                         </div>
                         @endif
@@ -54,13 +58,15 @@
                                 <label class="titleLabel">{{ $propValue['label'] }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <select data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($propValue['options'] as $group)
-                                    @php $group = (object) $group; @endphp
-                                    <option value="{{ $group->id }}" {{ old($propKey) == $group->id ? 'selected' : '' }} {{ Session::has($propKey) && Session::get($propKey) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="{{ $propKey }}">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        @foreach($propValue['options'] as $group)
+                                        @php $group = (object) $group; @endphp
+                                        <option value="{{ $group->id }}" {{ old($propKey) == $group->id ? 'selected' : '' }} {{ Session::has($propKey) && Session::get($propKey) == $group->id ? 'selected' : '' }}>{{ $group->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div> 
                         @endif

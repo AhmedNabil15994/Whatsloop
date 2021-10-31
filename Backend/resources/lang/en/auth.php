@@ -11,6 +11,7 @@ return [
 	'password' => 'Password',
 	'passwordPlaceHolder' => 'Enter your password',
 	'code' => 'Code',
+	'checkCode' => 'Check Code',
 	'codePlaceHolder' => 'Enter your code',
 	'loginButton' => 'Log In',
 	'forgotPassword' => 'Forgot your password?',

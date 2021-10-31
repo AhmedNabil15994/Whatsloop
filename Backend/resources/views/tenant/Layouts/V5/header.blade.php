@@ -28,8 +28,12 @@
                 <span class="account">{{ GROUP_NAME }}</span>
             </div>
             <ul class="listProfile">
+                @if(\Helper::checkRules('subscription'))
                 <li><a href="{{ URL::to('/profile/subscription') }}"><i class="flaticon-settings-1"></i> {{ trans('main.subscriptionManage') }}</a></li>
+                @endif
+                @if(\Helper::checkRules('list-invoices'))
                 <li><a href="{{ URL::to('/invoices') }}"><i class="flaticon-invoice"></i> {{ trans('main.subs_invoices') }}</a></li>
+                @endif
                 <li><a href="{{ URL::to('/profile/personalInfo') }}"><i class="flaticon-user-1"></i> {{ trans('main.account_setting') }}</a></li>
                 <li><a href="{{ URL::to('/helpCenter') }}"><i class="flaticon-life-buoy"></i> {{ trans('main.helpCenter') }}</a></li>
                 <li><a href="{{ URL::to('/logout') }}"><i class="flaticon-user"></i> {{ trans('main.logout') }}</a></li>

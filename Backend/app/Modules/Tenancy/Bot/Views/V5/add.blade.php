@@ -29,11 +29,13 @@
                                 <label class="titleLabel">{{ trans('main.messageType') }} :</label>                            
                             </div>
                             <div class="col-md-9">
-                                <select data-toggle="select2" data-style="btn-outline-myPR" name="message_type">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    <option value="1" {{ old('message_type') == 1 ? 'selected' : '' }}>{{ trans('main.equal') }}</option>
-                                    <option value="2" {{ old('message_type') == 2 ? 'selected' : '' }}>{{ trans('main.part') }}</option>
-                                </select>
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="message_type">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        <option value="1" {{ old('message_type') == 1 ? 'selected' : '' }}>{{ trans('main.equal') }}</option>
+                                        <option value="2" {{ old('message_type') == 2 ? 'selected' : '' }}>{{ trans('main.part') }}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div> 
                         <div class="row">
@@ -49,17 +51,19 @@
                                 <label class="titleLabel">{{ trans('main.replyType') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <select data-toggle="select2" data-style="btn-outline-myPR" name="reply_type">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    <option value="1" {{ old('reply_type') == 1 ? 'selected' : '' }}>{{ trans('main.text') }}</option>
-                                    <option value="2" {{ old('reply_type') == 2 ? 'selected' : '' }}>{{ trans('main.photoOrFile') }}</option>
-                                    <option value="3" {{ old('reply_type') == 3 ? 'selected' : '' }}>{{ trans('main.video') }}</option>
-                                    <option value="4" {{ old('reply_type') == 4 ? 'selected' : '' }}>{{ trans('main.sound') }}</option>
-                                    <option value="5" {{ old('reply_type') == 5 ? 'selected' : '' }}>{{ trans('main.link') }}</option>
-                                    <option value="6" {{ old('reply_type') == 6 ? 'selected' : '' }}>{{ trans('main.whatsappNos') }}</option>
-                                    <option value="7" {{ old('reply_type') == 7 ? 'selected' : '' }}>{{ trans('main.mapLocation') }}</option>
-                                    <option value="8" {{ old('reply_type') == 8 ? 'selected' : '' }}>{{ trans('main.webhook') }}</option>
-                                </select>
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="reply_type">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        <option value="1" {{ old('reply_type') == 1 ? 'selected' : '' }}>{{ trans('main.text') }}</option>
+                                        <option value="2" {{ old('reply_type') == 2 ? 'selected' : '' }}>{{ trans('main.photoOrFile') }}</option>
+                                        <option value="3" {{ old('reply_type') == 3 ? 'selected' : '' }}>{{ trans('main.video') }}</option>
+                                        <option value="4" {{ old('reply_type') == 4 ? 'selected' : '' }}>{{ trans('main.sound') }}</option>
+                                        <option value="5" {{ old('reply_type') == 5 ? 'selected' : '' }}>{{ trans('main.link') }}</option>
+                                        <option value="6" {{ old('reply_type') == 6 ? 'selected' : '' }}>{{ trans('main.whatsappNos') }}</option>
+                                        <option value="7" {{ old('reply_type') == 7 ? 'selected' : '' }}>{{ trans('main.mapLocation') }}</option>
+                                        <option value="8" {{ old('reply_type') == 8 ? 'selected' : '' }}>{{ trans('main.webhook') }}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -67,11 +71,13 @@
                                 <label class="titleLabel" for="lang"> {{ trans('main.lang') }}</label>                            
                             </div>
                             <div class="col-md-9">
-                                <select data-toggle="select2" data-style="btn-outline-myPR" name="lang">
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    <option value="0">{{ trans('main.arabic') }}</option>
-                                    <option value="1">{{ trans('main.english') }}</option>
-                                </select>
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="lang">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        <option value="0">{{ trans('main.arabic') }}</option>
+                                        <option value="1">{{ trans('main.english') }}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="reply" data-id="1">

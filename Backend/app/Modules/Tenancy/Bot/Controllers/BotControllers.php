@@ -157,7 +157,7 @@ class BotControllers extends Controller {
             'message_type.required' => trans('main.messageTypeValidate'),
             'message.required' => trans('main.messageValidate'),
             'reply_type.required' => trans('main.replyTypeValidate'),
-            'lang.required' => trans('main.replyTypeValidate'),
+            'lang.required' => trans('main.langValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -383,8 +383,8 @@ class BotControllers extends Controller {
             $dataObj->webhook_url = $input['webhook_url'];
             if(isset($input['templates']) && !empty($input['templates'])){
                 $dataObj->templates = serialize($input['templates']);
-                $dataObj->save();
             }
+            $dataObj->save();
         }
 
         if(in_array($input['reply_type'], [2,3,4])){

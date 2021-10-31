@@ -219,7 +219,7 @@ class ContactsControllers extends Controller {
         $input = \Request::all();
         // dd($input);
         $dataObj = Contact::NotDeleted()->find($id);
-        if($dataObj == null || $id == 1) {
+        if($dataObj == null) {
             return Redirect('404');
         }
 

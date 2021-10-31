@@ -3,10 +3,10 @@ resizeMenu();
 	$(".loginPage .left").height($(".loginPage .right").height());
 	
 	$( ".loginPage .right .center .formLogin .inputStyle.telStyle input" ).focus(function() {
-	  $(this).parent().siblings().css("color","#00BFB5");
+	  $(this).parent().siblings('i').css("color","#00BFB5");
 	});
 	$( ".loginPage .right .center .formLogin .inputStyle.telStyle input" ).focusout(function() {
-	  $(this).parent().siblings().css("color","#6D7E9F");
+	  $(this).parent().siblings('i').css("color","#6D7E9F");
 	});
 
 	$(".loginPage .right .center .formLogin .inputStyle input").keyup(function() {

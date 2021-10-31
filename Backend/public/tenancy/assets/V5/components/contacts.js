@@ -140,4 +140,7 @@ $(function(){
         }
     });
 
+    $('.contacts.btnsTabs li').on('click',function(){
+        $('input[name="vType"]').val($(this).data('contact') > 1 ? $(this).data('contact') : 2);
+    });
 });
