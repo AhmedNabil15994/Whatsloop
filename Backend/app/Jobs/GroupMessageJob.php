@@ -58,10 +58,9 @@ class GroupMessageJob implements ShouldQueue
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $check = $mainWhatsLoopObj->checkPhone(['phone' => $contact]);
         $check = $check->json();
-        if($check['data']['result'] == 'exists'){
+        $status = 0;
+        if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
             $status = 1;
-        }else{
-            $status = 0;
         }
 
         if($status){

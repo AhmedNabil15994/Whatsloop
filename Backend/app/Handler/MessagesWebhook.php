@@ -57,7 +57,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		if($message['fromMe'] == false){
 
 					// Fire Incoming Message Event For Web Application
-					$this->handleMessages($userObj->domain,$message);
+					$this->handleMessages($userObj->domain,$message,$tenantObj->tenant_id);
 
 					// Check User Message
 	    			if(in_array(strtolower($senderMessage), ['english','عربي','#','خروج','exit'])){
@@ -102,8 +102,8 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 	    			if($botObj && !$dis){
 	    				$botObj = Bot::getData($botObj,$tenantObj->tenant_id);
-	    				$botObj->file = str_replace('http://localhost','https://c16e-154-182-239-112.ngrok.io',$botObj->file);
-	    				$botObj->photo = str_replace('http://localhost','https://c16e-154-182-239-112.ngrok.io',$botObj->photo);
+	    				$botObj->file = str_replace('localhost',$userObj->domain.'.wloop.net',$botObj->file);
+	    				$botObj->photo = str_replace('localhost',$userObj->domain.'.wloop.net',$botObj->photo);
 	    				Logger((array)$botObj);
 	    				$reply = $botObj->reply;
 	    				$myMessage = $reply;
@@ -140,7 +140,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				$sendData['body'] = $botObj->https_url;
 	        				$sendData['title'] = $botObj->url_title;
 	        				$sendData['description'] = $botObj->url_desc;
-	        				$sendData['previewBase64'] = $botObj->photo;
+	        				$sendData['previewBase64'] = substr(base64_encode(file_get_contents($botObj->photo)),20000)[0];
 			    			$result = $mainWhatsLoopObj->sendLink($sendData);
 		    			}elseif($botObj->reply_type == 6){
 	    					$message_type = 'contact';
@@ -162,23 +162,28 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    			}
 		    			Logger($result);
 				        if(isset($result['data']) && isset($result['data']['id'])){
+            				$checkMessageObj = ChatMessage::where('chatId',$sender)->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
 				            $messageId = $result['data']['id'];
 				            $lastMessage['status'] = 'BOT';
 				            $lastMessage['id'] = $messageId;
 				            $lastMessage['chatId'] = $sender;
 				            $lastMessage['fromMe'] = 1;
 				            $lastMessage['message_type'] = $message_type;
-				            $lastMessage['body'] = $botObj->reply;
+				            $lastMessage['body'] = $sendData['body'];
+				            if($message_type == 'photo'){
+				            	$lastMessage['caption'] = $sendData['caption'];
+		    				}
+            				$lastMessage['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
 				            $lastMessage['type'] = $whats_message_type;
-				            $lastMessage['time'] = date('Y-m-d H:i:s');
+				            $lastMessage['time'] = strtotime(date('Y-m-d H:i:s'));
 				            $lastMessage['sending_status'] = 1;
-            				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sender)->where('chatName','!=',null)->first();
             				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
 				            $messageObj = ChatMessage::getData(ChatMessage::newMessage($lastMessage));
 
+            				Logger((array)$messageObj);
 
 				            $dialog = ChatDialog::getOne($sender);
-							$dialog->last_time = strtotime($lastMessage['time']);
+							$dialog->last_time = $lastMessage['time'];
 							$dialogObj = ChatDialog::getData($dialog); 
 	    					$dialogObj->lastMessage = $messageObj;
 				            $dialogObj->lastMessage->bot_details = $botObj;
@@ -232,22 +237,38 @@ class MessagesWebhook extends ProcessWebhookJob{
     	}
 	}
 
-	public function handleMessages($domain,$message){
+	public function handleMessages($domain,$message,$tenantId){
 	    if($message['fromMe'] == 0){
 			if(strpos($message['body'], '://') !== false){
 				$message['message_type'] = \ImagesHelper::checkExtensionType(substr($message['body'], strrpos($message['body'], '.') + 1));
-				$fileName = '/uploads/chats/'.substr($message['body'], strrpos($message['body'], '/' )+1);
-				$destinationPath = public_path() . $fileName;
+				$fileName = substr($message['body'], strrpos($message['body'], '/' )+1);
+				$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
 				$succ = file_put_contents($destinationPath, file_get_contents($message['body']));
-				$message['body'] = config("app.BASE_URL").$fileName;
+				$message['body'] = config('app.BASE_URL').'/public/uploads/'.$tenantId.'/chats/' . $fileName;
 			}else{
 				$message['message_type'] = 'text';
 			}
 	        $message['sending_status'] = 1;
-	        $message['time'] = date('Y-m-d H:i:s');
+	        $message['time'] = strtotime(date('Y-m-d H:i:s'));
+            $checkMessageObj = ChatMessage::where('chatId',$message['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
+            $message['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
 	        $messageObj = ChatMessage::newMessage($message);
 	        $dialog = ChatDialog::getOne($message['chatId']);
-			$dialog->last_time = strtotime($message['time']);
+	        if(!$dialog){
+                $dialogObj = new ChatDialog;
+                $dialogObj->id = $message['chatId'];
+                $dialogObj->name = $message['chatId'];
+                $dialogObj->image = '';
+                $dialogObj->metadata = '';
+                $dialogObj->is_pinned = 0;
+                $dialogObj->is_read = 0;
+                $dialogObj->modsArr = '';
+                $dialogObj->last_time = $message['time'];
+                $dialogObj->save();
+            }else{
+            	$dialog->last_time = $message['time'];
+                $dialog->save();
+            }
 			$dialogObj = ChatDialog::getData($dialog); 
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
 		}

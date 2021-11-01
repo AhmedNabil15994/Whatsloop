@@ -124,12 +124,12 @@ class LiveChatControllers extends Controller {
 
         $is_admin = IS_ADMIN;
         $user_id = USER_ID; 
-        // if(!$is_admin){
+        if(!$is_admin){
             $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
             if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
                 ChatEmpLog::newLog($input['chatId']);
             }
-        // }
+        }
 
         $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
         $dataList['status'] = \TraitsFunc::SuccessMessage();
@@ -441,14 +441,15 @@ class LiveChatControllers extends Controller {
 
         $result = $result->json();
         if(isset($result['data']) && isset($result['data']['id'])){
-            $checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+            $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
             $messageId = $result['data']['id'];
             $lastMessage['status'] = 'APP';
             $lastMessage['id'] = $messageId;
             $lastMessage['fromMe'] = 1;
             $lastMessage['chatId'] = $sendData['chatId'];
-            $lastMessage['time'] = date('Y-m-d H:i:s');
+            $lastMessage['time'] = strtotime(date('Y-m-d H:i:s'));
             $lastMessage['body'] = $bodyData;
+            $lastMessage['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
             $lastMessage['caption'] = $caption;
             $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
             $lastMessage['message_type'] = $message_type;
@@ -464,18 +465,18 @@ class LiveChatControllers extends Controller {
             }
             $messageObj = ChatMessage::newMessage($lastMessage);
             $dialog = ChatDialog::getOne($sendData['chatId']);
-            $dialog->last_time = strtotime($lastMessage['time']);
+            $dialog->last_time = $lastMessage['time'];
             $dialogObj = ChatDialog::getData($dialog);
             broadcast(new SentMessage($domain , $dialogObj ));
         
             $is_admin = IS_ADMIN;
             $user_id = USER_ID; 
-            // if(!$is_admin){
+            if(!$is_admin){
                 $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
                 if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
                     ChatEmpLog::newLog($input['chatId'],3);
                 }
-            // }
+            }
         }else{
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
@@ -488,7 +489,7 @@ class LiveChatControllers extends Controller {
     public function liveChatLogout(){
         $is_admin = IS_ADMIN;
         $user_id = USER_ID;
-        // if(!$is_admin){
+        if(!$is_admin){
             $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
             if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
                 $lastObj->ended = 1;
@@ -496,7 +497,7 @@ class LiveChatControllers extends Controller {
                 $lastObj->save();
                 ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
             }
-        // }
+        }
         return redirect()->to('/dashboard');
     }
 

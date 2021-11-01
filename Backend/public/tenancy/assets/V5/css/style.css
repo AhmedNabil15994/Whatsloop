@@ -1625,7 +1625,8 @@ input[type="number"] {
 	color:#000;
 	font-weight:700;
 	text-align: center;
-	min-width:160px;
+	/*min-width:160px;*/
+	width: 108px;
 }
 
 .steps .step .icon
@@ -4096,7 +4097,7 @@ input[type="number"] {
 }
 
 .d-hidden{
-	display: none;
+	display: none !important;
 }
 .paySteps,
 .setSteps{
@@ -4696,12 +4697,176 @@ div.phone-footer img{
 .dark-mode .UnSelectAllCheckBox{
 	color: #FFF;
 }
-
-
-
-
-
-
+.pre-space{
+	white-space: pre-line;
+}
+.label.label-primary {
+  color:#fff !important;
+  background-color:#3699ff
+}
+.label.label-outline-primary {
+  background-color:transparent;
+  color:#3699ff !important;
+  border:1px solid #3699ff
+}
+.label.label-outline-primary.label-outline-2x {
+  border:2px solid #3699ff
+}
+.label.label-light-primary {
+  color:#3699ff !important;
+  background-color:#e1f0ff
+}
+.label.label-secondary {
+  color:#464e5f !important;
+  background-color:#e5eaee
+}
+.label.label-default{
+  background-color: #ecf0f3;
+  color: #464e5f !important;
+}
+.label.label-outline-secondary {
+  background-color:transparent;
+  color:#464e5f !important;
+  border:1px solid #e5eaee
+}
+.label.label-outline-secondary.label-outline-2x {
+  border:2px solid #e5eaee
+}
+.label.label-light-secondary {
+  color:#e5eaee !important;
+  background-color:#ecf0f3
+}
+.label.label-success {
+  color:#fff !important;
+  background-color:#1bc5bd
+}
+.label.label-outline-success {
+  background-color:transparent;
+  color:#1bc5bd !important;
+  border:1px solid #1bc5bd
+}
+.label.label-outline-success.label-outline-2x {
+  border:2px solid #1bc5bd
+}
+.label.label-light-success {
+  color:#1bc5bd !important;
+  background-color:#c9f7f5
+}
+.label.label-info {
+  color:#fff !important;
+  background-color:#8950fc
+}
+.label.label-outline-info {
+  background-color:transparent;
+  color:#8950fc !important;
+  border:1px solid #8950fc
+}
+.label.label-outline-info.label-outline-2x {
+  border:2px solid #8950fc
+}
+.label.label-light-info {
+  color:#8950fc !important;
+  background-color:#eee5ff
+}
+.label.label-warning {
+  color:#fff !important;
+  background-color:#ffa800
+}
+.label.label-outline-warning {
+  background-color:transparent;
+  color:#ffa800 !important;
+  border:1px solid #ffa800
+}
+.label.label-outline-warning.label-outline-2x {
+  border:2px solid #ffa800
+}
+.label.label-light-warning {
+  color:#ffa800 !important;
+  background-color:#fff4de
+}
+.label.label-danger {
+  color:#fff !important;
+  background-color:#f64e60
+}
+.label.label-outline-danger {
+  background-color:transparent;
+  color:#f64e60 !important;
+  border:1px solid #f64e60
+}
+.label.label-outline-danger.label-outline-2x {
+  border:2px solid #f64e60
+}
+.label.label-light-danger {
+  color:#f64e60 !important;
+  background-color:#ffe2e5
+}
+.label.label-light {
+  color:#80808f !important;
+  background-color:#f3f6f9
+}
+.label.label-outline-light {
+  background-color:transparent;
+  color:#464e5f !important;
+  border:1px solid #f3f6f9
+}
+.label.label-outline-light.label-outline-2x {
+  border:2px solid #f3f6f9
+}
+.label.label-light-light {
+  color:#f3f6f9 !important;
+  background-color:#f3f6f9
+}
+.label.label-dark {
+  color:#fff !important;
+  background-color:#212121
+}
+.label.label-outline-dark {
+  background-color:transparent;
+  color:#212121 !important;
+  border:1px solid #212121
+}
+.label.label-outline-dark.label-outline-2x {
+  border:2px solid #212121
+}
+.label.label-light-dark {
+  color:#212121 !important;
+  background-color:#d6d6e0
+}
+.label.label-white {
+  color:#464e5f !important;
+  background-color:#fff
+}
+.label.label-outline-white {
+  background-color:transparent;
+  color:#fff !important;
+  border:1px solid #fff
+}
+.label.label-outline-white.label-outline-2x {
+  border:2px solid #fff
+}
+.label.label-light-white {
+  color:#fff !important;
+  background-color:#fff
+}
+.badge{
+	padding: 10px 15px;
+}
+.dz-image img{
+	width: 150px;
+	height: 150px;
+	margin-bottom: 10px;
+}
+.my-gallery{
+	display: inline-block;
+}
+.PhotoBTNS a{
+    z-index: 9999;
+}
+.PhotoBTNS a i {
+	font-size: 24px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
 
 
 

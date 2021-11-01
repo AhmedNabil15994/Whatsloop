@@ -268,12 +268,16 @@ class CategoryControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
+        $varObj = Variable::getVar('BUSINESS');
+        $disable = 0;
+        if(!$varObj){$disable = 1;}
         // Perform Whatsapp Integration
         $labelId = '';
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
         $addResult = $mainWhatsLoopObj->createLabel($data);
         $result = $addResult->json();
+        // dd($result);
         if($result['status']['status'] != 1){
             Session::flash('error', $result['status']['message']);
             return \Redirect::back()->withInput();

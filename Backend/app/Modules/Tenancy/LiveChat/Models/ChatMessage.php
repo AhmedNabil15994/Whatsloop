@@ -24,9 +24,10 @@ class ChatMessage extends Model{
             $source->where('body','LIKE','%'.$input['message'].'%')->orWhere('caption','LIKE','%'.$input['message'].'%');
         }
         if($chatId != null){
-            $source->where('chatId',$chatId);
+            $source->where('chatId',$chatId)->orderBy('messageNumber','DESC');
+        }else{
+            $source->orderBy('time','DESC');
         }
-        $source->orderBy('time','DESC');
         return self::generateObj($source,$limit);
     }
 
@@ -57,16 +58,19 @@ class ChatMessage extends Model{
     static function newMessage($source,$addHours=null){
         $source = (object) $source;
         $dataObj = self::where('id',$source->id)->first();
+        $oldBody = '';
         if($dataObj == null){
             $dataObj = new  self;
+        }else{
+            $oldBody = $dataObj->body;
         }
         
         $dataObj->id = $source->id;
-        $dataObj->body = isset($source->body) ? $source->body : '';
+        $dataObj->body = isset($source->body) && empty($oldBody) ? $source->body : $oldBody;
         $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
         $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
         $dataObj->author = isset($source->author) ? $source->author : '';
-        $dataObj->time = isset($source->time) ? $addHours ? strtotime($source->time)+7200 : strtotime($source->time)  : '';
+        $dataObj->time = isset($source->time) ? $addHours ? strtotime($source->time)+10817 : $source->time  : $dataObj->time;
         $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
         $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
         if(isset($source->status)){

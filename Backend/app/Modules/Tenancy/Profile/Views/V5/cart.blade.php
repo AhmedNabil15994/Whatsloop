@@ -33,6 +33,7 @@
             <div class="col-sm-12 col-md-12 col-lg-9">
                 <div class="tabs tabs1">
                     <div class="tab tab1 tab2">
+                        <input type="hidden" name="start_date" value="{{ $data->start_date }}">
                         @if(!empty($data->memberships))
                         <input type="hidden" name="updated" value="1">
                         <input type="hidden" name="oldMembership" value="{{ Session::get('membership') }}">
@@ -200,7 +201,7 @@
                 <div class="cart-sell cart">
                     <div class="box-style">
                         <div class="box-header">
-                            <h5>{{ trans('main.myCart') }} ( <span class="cartCount">1</span> )</h5>
+                            <h5>{{ trans('main.myCart') }} ( <span class="cartCount">0</span> )</h5>
                         </div>
                         <div class="box-content">
                             <input type="hidden" name="addon" value="{{ trans('main.addon') }}">
@@ -218,23 +219,11 @@
                                 @csrf
                                 <input type="hidden" name="data" value="">
                                 <input type="hidden" name="totals" value="">
+                                <input type="hidden" name="background" value="{{ $data->userCredits }}">
+                                <input type="hidden" name="type" value="{{ Request::get('type') }}">
                             </form>
                             <div class="row sellCards">
-                                <div class="col-sm-12 col-lg-12 card-body membership" data-cols="{{ $data->membership->id }}">
-                                    <div class="sell-card">
-                                        <div class="card-img">
-                                            <img src="{{ asset('V5/images/sell.png') }}" alt="">
-                                        </div>
-                                        <div class="card-body">
-                                            <a href="" class="delete"><i class="fa fa-times"></i></a>
-                                            <h5 class="card-title-2">{{ $data->membership->{'title_'.LANGUAGE_PREF} }}</h5>
-                                            <p class="card-text-2 monthly" data-tabs="{{ $data->membership->monthly_after_vat }}">{{ number_format((float)$data->membership->monthly_price, 2, '.', '') }} {{ trans('main.sar2') }} <span class="">{{ trans('main.monthly') }}</span></p>
-                                            <p class="card-text-2 yearly d-hidden" data-tabs="{{ $data->membership->annual_after_vat }}">{{ number_format((float)$data->membership->annual_after_vat, 2, '.', '') }} {{ trans('main.sar2') }} <span class="">{{ trans('main.yearly') }}</span></p>
-                                            <p class="card-text-3 card-text-last"><span>{{ trans('main.extra_type') }}</span>: {{ trans('main.membership') }}</p>
-                                            <a href="#" class="card-link rmv">{{ trans('main.remove') }}</a>
-                                        </div>
-                                    </div>
-                                </div>  
+                                
                             </div>
                         </div>
                         
@@ -244,26 +233,23 @@
                             <h5>{{ trans('main.order_sum') }}</h5>
                         </div>
                         <ul class="summersize">
-                            @php
-                                $tax = \Helper::calcTax($data->membership->monthly_after_vat);
-                                $actual_price = round($data->membership->monthly_after_vat - $tax , 2);
-                            @endphp
+                            
                             <li>
                                 <span>{{ trans('main.grandTotal') }}</span>
                                 <span>
-                                    <span class="grandTotal">{{ number_format((float)$actual_price, 2, '.', '') }}</span> {{ trans('main.sar') }}
+                                    <span class="grandTotal">{{ number_format((float)0, 2, '.', '') }}</span> {{ trans('main.sar') }}
                                 </span>
                             </li>
                             <li>
                                 <span>{{ trans('main.estimatedTax') }}</span>
                                 <span>
-                                    <span class="estimatedTax">{{ number_format((float)$tax, 2, '.', '') }}</span> {{ trans('main.sar') }}
+                                    <span class="estimatedTax">{{ number_format((float)0, 2, '.', '') }}</span> {{ trans('main.sar') }}
                                 </span>
                             </li>
                             <li class="total">
                                 <span>{{ trans('main.total') }}</span>
                                 <span>
-                                    <span class="total">{{ number_format((float)$data->membership->monthly_after_vat, 2, '.', '') }}</span> {{ trans('main.sar') }}
+                                    <span class="total">{{ number_format((float)0, 2, '.', '') }}</span> {{ trans('main.sar') }}
                                 </span>
                             </li>
                         </ul>
@@ -288,5 +274,5 @@
 
 {{-- Scripts Section --}}
 @section('topScripts')
-<script src="{{ asset('V5/components/newPackage.js') }}" type="text/javascript"></script>
+<script src="{{ asset('V5/components/userCart.js') }}" type="text/javascript"></script>
 @endsection

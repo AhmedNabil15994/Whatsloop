@@ -141,7 +141,7 @@ class SubscriptionHelper {
                     $dataObj = Addons::getOne($one[0]);
                     $addon[] = $one[0];
                     if($myEndDate != null){
-                        $addonData[] = [
+                        $item = [
                             'tenant_id' => $tenant_id,
                             'global_user_id' => $userObj->global_id,
                             'user_id' => $userObj->id,
@@ -150,6 +150,10 @@ class SubscriptionHelper {
                             'duration_type' => $one[3],
                             'end_date' => $myEndDate, 
                         ];
+                        if($type == 'new' && $start_date != null){
+                            $item = array_merge($item,['start_date'=>$start_date]);
+                        }
+                        $addonData[] = $item;
                     }else{
                         $addonData[] = [
                             'tenant_id' => $tenant_id,
@@ -167,7 +171,7 @@ class SubscriptionHelper {
                     $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
                     for ($i = 0; $i < $one[7] ; $i++) {
                         if($myEndDate != null){
-                            $extraQuotaData[] = [
+                            $item = [
                                 'tenant_id' => $tenant_id,
                                 'global_user_id' => $userObj->global_id,
                                 'user_id' => $userObj->id,
@@ -176,6 +180,10 @@ class SubscriptionHelper {
                                 'status' => 1,
                                 'end_date' => $myEndDate, 
                             ];
+                            if($type == 'new' && $start_date != null){
+                                $item = array_merge($item,['start_date'=>$start_date]);
+                            }
+                            $extraQuotaData[] = $item;
                         }else{
                             $extraQuotaData[] = [
                                 'tenant_id' => $tenant_id,

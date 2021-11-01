@@ -79,10 +79,10 @@
                                 <img src="{{ $itemImage }}" alt="" />
                                 <h2 class="title">{{ $oneItem[2] }}</h2>
                                 <p class="type">{{ trans('main.extra_type') }} : <span>{{ trans('main.'.$oneItem[1]) }}</span></p>
-                                <p class="type">{{ trans('main.subscription') }} : <span>{{ $oneItem[4] }} <b>-</b> {{ $oneItem[5] }}</span></p>
+                                <p class="type">{{ trans('main.subscription') }} : <span><span class="start_date">{{ $oneItem[4] }}</span> <b>-</b> <span class="end_date">{{ $oneItem[5] }}</span></span></p>
                             </div>
                         </td>
-                        <td>1</td>
+                        <td class="quantity">1</td>
                         <td class="prices"><span class="price">{{ $oneItem[1] == 'extra_quota' ?  number_format((float)$oneItem[6] * $oneItem[7], 2, '.', '') : number_format((float)$oneItem[6], 2, '.', '') }}</span> {{ trans('main.sar') }}</td>
                         <td>
                             @if($oneItem[1] != 'membership')
@@ -118,8 +118,21 @@
         </div>
     </div>
 
+    @php
+    $action = '';
+    if(Request::segment(1) == 'invoices'){
+        $action = URL::current();
+    }else{
+        if(Request::segment(3) == 'transferPayment'){
+            $action = URL::to('/profile/subscription/renewToFirst');
+        }else{
+            $action = URL::to('/completeOrder');
+        }
+    }
+    @endphp
+
     <div id="step2" class="paySteps">
-        <form class="formPayment completeOrder" action="{{ Request::segment(1) == 'invoices' ? URL::current() : URL::to('/completeOrder') }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+        <form class="formPayment completeOrder" action="{{ $action }}" method="post" accept-charset="utf-8" enctype="multipart/form-data">
             @csrf
             <div class="row">
                 <div class="col-md-6">
@@ -172,6 +185,7 @@
                 </div>
             </div>
             <input type="hidden" name="payType" value="">
+            <input type="hidden" name="dataType" value="2">
             <input type="hidden" name="totals" value="{{ json_encode($data->totals) }}">
             <input type="hidden" name="data" value="{{ json_encode($data->data) }}">
             <div class="totalConfirm">

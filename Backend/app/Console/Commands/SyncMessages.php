@@ -43,7 +43,7 @@ class SyncMessages extends Command
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
         $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
-        if($lastMessageObj != null){
+        if($lastMessageObj != null && $lastMessageObj->time != null){
             $data['min_time'] = $lastMessageObj->time - 7200;
         }
         $updateResult = $mainWhatsLoopObj->messages($data);

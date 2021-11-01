@@ -97,6 +97,8 @@ class CentralChannel extends Model{
         $dataObj->usedDays = (strtotime(date('Y-m-d')) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->leftDays = $dataObj->days - $dataObj->usedDays;
         $dataObj->rate = ($dataObj->leftDays / $dataObj->days) * 100;
+        $dataObj->myId = 1;
+        $dataObj->name2 = trans('main.channel').' #'.$source->instanceId;
         return $dataObj;
     }
 

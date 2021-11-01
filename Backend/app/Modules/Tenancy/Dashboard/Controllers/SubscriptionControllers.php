@@ -372,6 +372,7 @@ class SubscriptionControllers extends Controller {
         }
 
         $cartData = $input['data'];
+        
         $this->calcData($input['totals'],$cartData,$userObj);
 
         // if($input['payType'] == 2){ // Paytabs Integration
@@ -406,10 +407,24 @@ class SubscriptionControllers extends Controller {
         //     return redirect()->away($result->data->redirect_url);
 
         // }
+        $url = \URL::to('/pushInvoice');
+        if(isset($input['dataType']) && $input['dataType'] == 2){
+            $url = \URL::to('/pushInvoice2');
+            $nextStartMonth = date('Y-m-d',strtotime('first day of +1 month',strtotime(date('Y-m-d'))));
+
+            Variable::where('var_key','endDate')->firstOrCreate([
+                'var_key' => 'endDate',
+                'var_value' => $nextStartMonth, 
+            ]);
+            Variable::where('var_key','start_date')->firstOrCreate([
+                'var_key' => 'start_date',
+                'var_value' => date('Y-m-d'), 
+            ]);
+        }
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
-                'returnURL' => \URL::to('/pushInvoice'),
+                'returnURL' => $url ,
                 // 'returnURL' => \URL::to('/pushInvoice'),  // For Local 
                 'cart_id' => 'whatsloop-'.rand(1,100000),
                 'cart_amount' => json_decode($input['totals'])[3],
@@ -571,7 +586,7 @@ class SubscriptionControllers extends Controller {
         $data['data'] = array_values($userAddonsTutorial);
         $names = Addons::NotDeleted()->whereIn('id',$data['data'])->pluck('title_'.LANGUAGE_PREF);
         $data['dataNames'] = reset($names);
-        $data['channelName'] = UserChannels::first()->name;
+        $data['channelName'] = trans('main.channel'). ' #'.Session::get('channelCode');
         $data['dis'] = 0;
         if(count($data['data']) > 0){
             $data['templates'] = ModTemplate::dataList(null, ($data['data'][0] == 5 ? 1 : 2 )  )['data'];

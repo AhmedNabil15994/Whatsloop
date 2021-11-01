@@ -79,10 +79,10 @@
                                 <img src="{{ $itemImage }}" alt="" />
                                 <h2 class="title">{{ $oneItem[2] }}</h2>
                                 <p class="type">{{ trans('main.extra_type') }} : <span>{{ trans('main.'.$oneItem[1]) }}</span></p>
-                                <p class="type">{{ trans('main.subscription') }} : <span>{{ $oneItem[4] }} <b>-</b> {{ $oneItem[5] }}</span></p>
+                                <p class="type">{{ trans('main.subscription') }} : <span><span class="start_date">{{ $oneItem[4] }}</span> <b>-</b> <span class="end_date">{{ $oneItem[5] }}</span></span></p>
                             </div>
                         </td>
-                        <td>1</td>
+                        <td class="quantity">1</td>
                         <td class="prices"><span class="price">{{ $oneItem[1] == 'extra_quota' ?  number_format((float)$oneItem[6] * $oneItem[7], 2, '.', '') : number_format((float)$oneItem[6], 2, '.', '') }}</span> {{ trans('main.sar') }}</td>
                         <td>
                             @if($oneItem[1] != 'membership')

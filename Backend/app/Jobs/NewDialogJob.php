@@ -62,7 +62,7 @@ class NewDialogJob implements ShouldQueue
                     if($image == false || $fileName == false){
                         return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                     }            
-                    $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                    $bodyData = config("app.BASE_URL").'/public/uploads/chats/'.$fileName;
                     $message_type = \ImagesHelper::checkExtensionType(substr($bodyData, strrpos($bodyData, '.') + 1));
                     $sendData['filename'] = $fileName;
                     $sendData['body'] = $bodyData;
@@ -82,7 +82,7 @@ class NewDialogJob implements ShouldQueue
                     if($image == false || $fileName == false){
                         return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                     }            
-                    $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                    $bodyData = config("app.BASE_URL").'/public/uploads/chats/'.$fileName;
                     $message_type = "video";
                     $sendData['filename'] = $fileName;
                     $sendData['body'] = $bodyData;
@@ -96,7 +96,7 @@ class NewDialogJob implements ShouldQueue
                     if($image == false || $fileName == false){
                         return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                     }            
-                    $bodyData = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                    $bodyData = config("app.BASE_URL").'/public/uploads/chats/'.$fileName;
                     $message_type = "sound";
                     $whats_message_type = 'ppt';
                     $sendData['audio'] = $bodyData;
@@ -148,7 +148,7 @@ class NewDialogJob implements ShouldQueue
                     if($image == false || $fileName == false){
                         return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                     }            
-                    $fullUrl = config("app.BASE_URL").'/uploads/chats/'.$fileName;
+                    $fullUrl = config("app.BASE_URL").'/public/uploads/chats/'.$fileName;
                 }
 
                 $message_type = 'link';
@@ -165,14 +165,15 @@ class NewDialogJob implements ShouldQueue
 
             $result = $result->json();
             if(isset($result['data']) && isset($result['data']['id'])){
-                $checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+                $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
                 $messageId = $result['data']['id'];
                 $lastMessage['status'] = 'APP';
                 $lastMessage['id'] = $messageId;
                 $lastMessage['fromMe'] = 1;
                 $lastMessage['chatId'] = $sendData['chatId'];
-                $lastMessage['time'] = date('Y-m-d H:i:s');
+                $lastMessage['time'] = strtotime(date('Y-m-d H:i:s'));
                 $lastMessage['body'] = $bodyData;
+                $lastMessage['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
                 $lastMessage['caption'] = $caption;
                 $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
                 $lastMessage['message_type'] = $message_type;
@@ -190,10 +191,9 @@ class NewDialogJob implements ShouldQueue
                     $dialogObj->is_pinned = 0;
                     $dialogObj->is_read = 0;
                     $dialogObj->modsArr = '';
-                    $dialogObj->last_time = strtotime($lastMessage['time']);
+                    $dialogObj->last_time = $lastMessage['time'];
                     $dialogObj->save();
                 }
-                $dialogObj->last_time = strtotime($lastMessage['time']);
                 $dialogObj =ChatDialog::getData($dialogObj);
                 broadcast(new SentMessage($this->domain , $dialogObj ));
             

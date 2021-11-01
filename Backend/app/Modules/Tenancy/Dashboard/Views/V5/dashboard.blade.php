@@ -169,4 +169,7 @@
 {{-- Scripts Section --}}
 @section('topScripts')
 <script src="{{ asset('V5/components/newPackage.js') }}" type="text/javascript"></script>
+@if(Session::has('hasJob') && Session::get('hasJob') == 1)
+    <script src="{{ asset('components/countDown.js') }}"></script>
+@endif
 @endsection

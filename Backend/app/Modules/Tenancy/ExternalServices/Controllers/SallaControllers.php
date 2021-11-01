@@ -584,7 +584,7 @@ class SallaControllers extends Controller {
 
         $data['designElems']['searchData'] = array_merge($oldSearchData,$extraSearchData); 
         $data['designElems']['tableData'] = array_merge($oldTableData,$extraTableData);
-        return view('Tenancy.ExternalServices.Views.reports')->with('data', (object) $data);
+        return view('Tenancy.ExternalServices.Views.V5.reports')->with('data', (object) $data);
     }
 
     public function templates(Request $request){
@@ -594,7 +594,7 @@ class SallaControllers extends Controller {
         $channels = [];
         $channelObj = new \stdClass();
         $channelObj->id = Session::get('channelCode');
-        $channelObj->title = unserialize($userObj->channels)[0];
+        $channelObj->name = unserialize($userObj->channels)[0];
         $channels[] = $channelObj;
 
         $data['designElems']['mainData'] = [
@@ -604,6 +604,7 @@ class SallaControllers extends Controller {
             'nameOne' => $service.'-template',
             'service' => $service,
             'icon' => 'fas fa-envelope-open-text',
+            'addOne' => trans('main.newTemplate'),
         ];
 
         $actives = [
@@ -702,7 +703,7 @@ class SallaControllers extends Controller {
 
         $data['designElems']['searchData'] = $searchData; 
         $data['designElems']['tableData'] = $tableData;
-        return view('Tenancy.ExternalServices.Views.templates')->with('data', (object) $data);
+        return view('Tenancy.ExternalServices.Views.V5.templates')->with('data', (object) $data);
     }
 
     public function templatesEdit($id) {

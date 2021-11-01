@@ -31,7 +31,7 @@ $(function(){
 
         if(phone){
             $('input[name="phone"]').val(phone);
-            $('form').submit();
+            $('form.formLogin').submit();
         }
 
     });

@@ -7,6 +7,7 @@
 <link href="{{ asset('V5/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('V5/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('V5/libs/datatables.net-select-bs4/css//select.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('css/icons.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

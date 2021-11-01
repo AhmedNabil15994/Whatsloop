@@ -209,6 +209,7 @@ export default {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewSentMessage')
             .listen('SentMessage', (data) => {
+              console.log(data)
               this.searchPucher(data.message);
             })
           // End socket.io listener
@@ -222,6 +223,7 @@ export default {
                     //var audio = new Audio(require('/swiftly.mp3')); // path to file
                     //audio.play();
                 }
+                console.log(data)
                 this.searchPucher(data.message);
             });
           // End socket.io listener
@@ -231,6 +233,15 @@ export default {
         window.Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
                     //data.message.lastMessage.body = data.message.lastMessage.bot_details.message;
+                    if(data.message.lastMessage.bot_details.reply_type == 2){
+                        if(data.message.lastMessage.whatsAppMessageType == 'image'){
+                            data.message.lastMessage.caption = data.message.lastMessage.bot_details.message;
+                            data.message.lastMessage.body = data.message.lastMessage.bot_details.file;
+                        }else{
+                            data.message.lastMessage.caption = data.message.lastMessage.bot_details.file_name;
+                        }
+                    }
+                    console.log(data)
                     this.searchPucher(data.message);
             })
           // End socket.io listener
@@ -240,6 +251,7 @@ export default {
             // Start socket.io listener
             window.Echo.channel(domain+'-UpdateDialogPinStatus')
             .listen('DialogPinStatus', (data) => {
+              console.log(data)
       
                 for (var remBin in this.DialogsBin) {
                     if(this.DialogsBin[remBin] === data.chatId.id) {
@@ -304,6 +316,8 @@ export default {
             // Start socket.io listener
             window.Echo.channel(domain+'-UpdateMessageStatus')
                 .listen('MessageStatus', (data) => {
+              console.log(data)
+
                     this.chatsPin.forEach((element) => {
                         if (element.id) {
                             if (element.id.search(data.chatId) !== -1) {
@@ -340,6 +354,7 @@ export default {
         // Start socket.io listener
           window.Echo.channel(domain+'-UpdateChatReadStatus')
             .listen('ChatReadStatus', (data) => {
+              console.log(data)
                     
                     this.chats.chatsPin.forEach((element) => {
                         if (element.id.search(data.chatId.id) !== -1) {

@@ -386,7 +386,7 @@ class ProfileControllers extends Controller {
         $oldDuration = $mainUserObj->duration_type;
 
         $diffData = $this->getDiffs($userChannelObj->end_date,$oldDuration,$dataObj->monthly_after_vat,$dataObj->annual_after_vat);
-        Variable::firstOrCreate([
+        Variable::where('var_key','endDate')->firstOrCreate([
             'var_key' => 'endDate',
             'var_value' => $diffData['nextStartMonth'], 
         ]);
@@ -538,7 +538,7 @@ class ProfileControllers extends Controller {
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
-                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice')),
+                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice2')),
                 // 'returnURL' => \URL::to('/pushInvoice2'),  // For Local 
                 'cart_id' => 'whatsloop-'.rand(1,100000),
                 'cart_amount' => json_decode($input['totals'])[3],
@@ -575,10 +575,11 @@ class ProfileControllers extends Controller {
     public function activate($transaction_id = null , $paymentGateaway = null){
         $cartObj = Variable::getVar('cartObj');
         $endDate = Variable::getVar('endDate');
+        $start_date = Variable::getVar('start_date');
         $cartObj = json_decode(json_decode($cartObj));
 
         $paymentObj = new \SubscriptionHelper(); 
-        $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,null,null,null,null,$endDate);   
+        $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,$start_date,null,null,null,$endDate);   
         if($resultData[0] == 0){
             Session::flash('error',$resultData[1]);
             return back()->withInput();
@@ -969,18 +970,18 @@ class ProfileControllers extends Controller {
         ];
 
         $data['designElems']['tableData'] = [
-            'instanceId' => [
+            'myId' => [
                 'label' => trans('main.id'),
                 'type' => '',
                 'className' => '',
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'name' => [
+            'name2' => [
                 'label' => trans('main.name'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'name',
+                'data-col' => 'name2',
                 'anchor-class' => '',
             ],
             'instanceToken' => [

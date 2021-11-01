@@ -43,12 +43,12 @@ function getData(){
         data.push([
             $(item).data('cols'), // id
             $(item).data('type'), // type
-            $(item).children('td').find('.font-weight-semibold.text-uppercase').text(), // name
+            $(item).find('.details').children('.title').text(), // name
             parseInt($(item).data('dur')), // period
             $(item).children('td').find('span.start_date').text(), // start_date,
             $(item).children('td').find('span.end_date').text(), // end_date,
             $(item).children('td.prices').find('span.price').text(), // total
-            $(item).children('td').find('select[name="quantity"]').val(), // qunatity
+            $(item).find('td.quantity').text(), // qunatity
         ]);
     });
 
