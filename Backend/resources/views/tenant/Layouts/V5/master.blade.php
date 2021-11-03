@@ -20,13 +20,13 @@
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
 		@include('tenant.Layouts.V5.header')
 
-		@if(!in_array(Request::segment(1),['menu','packages','checkout','postBundle','updateSubscription']))
+		@if(!in_array(Request::segment(1),['menu','packages','checkout','postBundle','updateSubscription']) && (Request::segment(1) != 'invoices' && Request::segment(4) != 'checkout')  && (Request::segment(1) != 'profile' && Request::segment(3) != 'transferPayment'))
 		@include('tenant.Layouts.V5.sidebar')
 		@endif
 
 		@include('tenant.Layouts.V5.breadcrumb')
 		{{-- @include('tenant.Layouts.V5.userStatus') --}}
-		@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob'))
+		@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob')  && (Request::segment(1) != 'invoices' && Request::segment(4) != 'checkout')  && (Request::segment(1) != 'profile' && Request::segment(3) != 'transferPayment'))
 		@livewire('check-reconnection',[
 			'requestSemgent' => Request::segment(1),
 			'addons' => Session::get('addons'),

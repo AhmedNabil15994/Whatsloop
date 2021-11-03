@@ -40,7 +40,7 @@ return [
 	'passwordValidation3' => "يرجي اعادة كتابة كلمة المرور",
 	'passwordChanged' => "تم تغيير كلمة المرور بنجاح",
 	'mustLogin' => 'يرجي تسجيل الدخول اولا!',
-	'newClient' => 'انشاء حساب جديد ?!',
+	'newClient' => 'إنشاء حساب جديد !',
 
 
 ];

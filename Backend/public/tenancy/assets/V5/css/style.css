@@ -4201,14 +4201,14 @@ input[type="number"] {
 {
 	font-size:16px;
 	font-weight:700;
-	margin-bottom:15px;
+	margin-bottom:10px;
 }
 
 .helpCenter .subTitle
 {
 	font-size:14px;
 	font-weight:500;
-	margin-bottom:25px;
+	margin-bottom:15px;
 	display:block
 }
 
@@ -4217,7 +4217,7 @@ input[type="number"] {
 	background-color:#F4F4F4;
 	border-radius: 10px;
 	overflow: hidden;
-	margin-bottom:35px;
+	margin-bottom:20px;
 }
 
 .helpCenter .contentStyle .contentTitle
@@ -4225,13 +4225,8 @@ input[type="number"] {
 	padding:20px;
 	background-color:#9AE2DE;
 	font-size:16px;
-	color:#fff;
+	color:#000;
 	font-weight:700;
-}
-
-.helpCenter .contentStyle .details
-{
-	padding:20px;
 }
 
 .helpCenter .contentStyle .details img
@@ -4243,6 +4238,29 @@ input[type="number"] {
 {
 	color:#616161;
 	font-size:16px;
+	padding:20px;
+}
+
+.helpCenter .ticketContent
+{
+	margin-bottom:30px;
+}
+
+.helpCenter .ticketContent textarea
+{
+	background:none;
+	border:1px solid #F4F4F4
+}
+
+.helpCenter .contentStyle:not(.active) ~ .emoji,
+.helpCenter .contentStyle:not(.active) ~ .ticketContent{
+	display: none;
+}
+
+
+.helpCenter .contentStyle.active ~ .emoji,
+.helpCenter .contentStyle.active ~ .ticketContent{
+	display: block;
 }
 
 .searchCategory
@@ -5474,6 +5492,171 @@ input[type="number"] {
 	display:none;
 }
 
+.helpPage .helpHead
+{
+	display:flex;
+	justify-content:space-between;
+	
+}
+
+.helpPage .helpHead .titleHelp
+{
+	font-size:20px;
+	font-weight:700;
+	margin-bottom:25px;
+	margin-top:15px;
+}
+
+.helpPage .helpHead .btnHelp
+{
+	width:130px;
+	height:40px;
+	line-height:40px;
+	font-weight:500;
+	border-radius: 5px;
+	margin-bottom:25px;
+	background-color:#fff;
+	color:#000;
+	display:block;
+	text-align: center
+}
+
+.helpPage .helpHead .ticketHead
+{
+	width:320px;
+	overflow: hidden;
+	position:relative;
+	min-height:100px;
+	margin-right:20px;
+}
+
+.helpPage .helpHead .ticketHead:after
+{
+	content:"";
+	position:absolute;
+	left:-9px;
+	top:8px;
+	height:100%;
+	background:url("../images/Subtraction 3.png") no-repeat;
+	width:18px;
+}
+
+.helpPage .helpHead .ticketHead .title
+{
+	float:right;
+	width:50%;
+	background-color:#F6CD02;
+	height:100px;
+	line-height:100px;
+	color:#000;
+	font-size:25px;
+	font-weight:700;
+	text-align: center;
+}
+
+.helpPage .helpHead .ticketHead .numbTicket
+{
+	width:50%;
+	float:left;
+	height:100px;
+	background-color:#fff;
+	padding-top:10px;
+}
+
+.helpPage .helpHead .ticketHead .numbTicket .numb
+{
+	font-weight:800;
+	font-size:25px;
+	margin-bottom:5px;
+	display:block;
+	text-align: center
+}
+
+.helpPage .helpHead .ticketHead .numbTicket a
+{
+	width:90px;
+	height:35px;
+	border-radius: 5px;
+	background-color:#00BFB5;
+	color:#fff;
+	font-size:18px;
+	font-weight:500;
+	display:block;
+	margin:0 auto;
+	text-align: center;
+	line-height:35px;
+}
+
+.helpPage .detailsHelp
+{
+	background-color:#fff;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.helpPage .detailsHelp .tableDetails thead tr th
+{
+	padding:30px;
+	font-weight:700;
+	font-size:18px;
+}
+
+.helpPage .detailsHelp .tableDetails tr th:not(:last-of-type),
+.helpPage .detailsHelp .tableDetails tr td:not(:last-of-type),
+.helpPage .detailsHelp .tables.bill .tableBills tbody tr td:not(:last-of-type)
+{
+	border-left:1px solid #F3F3F3
+}
+
+.helpPage .detailsHelp .tableDetails tr,
+.helpPage .detailsHelp .tables.bill .tableBills tbody tr
+{
+	border-bottom:1px solid #f3f3f3
+}
+
+.helpPage .detailsHelp .tables.bill .overflowTable
+{
+	border-radius: 10px;
+	border:1px solid #F3F3F3;
+	margin-bottom:30px;
+}
+
+.helpPage .detailsHelp .tables.bill .overflowTable .tableBills
+{
+	margin:0;
+}
+
+
+.helpPage .detailsHelp  .tables.bill .tableBills thead tr th,
+.helpPage .detailsHelp .tables.bill .tableBills tbody tr td
+{
+	padding-left:15px;
+	padding-right:15px;
+}
+
+.helpPage .detailsHelp .tableDetails tbody tr td
+{
+	padding:30px;
+	font-weight:500;
+	font-size:18px;
+}
+
+.helpPage .detailsHelp .tables 
+{
+	padding:40px 15px 35px;
+}
+
+.helpPage .detailsHelp .tables.bill .tableBills tbody tr
+{
+	background:none;
+}
+
+.helpPage .detailsHelp .tables.bill .nextPrev .btnNext:first-of-type
+{
+	background-color:#C2C8D5;
+	color:#3D5075
+}
+
 
 /* Touches Made By Backend */
 
@@ -6258,6 +6441,30 @@ div.phone-footer img{
 	margin-top: 10px;
 	display: inline-block;
 }
-
+@media print{
+  	.menuCpanel,
+  	.header,
+  	.Additions,
+  	.footer,
+  	.nextPrev,
+  	.menuCpanel.active
+  	{
+    	display: none !important;
+  	}
+   	.overflowTable{
+   		overflow: unset;
+   	}
+   	.menuCpanel.active{
+  		width: 0;
+  		z-index: 0;
+  	}
+  	.cpanelStyle.activeMenu,
+  	.cpanelStyle{
+  		padding-right: 0 !important;
+  	}
+  	.containerCpanel{
+  		padding: 0;
+  	}
+}
 
 

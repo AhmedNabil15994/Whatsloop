@@ -572,7 +572,7 @@ $('.ckbox:not(.prem) input[type="checkbox"]').on('change',function(){
 
 $('.emoji-img').on('click',function(){
     $(this).siblings().removeClass('selected');
-    $(this).parent('.imgs').siblings('input[name="rate"]').val($(this).data('area'));
+    $(this).parents('.emoji').siblings('.ticketContent').find('input[name="rate"]').val($(this).data('area'));
     $(this).toggleClass('selected');
 });
 
@@ -580,8 +580,8 @@ $('.addRate').on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
     var id = $(this).data('area');
-    var rate = $(this).siblings('input[name="rate"]').val();
-    var comment = $(this).siblings('textarea').val();
+    var rate = $(this).parent('div.clearfix').siblings('input[name="rate"]').val();
+    var comment = $(this).parent('div.clearfix').siblings('textarea').val();
     var elem = $(this);
     if(rate && comment){
         $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
@@ -597,9 +597,9 @@ $('.addRate').on('click',function(e){
             success:function(data){
                 if(data.status.status == 1){
                     successNotification(data.status.message);
-                    elem.siblings('.imgs').children('.emoji-img.selected').removeClass('selected');
-                    elem.siblings('input[name="rate"]').val(' ');
-                    elem.siblings('textarea').val(' ');
+                    elem.parents('.ticketContent').siblings('.emoji').find('.emoji-img.selected').removeClass('selected');
+                    elem.parent('div.clearfix').siblings('input[name="rate"]').val(' ');
+                    elem.parent('div.clearfix').siblings('textarea').val(' ');
                 }else{
                     errorNotification(data.status.message);
                 }

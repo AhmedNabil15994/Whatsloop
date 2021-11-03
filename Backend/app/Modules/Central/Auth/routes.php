@@ -25,13 +25,13 @@ Route::group(['prefix' => '/'] , function () {
     
     Route::get('/', function(){ return redirect()->to('/login'); });
 
-    Route::get('/login', [$authController,'login'])->name('login');
-    Route::post('/login', [$authController,'doLogin'])->name('doLogin');
+    Route::get('/login', [$authController,'login']);
+    Route::post('/login', [$authController,'doLogin']);
     Route::post('/checkByCode', [$authController,'checkByCode']);
     Route::get('/logout', [$authController,'logout']);
 
-    Route::get('/getResetPassword', [$authController,'getResetPassword'])->name('getResetPassword');
-    Route::post('/resetPassword', [$authController,'resetPassword'])->name('resetPassword');
+    Route::get('/getResetPassword', [$authController,'getResetPassword']);
+    Route::post('/resetPassword', [$authController,'resetPassword']);
     Route::get('/changePassword', [$authController,'changePassword']);
     Route::post('/checkResetPassword', [$authController,'checkResetPassword']);
     Route::post('/completeReset', [$authController,'completeReset']);
@@ -41,9 +41,9 @@ Route::group(['prefix' => '/'] , function () {
     Route::post('/checkAvailabilityCode', [$authController,'checkAvailabilityCode'])->name('checkAvailabilityCode');
     
     Route::get('/register', [$authController,'register'])->name('register');
-    Route::post('/register', [$authController,'postRegister'])->name('register');
+    Route::post('/register', [$authController,'postRegister']);
 
-	Route::post('/changeLang', [$authController,'changeLang'])->name('changeLang');
+	Route::post('/changeLang', [$authController,'changeLang']);
 
     // Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
 });

@@ -466,7 +466,7 @@ class ProfileControllers extends Controller {
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
-        return view('Tenancy.Profile.Views.checkout')->with('data',(object) $data);
+        return view('Tenancy.Profile.Views.V5.checkout')->with('data',(object) $data);
     }
 
     public function calcData($total,$cartData,$userObj){

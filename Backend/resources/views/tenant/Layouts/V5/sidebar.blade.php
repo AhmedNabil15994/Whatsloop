@@ -203,7 +203,7 @@
 
 		@if(\Helper::checkRules('apiSetting,apiGuide,webhookSetting'))
         <li titlehover="link19">
-			<a href="#" class="subToggle {{ Active(URL::to('/profile*') && Request::segment(2) != 'personalInfo') }}"><i class="flaticon-settings"></i> {{ trans('main.website_setting') }} <i class="arrowLeft flaticon-left-arrow"></i></a>
+			<a href="#" class="subToggle {{ Active(URL::to('/profile*') && (Request::segment(1) == 'profile' && Request::segment(2) != 'personalInfo')) }}"><i class="flaticon-settings"></i> {{ trans('main.website_setting') }} <i class="arrowLeft flaticon-left-arrow"></i></a>
 			<ul class="subMenu">
 				@if(\Helper::checkRules('apiSetting'))
 				<li><a href="{{ URL::to('/profile/apiSetting') }}" class="{{ Active(URL::to('/profile/apiSetting')) }}">{{ trans('main.api_setting') }}</a></li>

@@ -191,7 +191,7 @@ class TenantInvoiceControllers extends Controller {
         $data['clients'] = $data['designElems']['clients'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.invoices') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
-        return view('Tenancy.Invoice.Views.view')->with('data', (object) $data);      
+        return view('Tenancy.Invoice.Views.V5.view')->with('data', (object) $data);      
     }
 
     public function update($id) {
@@ -272,7 +272,7 @@ class TenantInvoiceControllers extends Controller {
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
-        return view('Tenancy.Dashboard.Views.checkout')->with('data',(object) $data);
+        return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
     }
 
     public function postCheckout($id){

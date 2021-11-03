@@ -23,7 +23,7 @@
 		<div class="cpanelStyle activeMenu">
 			@include('tenant.Layouts.V5.header')
 
-			@if(!in_array(Request::segment(1),['dashboard','menu','sync','services','tickets']) && (Request::segment(1) != 'profile' && Request::segment(2) != 'apiGuide'))
+			@if(!in_array(Request::segment(1),['dashboard','menu','sync','services','tickets']) && (Request::segment(1) != 'profile' && Request::segment(2) != 'apiGuide')  && (Request::segment(1) == 'invoices' && Request::segment(2) != 'view'))
 			@include('tenant.Layouts.V5.breadcrumb')
 			@endif
 			{{-- @include('tenant.Layouts.V5.userStatus') --}}

@@ -203,7 +203,8 @@
 .dark-mode .tickets .details .content li span,
 .dark-mode .cartSub .date,
 .dark-mode .channel .content .colms .title .text,
-.dark-mode .accordion .iconArrow
+.dark-mode .accordion .iconArrow,
+.dark-mode .helpPage .helpHead .btnHelp
 {
 	color:#A9B2C4
 }
@@ -254,7 +255,13 @@
 .dark-mode .comment,
 .dark-mode .addComment textarea,
 .dark-mode .channel .logoChannel,
-.dark-mode .channel .content .colms:not(:last-of-type)
+.dark-mode .channel .content .colms:not(:last-of-type),
+.dark-mode .helpPage .detailsHelp .tableDetails tr th:not(:last-of-type), 
+.dark-mode .helpPage .detailsHelp .tableDetails tr td:not(:last-of-type), 
+.dark-mode .helpPage .detailsHelp .tables.bill .tableBills tbody tr td:not(:last-of-type),
+.dark-mode .helpPage .detailsHelp .tableDetails tr, 
+.dark-mode .helpPage .detailsHelp .tables.bill .tableBills tbody tr,
+.dark-mode .helpPage .detailsHelp .tables.bill .overflowTable
 {
 	border-color:#2E3950
 }
@@ -292,7 +299,10 @@
 .dark-mode .abCart,
 .dark-mode .addComment textarea,
 .dark-mode .comment .commentHead,
-.dark-mode .tickets .attachments .uploads
+.dark-mode .tickets .attachments .uploads,
+.dark-mode .helpPage .helpHead .ticketHead .numbTicket,
+.dark-mode .helpPage .helpHead .btnHelp,
+.dark-mode .helpPage .detailsHelp
 {
 	background-color:#384560
 }
@@ -373,3 +383,7 @@
 }
 
 
+.dark-mode .helpPage .helpHead .ticketHead:after
+{
+	background:url("../images/Subtraction 3-Dark.png") no-repeat;
+}

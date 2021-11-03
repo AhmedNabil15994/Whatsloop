@@ -59,6 +59,15 @@
                             </svg>
                             {{ trans('auth.loginButton') }}
                         </button>
+                        <a href="{{ URL::to('/checkAvailability') }}" class="btnStyle forgetBtn" style="background: #eee;padding-top: 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17.121" height="17.414" viewBox="0 0 17.121 17.414">
+                              <g id="Group_1283" data-name="Group 1283" transform="translate(1.414 0.707)">
+                                <path id="Path_891" data-name="Path 891" d="M1409,3149l-8,8,8,8" transform="translate(-1401 -3149)" fill="none" stroke="#fff" stroke-width="2"/>
+                                <path id="Path_892" data-name="Path 892" d="M1409,3149l-8,8,8,8" transform="translate(-1394 -3149)" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/>
+                              </g>
+                            </svg>
+                            {{ trans('auth.newClient') }}
+                        </a>
                         <center>
                             <a href="{{ URL::to('/getResetPassword') }}" class="forgetBtn">{{ trans('auth.forgotPassword') }}</a>
                         </center>

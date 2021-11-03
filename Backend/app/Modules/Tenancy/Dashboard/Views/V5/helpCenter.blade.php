@@ -144,37 +144,42 @@
                         <div class="col-md-8 logs-col">
                             <div class="content">
                                 @foreach($data->changeLogs as $logKey => $oneLog)
-                                <div class="col logs-col mb-3">
-                                    <div class="card  pricing-card overflow-hidden">
-                                        <div class="row bg-{{ $oneLog->color }} text-center">
-                                            @if($oneLog->category != '')
-                                            <div class="card-status bg-{{ $oneLog->color }}"></div>
-                                            <span class="mb-2 cats">{{ $oneLog->category }}</span>
-                                            @endif
+
+                                <div class="helpCenter">
+                                    @if($oneLog->category != '')
+                                    <h2 class="titleHelp float-left">{{ $oneLog->category }}</h2>
+                                    @endif
+                                    <span class="subTitle float-right">{{ $oneLog->dateForHuman }}</span>
+                                    <div class="clearfix"></div>
+                                    <div class="accordion {{ $logKey == 0 ? 'active' : '' }}" id="accordion">
+                                        <div class="contentStyle {{ $logKey == 0 ? 'active' : '' }}">
+                                            <h2 class="contentTitle accordion-title" id="accordion-title">{{ $oneLog->title }}</h2>
+                                            <div class="details accordion-content" id="accordion-content">
+                                                <p class="mb-3">{{ $oneLog->description }}</p>
+                                                <img src="{{ $oneLog->photo }}" />
+                                            </div>
                                         </div>
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="text-capitalize">
-                                                <a href="#">{{ $oneLog->title }}</a>
-                                                <small class="text-muted float-right">{{ $oneLog->dateForHuman }}</small>
-                                            </h5>
-                                            <div class="clearfix"></div>
-                                            <div class="text-muted {{ $oneLog->description != '' ? 'mg-b-10' : '' }} desc">{{ $oneLog->description }}</div>
-                                        </div>
-                                        <img class="card-img-bottom" src="{{ $oneLog->photo }}" alt="Changelog Photo">
-                                        <div class="pt-3 emoji mt-3">
-                                            <div class="ml-auto imgs mb-3 text-muted text-center">
+                                        <div class="emoji emojs mt-3">
+                                            <div class="imgs text-center">
                                                 <img class="emoji-img" data-area="1" src="{{ asset('emoji/1.svg') }}" alt="">
                                                 <img class="emoji-img" data-area="2" src="{{ asset('emoji/2.svg') }}" alt="">
                                                 <img class="emoji-img" data-area="3" src="{{ asset('emoji/3.svg') }}" alt="">
                                                 <img class="emoji-img" data-area="4" src="{{ asset('emoji/4.svg') }}" alt="">
                                                 <img class="emoji-img" data-area="5" src="{{ asset('emoji/5.svg') }}" alt="">
                                             </div>
-                                            <textarea name="reply" class="form-control d-block" placeholder="{{ trans('main.postComment') }}"></textarea>
-                                            <input type="hidden" name="rate" value="">
-                                            <button class="btn addRate d-block btn-primary mb-2 mt-2 w-100" data-area="{{ $oneLog->id }}"> <i class="typcn typcn-location-arrow"></i> {{ trans('main.send') }}</button>
+                                        </div>
+                                        <div class="ticketContent">
+                                            <form class="desc addComment">
+                                                <textarea name="reply" placeholder="{{ trans('main.postComment') }}"></textarea>
+                                                <input type="hidden" name="rate" value="">
+                                                <div class="clearfix">
+                                                    <button class="btnStyle addRate" data-area="{{ $oneLog->id }}">{{ trans('main.send') }}</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
+                                <hr class="mb-3">
                                 @endforeach
                             </div>
                         </div><!-- end col-->

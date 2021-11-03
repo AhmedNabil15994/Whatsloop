@@ -12,35 +12,3 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('central.welcome');    
-});
-
-Route::post('register',[App\Http\Controllers\CentralController::class, 'register'])->name('central.register');
-
-Route::post('login',[App\Http\Controllers\CentralController::class, 'login'])->name('central.login');
-
-Route::get('login',[App\Http\Controllers\CentralController::class, 'showLogin'])->name('central.show.login');
-Route::post('redirection',[App\Http\Controllers\CentralController::class, 'redirectLogin'])->name('central.redirection');
-Route::group(['prefix' => 'manager/auth' , 'namespace' => '\App\Http\Controllers\Manager\Auth','as' => 'manager.'],function(){
-
-    //login
-    Route::get('/login','LoginController@showLoginForm')->name('show.login');
-    Route::post('/login','LoginController@login')->name('login');
-    Route::post('/logout','LoginController@logout')->name('logout');
-
-    //Forgot Password Routes
-    Route::get('/password/reset','ForgotPasswordController@showLinkRequestForm')->name('password.request');
-    Route::post('/password/email','ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-    //Reset Password Routes
-    Route::get('/password/reset/{token}','ResetPasswordController@showResetForm')->name('password.reset');
-    Route::post('/password/reset','ResetPasswordController@reset')->name('password.update');
-
-});
-
-
-Route::group(['middleware' => 'auth:managers','prefix' => 'dashboard','namespace' => '\App\Http\Controllers\Manager','as' => 'manager.'],function(){
-    Route::get('/','DashboardController@index')->name('dashboard');
-
-});
