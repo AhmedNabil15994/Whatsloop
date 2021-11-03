@@ -101,6 +101,8 @@ resizeMenu();
     
     $(".menuCpanel.active .linksCpanel li .subToggle").click(function() {
 		if($(".menuCpanel").hasClass("active")) {
+			$(".menuCpanel.active .linksCpanel li .subMenu").not($(this).siblings()).slideUp();
+			$(".menuCpanel.active .linksCpanel li .subToggle").not($(this)).removeClass("active");
 			$(this).siblings().slideToggle();
     		$(this).toggleClass("active");
 		}
@@ -109,9 +111,9 @@ resizeMenu();
 
     $(".menuCpanel .linksCpanel li").hover(function() {
     	var offset = $(this).position();
-    	var id = $(this).attr("titlehover");
-    	$(".menuCpanel .hovers  #"+id  +".titleHover").css("top",offset.top + 5);
-    	$(".menuCpanel .hovers #"+id  +".titleHover").addClass("active");
+    	var titlehover = $(this).attr("titlehover");
+    	$(".menuCpanel .hovers  #"+titlehover  +".titleHover").css("top",offset.top + 5);
+    	$(".menuCpanel .hovers #"+titlehover  +".titleHover").addClass("active");
     },function() {
     	var id = $(this).attr("titlehover");
     	$(".menuCpanel .hovers #"+id  +".titleHover").removeClass("active");
@@ -168,12 +170,14 @@ resizeMenu();
 	/********************************************/
 
 	$('.circle1').circleProgress({
+		value:0.20,
 		thickness:10
 	}).on('circle-animation-progress', function (event, progress) {
-		$(this).find('strong').html('<i>%</i>' + Math.round(100 * progress));
+		$(this).find('strong').html('<i>%</i>' + Math.round(20 * progress));
 	});
 	
 	$('.circle2').circleProgress({
+		value: 1,
 		thickness:10
 	}).on('circle-animation-progress', function (event, progress) {
 		$(this).find('strong').html('<i>%</i>' + Math.round(100 * progress));
@@ -189,7 +193,23 @@ resizeMenu();
     	
     });
     
+	$('body,html').on('click', function(e) {
+		var container = $(".categories .link,.categories .link *"),
+		Sub = $(".categories .subMenu");
+		
+
+	    if( !$(e.target).is(container)  ){
+	        Sub.slideUp();
+	    }
+
+	});
+    
+    
     $( ".selectmenu" ).selectmenu();
+    
+    
+    
+    
     
  	/****** Start Tabs ******/
 	
@@ -218,10 +238,61 @@ resizeMenu();
 		$("body").toggleClass("dark-mode");
 	});
 	
+	if($('#Timer').length){
+
+		var timeLeft = 30;
+		    var elem = document.getElementById('Timer');
+		    
+		    var timerId = setInterval(countdown, 1000);
+		    
+		    function countdown() {
+		      if (timeLeft == 0) {
+		        clearTimeout(timerId);
+		        doSomething();
+		      } else {
+		        elem.innerHTML = timeLeft;
+		        timeLeft--;
+		      }
+		    }
+		    
+	    }
 	
 	
+	/************ 29/10/2021 *************/
+	
+	$(".options .openOptions").click(function() {
+		$(this).siblings().slideToggle();
+	});
+	
+	$('body,html').on('click', function(e) {
+		var container = $(".options .openOptions"),
+		Sub = $(".options .optionsList");
+		
+
+	    if( !$(e.target).is(container)  ){
+	        Sub.slideUp();
+	    }
+
+	});
 	
 	
+	/** Start accordion **/
+	
+	$(".accordion.active .accordion-content").css("display","block");
+	
+	$(".accordion .accordion-title").click(function () {
+		
+		var accordId = $(this).parent().parent().attr("id");
+				
+		$(this).next().slideToggle(500);
+		
+		$("#"+accordId + " .accordion .accordion-content").not($(this).next()).slideUp(500);
+		
+		$(this).parent().toggleClass("active").siblings().removeClass("active");
+				
+	});
+	
+	/** End accordion **/
 	
 	
 	

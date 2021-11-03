@@ -758,7 +758,7 @@ class ProfileControllers extends Controller {
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
         $data['channel'] = $channelObj ? CentralChannel::getData(CentralChannel::getOne(Session::get('channel'))) : null;
         $data['contactsCount'] = Contact::NotDeleted()->count();
-        return view('Tenancy.Profile.Views.subscription')->with('data', (object) $data);
+        return view('Tenancy.Profile.Views.V5.subscription')->with('data', (object) $data);
     }
 
     public function screenshot(){
@@ -1068,7 +1068,7 @@ class ProfileControllers extends Controller {
             'icon' => 'fas fa-code',
         ];
         $data['data'] = $userObj;
-        return view('Tenancy.Profile.Views.apiGuide')->with('data', (object) $data);
+        return view('Tenancy.Profile.Views.V5.apiGuide')->with('data', (object) $data);
     }
 
     public function uploadImage(Request $request,$id=false){

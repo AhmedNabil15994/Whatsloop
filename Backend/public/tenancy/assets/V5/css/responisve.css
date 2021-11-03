@@ -169,6 +169,57 @@
 		text-align: right
 	}
 	
+	.sendMsg .details,
+	.sendMsg .details .desc,
+	.apiGuide .details,
+	.planDetails .next .dates li,
+	.cartSub
+	{
+		padding-left:15px;
+		padding-right:15px;
+	}
+	
+	.abCart .userDetails
+	{
+		display:block;
+		text-align: center
+	}
+	
+	.files
+	{
+		padding:20px 0;
+	}
+	
+	.channel
+	{
+		padding-right:0;
+	}
+	
+	.channel .logoChannel
+	{
+		height:auto;
+		position:static;
+		width:100%;
+		border:none;
+	}
+	
+	.planDetails .planContent,
+	.planDetails .next .dates
+	{
+		margin-bottom:15px;
+	}
+	
+	.channel .content .colms .progressSize
+	{
+		margin:0 auto 10px;
+		width:100%;
+	}
+	
+	.AdditionsSub .title
+	{
+		font-size:15px;
+	}
+	
 }
 
 /* Small Screens */
@@ -554,6 +605,24 @@
 		left:0;
 	}
 	
+	.orderStyle .details .titleOrder,
+	.orderStyle .details .price
+	{
+		float:none;
+		display:block;
+		width:100%;
+		max-width:none;
+		margin-bottom:5px;
+	}
+	
+	.channel .content .colms,
+	.planDetails .footerPlan,
+	.carts
+	{
+		display:block
+	}
+	
+	
 }
 
 /* Tablets */
@@ -653,10 +722,26 @@
     	font-size: 21px;
 	}
 	
-	.qutas-parent .box-style .box-content
+	.qutas-parent .box-style .box-content,
+	.tickets .ticketContent .desc,
+	.comment .commentContent,
+	.tickets .attachments,
+	.tickets .details .content li
 	{
 		padding-left:15px;
 		padding-right:15px;
+	}
+	
+	.comment .commentHead
+	{
+		display:block;
+		padding-left:15px;
+	}
+	
+	.comment .commentHead .time
+	{
+		margin-top:5px;
+		padding-right:60px;
 	}
 	
 }

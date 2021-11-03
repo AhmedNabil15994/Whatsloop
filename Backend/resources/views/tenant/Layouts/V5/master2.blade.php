@@ -23,12 +23,12 @@
 		<div class="cpanelStyle activeMenu">
 			@include('tenant.Layouts.V5.header')
 
-			@if(!in_array(Request::segment(1),['dashboard','menu','sync']))
+			@if(!in_array(Request::segment(1),['dashboard','menu','sync','services','tickets']) && (Request::segment(1) != 'profile' && Request::segment(2) != 'apiGuide'))
 			@include('tenant.Layouts.V5.breadcrumb')
 			@endif
 			{{-- @include('tenant.Layouts.V5.userStatus') --}}
 			<div class="containerCpanel">
-				@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob'))
+				@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob') && (Request::segment(1) != 'profile' && Request::segment(2) != 'apiGuide'))
 				@livewire('check-reconnection',[
 					'requestSemgent' => Request::segment(1),
 					'addons' => Session::get('addons'),

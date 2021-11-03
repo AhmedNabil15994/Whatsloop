@@ -158,7 +158,7 @@ class TicketControllers extends Controller {
         $data['userObj'] = CentralUser::getData(\App\Models\CentralUser::getOne(USER_ID));
         $data['comments'] = Comment::dataList($id);
         $data['commentsCount'] = Comment::NotDeleted()->where('status',1)->where('ticket_id',$id)->count();
-        return view('Tenancy.Ticket.Views.view')->with('data', (object) $data);      
+        return view('Tenancy.Ticket.Views.V5.view')->with('data', (object) $data);      
     }
 
     public function edit($id) {

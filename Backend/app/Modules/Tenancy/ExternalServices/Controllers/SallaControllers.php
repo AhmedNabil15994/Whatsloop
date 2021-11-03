@@ -174,7 +174,7 @@ class SallaControllers extends Controller {
     public function runModuleService($model,$tableName,$ajaxCheck=0){
         $input = \Request::all();
         $service = $this->service;
-        $paginationNo = 15;
+        $paginationNo = isset($input['recordNumber']) && !empty($input['recordNumber']) ? $input['recordNumber'] : 15;
 
         if (Schema::hasTable($tableName)) {
             $source = DB::table($tableName);
@@ -386,11 +386,11 @@ class SallaControllers extends Controller {
         }
         // dd($mainData);
         if($ajaxCheck){
-            $returnHTML = view('Tenancy.ExternalServices.Views.ajaxData')->with('data', (object) $mainData)->render();
+            $returnHTML = view('Tenancy.ExternalServices.Views.V5.ajaxData')->with('data', (object) $mainData)->render();
             return response()->json( array('success' => true, 'html'=>$returnHTML) );
         }
 
-        return view('Tenancy.ExternalServices.Views.'.$model)->with('data', (object) $mainData);
+        return view('Tenancy.ExternalServices.Views.V5.'.$model)->with('data', (object) $mainData);
     }
 
     public function formatData($data,$table){
@@ -727,7 +727,7 @@ class SallaControllers extends Controller {
         ];
 
         $data['data'] = ModTemplate::getData($dataObj);
-        return view('Tenancy.ExternalServices.Views.edit')->with('data', (object) $data);      
+        return view('Tenancy.ExternalServices.Views.V5.edit')->with('data', (object) $data);      
     }
 
     public function templatesUpdate($id) {
@@ -771,7 +771,7 @@ class SallaControllers extends Controller {
             }
         }
         $data['statuses'] = $options;
-        return view('Tenancy.ExternalServices.Views.add')->with('data', (object) $data);      
+        return view('Tenancy.ExternalServices.Views.V5.add')->with('data', (object) $data);      
     }
 
     public function templatesCreate() {

@@ -33,68 +33,6 @@
                     <hr>
                 </div>
                 <div class="card-body">
-                    {{-- <div class="float-right">
-                        <div class="form-row">
-                            <div class="col-auto">
-                                <p class="btn btn-sm btn-link"> <i class="fa fa-calendar"></i> {{ date('d M y H:i A',strtotime($data->data->created_at)) }} <small class="text-muted">{{ date('H:i A',strtotime($data->data->created_at)) }}</small></p>
-                            </div>
-                            <div class="col-auto">
-                                <select class="custom-select custom-select-sm form">
-                                    <option selected="">{{ $data->data->statusText }}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div> <!-- end dropdown-->
-
-
-                    <div class="clerfix"></div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <!-- Ticket type -->
-                            <label class="mt-2 mb-1">{{ trans('main.department') }} :</label>
-                            <p>
-                                <i class='mdi mdi-ticket font-18 text-success mr-1 align-middle'></i> {{ $data->data->department }}
-                            </p>
-                            <!-- end Ticket Type -->
-                        </div>
-                    </div> <!-- end row --> --}}
-
-                    {{-- <div class="row">
-                        <div class="col-md-6">
-                            <!-- Reported by -->
-                            <label class="mt-2 mb-1">{{ trans('main.client') }} :</label>
-                            <div class="media">
-                                <img src="{{ $data->data->client_image }}" alt="Arya S"
-                                    class="rounded-circle mr-2" height="24" />
-                                <div class="media-body">
-                                    <p> {{ $data->data->client }} </p>
-                                </div>
-                            </div>
-                            <!-- end Reported by -->
-                        </div> <!-- end col -->
-                        @if(!empty($data->data->assignment))
-                        <div class="col-md-6">
-                            <!-- assignee -->
-                            <label class="mt-2 mb-1">{{ trans('main.assignment') }} :</label>
-                            @foreach($data->data->assignment as $user)
-                            @php 
-                            $assUser = \App\Models\CentralUser::getOne($user);
-                            $assignedUser = \App\Models\CentralUser::getData($assUser);
-                            @endphp
-                            <div class="media mb-1">
-                                <img src="{{ \App\Models\User::selectImage($assUser) }}" alt="Arya S"
-                                    class="rounded-circle mr-2" height="24" />
-                                <div class="media-body">
-                                    <p> {{ $assignedUser->name }} </p>
-                                </div>
-                            </div>
-                            @endforeach
-                            <!-- end assignee -->
-                        </div> <!-- end col -->
-                        @endif
-                    </div> <!-- end row --> --}}
-
                     <p class="text-muted mb-0">
                         {!! $data->data->description !!}
                     </p>
@@ -218,29 +156,6 @@
                             <small class="text-muted">{{ $oneFile->photo_size }}</small>
                         </h6>
                     </div>
-                    {{-- <div class="card mb-1 shadow-none">
-                        <div class="p-2">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <div class="avatar-sm">
-                                        <span class="avatar-title badge-soft-primary text-primary rounded">
-                                            {{ ucwords(explode('.', $oneFile->photo_name)[1]) }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col pl-0">
-                                    <a href="javascript:void(0);" class="text-muted font-weight-bold">{{ $oneFile->photo_name }}</a>
-                                    <p class="mb-0 font-12">{{ $oneFile->photo_size }}</p>
-                                </div>
-                                <div class="col-auto">
-                                    <!-- Button -->
-                                    <a href="{{ $oneFile->photo }}" target="_blank" class="btn btn-link font-16 text-muted">
-                                        <i class="dripicons-download"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                     @endforeach
                 </div>
             </div>

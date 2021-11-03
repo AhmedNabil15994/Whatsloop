@@ -31,11 +31,11 @@
                         <a href="#" class="edit quickEdit" data-toggle="tooltip" data-original-title="{{ trans('main.fastEdit') }}">{{ trans('main.fastEdit') }} <i class="flaticon-pencil"></i></a>
                     @endif
 
-                    @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
+                    {{-- @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
                     <a class="edit" data-toggle="tooltip" data-original-title=" {{  trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
                         <i class="flaticon-add"></i> {{ $data->designElems['mainData']['addOne'] }}  
                     </a>
-                    @endif
+                    @endif --}}
                 </div> 
                 @endif
             </div>

@@ -29,7 +29,9 @@
 .dark-mode .cpanelStyle,
 .dark-mode .header .profile .profileStyle,
 .dark-mode .payment .products-table tbody tr,
-.dark-mode .cpanelStyle .pagination li a
+.dark-mode .cpanelStyle .pagination li a,
+.dark-mode .helpCenter .contentStyle .contentTitle,
+.dark-mode .formSearch input
 {
 	background-color:#192439!important
 }
@@ -44,7 +46,6 @@
 .dark-mode .stats .itemStats,
 .dark-mode .stats .lastNumbers,
 .dark-mode .stats .msgArchive,
-.dark-mode .formNumbers .form,
 .dark-mode .header .profile .profileStyle .head,
 .dark-mode .transmitters,
 .dark-mode .botStyle,
@@ -52,7 +53,25 @@
 .dark-mode .categories .subMenu,
 .dark-mode .cart-sell .select-type .selectStyle,
 .dark-mode .payment,
-.dark-mode .form .btnsTabs li
+.dark-mode .form .btnsTabs li,
+.dark-mode .customer .numb,
+.dark-mode .formNumbers .form.supportForm .content,
+.dark-mode .searchCategory,
+.dark-mode .searchCategory .checkStyle i,
+.dark-mode .timer,
+.dark-mode .apiGuide,
+.dark-mode .sendMsg .details,
+.dark-mode .orderStyle,
+.dark-mode .size,
+.dark-mode .files,
+.dark-mode .tickets .details, 
+.dark-mode .tickets .attachments, 
+.dark-mode .tickets .ticketContent,
+.dark-mode .planDetails .planContent .planState,
+.dark-mode .planDetails .next .dates,
+.dark-mode .cartSub,
+.dark-mode .channel,
+.dark-mode .planDetails
 {
 	background:#253046
 }
@@ -74,7 +93,11 @@
 .dark-mode .steps .step .icon,
 .dark-mode .form .addTitle i,
 .dark-mode .transmitters .transmitterHead a,
-.dark-mode .transmitters .content .numbers .numbStyl .listNumbs li a
+.dark-mode .transmitters .content .numbers .numbStyl .listNumbs li a,
+.dark-mode .helpCenter .contentStyle,
+.dark-mode .sendMsg .details .desc,
+.dark-mode .comment .commentHead .creator .icon,
+.dark-mode .AdditionsSub
 {
 	background-color:#1A2336
 }
@@ -155,7 +178,32 @@
 .dark-mode .form .btnsTabs li,
 .dark-mode .transmitters .transmitterHead .title,
 .dark-mode .transmitters .transmitterHead a,
-.dark-mode .transmitters .content .numbers .numbStyl .listNumbs li a
+.dark-mode .transmitters .content .numbers .numbStyl .listNumbs li a,
+.dark-mode .titleSupport,
+.dark-mode .helpCenter,
+.dark-mode .helpCenter .contentStyle .contentTitle,
+.dark-mode .searchCategory .checkStyle,
+.dark-mode .timer .titleTimer,
+.dark-mode .timer .time,
+.dark-mode .timer .desc,
+.dark-mode .apiGuide .details .desc,
+.dark-mode .sendMsg .details .desc,
+.dark-mode .abCart .orderTitle,
+.dark-mode .abCart .userDetails li,
+.dark-mode .orderStyle .details .titleOrder,
+.dark-mode .totalOrders,
+.dark-mode .size .list li a,
+.dark-mode .files .titleFiles,
+.dark-mode .tickets .details .title, 
+.dark-mode .tickets .attachments .title, 
+.dark-mode .tickets .ticketContent .title,
+.dark-mode .tickets .details .content li,
+.dark-mode .tickets .ticketContent .desc,
+.dark-mode .comment .commentHead .creator,
+.dark-mode .tickets .details .content li span,
+.dark-mode .cartSub .date,
+.dark-mode .channel .content .colms .title .text,
+.dark-mode .accordion .iconArrow
 {
 	color:#A9B2C4
 }
@@ -196,7 +244,17 @@
 .dark-mode .paymentStyle,
 .dark-mode .form .addTitle,
 .dark-mode .transmitters .transmitterHead,
-.dark-mode .transmitters .content .numbers .numbStyl
+.dark-mode .transmitters .content .numbers .numbStyl,
+.dark-mode .apiGuide .title,
+.dark-mode .abCart .orderTitle,
+.dark-mode .abCart .list li:not(:last-of-type),
+.dark-mode .abCart .list,
+.dark-mode .abCart .userDetails,
+.dark-mode .tickets .ticketContent .title,
+.dark-mode .comment,
+.dark-mode .addComment textarea,
+.dark-mode .channel .logoChannel,
+.dark-mode .channel .content .colms:not(:last-of-type)
 {
 	border-color:#2E3950
 }
@@ -229,12 +287,19 @@
 .dark-mode .formNumbers .form input, 
 .dark-mode .formNumbers .form .uploadFile, 
 .dark-mode .ui-selectmenu-button.ui-button, 
-.dark-mode .formNumbers .form textarea
+.dark-mode .formNumbers .form textarea,
+.dark-mode .customer,
+.dark-mode .abCart,
+.dark-mode .addComment textarea,
+.dark-mode .comment .commentHead,
+.dark-mode .tickets .attachments .uploads
 {
 	background-color:#384560
 }
 
-.dark-mode .payment .totalConfirm .coupon input
+.dark-mode .payment .totalConfirm .coupon input,
+.dark-mode .customer .name,
+.dark-mode .customer .numb
 {
 	color:#fff;
 }
@@ -295,9 +360,16 @@
 }
 
 
+.dark-mode .helpCenter .contentStyle,
+.dark-mode .searchCategory .checkStyle,
+.dark-mode .tickets .details .content li:nth-of-type(odd)
+{
+	background-color: #151d2c;
+}
 
 
-
-
+.dark-mode .searchCategory .checkStyle i {
+	border-color:#253046
+}
 
 

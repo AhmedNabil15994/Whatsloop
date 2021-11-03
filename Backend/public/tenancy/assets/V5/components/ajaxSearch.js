@@ -37,8 +37,15 @@ $(function(){
 	        },
 	        success:function(data){
 	            if(data.success  == true){
-	                $('.numbers').remove();
-	                $('.sa.cl').append(data.html);
+	            	if($('.numbers').length){
+	            		$('.numbers').remove();
+	                	$('.sa.cl').append(data.html);
+	            	}
+	                
+	                if($('.users').length){
+	            		$('.data').empty();
+	                	$('.data').append(data.html);
+	            	}
 	            }
 	        },
 	    });

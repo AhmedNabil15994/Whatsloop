@@ -25,7 +25,7 @@ class RoutesGate {
             'auth',
         ];
 
-        if(count(array_intersect($availableRules, $rules)) > 0) {
+        if(count(array_intersect($availableRules, $rules)) > 0 || \Request::segment(1) == 'livechatApi') {
             return $next($request);
         }
 

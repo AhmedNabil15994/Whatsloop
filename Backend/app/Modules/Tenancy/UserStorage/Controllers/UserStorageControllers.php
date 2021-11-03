@@ -53,7 +53,7 @@ class UserStorageControllers extends Controller {
         $data['parent'] = 'main';
         $data['totalSize'] = $data['designElems']['totalSize'];
         $data['totalStorage'] = $data['designElems']['totalStorage'];
-        return view('Tenancy.UserStorage.Views.index')->with('data', (object) $data);
+        return view('Tenancy.UserStorage.Views.V5.index')->with('data', (object) $data);
     }
 
     public function bots(Request $request) {
@@ -71,7 +71,7 @@ class UserStorageControllers extends Controller {
         $data['parent'] = 'main';
         $data['totalSize'] = $data['designElems']['totalSize'];
         $data['totalStorage'] = $data['designElems']['totalStorage'];
-        return view('Tenancy.UserStorage.Views.index')->with('data', (object) $data);
+        return view('Tenancy.UserStorage.Views.V5.index')->with('data', (object) $data);
     }
 
     public function groupMsgs(Request $request) {
@@ -89,7 +89,7 @@ class UserStorageControllers extends Controller {
         $data['parent'] = 'main';
         $data['totalSize'] = $data['designElems']['totalSize'];
         $data['totalStorage'] = $data['designElems']['totalStorage'];
-        return view('Tenancy.UserStorage.Views.index')->with('data', (object) $data);
+        return view('Tenancy.UserStorage.Views.V5.index')->with('data', (object) $data);
     }
 
     public function chats(Request $request) {
@@ -113,7 +113,7 @@ class UserStorageControllers extends Controller {
         $data['parent'] = 'child';
         $data['totalSize'] = $data['designElems']['totalSize'];
         $data['totalStorage'] = $data['designElems']['totalStorage'];
-        return view('Tenancy.UserStorage.Views.index')->with('data', (object) $data);
+        return view('Tenancy.UserStorage.Views.V5.index')->with('data', (object) $data);
     }
 
     public function getByTypeAndId($type,$id){
@@ -139,7 +139,7 @@ class UserStorageControllers extends Controller {
         $data['parent'] = 'child';
         $data['totalSize'] = $data['designElems']['totalSize'];
         $data['totalStorage'] = $data['designElems']['totalStorage'];
-        return view('Tenancy.UserStorage.Views.index')->with('data', (object) $data);
+        return view('Tenancy.UserStorage.Views.V5.index')->with('data', (object) $data);
     }
 
     public function removeByTypeAndId($type,$id){

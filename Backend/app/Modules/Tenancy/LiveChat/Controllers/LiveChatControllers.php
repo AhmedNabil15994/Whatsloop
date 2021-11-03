@@ -55,9 +55,9 @@ class LiveChatControllers extends Controller {
     public function pinChat(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -87,9 +87,9 @@ class LiveChatControllers extends Controller {
     public function unpinChat(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -122,14 +122,14 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
 
-        $is_admin = IS_ADMIN;
-        $user_id = USER_ID; 
-        if(!$is_admin){
-            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-            if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-                ChatEmpLog::newLog($input['chatId']);
-            }
-        }
+        // $is_admin = IS_ADMIN;
+        // $user_id = USER_ID; 
+        // if(!$is_admin){
+        //     $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+        //     if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
+        //         ChatEmpLog::newLog($input['chatId']);
+        //     }
+        // }
 
         $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
         $dataList['status'] = \TraitsFunc::SuccessMessage();
@@ -139,9 +139,9 @@ class LiveChatControllers extends Controller {
     public function readChat(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -173,9 +173,9 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['liveChatId'] = $input['chatId'];
@@ -201,9 +201,9 @@ class LiveChatControllers extends Controller {
     public function sendMessage(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
@@ -289,15 +289,15 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                $file_size = $image->getSize();
-                $file_size = $file_size/(1024 * 1024);
-                $file_size = number_format($file_size,2);
-                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                $totalStorage = Session::get('storageSize');
-                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                }
+                // $file_size = $image->getSize();
+                // $file_size = $file_size/(1024 * 1024);
+                // $file_size = number_format($file_size,2);
+                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                // $totalStorage = Session::get('storageSize');
+                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                // }
 
                 $myType = explode('/', $image->getMimeType())[1];
                 $message_type = \ImagesHelper::checkExtensionType($myType);
@@ -322,15 +322,15 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                $file_size = $image->getSize();
-                $file_size = $file_size/(1024 * 1024);
-                $file_size = number_format($file_size,2);
-                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                $totalStorage = Session::get('storageSize');
-                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                }
+                // $file_size = $image->getSize();
+                // $file_size = $file_size/(1024 * 1024);
+                // $file_size = number_format($file_size,2);
+                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                // $totalStorage = Session::get('storageSize');
+                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                // }
 
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
@@ -347,15 +347,15 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                $file_size = $image->getSize();
-                $file_size = $file_size/(1024 * 1024);
-                $file_size = number_format($file_size,2);
-                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                $totalStorage = Session::get('storageSize');
-                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                }
+                // $file_size = $image->getSize();
+                // $file_size = $file_size/(1024 * 1024);
+                // $file_size = number_format($file_size,2);
+                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                // $totalStorage = Session::get('storageSize');
+                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                // }
                 
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
@@ -410,15 +410,15 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                $file_size = $image->getSize();
-                $file_size = $file_size/(1024 * 1024);
-                $file_size = number_format($file_size,2);
-                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                $totalStorage = Session::get('storageSize');
-                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                }
+                // $file_size = $image->getSize();
+                // $file_size = $file_size/(1024 * 1024);
+                // $file_size = number_format($file_size,2);
+                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                // $totalStorage = Session::get('storageSize');
+                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                // }
 
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
@@ -469,14 +469,14 @@ class LiveChatControllers extends Controller {
             $dialogObj = ChatDialog::getData($dialog);
             broadcast(new SentMessage($domain , $dialogObj ));
         
-            $is_admin = IS_ADMIN;
-            $user_id = USER_ID; 
-            if(!$is_admin){
-                $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-                if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-                    ChatEmpLog::newLog($input['chatId'],3);
-                }
-            }
+            // $is_admin = IS_ADMIN;
+            // $user_id = USER_ID; 
+            // if(!$is_admin){
+            //     $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+            //     if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
+            //         ChatEmpLog::newLog($input['chatId'],3);
+            //     }
+            // }
         }else{
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
@@ -487,17 +487,17 @@ class LiveChatControllers extends Controller {
     }
 
     public function liveChatLogout(){
-        $is_admin = IS_ADMIN;
-        $user_id = USER_ID;
-        if(!$is_admin){
-            $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
-            if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
-                $lastObj->ended = 1;
-                $lastObj->ended_at = DATE_TIME;
-                $lastObj->save();
-                ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
-            }
-        }
+        // $is_admin = IS_ADMIN;
+        // $user_id = USER_ID;
+        // if(!$is_admin){
+        //     $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
+        //     if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
+        //         $lastObj->ended = 1;
+        //         $lastObj->ended_at = DATE_TIME;
+        //         $lastObj->save();
+        //         ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
+        //     }
+        // }
         return redirect()->to('/dashboard');
     }
 
@@ -511,9 +511,9 @@ class LiveChatControllers extends Controller {
     public function labelChat(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -555,9 +555,9 @@ class LiveChatControllers extends Controller {
     public function unlabelChat(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -618,9 +618,9 @@ class LiveChatControllers extends Controller {
     public function updateContact(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -677,9 +677,9 @@ class LiveChatControllers extends Controller {
     public function assignMod(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -713,9 +713,9 @@ class LiveChatControllers extends Controller {
     public function removeMod(Request $request) {
         $input = \Request::all();
 
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
+        // if($this->checkPerm()){
+        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        // }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");

@@ -121,16 +121,6 @@
 			                                                @endif
 			                                    		</div>
 			                                    	</div>
-
-			                                        {{-- <div class="btn-group dropdown">
-			                                            <a href="javascript: void(0);" class="table-action-btn dropdown-toggle arrow-none btn btn-xs" data-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-horizontal"></i></a>
-			                                            <div class="dropdown-menu dropdown-menu-right">
-			                                                <a class="dropdown-item" href="{{ $oneItem->file }}" target="_blank"><i class="mdi mdi-download mr-2 text-muted vertical-middle"></i>{{ trans('main.download') }}</a>
-			                                                @if(\Helper::checkRules('delete-storage'))
-			                                                <a class="dropdown-item" onclick="deleteStorageFile('{{ URL::current().'/'.$oneItem->file_name.'/removeFile' }}')"><i class="mdi mdi-delete mr-2 text-muted vertical-middle"></i>{{ trans('main.delete') }}</a>
-			                                                @endif
-			                                            </div>
-			                                        </div> --}}
 			                                    </td>
 			                                </tr>
 			                                @endforeach
@@ -165,14 +155,6 @@
 			                                                @endif
 			                                    		</div>
 			                                    	</div>
-
-{{-- 
-			                                        <div class="btn-group dropdown">
-			                                            <a href="javascript: void(0);" class="table-action-btn dropdown-toggle arrow-none btn btn-xs" data-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-horizontal"></i></a>
-			                                            <div class="dropdown-menu dropdown-menu-right">
-			                                                
-			                                            </div>
-			                                        </div> --}}
 			                                    </td>
 			                                </tr>
 			                                @endif
