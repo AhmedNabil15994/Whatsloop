@@ -39,7 +39,8 @@
                         @csrf
                         <h2 class="title">{{ trans('auth.loginToPanel') }}</h2>
                         <div class="inputStyle telStyle">
-                            <input class="phone" type="tel"  id="telephone" name="phone" placeholder="{{ trans('auth.phonePlaceHolder') }}" />
+                            <input type="hidden" name="phone">
+                            <input class="phone" type="tel"  id="telephone" placeholder="{{ trans('auth.phonePlaceHolder') }}" />
                             <i class="flaticon-phone-call"></i>
                         </div>
                         <div class="inputStyle">

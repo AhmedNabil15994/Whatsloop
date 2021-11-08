@@ -5,7 +5,7 @@ User Auth
 ----------------------------------------------------------*/
 
 Route::group(['prefix' => '/'] , function () {
-	$authController = App\Http\Controllers\CentralAuthControllers::class;
+    $authController = App\Http\Controllers\CentralAuthControllers::class;
 
 
     // Route::get('/register',function(){
@@ -26,6 +26,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/', function(){ return redirect()->to('/login'); });
 
     Route::get('/login', [$authController,'login']);
+    Route::get('/appLogin', [$authController,'appLogin']);
     Route::post('/login', [$authController,'doLogin']);
     Route::post('/checkByCode', [$authController,'checkByCode']);
     Route::get('/logout', [$authController,'logout']);
@@ -43,7 +44,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/register', [$authController,'register'])->name('register');
     Route::post('/register', [$authController,'postRegister']);
 
-	Route::post('/changeLang', [$authController,'changeLang']);
+    Route::post('/changeLang', [$authController,'changeLang']);
 
     // Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
 });

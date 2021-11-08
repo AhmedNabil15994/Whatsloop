@@ -22,7 +22,7 @@ class ChatDialog extends Model{
         $input = \Request::all();
         if($name != null){
             $limit = 0;
-            $source = self::with('Messages')->where('name','LIKE','%'.$name.'%');  
+            $source = self::with('Messages')->where('name','LIKE','%'.$name.'%')->orWhere('id','LIKE','%'.str_replace('+','',$name).'%');  
         }else{
             $source = self::with('Messages');  
         }
@@ -90,6 +90,7 @@ class ChatDialog extends Model{
             $source = (object) $source;
             $dataObj->id = $source->id;
             $dataObj->name = isset($source->name) ? $source->name : '';
+            $dataObj->chatName = isset($source->name) ? self::reformChatId($source->name) : '';
             $dataObj->image = isset($source->image) ? $source->image : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
             $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
@@ -120,6 +121,12 @@ class ChatDialog extends Model{
             $newName = $name;
         }
         return $newName;
+    }
+
+    static function reformChatId($chatId){
+        $chatId = str_replace('@c.us','',$chatId);
+        $chatId = str_replace('@g.us','',$chatId);
+        return $chatId;
     }
 
     static function reformDate($time){

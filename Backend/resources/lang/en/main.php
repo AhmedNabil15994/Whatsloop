@@ -746,4 +746,7 @@ return [
 
 	'specsMemb' => 'You can create your own customized package with multiple features and reasonable prices',
 	'startsFrom' => 'Starts From',
+	'sendPaymentLink' => 'Send Payment Link',
+	'newCoupon' => 'Add New Coupon',
+
 ];

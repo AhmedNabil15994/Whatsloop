@@ -106,7 +106,8 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        InitializeTenancyByDomain::$onFail = function ($exception, $request, $next) {
+        \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::$onFail = function ($exception, $request, $next) {
+            // dd('hereasdsads');
             return redirect(config('app.BASE_URL'));
         };
 
@@ -162,6 +163,7 @@ class TenancyServiceProvider extends ServiceProvider
             ->group(function () {
             require app_path('Modules/Tenancy/Auth/routes.php');
             require app_path('Modules/Tenancy/WhatsLoop/routes.php');
+            require app_path('Modules/Tenancy/WhatsappOrder/clientRoutes.php');
         });
     }
 

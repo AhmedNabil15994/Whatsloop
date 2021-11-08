@@ -207,12 +207,12 @@ class LiveChatControllers extends Controller {
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
-        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
-        $dailyCount = Session::get('dailyMessageCount');
-        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount + $extraQuotas <= $messagesCount){
-            return \TraitsFunc::ErrorMessage('Messages Quota Per Day Exceeded!!!');
-        }
+        // $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        // $dailyCount = Session::get('dailyMessageCount');
+        // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
+        // if($dailyCount + $extraQuotas <= $messagesCount){
+        //     return \TraitsFunc::ErrorMessage('Messages Quota Per Day Exceeded!!!');
+        // }
 
         if(!isset($input['type']) || empty($input['type']) ){
             return \TraitsFunc::ErrorMessage("Type Field Is Required");

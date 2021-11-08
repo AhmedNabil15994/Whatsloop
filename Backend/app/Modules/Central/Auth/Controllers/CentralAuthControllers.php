@@ -23,6 +23,18 @@ class CentralAuthControllers extends Controller {
 
     use \TraitsFunc;
 
+    public function appLogin() {
+        $input =\Request::all();
+        if(isset($input['type']) && !empty($input['type']) && $input['type'] == 'mob'){
+            return redirect()->away('https://whatsloop.net/ar/Login.html');
+        }
+        if(Session::has('user_id')){
+            return redirect('/dashboard');
+        }
+        $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
+        return view('Central.Auth.Views.V5.login')->with('data',(object) $data);
+    }
+    
     public function login() {
         if(Session::has('user_id')){
             return redirect('/dashboard');

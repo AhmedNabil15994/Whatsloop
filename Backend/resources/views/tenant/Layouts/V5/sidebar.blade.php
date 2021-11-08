@@ -82,15 +82,19 @@
 		</li>
 		@endif
 
-		@if(\Helper::checkRules('whatsapp-orders,whatsapp-products'))
+		@if(\Helper::checkRules('whatsapp-orders,whatsapp-products,whatsapp-coupons'))
 		<li titlehover="link5">
 			<a  class="subToggle {{ Active( URL::to('/whatsappOrders*') ) }}"><i class="flaticon-layer"></i> {{ trans('main.whatsappOrders') }} <i class="arrowLeft flaticon-left-arrow"></i></a>
 			<ul class="subMenu">
 				@if(\Helper::checkRules('whatsapp-products'))
-				<li><a href="{{ URL::to('/whatsappOrders/products') }}" class="{{ Active( URL::to('/whatsappOrders/products') ) }}">{{ trans('main.products') }} </a></li>
+				<li><a href="{{ URL::to('/whatsappOrders/products') }}" class="{{ Active( URL::to('/whatsappOrders/products*') ) }}">{{ trans('main.products') }} </a></li>
 				@endif
 				@if(\Helper::checkRules('whatsapp-orders'))
-				<li><a href="{{ URL::to('/whatsappOrders/orders') }}" class="{{ Active( URL::to('/whatsappOrders/orders') ) }}">{{ trans('main.orders') }} </a></li>
+				<li><a href="{{ URL::to('/whatsappOrders/orders') }}" class="{{ Active( URL::to('/whatsappOrders/orders*') ) }}">{{ trans('main.orders') }} </a></li>
+				@endif
+
+				@if(\Helper::checkRules('list-coupons'))
+				<li><a href="{{ URL::to('/whatsappOrders/coupons') }}" class="{{ Active( URL::to('/whatsappOrders/coupons*') ) }}">{{ trans('main.coupons') }} </a></li>
 				@endif
 			</ul>
 		</li>

@@ -38,6 +38,12 @@ $(function(){
 
         nextStepDiv.addClass('active');
         nextStepItem.addClass('active');
+
+        if($('img.qrImage').length){
+            if($('img.qrImage').data('area') == 1 && $('#step2').hasClass('active')){
+                nextStep($('#step2').find('.btnNext:not(.btnPrev):not(.finish)'));
+            }
+        }
     }
 
     $('.finish').on('click',function(e){

@@ -13,6 +13,7 @@ use App\Models\UserChannels;
 use App\Models\CentralChannel;
 use App\Models\Tenant;
 use App\Models\ModTemplate;
+use App\Models\Template;
 
 class SubscriptionHelper {
 
@@ -417,6 +418,67 @@ class SubscriptionHelper {
         $centralUser->update([
             'channels' => serialize([$channel['id']]),
         ]);
+
+        if(!empty($addon) && in_array(9,$addon)){
+            if($tenant){
+                tenancy()->initialize($tenant);
+            }
+            ModTemplate::insert([
+                [
+                    'channel' => $instanceId,
+                    'name_ar' => 'whatsAppOrders',
+                    'name_en' => 'whatsAppOrders',
+                    'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        طلبك رقم ( {ORDERID} ) جاهز الان للشراء 😎.
+
+                                        اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+
+                                        ( {ORDERURL} )
+
+                                        مع تحيات فريق عمل واتس لوب ❤️',
+                    'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        طلبك رقم ( {ORDERID} ) جاهز الان للشراء 😎.
+
+                                        اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+
+                                        ( {ORDERURL} )
+
+                                        مع تحيات فريق عمل واتس لوب ❤️',
+                    'status' => 1,
+                ],
+                [
+                    'channel' => $instanceId,
+                    'name_ar' => 'whatsAppInvoices',
+                    'name_en' => 'whatsAppInvoices',
+                    'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        تم تأكيد شراء طلبك رقم ( {ORDERID} )  😎.
+
+                                        اذا ما عليك امر تتوجه الي طباعة فاتورة طلبك 😊 من خلال الرابط التالي :
+
+                                        ( {INVOICEURL} )
+
+                                        مع تحيات فريق عمل واتس لوب ❤️',
+                    'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+                                        تم تأكيد شراء طلبك رقم ( {ORDERID} )  😎.
+
+                                        اذا ما عليك امر تتوجه الي طباعة فاتورة طلبك 😊 من خلال الرابط التالي :
+
+                                        ( {INVOICEURL} )
+
+                                        مع تحيات فريق عمل واتس لوب ❤️',
+                    'status' => 1,
+                ],
+
+            ]);
+
+            if($tenant){
+                tenancy()->end($tenant);
+            }
+        }
 
         if(!empty($addon) && in_array(5,$addon)){
             if($tenant){

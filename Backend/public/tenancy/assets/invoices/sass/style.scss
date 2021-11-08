@@ -1,0 +1,704 @@
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap");
+$mainColor: #f0a500;
+$secondColor: #1a1c20;
+
+html {
+  scroll-behavior: smooth;
+}
+
+input,
+select,
+textarea {
+  &:focus {
+    outline: 0 !important;
+  }
+}
+
+body {
+  font-family: "Tajawal", sans-serif;
+  text-transform: capitalize;
+  direction: rtl;
+}
+
+.clear {
+  clear: both;
+}
+
+img {
+  max-width: 100%;
+  // width: 100%;
+}
+
+a,
+button {
+  text-decoration: none !important;
+  outline: none;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+#floating {
+  position: fixed;
+  z-index: 1;
+  width: 65px;
+  height: 65px;
+  line-height: 70px;
+  text-align: center;
+  bottom: 15px;
+  right: 20px;
+  cursor: pointer;
+  background-color: #fff;
+  box-shadow: 0 3px 9px rgba($color: #000000, $alpha: 16%);
+  opacity: 0;
+  z-index: 999;
+  transition: all 0.5s;
+  i {
+    color: #000;
+    font-size: 25px;
+    font-weight: bold;
+  }
+}
+
+.splash.displayNone {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.splash {
+  display: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  z-index: 999999;
+  text-align: center;
+  padding: 0 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash img {
+  display: inline-block;
+  margin-bottom: 100px;
+  max-width: 255px;
+  width: auto;
+}
+
+.splash .loadProgress {
+  width: 400px;
+  background-color: #e5e5e5;
+  height: 10px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .splash .loadProgress {
+    width: 280px;
+  }
+}
+
+.splash .loadProgress .lineStyle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 100%;
+
+  background-color: $mainColor;
+  -moz-animation: move-progress 3s linear infinite;
+  -ms-animation: move-progress 3s linear infinite;
+  -o-animation: move-progress 3s linear infinite;
+  -webkit-animation: move-progress 3s linear infinite;
+  animation: move-progress 3s linear infinite;
+}
+
+@keyframes move-progress {
+  from {
+    left: -100%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@-webkit-keyframes move-progress {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@-moz-keyframes move-progress {
+  from {
+    left: -100%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@-ms-keyframes move-progress {
+  from {
+    left: -100%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+body {
+  // background-color: #f3f3f3;
+}
+
+/* invoice-color */
+.invoice-color{
+  background-color: #f3f3f3;
+}
+
+/* all-invoice page */
+.all-invoice {
+  // height: 100vh;
+  .invoice-list {
+    display: flex;
+    height: 100vh;
+    // align-items: center;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    li {
+      .invo-card {
+        display: inline-block;
+        max-width: 100%;
+        border-radius: 10px;
+        width: 267px;
+        margin: auto;
+        padding: 10px 35px;
+        background-color: #fff;
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 25px;
+        color: #000;
+        font-weight: 500;
+        margin-bottom: 21px;
+        h5{
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+/*  invoce */
+.invoce{
+  .invoice-header{
+    padding-top: 41px;
+    h5{
+      text-align: center;
+      margin: 0;
+      font-weight: 20px;
+      font-weight: bold;
+    }
+  }
+}
+
+/* invoice-1 */
+.invoice-1{
+  margin-bottom: 41px;
+  .bill{
+    background-color: #fff;
+    padding: 37px 24px;
+    padding-bottom: 20px;
+    margin-top: 56px;
+    overflow: hidden;
+    .bill-header{
+      text-align: center;
+      padding-bottom: 38px;
+      position: relative;
+      .line{
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+      }
+      &::after{
+        width: 37px;
+        height: 37px;
+        border-radius: 50%;
+        background-color:#f3f3f3;
+        position: absolute;
+        bottom: -14.5px;
+        left:-40.5px;
+        content: "";
+      }
+      &::before{
+        width: 37px;
+        height: 37px;
+        border-radius: 50%;
+        background-color:#f3f3f3;
+        position: absolute;
+        bottom: -14.5px;
+        right: -40.5px;
+        content: "";
+      }
+      h5{
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+      }
+      p{
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+    .qrCode{
+      text-align: center;
+      margin-top: 24px;
+    }
+    .bill-list{
+      margin-top: 20px;
+      .itemlist{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 18px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid #F3F3F3;
+        h5{
+          margin: 0;
+          font-size: 14px;
+          font-weight: bold;
+        }
+        span{
+          font-size: 14px;
+          font-weight: 500;
+        }
+        &:last-child{
+          border-bottom: 0;
+          padding-bottom: 0;
+        }
+      }
+    }
+  }
+  .bill-note{
+    padding: 26px;
+    background-color: #fff;
+    margin-top: 24px;
+    h5{
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    p{
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 30px;
+      margin: 0;
+      margin-top: 10px;
+    }
+  }
+}
+
+/* invoice-2 */
+.invoice-2{
+  .invoice-profile{
+    box-shadow: 0 20px 30px rgba($color: #000000, $alpha: 16%);
+    border-radius: 10px;
+  }
+  .whats-profile{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 55px;
+    background-color: #F3F3F3;
+    padding: 21px 14px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    .card-img{
+      background-color: #26B2EF;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 60px;
+      height: 60px;
+      margin-left: 10px;
+    }
+    .card-body{
+      padding: 0;
+      padding-top: 8px;
+      h5, p{
+        margin: 0;
+      }
+      h5{
+        font-size: 18px;
+        font-weight: bold;
+      }
+      p{
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+  .personal-profule-parent{
+    background-color: #fff !important;
+    display: flex;
+    justify-content: space-between;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    align-items: center;
+    padding-left: 24px;
+    .qrcode{
+      width: 58px;
+    }
+  }
+  .person-orifile{
+    background-color: transparent;
+    margin-top: 0;
+    .card-img{
+      background-color: #F3F3F3;
+    }
+  }
+  .bill{
+    margin-top: 0;
+    margin-top: 31px;
+    padding-top: 0;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba($color: #000000, $alpha: 16%);
+  }
+
+  .bill-note{
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba($color: #000000, $alpha: 16%);
+  }
+
+}
+
+/* invoice-3 */
+.invoice-3{
+  .secttion-profile{
+    background-color: #fff;
+    width: 165px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 27px 10px 27px 10px;
+    margin-top: 35px;
+    box-shadow: 0 20px 30px rgba($color: #000000, $alpha: 16%);
+    border-radius: 10px;
+    .card-img{
+      width: 50px;
+      height: 50px;
+      background-color: #F3F3F3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    h5, p{
+      margin: 0;
+    }
+    h5{
+      font-size: 16px;
+      font-weight: bold;
+    }
+    p{
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .whatloop-invoice{
+    background-color: #fff;
+    margin-top: 40px;
+    .section-profile{
+      display: flex;
+      padding: 25px 14px 25px 14px;
+      align-items: center;
+      border-bottom: 1px solid #F3F3F3;
+      .card-img{
+        width: 60px;
+        height: 60px;
+        background-color: #E9E9E9;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .card-body{
+        padding: 0;
+        padding-right: 13px;
+        h5, p{
+          margin: 0;
+        }
+        h5{
+          font-size: 18px;
+          font-weight: bold;
+        }
+        p{
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+    .section-bill{
+      padding: 31px 25px 30px 30px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #F3F3F3;
+      .listItem{
+        margin-bottom: 17px;
+        h5{
+          font-size: 14px;
+          font-weight: bold;
+          margin: 0;
+        }
+        span{
+          font-size: 14px;
+          font-weight: 500;
+          margin: 0;
+          margin-top: 2px;
+          display: inline-block;
+        }
+        &:last-child{
+          margin-bottom: 0;
+        }
+      }
+    }
+    .section-note{
+      padding: 23px 27px 25px 20px;
+      h5{
+        font-size: 14px;
+        font-weight: bold;
+      }
+      p{
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 30px;
+        width: 276px;
+        max-width: 100%;
+        margin: 0;
+        margin-top: 10px;
+      }
+    }
+  }
+
+}
+
+/* invoice-4 */
+.invoice-4{
+  margin-bottom: 90px;
+  .personal-profule-parent{
+    border-radius: 20px;
+    margin-top: 62px;
+    padding-bottom: 60px;
+  }
+  .person-orifile{
+    // background-color: #fff;
+    border-radius: 20px;
+  }
+
+  .invoice4-bill{
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba($color: #000000, $alpha: 16%);
+    margin-top: -60px;
+    .section-profile{
+      display: flex;
+      padding: 25px 14px 25px 14px;
+      align-items: center;
+      .card-img{
+        width: 60px;
+        height: 60px;
+        background-color: #E9E9E9;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .card-body{
+        padding: 0;
+        padding-right: 13px;
+        h5, p{
+          margin: 0;
+        }
+        h5{
+          font-size: 18px;
+          font-weight: bold;
+        }
+        p{
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .section-bill-info{
+      padding: 25px 20px 25px 14px;
+      background-color: #F3F3F3;
+      .listItem{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #E5E5E5;
+        h5{
+          font-size: 14px;
+          font-weight: bold;
+          margin: 0;
+        }
+        span{
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+    .section-bill-note{
+      background-color: #fff;
+      padding: 24px 21px 30px 10px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      h5, p{
+        margin: 0;
+      }
+      h5{
+        font-size: 14px;
+        font-weight: bold;
+      }
+      p{
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 30px;
+        width: 265px;
+        max-width: 100%;
+        margin-top: 10px;
+      }
+    }
+  }
+
+  
+}
+
+
+
+@media (max-width: 1200px) {
+}
+
+@media (max-width: 1199px) {
+}
+
+@media (max-width: 1024px) {
+}
+
+@media (max-width: 991px) {
+}
+
+@media (max-width: 960px) {
+}
+
+/* Small Screens */
+@media (min-width: 768px) and (max-width: 991px) {
+}
+
+/* Mobile & Tablets */
+@media (max-width: 767px) {
+}
+
+/* Tablets */
+@media (min-width: 480px) and (max-width: 767px) {
+}
+
+@media (max-width: 479px) {
+}
+
+@media (max-width: 376px) {
+}
+
+@media (max-width: 321px) {
+}
+
+%inilize-ui-icons {
+  font-family: uicons-regular-rounded !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+%img-bg-style {
+  -webkit-background-size: cover;
+  -webkit-background-position: center;
+  -moz-background-position: center;
+  -moz-background-size: cover;
+  background-position: center;
+  background-size: cover;
+}
+
+%img-bg-after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+%link-transition {
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+%spcfies-number-of-line {
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+%init-font-awesome {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+}
+
+%transition {
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+%line-after-secton-header {
+  content: "";
+  position: absolute;
+  background-color: #25a1a5;
+  border-radius: 10px;
+  width: 41px;
+  height: 5px;
+  bottom: 0;
+  left: 0;
+}

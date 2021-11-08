@@ -166,6 +166,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         Stevebauman\Location\LocationServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -235,6 +236,7 @@ return [
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'Location' => 'Stevebauman\Location\Facades\Location',
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
     ],
 
 ];

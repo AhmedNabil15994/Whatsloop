@@ -265,13 +265,23 @@ class Helper
                     $externalPermissions = [];
                 }elseif($addon == 8){
                     $externalPermissions = [];
+                }elseif($addon == 9){
+                    $externalPermissions = [
+                        'WhatsappOrdersControllers@products' => 'whatsapp-products',
+                        'WhatsappOrdersControllers@orders' => 'whatsapp-orders',
+                        'WhatsappOrdersControllers@sendLink' => 'whatsapp-orders-sendLink',
+                        'WhatsAppCouponControllers@index' => 'list-coupons',
+                        'WhatsAppCouponControllers@edit' => 'edit-coupon',
+                        'WhatsAppCouponControllers@update' => 'edit-coupon',
+                        'WhatsAppCouponControllers@fastEdit' => 'edit-coupon',
+                        'WhatsAppCouponControllers@add' => 'add-coupon',
+                        'WhatsAppCouponControllers@create' => 'add-coupon',
+                        'WhatsAppCouponControllers@delete' => 'delete-coupon',
+                        'WhatsAppCouponControllers@arrange' => 'sort-coupon',
+                        'WhatsAppCouponControllers@sort' => 'sort-coupon',
+                        'WhatsAppCouponControllers@charts' => 'charts-coupon',
+                    ];
                 }
-                // elseif($addon == 9){
-                //     $externalPermissions = [
-                //         'WhatsappOrdersControllers@products' => 'whatsapp-products',
-                //         'WhatsappOrdersControllers@orders' => 'whatsapp-orders',
-                //     ];
-                // }
             }
 
             $controllers = array_merge($controllers,$externalPermissions);

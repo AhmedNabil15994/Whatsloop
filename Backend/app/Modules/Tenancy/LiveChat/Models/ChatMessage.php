@@ -104,8 +104,8 @@ class ChatMessage extends Model{
                 $data['orderToken'] = $source->metadata['orderToken'];
                 $result = $mainWhatsLoopObj->getOrder($data);
                 $result = $result->json();
-
-                if($result['status']['status'] == 1 && isset($result['data']['orders']) && !empty($result['data']['orders'])  ){
+                $count = 0;
+                if($result && $result['status'] && $result['status']['status'] == 1 && isset($result['data']['orders']) && !empty($result['data']['orders'])  ){
                     $orderObj = Order::getOne($data['orderId']);
                     if(!$orderObj){
                         $orderObj = new Order;
@@ -126,6 +126,7 @@ class ChatMessage extends Model{
                         $productObj->price =  $oneProduct['price'];
                         $productObj->images =  serialize($oneProduct['images']);
                         $productObj->save();
+                        $count+= $oneProduct['quantity'] ;
                     }
 
                     $orderObj->order_id =  $source->metadata['orderId'];
@@ -135,6 +136,7 @@ class ChatMessage extends Model{
                     $orderObj->message_id = $dataObj->id;
                     $orderObj->products = serialize($result['data']['orders'][0]['products']);
                     $orderObj->client_id = $dataObj->author;
+                    $orderObj->products_count = $count;
                     $orderObj->created_at = $result['data']['orders'][0]['createdAt'];
                     $orderObj->save();
                 }

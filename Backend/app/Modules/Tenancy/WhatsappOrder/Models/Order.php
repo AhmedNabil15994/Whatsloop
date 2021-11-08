@@ -10,15 +10,15 @@ class Order extends Model{
     public $incrementing = false;
 
     static function getOne($id){
-        return self::where('order_id', $id)->first();
+        return self::with('Details')->where('order_id', $id)->first();
     }
 
     public function Message(){
         return $this->belongsTo('App\Models\ChatMessage','message_id');
     }
 
-    public function Contact(){
-        return $this->belongsTo('App\Models\Contact','client_id');
+    public function Details(){
+        return $this->hasOne('App\Models\OrderDetails','order_id');
     }
 
     static function dataList() {
@@ -45,12 +45,19 @@ class Order extends Model{
         $data['pagination'] = \Helper::GeneratePagination($sourceArr);
         return $data;
     }
+    // payment_type == 1 => Cash on delivery
+    // payment_type == 2 => Cash inside branch
+    // payment_type == 3 => Bank Transfer
+    // payment_type == 4 => E-Payment
 
+    // status == 1 => New Order
+    // status == 2 => Paid Order
     static function getData($source){
         $dataObj = new \stdClass();
         if($source){
             $source = (object) $source;
             $dataObj->id = $source->id;
+            $dataObj->channel = $source->channel;
             $dataObj->order_id = $source->order_id;
             $dataObj->subtotal = $source->subtotal;
             $dataObj->tax = $source->tax;
@@ -59,9 +66,13 @@ class Order extends Model{
             $dataObj->message_id = $source->message_id;
             $dataObj->products = $source->products != null ? unserialize($source->products) : [];
             $dataObj->client_id = $source->client_id;
+            $dataObj->coupon = $source->coupon;
+            $dataObj->payment_type = $source->payment_type;
+            $dataObj->total_after_discount = $source->total_after_discount > 0 ? $source->total_after_discount : $source->total;
+            $dataObj->products_count = $source->products_count;
             $dataObj->created_at = isset($source->created_at) ? self::reformDate($source->created_at)[0] : ''; 
             $dataObj->created_at2 = isset($source->created_at) ? date('Y-m-d',$source->created_at) : ''; 
-            $dataObj->client = Contact::NotDeleted()->where('phone','+'.str_replace('@c.us','',$source->client_id))->first()->name;
+            $dataObj->client = Contact::NotDeleted()->where('phone','+'.str_replace('@c.us','',$source->client_id))->first();
             return $dataObj;
         }
     }

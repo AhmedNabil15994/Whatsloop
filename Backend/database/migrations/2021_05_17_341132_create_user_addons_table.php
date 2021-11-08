@@ -20,7 +20,7 @@ class CreateUserAddonsTable extends Migration
             $table->integer('user_id');
             $table->integer('addon_id');
             $table->integer('duration_type');
-            $table->integer('setting_pushed');
+            $table->integer('setting_pushed')->default(0);
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('status')->nullable();

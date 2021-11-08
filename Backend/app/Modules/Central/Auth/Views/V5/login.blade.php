@@ -28,7 +28,7 @@
             <script src="js/respond.min.js"></script>
         <![endif]-->   
     </head>
-    <body>
+    <body class="{{Request::segment(1) == 'appLoginDark' ? 'dark-mode' : ''}}">
     
         <div class="loginPage clearfix">
             <div class="right">
@@ -39,7 +39,8 @@
                         @csrf
                         <h2 class="title">{{ trans('auth.loginToPanel') }}</h2>
                         <div class="inputStyle telStyle">
-                            <input class="phone" type="tel"  id="telephone" name="phone" placeholder="{{ trans('auth.phonePlaceHolder') }}" />
+                            <input type="hidden" name="phone">
+                            <input class="phone" type="tel"  id="telephone" placeholder="{{ trans('auth.phonePlaceHolder') }}" />
                             <i class="flaticon-phone-call"></i>
                         </div>
                         <div class="inputStyle">

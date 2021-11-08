@@ -16,12 +16,12 @@ class Kernel extends HttpKernel
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
-        \Fruitcake\Cors\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Illuminate\Session\Middleware\StartSession::class,
+        \App\Http\Middleware\Cors::class,
     ];
 
     /**
@@ -126,5 +126,6 @@ class Kernel extends HttpKernel
         'language' => \App\Http\Middleware\LanguageMiddleware::class,
         'user' => \App\Http\Middleware\AuthEngine::class,
         'central_user' => \App\Http\Middleware\CentralAuthEngine::class,
+        'cors' => \App\Http\Middleware\Cors::class,
     ];
 }

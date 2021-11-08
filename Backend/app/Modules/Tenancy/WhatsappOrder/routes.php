@@ -4,4 +4,26 @@ Route::group(['prefix' => '/whatsappOrders'] , function (){
 	$controller = \App\Http\Controllers\WhatsappOrdersControllers::class;
 	Route::get('/products',[$controller,'products']);
 	Route::get('/orders',[$controller,'orders']);
+	Route::get('/orders/{id}/sendLink',[$controller,'sendLink']);
+
+
+
+
+	/*----------------------------------------------------------
+	Coupons
+	----------------------------------------------------------*/
+	Route::group(['prefix' => '/coupons'] , function () {
+		$controller2 = \App\Http\Controllers\WhatsAppCouponControllers::class;
+
+	    Route::get('/', [$controller2,'index']);
+	    Route::get('/add', [$controller2,'add']);
+	    Route::get('/arrange', [$controller2,'arrange']);
+	    Route::get('/charts', [$controller2,'charts']);
+	    Route::get('/edit/{id}', [$controller2,'edit']);
+	    Route::post('/update/{id}', [$controller2,'update']);
+	    Route::post('/fastEdit', [$controller2,'fastEdit']);
+		Route::post('/create', [$controller2,'create']);
+	    Route::get('/delete/{id}', [$controller2,'delete']);
+	    Route::post('/arrange/sort', [$controller2,'sort']);
+	});
 });
