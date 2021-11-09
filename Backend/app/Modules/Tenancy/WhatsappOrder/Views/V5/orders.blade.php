@@ -69,7 +69,7 @@
             </ul>
             <div class="details">
                 @if(\Helper::checkRules('whatsapp-orders-sendLink'))
-                <a href="{{ URL::to('/whatsappOrders/orders/'.$order->id.'/sendLink') }}" class="btnStyle">{{ trans('main.sendPaymentLink') }}</a>
+                <a href="{{ $order->status == 1 ? URL::to('/whatsappOrders/orders/'.$order->id.'/sendLink') : URL::to('/orders/'.$order->order_id.'/invoice') }}" class="btnStyle">{{ $order->status == 1 ? trans('main.sendPaymentLink') : trans('main.invoiceLink') }}</a>
                 @endif
             </div>
         </div>

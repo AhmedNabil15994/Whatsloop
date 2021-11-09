@@ -546,7 +546,10 @@ class WhatsappOrdersControllers extends Controller {
 
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
-        $data['details'] = OrderDetails::getData($orderObj->Details);
-        return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice1')->with('data', (object) $data);
+        $data['details'] = $orderObj->Details;
+        // return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice1')->with('data', (object) $data);
+        // return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice2')->with('data', (object) $data);
+        // return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice3')->with('data', (object) $data);
+        return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice4')->with('data', (object) $data);
     }
 }

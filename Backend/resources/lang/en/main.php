@@ -528,6 +528,7 @@ return [
 	'demo' => 'Demo (3 Days)',
 
 	'invoices' => 'Invoices',
+	'invoiceLink' => 'View Invoice',
 	'tenantInvoice' => 'Invoices',
 	'invoice' => 'Invoice',
 	'invoice_status_0' => 'Draft', 

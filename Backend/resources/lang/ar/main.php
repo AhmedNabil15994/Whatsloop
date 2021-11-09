@@ -530,6 +530,7 @@ return [
 	'invoices' => 'الفواتير',
 	'tenantInvoice' => 'الفواتير',
 	'invoice' => 'فاتورة',
+	'invoiceLink' => 'رابط الفاتورة',
 	'invoice_status_0' => 'مسودة', 
 	'invoice_status_1' => 'مدفوعة', 
 	'invoice_status_2' => 'غير مدفوعة', 
