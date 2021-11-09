@@ -33,6 +33,14 @@ $(function(){
 		}
 	});
 
+	$(document).on('click','.products.selectPayment .selectCircle li',function(){
+		if($(this).hasClass('active')){
+			$('input[name="payment_type"]').val($('.selectCircle li.active').data('area'));
+		}else{
+			$('input[name="payment_type"]').val('');
+		}
+	});
+
 	$(document).on('click','.selectForm3 li',function(){
 		if($(this).hasClass('active')){
 			$('input[name="shipping_method"]').val($('.selectForm3 li.active').data('area'));

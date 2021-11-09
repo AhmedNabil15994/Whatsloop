@@ -750,4 +750,10 @@ return [
 	'sendPaymentLink' => 'Send Payment Link',
 	'newCoupon' => 'Add New Coupon',
 
+	'prod_cat1' => 'Product (Needs Shipping)',
+	'prod_cat2' => 'Service (no need to charge)',
+	'prod_cat3' => 'Service (needs an Appointment)',
+
+	'selectDesign' => 'Please choose the design you want to apply',
+	'selectInvoice' => 'Please choose the invoice design to be applied',
 ];

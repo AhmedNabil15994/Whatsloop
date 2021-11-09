@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded",(e)=> {
 $(function(){
 
 	
-	$("#selectCountry li,#formSelect2 li,#selectForm3 li").click(function() {
+	$(document).on('click',"#selectCountry li,#formSelect2 li,#selectForm3 li",function() {
 		$(this).siblings().removeClass("active")
 		if($(this).hasClass("active")) {
 			$(this).removeClass("active");

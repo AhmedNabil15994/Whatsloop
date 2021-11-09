@@ -643,3 +643,41 @@ if($('select[name="valid_type"]').val() == 2){
         format: 'YYYY-MM-DD',
     });
 }
+
+$('.orderStyle .selectStyle select[name="category_id"]').on('change',function () {
+    var category_id = $(this).val();
+    var product_id = $(this).data('area');
+
+    if(category_id && product_id){
+        $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+        $.ajax({
+            type: 'POST',
+            url: '/whatsappOrders/products/assignCategory',
+            data:{
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'category_id': category_id,
+                'product_id': product_id,
+            },
+            success:function(data){
+                if(data.status.status == 1){
+                    successNotification(data.status.message);
+                }else{
+                    errorNotification(data.status.message);
+                }
+            },
+        });
+    }
+});
+
+$('img.designStyle').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation()
+    $(this).toggleClass('selected');
+    $(this).parent('div').siblings('div').children('img.designStyle.selected').removeClass('selected');
+    var imgVal = $(this).parent('div').data('area');
+    if($(this).hasClass('selected')){
+        $(this).parent('div').siblings('input').val(imgVal);
+    }else{
+        $(this).parent('div').siblings('input').val('');
+    }
+});

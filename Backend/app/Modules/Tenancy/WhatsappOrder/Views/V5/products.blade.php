@@ -8,6 +8,9 @@
     .icon{
         float: unset;
     }
+    .selectStyle{
+        width: 50%;
+    }
 </style>
 @endsection
 
@@ -53,6 +56,18 @@
                 <div class="clearfix">
                     <a href="#" class="titleOrder">{{ $product->name }}</a>
                     <span class="price">{{ $product->price . ' ' . $product->currency }}</span>
+                </div>
+                <div class="clearfix">
+                    <a href="#" class="titleOrder">{{ trans('main.category') }}</a>
+                    <div class="selectStyle float-right">
+                        <select name="category_id" data-toggle="select2" data-area="{{ $product->id }}" {{ \Helper::checkRules('whatsapp-assignCategory') ? '' : 'disabled' }}>
+                            <option value="">{{ trans('main.choose') }}</option>
+                            <option value="1" {{ $product->category_id == 1 ? 'selected' : '' }}>{{ trans('main.prod_cat1') }}</option>
+                            <option value="2" {{ $product->category_id == 2 ? 'selected' : '' }}>{{ trans('main.prod_cat2') }}</option>
+                            <option value="3" {{ $product->category_id == 3 ? 'selected' : '' }}>{{ trans('main.prod_cat3') }}</option>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
                 </div>
                 <a href="#" class="btnOrder">{{ trans('main.quantity') }} : {{ $product->quantity }} </a>
             </div>

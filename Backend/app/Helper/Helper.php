@@ -267,7 +267,15 @@ class Helper
                     $externalPermissions = [];
                 }elseif($addon == 9){
                     $externalPermissions = [
+                        'WhatsappOrdersControllers@settings' => 'whatsapp-settings',
+                        'WhatsappOrdersControllers@postSettings' => 'whatsapp-settings',
+                        'WhatsappOrdersControllers@bankTransfers' => 'whatsapp-bankTransfers',
+                        'WhatsappOrdersControllers@viewTransfer' => 'view-whatsapp-bankTransfer',
+                        'WhatsappOrdersControllers@updateTransfer' => 'edit-whatsapp-bankTransfer',
+                        'WhatsappOrdersControllers@deleteTransfer' => 'delete-whatsapp-bankTransfer',
+
                         'WhatsappOrdersControllers@products' => 'whatsapp-products',
+                        'WhatsappOrdersControllers@assignCategory' => 'whatsapp-assignCategory',
                         'WhatsappOrdersControllers@orders' => 'whatsapp-orders',
                         'WhatsappOrdersControllers@sendLink' => 'whatsapp-orders-sendLink',
                         'WhatsAppCouponControllers@index' => 'list-coupons',

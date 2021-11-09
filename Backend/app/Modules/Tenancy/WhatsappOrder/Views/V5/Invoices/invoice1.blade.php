@@ -25,10 +25,6 @@
                             <span>{{ @$data->user->paymentInfo->tax_id }}</span>
                         </li>
                         <li class="itemlist">
-                            <h5>السجل التجاري</h5>
-                            <span>798985</span>
-                        </li>
-                        <li class="itemlist">
                             <h5>طريقة الدفع</h5>
                             <span>
                                 @if($data->order->payment_type == 1)

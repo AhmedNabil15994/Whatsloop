@@ -16,17 +16,17 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 
-	<link rel="stylesheet" href="{{ asset('designs/1/css/owl.carousel.min.css') }}" />
-	<link rel="stylesheet" href="{{ asset('designs/1/css/owl.theme.default.min.css') }}" />
+	<link rel="stylesheet" href="{{ asset('designs/2/css/owl.carousel.min.css') }}" />
+	<link rel="stylesheet" href="{{ asset('designs/2/css/owl.theme.default.min.css') }}" />
 
-	<link rel="stylesheet" href="{{ asset('designs/1/css/animate.css') }}" />
-    <link rel="stylesheet" href="{{ asset('designs/1/css/bootstrap.css') }}" />
-    <link rel="stylesheet" href="{{ asset('designs/1/css/bootstrap-rtl.css') }}" />
-    <link rel="stylesheet" href="{{ asset('designs/1/css/font-awesome.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('designs/1/css/jquery.bxslider.css') }}" />
+	<link rel="stylesheet" href="{{ asset('designs/2/css/animate.css') }}" />
+    <link rel="stylesheet" href="{{ asset('designs/2/css/bootstrap.css') }}" />
+    <link rel="stylesheet" href="{{ asset('designs/2/css/bootstrap-rtl.css') }}" />
+    <link rel="stylesheet" href="{{ asset('designs/2/css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('designs/2/css/jquery.bxslider.css') }}" />
     <link rel="stylesheet" href="{{ asset('V5/css/toastr.min.css') }}"  type="text/css">
-    <link rel="stylesheet" href="{{ asset('designs/1/css/style.css') }}" />
-    <link rel="stylesheet" href="{{ asset('designs/1/css/responisve.css') }}" />
+    <link rel="stylesheet" href="{{ asset('designs/2/css/style.css') }}" />
+    <link rel="stylesheet" href="{{ asset('designs/2/css/responisve.css') }}" />
         
     @yield('styles')
    <!--[if lt IE 9]>
@@ -41,13 +41,13 @@
     
 	<div class="splash">
 		<div>
-			<img src="{{ asset('designs/1/images/logoSplash.png') }}" alt="" />
+			<img src="{{ asset('designs/2/images/logoSplash.png') }}" alt="" />
 		</div>
 	</div> 
     
     <div class="header">
         @if(Request::segment(3) != 'finish')
-    	<a href="#" class="cart"><img src="{{ asset('designs/1/images/cart.png') }}" alt="" /> @yield('itemCounts')</a>
+    	<a href="#" class="cart"><img src="{{ asset('designs/2/images/cart.png') }}" alt="" /> @yield('itemCounts')</a>
     	@endif
         <h2 class="title">@yield('title')</h2>
     </div>
@@ -58,13 +58,13 @@
     @yield('content')    
      
     
-    <script src="{{ asset('designs/1/js/jquery-1.11.2.min.js') }}"></script>
-    <script src="{{ asset('designs/1/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('designs/1/js/jquery.bxslider.min.js') }}"></script>
-    <script src="{{ asset('designs/1/js/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('designs/1/js/wow.min.js') }}"></script>
-    <script src="{{ asset('designs/1/js/scrollIt.min.js') }}"></script>
-    <script src="{{ asset('designs/1/js/custom.js') }}"></script>
+    <script src="{{ asset('designs/2/js/jquery-1.11.2.min.js') }}"></script>
+    <script src="{{ asset('designs/2/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('designs/2/js/jquery.bxslider.min.js') }}"></script>
+    <script src="{{ asset('designs/2/js/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('designs/2/js/wow.min.js') }}"></script>
+    <script src="{{ asset('designs/2/js/scrollIt.min.js') }}"></script>
+    <script src="{{ asset('designs/2/js/custom.js') }}"></script>
     <script src="{{ asset('V5/js/toastr.min.js') }}"></script>
     <script src="{{ asset('V5/components/notifications.js') }}"></script>
     <script src="{{ asset('V5/components/orders.js') }}"></script>

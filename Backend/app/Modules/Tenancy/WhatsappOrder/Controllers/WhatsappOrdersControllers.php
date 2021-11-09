@@ -32,6 +32,45 @@ class WhatsappOrdersControllers extends Controller {
         return $dis;
     }
 
+    public function settings(){
+        $data['mainData'] = [
+            'title' => trans('main.settings'),
+            'url' => 'settings',
+            'icon' => ' mdi mdi-truck-delivery-outline',
+        ];
+        $mainData['designElems'] = $data;
+        $mainData['dis'] = $this->checkPerm();
+        $mainData['design'] = Variable::getVar('DESIGN');
+        $mainData['invoice'] = Variable::getVar('INVOICE');
+        return view('Tenancy.WhatsappOrder.Views.V5.settings')->with('data', (object) $mainData);
+    }
+
+    public function postSettings(){
+        $input = \Request::all();
+        if(isset($input['design']) && !empty($input['design'])){
+            $varObj = Variable::where('var_key','DESIGN')->first();
+            if(!$varObj){
+                $varObj = new Variable;
+                $varObj->var_key = 'DESIGN';
+            }
+            $varObj->var_value = (int) $input['design'];
+            $varObj->save();
+        }
+
+        if(isset($input['invoice']) && !empty($input['invoice'])){
+            $varObj = Variable::where('var_key','INVOICE')->first();
+            if(!$varObj){
+                $varObj = new Variable;
+                $varObj->var_key = 'INVOICE';
+            }
+            $varObj->var_value = (int) $input['invoice'];
+            $varObj->save();
+        }
+        
+        Session::flash('success',trans('main.editSuccess'));
+        return redirect()->back();
+    }
+
     public function products(){
         $data['mainData'] = [
             'title' => trans('main.products'),
@@ -85,36 +124,12 @@ class WhatsappOrdersControllers extends Controller {
         return view('Tenancy.WhatsappOrder.Views.V5.products')->with('data', (object) $mainData);
     }
 
-    public function orders(){
-        $data['mainData'] = [
-            'title' => trans('main.orders'),
-            'url' => 'orders',
-            'icon' => ' mdi mdi-truck-delivery-outline',
-        ];
-
-        $data['searchData'] = [
-                'id' => [
-                    'type' => 'text',
-                    'class' => 'form-control m-input',
-                    'label' => trans('main.id'),
-                ],
-                'from' => [
-                    'type' => 'text',
-                    'class' => 'form-control m-input datepicker',
-                    'id' => 'datepicker1',
-                    'label' => trans('main.dateFrom'),
-                ],
-                'to' => [
-                    'type' => 'text',
-                    'class' => 'form-control m-input datepicker',
-                    'id' => 'datepicker2',
-                    'label' => trans('main.dateTo'),
-                ],
-        ];
-        $mainData = Order::dataList();
-        $mainData['designElems'] = $data;
-        $mainData['dis'] = $this->checkPerm();
-        return view('Tenancy.WhatsappOrder.Views.V5.orders')->with('data', (object) $mainData);
+    public function assignCategory(){
+        $input = \Request::all();
+        $productObj = Product::find($input['product_id']);
+        $productObj->category_id = $input['category_id'];
+        $productObj->save();
+        return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
     }
 
     public function sendLink($id){
@@ -128,7 +143,15 @@ class WhatsappOrdersControllers extends Controller {
         $orderObj = Order::getData($orderObj);
         $sendData['chatId'] = $orderObj->client_id;
         $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/view';
+        foreach($orderObj->products as $product){
+            $productObj = Product::where('product_id',$product['id'])->first();
+            if(!$productObj || $productObj->category_id == null){
+                Session::flash('error','يرجي اختيار التصنيف لمنتج: '.$product['name'].' قبل ارسال رابط الشراء للعميل');
+                return redirect()->back()->withInput();     
+            }
+        }
 
+    
         $templateObj = Template::NotDeleted()->where('name_ar','whatsAppOrders')->first();
         if($templateObj){
             $content = $templateObj->description_ar;
@@ -171,7 +194,225 @@ class WhatsappOrdersControllers extends Controller {
         return redirect()->back()->withInput();     
     }
 
+    public function orders(){
+        $data['mainData'] = [
+            'title' => trans('main.orders'),
+            'url' => 'orders',
+            'icon' => ' mdi mdi-truck-delivery-outline',
+        ];
 
+        $data['searchData'] = [
+                'id' => [
+                    'type' => 'text',
+                    'class' => 'form-control m-input',
+                    'label' => trans('main.id'),
+                ],
+                'from' => [
+                    'type' => 'text',
+                    'class' => 'form-control m-input datepicker',
+                    'id' => 'datepicker1',
+                    'label' => trans('main.dateFrom'),
+                ],
+                'to' => [
+                    'type' => 'text',
+                    'class' => 'form-control m-input datepicker',
+                    'id' => 'datepicker2',
+                    'label' => trans('main.dateTo'),
+                ],
+        ];
+        $mainData = Order::dataList();
+        $mainData['designElems'] = $data;
+        $mainData['dis'] = $this->checkPerm();
+        return view('Tenancy.WhatsappOrder.Views.V5.orders')->with('data', (object) $mainData);
+    }
+
+    public function initTransferData(){
+        $mainData['mainData'] = [
+            'title' => trans('main.transfers'),
+            'url' => 'whatsappOrders/bankTransfers',
+            'name' => 'whatsapp-bankTransfers',
+            'nameOne' => 'whatsapp-bankTransfer',
+            'modelName' => '',
+            'icon' => ' dripicons-duplicate',
+            'sortName' => '',
+            'addOne' => '',
+        ];
+
+        $mainData['searchData'] = [
+            'id' => [
+                'type' => 'text',
+                'class' => 'form-control m-input',
+                'index' => '0',
+                'label' => trans('main.id'),
+                'specialAttr' => '',
+            ],
+        ];
+
+        $mainData['tableData'] = [
+            'id' => [
+                'label' => trans('main.id'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ],
+            'order_no' => [
+                'label' => trans('main.order_no'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'order_no',
+                'anchor-class' => '',
+            ],
+            'client' => [
+                'label' => trans('main.client'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'user_id',
+                'anchor-class' => '',
+            ],
+            'total' => [
+                'label' => trans('main.total'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'total',
+                'anchor-class' => '',
+            ],
+            'statusText' => [
+                'label' => trans('main.status'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'status',
+                'anchor-class' => '',
+            ],
+            'created_at' => [
+                'label' => trans('main.date'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'created_at',
+                'anchor-class' => '',
+            ],
+            'actions' => [
+                'label' => trans('main.actions'),
+                'type' => '',
+                'className' => '',
+                'data-col' => '',
+                'anchor-class' => '',
+            ],
+        ];
+        return $mainData;
+    }
+
+    public function bankTransfers(Request $request){
+        if($request->ajax()){
+            $data = OrderDetails::transfersList();
+            return Datatables::of($data['data'])->make(true);
+        }
+        $data['designElems'] = $this->initTransferData();
+        return view('Tenancy.User.Views.index')->with('data', (object) $data);
+    }
+
+    public function viewTransfer($id){
+        $id = (int) $id;
+
+        $userObj = OrderDetails::find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+
+        $data['data'] = OrderDetails::getTransfer($userObj);
+        $data['designElems'] = $this->initTransferData();
+        $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.transfers') ;
+        $data['designElems']['mainData']['icon'] = 'fa fa-eye';
+        return view('Tenancy.WhatsappOrder.Views.V5.viewTransfer')->with('data', (object) $data);      
+    }
+    
+    public function updateTransfer($id) {
+        $id = (int) $id;
+
+        $input = \Request::all();
+        $oldTransferObj = OrderDetails::find($id);
+        $status = (int) $input['status'];
+        if($oldTransferObj == null || !in_array($status , [2,3])) {
+            return Redirect('404');
+        }
+
+        $transferObj = OrderDetails::getTransfer($oldTransferObj);
+        $oldStatus = $transferObj->status;
+        
+        $beginProcess = 0;
+        if($status == 2 && $oldStatus != $status){
+            $beginProcess = 1;
+        }
+
+        if($beginProcess){
+            $orderObj = $oldTransferObj->Order;
+            $orderObj->status = 2;
+            $orderObj->save();
+
+            $orderObj = Order::getData($orderObj);
+            $sendData['chatId'] = $orderObj->client_id;
+            $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/invoice';
+
+            $templateObj = Template::NotDeleted()->where('name_ar','whatsAppInvoices')->first();
+            if($templateObj){
+                $content = $templateObj->description_ar;
+                $content = str_replace('{CUSTOMERNAME}', str_replace('@c.us','',str_replace('+','',$orderObj->client->name)), $content);
+                $content = str_replace('{ORDERID}', $orderObj->order_id, $content);
+                $content = str_replace('{INVOICEURL}', $url, $content);
+
+                $message_type = 'text';
+                $whats_message_type = 'chat';
+                $sendData['body'] = $content;
+                $mainWhatsLoopObj = new \MainWhatsLoop();
+                $result = $mainWhatsLoopObj->sendMessage($sendData);
+                $result = $result->json();
+                if(isset($result['data']) && isset($result['data']['id'])){
+                    $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
+                    $messageId = $result['data']['id'];
+                    $lastMessage['status'] = 'APP';
+                    $lastMessage['id'] = $messageId;
+                    $lastMessage['fromMe'] = 1;
+                    $lastMessage['chatId'] = $sendData['chatId'];
+                    $lastMessage['time'] = strtotime(date('Y-m-d H:i:s'));
+                    $lastMessage['body'] = $sendData['body'];
+                    $lastMessage['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
+                    $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+                    $lastMessage['message_type'] = $message_type;
+                    $lastMessage['sending_status'] = 1;
+                    $lastMessage['type'] = $whats_message_type;
+                    $messageObj = ChatMessage::newMessage($lastMessage);
+                    $dialog = ChatDialog::getOne($sendData['chatId']);
+                    $dialog->last_time = $lastMessage['time'];
+                    $dialogObj = ChatDialog::getData($dialog);
+                    broadcast(new SentMessage(User::first()->domain , $dialogObj ));
+                    Session::flash('success',trans('main.inPrgo'));
+                }else{
+                    Session::flash('error',$result['status']['message']);
+                }
+            }   
+        }
+
+        $oldTransferObj->transfer_status = $status;
+        $oldTransferObj->save();
+        Session::flash('success', trans('main.inPrgo'));
+        return \Redirect::back()->withInput();
+    }
+
+    public function delete($id) {
+        $id = (int) $id;
+        $dataObj = OrderDetails::getOne($id);
+        if($dataObj){
+            $dataObj->bank_name = null;
+            $dataObj->account_name = null;
+            $dataObj->account_number = null;
+            $dataObj->image = null;
+            $dataObj->transfer_status = null;
+            $dataObj->transfer_date = null;
+            $dataObj->save();
+        }
+        $data['status'] = \TraitsFunc::SuccessResponse(trans('main.deleteSuccess'));
+        return response()->json($data);
+    }
 
     /********************* Client Views ****************************/
 
@@ -183,7 +424,8 @@ class WhatsappOrdersControllers extends Controller {
         }
 
         $data = Order::getData($orderObj);
-        return view('Tenancy.WhatsappOrder.Views.V5.Designs.1.orderProducts')->with('data', (object) $data);
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
+        return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.orderProducts')->with('data', (object) $data);
     }
 
     public function checkCoupon(){
@@ -222,9 +464,17 @@ class WhatsappOrdersControllers extends Controller {
         if(!$orderObj || $orderObj->status != 1){
             return redirect(404);
         }
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
+
+        if($designIndex == 1){
+            if(!isset($input['payment_type']) || empty($input['payment_type'])){
+                Session::flash('error','يرجي اختيار طريقة الدفع');
+                return redirect()->back()->withInput();
+            }
+            $orderObj->payment_type = $input['payment_type'];
+        }
 
         $orderObj->coupon = $input['coupon'];
-        $orderObj->payment_type = $input['payment_type'];
         $orderObj->total_after_discount = $input['total_after_discount'];
         $orderObj->save();
 
@@ -241,7 +491,8 @@ class WhatsappOrdersControllers extends Controller {
         
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
-        return view('Tenancy.WhatsappOrder.Views.V5.Designs.1.personalInfo')->with('data', (object) $data);
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
+        return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.personalInfo')->with('data', (object) $data);
     }
 
     public function postPersonalInfo($id){
@@ -273,7 +524,7 @@ class WhatsappOrdersControllers extends Controller {
             $orderDetailsObj = new OrderDetails;
         }
 
-        $orderDetailsObj->order_id = $id;
+        $orderDetailsObj->order_id = $orderObj->id;
         $orderDetailsObj->name = $input['name'];
         $orderDetailsObj->email = $input['email'];
         $orderDetailsObj->phone = $input['phone'];
@@ -294,7 +545,8 @@ class WhatsappOrdersControllers extends Controller {
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
         $data['countries'] = countries();
-        return view('Tenancy.WhatsappOrder.Views.V5.Designs.1.paymentInfo')->with('data', (object) $data);
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
+        return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.paymentInfo')->with('data', (object) $data);
     }
 
     public function getCities(){
@@ -306,14 +558,14 @@ class WhatsappOrdersControllers extends Controller {
         return \Response::json((object) $statusObj);
     }
 
-
-     public function postPaymentInfo($id){
+    public function postPaymentInfo($id){
         $input = \Request::all();
         $id = (string) $id; 
         $orderObj = Order::getOne($id);
         if(!$orderObj || $orderObj->status != 1){
             return redirect(404);
         }
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
  
         if(!isset($input['country']) || empty($input['country'])){
             Session::flash('error','يرجي اختيار الدولة');
@@ -354,6 +606,42 @@ class WhatsappOrdersControllers extends Controller {
         $orderDetailsObj->save();
 
         Session::flash('success','تم تحديث معلومات الشحن بنجاح');
+        if($designIndex == 1){
+            return redirect()->to('/orders/'.$id.'/completeOrder');
+        }elseif($designIndex == 2 || $designIndex == 3){
+            return redirect()->to('/orders/'.$id.'/setPaymentType');
+        }
+    }
+
+    public function setPaymentType($id){
+        $input = \Request::all();
+        $id = (string) $id; 
+        $orderObj = Order::getOne($id);
+        if(!$orderObj || $orderObj->status != 1){
+            return redirect(404);
+        }
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
+
+        $data['order'] = Order::getData($orderObj);
+        $data['user'] = User::getData(User::first());
+        return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.setPaymentType')->with('data', (object) $data);
+    }
+
+    public function postPaymentType($id){
+        $input = \Request::all();
+        $id = (string) $id; 
+        $orderObj = Order::getOne($id);
+        if(!$orderObj || $orderObj->status != 1){
+            return redirect(404);
+        }
+
+        if(!isset($input['payment_type']) || empty($input['payment_type'])){
+            Session::flash('error','يرجي اختيار طريقة الدفع');
+            return redirect()->back()->withInput();
+        }
+        $orderObj->payment_type = $input['payment_type'];
+        $orderObj->save();
+        Session::flash('success','تم اختيار طريقة الدفع بنجاح');
         return redirect()->to('/orders/'.$id.'/completeOrder');
     }
 
@@ -364,15 +652,16 @@ class WhatsappOrdersControllers extends Controller {
         if(!$orderObj || $orderObj->status != 1){
             return redirect(404);
         }
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
 
         if($orderObj->payment_type == 4){ // E-Payment
             return redirect()->to('/orders/'.$id.'/finish');
         }elseif($orderObj->payment_type == 3){ // Bank Transfer
             $data['order'] = Order::getData($orderObj);
             $data['user'] = User::getData(User::first());
-            return view('Tenancy.WhatsappOrder.Views.V5.Designs.1.bankTransfer')->with('data', (object) $data);
+            return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.bankTransfer')->with('data', (object) $data);
         }else{
-
+            return redirect()->to('/orders/'.$id.'/finish');
         }
     }
 
@@ -421,6 +710,8 @@ class WhatsappOrdersControllers extends Controller {
         $orderDetailsObj->bank_name = $input['bank_name'];
         $orderDetailsObj->account_name = $input['account_name'];
         $orderDetailsObj->account_number = $input['account_number'];
+        $orderDetailsObj->transfer_date = date('Y-m-d H:i:s');
+        $orderDetailsObj->transfer_status = 1;
         $orderDetailsObj->image = $fileName;
         $orderDetailsObj->save();
 
@@ -428,7 +719,7 @@ class WhatsappOrdersControllers extends Controller {
         return redirect()->to('/orders/'.$id.'/finish');
     }
 
-     public function finish($id){
+    public function finish($id){
         $input = \Request::all();
         $id = (string) $id; 
         $orderObj = Order::getOne($id);
@@ -463,7 +754,8 @@ class WhatsappOrdersControllers extends Controller {
 
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
-        return view('Tenancy.WhatsappOrder.Views.V5.Designs.1.finish')->with('data', (object) $data);
+        $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
+        return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.finish')->with('data', (object) $data);
     }
 
     public function pushInvoice($id){
@@ -529,6 +821,7 @@ class WhatsappOrdersControllers extends Controller {
                     Session::flash('error',$result['status']['message']);
                 }
             }   
+            \Session::flash('success',trans('main.inPrgo'));
             return redirect()->to(\URL::to('/').'/orders/'.$orderObj->order_id.'/view');            
         }else{
             \Session::flash('error',$data['status']->message);
@@ -540,16 +833,14 @@ class WhatsappOrdersControllers extends Controller {
         $input = \Request::all();
         $id = (string) $id; 
         $orderObj = Order::getOne($id);
-        if(!$orderObj || $orderObj->status != 2  || ($orderObj->payment_type == 3 && $orderObj->Details->image == null)){
+        if(!$orderObj || ($orderObj->status != 2  && ($orderObj->payment_type == 3 && $orderObj->Details->image != null) && ($orderObj->payment_type == 4 && $orderObj->Details->transaction_id != null) )){
             return redirect(404);
         }
 
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
         $data['details'] = $orderObj->Details;
-        // return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice1')->with('data', (object) $data);
-        // return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice2')->with('data', (object) $data);
-        // return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice3')->with('data', (object) $data);
-        return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice4')->with('data', (object) $data);
+        $invoiceIndex = Variable::getVar('INVOICE') != null ? Variable::getVar('INVOICE') : 1;
+        return view('Tenancy.WhatsappOrder.Views.V5.Invoices.invoice'.$invoiceIndex)->with('data', (object) $data);
     }
 }

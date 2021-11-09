@@ -5994,6 +5994,7 @@ border-radius: 4px;
   padding: 50px;
   border-radius: 10px;
   margin-bottom: 20px;
+  height: auto;
 }
 .dropzone .dz-message.needsclick{
   text-align: center;
@@ -6014,9 +6015,9 @@ border-radius: 4px;
 .dropzone .dz-preview .dz-details {
     z-index: 20;
     position: absolute;
-    top: 0;
+    top: 155px;
     right: 0;
-    opacity: 0;
+    opacity: 1;
     font-size: 13px;
     min-width: 100%;
     max-width: 100%;

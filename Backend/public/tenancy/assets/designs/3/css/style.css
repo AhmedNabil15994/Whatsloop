@@ -775,7 +775,7 @@ li.active .checkStyle i:after
 .products .items .item .img img
 {
 	width:100%;
-	height:100%;
+	height:80px;
 }
 
 .products .items .item .title
@@ -1328,6 +1328,10 @@ li.active .checkStyle i:after
 .selectTime li.active .check
 {
 	background-color:#4EBCEC
+}
+
+.mt-5{
+	margin-top: 50px;
 }
 
 

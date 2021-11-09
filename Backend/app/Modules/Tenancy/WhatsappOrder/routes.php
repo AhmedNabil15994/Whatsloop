@@ -2,7 +2,16 @@
 
 Route::group(['prefix' => '/whatsappOrders'] , function (){
 	$controller = \App\Http\Controllers\WhatsappOrdersControllers::class;
+	Route::get('/settings',[$controller,'settings']);
+	Route::post('/settings',[$controller,'postSettings']);
+	
+	Route::get('/bankTransfers',[$controller,'bankTransfers']);
+	Route::get('/bankTransfers/view/{id}', [$controller,'viewTransfer']);
+    Route::post('/bankTransfers/update/{id}', [$controller,'updateTransfer']);
+    Route::get('/bankTransfers/delete/{id}', [$controller,'deleteTransfer']);
+
 	Route::get('/products',[$controller,'products']);
+	Route::post('/products/assignCategory',[$controller,'assignCategory']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/orders/{id}/sendLink',[$controller,'sendLink']);
 

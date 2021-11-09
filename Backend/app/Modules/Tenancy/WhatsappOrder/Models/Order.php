@@ -23,7 +23,7 @@ class Order extends Model{
 
     static function dataList() {
          $input = \Request::all();
-        $source = self::where('id','!=',0);
+        $source = self::with('Details')->where('id','!=',0);
         if(isset($input['price']) && !empty($input['price'])){
             $source->where('total',$input['price']);
         }
@@ -58,6 +58,7 @@ class Order extends Model{
             $source = (object) $source;
             $dataObj->id = $source->id;
             $dataObj->channel = $source->channel;
+            $dataObj->Details = $source->Details;
             $dataObj->order_id = $source->order_id;
             $dataObj->subtotal = $source->subtotal;
             $dataObj->tax = $source->tax;

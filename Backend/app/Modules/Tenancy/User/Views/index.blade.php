@@ -26,7 +26,7 @@
 <input type="hidden" name="tenant" value="1">
 @endif
 
-@if($data->designElems['mainData']['url'] == 'groupMsgs' || $data->designElems['mainData']['url'] == 'tickets' || $data->designElems['mainData']['url'] == 'invoices')
+@if($data->designElems['mainData']['url'] == 'groupMsgs' || $data->designElems['mainData']['url'] == 'tickets' || $data->designElems['mainData']['url'] == 'invoices' || $data->designElems['mainData']['name'] == 'whatsapp-bankTransfers')
 <input type="hidden" name="data-tab" value="{{ \Helper::checkRules('view-'.$data->designElems['mainData']['nameOne']) }}">
 @endif
 

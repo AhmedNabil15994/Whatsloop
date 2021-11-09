@@ -13,6 +13,9 @@ Route::group(['prefix' => '/orders'] , function (){
     Route::get('/getCities', [$controller,'getCities']);
 	Route::post('/{id}/paymentInfo',[$controller,'postPaymentInfo']);
 
+	Route::get('/{id}/setPaymentType',[$controller,'setPaymentType']);
+	Route::post('/{id}/setPaymentType',[$controller,'postPaymentType']);
+
 	Route::get('/{id}/completeOrder',[$controller,'completeOrder']);
 	Route::post('/{id}/bankTransfer',[$controller,'bankTransfer']);
 

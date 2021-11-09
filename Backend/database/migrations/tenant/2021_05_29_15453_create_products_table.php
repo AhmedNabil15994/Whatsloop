@@ -14,6 +14,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->string('currency');
             $table->double('price');
+            $table->integer('category_id')->nullable();
             $table->text('images');
         });
     }

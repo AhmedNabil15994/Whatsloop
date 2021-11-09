@@ -6,25 +6,7 @@
 
 @section('content')
 
-@if($data->order->payment_type == 3)
-<div id="thanks2" class="thanks">
-      <div class="col-xs-12 mt-5">
-        <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <div class="modal-body">
-                <center>
-                   <img src="{{ asset('designs/1/images/delivery-truck.png') }}" alt="" />
-                   <h2 class="thankU">شكراً لك</h2>
-                   <div class="desc">
-                        تم ارسال طلبكم بنجاح رقم الطلب
-                        <span>#{{ $data->order->order_id }}</span>
-                   </div>
-               </center>
-            </div>
-        </div>
-    </div>
-</div>
-@elseif($data->order->payment_type == 4)
+@if($data->order->payment_type == 4)
  <div id="thanks" class="thanks" role="dialog">
     <div class="col-xs-12 mt-5">                
         <div class="modal-content">
@@ -51,6 +33,25 @@
     });
 </script>      
 @endsection
+
+@else
+<div id="thanks2" class="thanks">
+      <div class="col-xs-12 mt-5">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="modal-body">
+                <center>
+                   <img src="{{ asset('designs/1/images/delivery-truck.png') }}" alt="" />
+                   <h2 class="thankU">شكراً لك</h2>
+                   <div class="desc">
+                        تم ارسال طلبكم بنجاح رقم الطلب
+                        <span>#{{ $data->order->order_id }}</span>
+                   </div>
+               </center>
+            </div>
+        </div>
+    </div>
+</div>
 @endif
     
 @endsection

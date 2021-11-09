@@ -46,6 +46,7 @@ class Product extends Model{
             $dataObj->product_id = $source->product_id;
             $dataObj->name = $source->name;
             $dataObj->currency = $source->currency;
+            $dataObj->category_id = $source->category_id;
             $dataObj->price = $source->price;
             $dataObj->quantity = trans('main.unlimitted');
             $dataObj->images = $source->images != null ? unserialize($source->images) : [];

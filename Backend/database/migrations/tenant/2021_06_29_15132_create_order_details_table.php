@@ -22,6 +22,8 @@ class CreateOrdersTable extends Migration
             $table->string('bank_name')->nullable();
             $table->string('account_name')->nullable();
             $table->string('account_number')->nullable();
+            $table->dateTime('transfer_date')->nullable();
+            $table->integer('transfer_status')->nullable();
             $table->string('image')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('paymentGateaway')->nullable();

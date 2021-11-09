@@ -177,8 +177,8 @@ $(function(){
 						deleteButton = '';
 					}
 
-					if(designElems.mainData.url == 'transfers' && $('input[name="data-tab"]').val() == 1){
-						showButton = '<a href="/transfers/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+detailsText+'</a>';
+					if((designElems.mainData.url == 'transfers' || designElems.mainData.name == 'whatsapp-bankTransfers') && $('input[name="data-tab"]').val() == 1){
+						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+detailsText+'</a>';
 						editButton = '';
 					}
 
