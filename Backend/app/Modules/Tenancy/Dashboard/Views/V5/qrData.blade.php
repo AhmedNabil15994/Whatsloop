@@ -91,7 +91,7 @@
             </form>
             @endif
             <div class="nextPrev clearfix">
-                <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
+                <button class="btnNext btnPrev dis">{{ trans('main.prev') }}</button>
                 <button class="btnNext">{{ trans('main.next') }}</button>
             </div>
         </div>
@@ -128,7 +128,7 @@
             <hr>
             @endforeach
             <div class="nextPrev clearfix">
-                <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
+                <button class="btnNext btnPrev dis">{{ trans('main.prev') }}</button>
                 <button class="btnNext">{{ trans('main.next') }}</button>
             </div>
         </div>
@@ -145,10 +145,10 @@
             </div>
             <div class="qr">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         @livewire('qr-image')
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <span class="stepQr">{{ trans('main.alert2') }}</span>
                         <span class="stepQr">{{ trans('main.alert3') }}</span>
                         <span class="stepQr">{{ trans('main.alert4') }}</span>
@@ -163,14 +163,16 @@
             </div>
         </div>
         <div class="settings">
-            <h2 class="titleSettings">{{ trans('main.instructions') }}</h2>
-            <ul class="list">
-                <li>{{ trans('main.tip11') }}</li>
-                <li>{{ trans('main.tip21') }}</li>
-                <li>{{ trans('main.tip31') }}</li>
-                <li>{{ trans('main.tip41') }}</li>
-                <li>{{ trans('main.tip51') }}</li>
-            </ul>
+            <div class="orangeBg">
+                <h2 class="titleSettings">{{ trans('main.instructions') }}</h2>
+                <ul class="list">
+                    <li>{{ trans('main.tip11') }}</li>
+                    <li>{{ trans('main.tip21') }}</li>
+                    <li>{{ trans('main.tip31') }}</li>
+                    <li>{{ trans('main.tip41') }}</li>
+                    <li>{{ trans('main.tip51') }}</li>
+                </ul>
+            </div>
         </div>
         <div class="settings clearfix">
             <ul class="terms">
@@ -178,7 +180,7 @@
                 <li><a data-effect="effect-sign" data-toggle="modal" data-target="#termsModal" data-backdrop="static">{{ trans('main.conditions') }}</a></li>
             </ul>
             <div class="nextPrev clearfix">
-                <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
+                <button class="btnNext btnPrev dis">{{ trans('main.prev') }}</button>
                 <button class="btnNext">{{ trans('main.next') }}</button>
             </div>
         </div>
@@ -195,7 +197,7 @@
         </div>
         <div class="settings clearfix">
             <div class="nextPrev clearfix">
-                <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
+                <button class="btnNext btnPrev dis">{{ trans('main.prev') }}</button>
                 <button class="btnNext finish">{{ trans('main.finish') }}</button>
             </div>
         </div>

@@ -443,7 +443,7 @@ class ImagesHelper {
             $directory = $path . 'bankAccounts/' . $id;
         }
 
-        $fileName_full = $fileName . '.' . $extension;
+        $fileName_full = $fileName . '.' . ($extension == 'plain' ? 'txt' : $extension);
 
         if ($directory == '') {
             return false;

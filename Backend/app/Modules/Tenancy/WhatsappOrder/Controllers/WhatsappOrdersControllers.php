@@ -97,9 +97,9 @@ class WhatsappOrdersControllers extends Controller {
         ];
         $input = \Request::all();
         if(isset($input['refresh']) && !empty($input['refresh']) && $input['refresh'] == 'refresh'){
-            $data['businessId'] = str_replace('+','',User::first()->phone);
+            $urlData['businessId'] = str_replace('+','',User::first()->phone);
             $mainWhatsLoopObj = new \MainWhatsLoop();
-            $result = $mainWhatsLoopObj->getProducts($data);
+            $result = $mainWhatsLoopObj->getProducts($urlData);
             $result = $result->json();
             if(isset($result['data']) && isset($result['data']['products'])){
                 $products = $result['data']['products'];
@@ -136,11 +136,11 @@ class WhatsappOrdersControllers extends Controller {
         $id = (string) $id; 
         $order_id = base64_decode($id);
 
-        $orderObj = Order::find($id);
-        if(!$orderObj || $orderObj->status != 1){
+        $oldOrderObj = Order::find($id);
+        if(!$oldOrderObj || $oldOrderObj->status != 1){
             return redirect(404);
         }
-        $orderObj = Order::getData($orderObj);
+        $orderObj = Order::getData($oldOrderObj);
         $sendData['chatId'] = $orderObj->client_id;
         $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/view';
         foreach($orderObj->products as $product){
@@ -188,8 +188,8 @@ class WhatsappOrdersControllers extends Controller {
             }else{
                 Session::flash('error',$result['status']['message']);
             }
-            $orderObj->channel = $templateObj->channel;
-            $orderObj->save();
+            $oldOrderObj->channel = $templateObj->channel;
+            $oldOrderObj->save();
         }   
         return redirect()->back()->withInput();     
     }

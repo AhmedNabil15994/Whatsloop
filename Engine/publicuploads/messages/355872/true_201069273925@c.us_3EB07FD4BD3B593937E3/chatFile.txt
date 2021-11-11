@@ -1,0 +1,111 @@
+{#270 ▼
+  +"resultCode": 0
+  +"message": "Processed successfully"
+  +"resultClass": 0
+  +"classDescription": ""
+  +"actionHint": ""
+  +"requestReference": "a34934e4-8580-4621-b671-a16b84cb7349"
+  +"result": {#269 ▼
+    +"order": {#243 ▼
+      +"status": "FAILED"
+      +"creationTime": "2021-09-15T15:23:08.863Z"
+      +"errorMessage": "Could not process the request due to invalid request data."
+      +"id": 557386389206
+      +"amount": 10.0
+      +"currency": "SAR"
+      +"name": "WhatsLoop Membership For User 2"
+      +"reference": "whatsloop-2"
+      +"category": "pay"
+      +"channel": "Web"
+    }
+    +"configuration": {#272 ▼
+      +"tokenizeCc": true
+      +"returnUrl": "http://payment.whatsloop.loc/noon/testResult?date=2021-09-15 18:23:08"
+      +"locale": "ar"
+      +"paymentAction": "Sale"
+      +"payerConsentForToken": true
+    }
+    +"business": {#276 ▼
+      +"id": "digital_servers"
+      +"name": "Digital Servers Company"
+    }
+    +"events": array:5 [▼
+      0 => {#275 ▼
+        +"creationTime": "2021-09-15T15:23:08.863Z"
+        +"apiOperation": "INITIATE"
+        +"result": "SUCCESS"
+        +"requestReference": "027f520e-af4b-45d9-9d8f-35352a3b6453"
+        +"durationInMs": 40
+      }
+      1 => {#271 ▼
+        +"creationTime": "2021-09-15T15:26:29.423Z"
+        +"apiOperation": "ADD_PAYMENT_INFO_CARD"
+        +"result": "SUCCESS"
+        +"requestReference": "f58703dc-65c7-4db7-94cc-c7b991babef6"
+        +"durationInMs": 24
+      }
+      2 => {#263 ▼
+        +"creationTime": "2021-09-15T15:26:29.47Z"
+        +"apiOperation": "ADD_PAYMENT_INFO_CVV"
+        +"result": "SUCCESS"
+        +"requestReference": "f58703dc-65c7-4db7-94cc-c7b991babef6"
+        +"durationInMs": 5
+      }
+      3 => {#278 ▼
+        +"creationTime": "2021-09-15T15:26:29.487Z"
+        +"apiOperation": "FRAUD_SCREEN_LEVEL1"
+        +"result": "SUCCESS"
+        +"requestReference": "f58703dc-65c7-4db7-94cc-c7b991babef6"
+        +"durationInMs": 51
+      }
+      4 => {#279 ▼
+        +"creationTime": "2021-09-15T15:26:29.547Z"
+        +"apiOperation": "CHECK_3DS_ENROLLMENT"
+        +"result": "REJECTED"
+        +"requestReference": "f58703dc-65c7-4db7-94cc-c7b991babef6"
+        +"durationInMs": 131
+      }
+    ]
+    +"fraudCheck": {#281 ▼
+      +"internal": {#280 ▼
+        +"result": "ACCEPTED"
+        +"screeningResponse": "No rule matched"
+      }
+    }
+    +"billing": {#283 ▼
+      +"address": {#282 ▼
+        +"postalCode": "23324"
+        +"street": "7447 Al Ilham"
+        +"city": "Jeddah"
+        +"stateProvince": "Jeddah"
+        +"country": "SA"
+      }
+      +"contact": {#284 ▼
+        +"firstName": "Ahmed"
+        +"lastName": "Nabil"
+        +"phone": "201069273925"
+        +"mobilePhone": "201069273925"
+        +"email": "ahmednabil15994@gmail.com"
+      }
+    }
+    +"deviceFingerPrint": {#285 ▼
+      +"sessionId": "557386389206"
+    }
+    +"paymentDetails": {#286 ▼
+      +"instrument": "CARD"
+      +"mode": "Card"
+      +"integratorAccount": "CARD"
+      +"paymentInfo": "411739xxxxxx3861"
+      +"paymentMechanism": "CARD"
+      +"brand": "VISA"
+      +"scheme": "VISA"
+      +"expiryMonth": "9"
+      +"expiryYear": "2022"
+      +"isNetworkToken": "FALSE"
+      +"cardType": "DEBIT"
+      +"cardCategory": "PREPAID"
+      +"cardCountry": "EG"
+      +"cardCountryName": "Egypt"
+      +"cardIssuerName": "NATIONAL BANK OF EGYPT"
+      +"cardIssuerWebsite": "http://www.nbe.com.eg/"
+    }

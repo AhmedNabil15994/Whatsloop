@@ -9,3 +9,15 @@
 		</svg>
 	</i>
 </div>
+
+<div class="menuDownHeight"></div>
+<div class="menuDown">
+	<ul class="linksList">
+		<li><a href="{{ URL::to('/dashboard') }}"><i class="flaticon-home"></i>{{ trans('main.dashboard') }}</a></li>
+		@if(\Helper::checkRules('list-livechat'))
+		<li><a href="{{ URL::to('/livechat') }}"><i class="flaticon-statistics"></i>{{ trans('main.livechat') }}</a></li>
+		@endif
+		<li><a href="{{ URL::to('/profile/personalInfo') }}" class="openProfile"><i class="flaticon-user-3"></i>{{ trans('main.account_setting') }}</a></li>
+		<li><a class="iconMenuCpanel"><i class="fa fa-bars"></i>{{ trans('main.menu') }}</a></li>
+	</ul>
+</div>

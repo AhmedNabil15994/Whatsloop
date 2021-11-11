@@ -61,7 +61,7 @@ resizeMenu();
 
 	});
 	
-	$(".menuCpanel .iconMenuCpanel,.cpanelStyle.activeMenu .bgOpacity").click(function () {
+	$(".iconMenuCpanel,.cpanelStyle.activeMenu .bgOpacity").click(function () {
 		if($(".menuCpanel").hasClass("active")) {
 			$(".menuCpanel .linksCpanel li .subMenu").css("display","none");
 			$(".menuCpanel.active .linksCpanel li .subToggle").removeClass("active");
@@ -81,7 +81,7 @@ resizeMenu();
 
 	}).resize();
     
-	$(window).load(resizeMenu);
+	//$(window).load(resizeMenu);
 	
 	function resizeMenu() {
 
@@ -121,14 +121,21 @@ resizeMenu();
     
 /***************************************************************************/    
     
-    $(".header .profile .openProfile").click(function() {
+    $(".openProfile").click(function() {
     	
-    	$(this).siblings().slideToggle();
-    	
+    	$(".header .profile .profileStyle").slideToggle();
+    	if ($(window).width() < 1200) {
+    		$("html,body").addClass("overflowH")
+    	}
     });
     
+    $(".header .profile .profileStyle .head .iconClose").click(function() {
+    	$("body,html").removeClass("overflowH");
+    	$(".header .profile .profileStyle").slideUp()
+    })
+    
 	$('body,html').on('click', function(e) {
-		var container = $(".header .profile .openProfile,.header .profile .profileStyle *,.header .profile .profileStyle"),
+		var container = $(".header .profile .openProfile,.header .profile .profileStyle *,.header .profile .profileStyle,.openProfile,.openProfile *"),
 		Sub = $(".header .profile .profileStyle");
 		
 
@@ -276,7 +283,7 @@ resizeMenu();
 	});
 	
 	
-	/** Start accordion **/
+	/****** Start accordion ******/
 	
 	$(".accordion.active .accordion-content").css("display","block");
 	
@@ -292,13 +299,7 @@ resizeMenu();
 				
 	});
 	
-	/** End accordion **/
-	
-	
-	
-	
-	
-	
+	/****** End accordion ******/
 	
 	
 	

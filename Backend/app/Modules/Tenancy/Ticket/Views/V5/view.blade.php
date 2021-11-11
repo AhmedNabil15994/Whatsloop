@@ -19,40 +19,6 @@
 @section('content')
 <div class="tickets">
     <div class="row">
-        <div class="col-md-4">
-            <div class="details">
-                <h2 class="title">{{ trans('main.info') }}</h2>
-                <ul class="content">
-                    <li>{{ trans('main.client') }} <span>{{ $data->data->client }}</span></li>
-                    <li>{{ trans('main.department') }} <span>{{ $data->data->department }}</span></li>
-                    <li>{{ trans('main.status') }} <span>{{ $data->data->statusText }}</span></li>
-                    <li>{{ trans('main.date') }} <span>{{ date('d M y H:i A',strtotime($data->data->created_at)) }}</span></li>
-                    <li>{{ trans('main.lastReply') }} <span>{{ !empty($data->comments) ? $data->comments[0]->created_at : '' }}</span></li>
-                </ul>
-            </div>
-            <div class="attachments">
-                <h2 class="title">{{ trans('main.attachments') }}</h2>
-                <div class="uploads">
-                    @foreach($data->data->files as $oneFile)
-                    <div class="m-2 border text-center">
-                        <a href="{{ $oneFile->photo }}" target="_blank">
-                            @if($oneFile->file_type == 'photo')
-                            <img class="wd-150 mb-0" src="{{ $oneFile->photo }}" alt="attachment">
-                            @elseif($oneFile->file_type == 'video')
-                            <video src="{{ $oneFile->photo }}" controls>
-                                <source src="{{ $oneFile->photo }}" type="video/mp4">
-                            </video>
-                            @endif
-                        </a>
-                        <h6 class="mb-0 p-3 bg-gray-100"> 
-                            {{ $oneFile->photo_name }} <br>
-                            <small class="text-muted">{{ $oneFile->photo_size }}</small>
-                        </h6>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
         <div class="col-md-8">
             <div class="ticketContent">
                 <h2 class="title">{{ ucfirst($data->data->subject) }} <span>{{ trans('main.ticket') }} #{{ $data->data->id }}</span></h2>
@@ -87,7 +53,40 @@
                     </div>
                 </form>
             </div>
-
+        </div>
+        <div class="col-md-4">
+            <div class="details">
+                <h2 class="title">{{ trans('main.info') }}</h2>
+                <ul class="content">
+                    <li>{{ trans('main.client') }} <span>{{ $data->data->client }}</span></li>
+                    <li>{{ trans('main.department') }} <span>{{ $data->data->department }}</span></li>
+                    <li>{{ trans('main.status') }} <span>{{ $data->data->statusText }}</span></li>
+                    <li>{{ trans('main.date') }} <span>{{ date('d M y H:i A',strtotime($data->data->created_at)) }}</span></li>
+                    <li>{{ trans('main.lastReply') }} <span>{{ !empty($data->comments) ? $data->comments[0]->created_at : '' }}</span></li>
+                </ul>
+            </div>
+            <div class="attachments">
+                <h2 class="title">{{ trans('main.attachments') }}</h2>
+                <div class="uploads">
+                    @foreach($data->data->files as $oneFile)
+                    <div class="m-2 border text-center">
+                        <a href="{{ $oneFile->photo }}" target="_blank">
+                            @if($oneFile->file_type == 'photo')
+                            <img class="wd-150 mb-0" src="{{ $oneFile->photo }}" alt="attachment">
+                            @elseif($oneFile->file_type == 'video')
+                            <video src="{{ $oneFile->photo }}" controls>
+                                <source src="{{ $oneFile->photo }}" type="video/mp4">
+                            </video>
+                            @endif
+                        </a>
+                        <h6 class="mb-0 p-3 bg-gray-100"> 
+                            {{ $oneFile->photo_name }} <br>
+                            <small class="text-muted">{{ $oneFile->photo_size }}</small>
+                        </h6>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -29,8 +29,8 @@
 	.cpanelStyle.activeMenu
 	{
 		padding-right:0;
-    	-webkit-transform: translateX(-275px);
-    	transform: translateX(-275px);
+    	-webkit-transform: translateX(0);
+    	transform: translateX(0);
 	}
 	
 	.cpanelStyle .bgOpacity
@@ -85,6 +85,15 @@
 /* small Screens & tablets & Smart phone */
 @media (max-width: 991px) 
 {
+	.AdditionsSub
+	{
+		min-height:auto;
+	}
+	.planDetails .footerPlan
+	{
+		display:block
+	}
+	
 	.loginPage .left
 	{
 		display:none;
@@ -143,10 +152,32 @@
 		padding-top:0;
 	}
 	
+	.transmitters .content
+	{
+		text-align: center
+	}
+	
+	.transmitters .content .searchTable input
+	{
+		width:100%!important;
+		margin:0!important;
+	}
+	
+	.transmitters .content .searchTable span
+	{
+		display:none;
+	}
+	
+	.bill .dateStart
+	{
+		width:100%;
+	}
+	
 	.bill .dateStart:not(:last-of-type)
 	{
 		margin-left:0;
 		margin-bottom:20px;
+		width:100%
 	}
 	
 	.bill .listPDF
@@ -220,6 +251,123 @@
 		font-size:15px;
 	}
 	
+	.helpPage .helpHead
+	{
+		display:block;
+		margin-bottom:30px;
+	}
+	
+	.helpPage .helpHead .ticketHead
+	{
+		width:100%;
+		margin-right:0;
+		transform:scale(1)
+	}
+	
+	.formSearch input
+	{
+		width:100%;
+		margin-bottom:15px;
+	}
+	
+	.formSearch button
+	{
+		width:100%;
+		margin-right:0;
+	}
+	
+	.menuCpanel .linksCpanel li a i:not(.flaticon-left-arrow)
+	{
+		width:60px;
+	}
+	
+	.footer
+	{
+		display:none;
+	}
+	
+	.cpanelStyle
+	{
+		padding-right:0;
+	}
+	
+	.menuCpanel
+	{
+		right:-100%;
+	}
+	
+	.menuCpanel.active
+	{
+		right:0;
+	}
+	
+	.menuCpanel,
+	.menuCpanel.active
+	{
+		width:100%;
+	}
+	
+	.menuCpanel .linksCpanel li a
+	{
+		text-indent: 600px;
+	}
+	
+	.customer .numb
+	{
+		text-align: left
+	}
+	
+	.MeasuresText
+	{
+		width:calc(50% - 22px);
+	}
+	
+	.header .profile
+	{
+		position:static
+	}
+	
+	.header .profile
+	{
+		float:left;
+	}
+	
+	.header .btnDark,
+	.header .iconMenu,
+	.header .lang
+	{
+		display:none;
+	}
+	
+	.header .profile .profileStyle
+	{
+		top:0;
+		right:0;
+		width:100vw!important;
+		height:100%;
+		overflow: auto
+	}
+	
+	.header .profile .profileStyle .head .iconClose,
+	.header .profile .profileStyle .btnDark,
+	.header .profile .profileStyle .iconMenu,
+	.header .profile .profileStyle .lang
+	{
+		display:block
+	}
+	
+	.header .profile .profileStyle .btnsHeader
+	{
+		display:inline-block;
+		padding:0 15px 30px;
+		width:100%;
+	}
+	
+	.menuDown,
+	.menuDownHeight
+	{
+		display:block
+	}
 }
 
 /* Small Screens */
@@ -237,12 +385,7 @@
 	{
 		width:60px;
 	}
-	
-	.cpanelStyle
-	{
-		padding-right:60px;
-	}
-	
+
 	.menuCpanel .iconMenuCpanel
 	{
 		left:17px;
@@ -255,15 +398,13 @@
 	
 	.header
 	{
-		padding-left:15px;
-		padding-right:15px;
+		padding:15px;
 	}
 	
 	.header .user
 	{
     	width: calc(100% - 23px);
 		margin-left:0;
-		margin-bottom:10px;
 	}
 	
 	.header .profile .profileStyle
@@ -364,12 +505,20 @@
 	.steps,
 	.botStyle .stepsBot
 	{
-		display:block
+		display:block;
+		text-align: center
+	}
+	
+	.steps .step i,
+	.botStyle .stepsBot .step i
+	{
+		display:none;
 	}
 	
 	.steps .step,
 	.botStyle .stepsBot .step
 	{
+		display:inline-block;
 		margin-bottom:20px;
 	}
 	
@@ -499,6 +648,12 @@
 		padding:0 20px;
 	}
 	
+	.botStyle .settings
+	{
+		margin-left:-20px;
+		margin-right:-20px;
+	}
+	
 	.botStyle .settings .attention
 	{
 		padding-right:15px;
@@ -532,13 +687,8 @@
 		margin:0 auto;
 		display:block;
 		float:none;
-		max-width: 235px;
 	}
 	
-	.transmitters .content .searchTable input
-	{
-		width:145px;
-	}
 	
 	.transmitters .content .numbers .numbStyl
 	{
@@ -742,6 +892,11 @@
 	{
 		margin-top:5px;
 		padding-right:60px;
+	}
+	
+	.steps, .botStyle .stepsBot
+	{
+		text-align: right
 	}
 	
 }

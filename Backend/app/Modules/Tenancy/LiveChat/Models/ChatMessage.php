@@ -100,12 +100,13 @@ class ChatMessage extends Model{
         if(isset($source->metadata)){
             $mainWhatsLoopObj = new \MainWhatsLoop();
             if(isset($source->metadata['orderId']) && isset($source->metadata['orderToken'])){
+
                 $data['orderId'] = $source->metadata['orderId'];
                 $data['orderToken'] = $source->metadata['orderToken'];
                 $result = $mainWhatsLoopObj->getOrder($data);
-                $result = $result->json();
+                $testResult = $result->json();
                 $count = 0;
-                if($result && $result['status'] && $result['status']['status'] == 1 && isset($result['data']['orders']) && !empty($result['data']['orders'])  ){
+                if($testResult && $testResult['status'] && $testResult['status']['status'] == 1 && isset($testResult['data']['orders']) && !empty($testResult['data']['orders'])  ){
                     $orderObj = Order::getOne($data['orderId']);
                     if(!$orderObj){
                         $orderObj = new Order;
@@ -179,6 +180,11 @@ class ChatMessage extends Model{
             }
             if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image'])){
                 $dataObj->file_size = self::getPhotoSize($dataObj->body);
+                $dataObj->file_name = self::getFileName($dataObj->body);
+            }
+            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard'){
+                $dataObj->contact_name = str_replace('\n','',explode('TEL',explode('FN:',$dataObj->body)[1])[0]);
+                $dataObj->contact_number = explode(':+',explode(';waid=',$dataObj->body)[1])[0];
             }
             return $dataObj;
         }
@@ -220,11 +226,17 @@ class ChatMessage extends Model{
         if($url == ""){
             return '';
         }
-        if(strpos('http',$url) !== false){
+
+        if (filter_var($url, FILTER_VALIDATE_URL)) { 
             $image = get_headers($url, 1);
-            $bytes = $image["Content-Length"];
+            $bytes = @$image["Content-Length"];
             $mb = $bytes/(1024 * 1024);
             return number_format($mb,2) . " MB ";
         }
+    }
+
+    static function getFileName($body){
+        $names = explode('/',$body);
+        return array_reverse($names)[0];
     }
 }

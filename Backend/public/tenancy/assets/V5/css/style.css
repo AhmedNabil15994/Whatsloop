@@ -9,8 +9,8 @@ body,html
 
 body
 {
-	font-family: 'Tajawal', sans-serif;
-	background-color:#F9F9F9
+	font-family: "Tajawal-Regular";
+	background-color:#F9F9F9;
 }
 
 
@@ -30,6 +30,11 @@ ul
     -webkit-appearance:none;
     -moz-appearance:none;
     appearance:none;
+}
+
+label
+{
+	font-weight:normal
 }
 
 p
@@ -90,12 +95,13 @@ input[type="number"] {
 {
 	width:100%;
 	display:block;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	padding:0 25px 0 40px;
 	border:none;
 	background-color:#00BFB5;
-	height:60px;
+	height:50px;
+	line-height:50px;
 	border-radius: 5px;
 	color:#fff;
 	position:relative;
@@ -112,7 +118,7 @@ input[type="number"] {
 {
 	position:absolute;
 	left:20px;
-	top:20px;
+	top:17px;
 }
 
 .btnStyle:hover svg
@@ -151,7 +157,7 @@ input[type="number"] {
 
 .loginPage .left
 {
-	padding:0 75px;
+	padding:0 40px;
   	display: flex;
   	align-items: center;
   	justify-content: center;
@@ -191,10 +197,10 @@ input[type="number"] {
 
 .loginPage .right .center .formLogin .title
 {
-	font-weight:700;
-	font-size:25px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	color:#000;
-	margin-bottom:40px;
+	margin-bottom:30px;
 	text-align: center;
 }
 
@@ -208,13 +214,13 @@ input[type="number"] {
 .loginPage .right .center .formLogin .inputStyle input
 {
 	width:100%;
-	color: #777777 !important;
 	border:1px solid #F1F1F1;
 	border-radius: 5px;
-	height:60px;
+	height:50px;
 	padding:0 60px 0 15px;
 	background:none;
-	font-weight:700;
+	font-size:13px;
+	font-family: "Tajawal-Bold";
 	-webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     -o-transition: all 0.3s;
@@ -260,7 +266,7 @@ input[type="number"] {
 .loginPage .right .center .formLogin .inputStyle i
 {
 	position:absolute;
-	top:20px;
+	top:15px;
 	right:23px;
 	color:#6D7E9F;
 	font-size:20px;
@@ -285,9 +291,9 @@ input[type="number"] {
 {
 	position:absolute;
 	left:20px;
-	top:20px;
+	top:16px;
 	color:#000;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	z-index: -1;
 }
 
@@ -303,7 +309,7 @@ input[type="number"] {
 
 .loginPage .right .center .formLogin .forgetBtn
 {
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	color:#777777
 }
 
@@ -386,7 +392,7 @@ input[type="number"] {
 
 .cpanelStyle.activeMenu
 {
-	padding-right:275px;
+	padding-right:230px;
 }
 
 .menuCpanel
@@ -408,7 +414,7 @@ input[type="number"] {
 
 .menuCpanel.active
 {
-	width:275px;
+	width:230px;
 }
 
 .menuCpanel .menuHead
@@ -462,7 +468,7 @@ input[type="number"] {
 .menuCpanel.active .iconMenuCpanel
 {
 	transform:rotate(0deg);
-	left:20px;
+	left:9px;
 	top:35px;
 }
 
@@ -480,13 +486,13 @@ input[type="number"] {
 .menuCpanel .linksCpanel li a
 {
 	height:60px;
-	line-height:61px;
+	line-height:60px;
 	color:#fff;
-	font-size:15px;
+	font-size:14px;
 	display:block;
 	position:relative;
-	padding-right:75px;
-	font-weight:700;
+	padding-right:60px;
+	font-family: "Tajawal-Bold";
 	overflow:hidden;
 	width:100%;
 	z-index: 1;
@@ -551,6 +557,7 @@ input[type="number"] {
 	background-color:#2d2f44
 }
 
+
 .menuCpanel.active .linksCpanel li a:hover i:not(.flaticon-left-arrow),
 .menuCpanel.active .linksCpanel li a.active i:not(.flaticon-left-arrow)
 {
@@ -592,10 +599,10 @@ input[type="number"] {
 	position:absolute;
 	right:0;
 	top:0;
-	height:55px;
-	line-height:65px;
-	font-size:25px;
-	width:75px;
+	height:100%;
+	line-height:66px;
+	font-size:22px;
+	width:60px;
 	color:#9499A4;
 	text-indent:0!important;
 	z-index:2;
@@ -620,10 +627,10 @@ input[type="number"] {
 .menuCpanel.active .linksCpanel li a i.arrowLeft
 {
 	position: absolute;
-    left: 23px;
-    top: 19px;
+    left: 20px;
+    top: 21px;
     color: #4E6082;
-    font-size: 15px;
+    font-size:14px;
     height: auto;
     line-height: normal;
 	-webkit-transition:all 0.3s;
@@ -648,9 +655,9 @@ input[type="number"] {
 
 .menuCpanel .linksCpanel li .subMenu li a
 {
-	padding-right:50px;
+	padding-right:45px;
 	color:#778094;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	height:50px;
 	line-height:50px;
 }
@@ -684,14 +691,14 @@ input[type="number"] {
 }
 .menuCpanel .linksCpanel li a i:not(.flaticon-left-arrow).flaticon-home
 {
-	line-height:54px
+	line-height:62px
 }
 
 .menuCpanel .linksCpanel li a i:not(.flaticon-left-arrow) svg
 {
 	line-height: 106px;
     display: block;
-    margin: 10px auto 0;
+    margin: 14px auto 0;
 }
 
 .menuCpanel .linksCpanel .titleHover
@@ -732,7 +739,7 @@ input[type="number"] {
 {
 	color:#fff;
 	font-size:14px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	padding:15px 25px;
 	border-radius: 5px;
 	background-color:#0B162E;
@@ -747,7 +754,7 @@ input[type="number"] {
     left: 23px;
     top: 19px;
     color: #4E6082;
-    font-size: 15px;
+    font-size:14px;
     height: auto;
     line-height: normal;
 }
@@ -804,7 +811,7 @@ input[type="number"] {
 .menuCpanel .hovers .titleHover .subMenu li a
 {
 	color:#778094;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
 .menuCpanel .hovers .titleHover .subMenu li a:hover
@@ -830,10 +837,10 @@ input[type="number"] {
 .header .user
 {
 	float:right;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
 	margin-left:20px;
-	line-height:50px;
+	line-height:45px;
 }
 
 .header .user img
@@ -843,24 +850,24 @@ input[type="number"] {
 
 .header .user .icon
 {
-	width:50px;
-	height:50px;
-	border-radius: 50%;
-	font-size:30px;
-	color:#A9B2C4;
-	float:right;
-	margin-left:15px;
-	line-height:55px;
-	text-align:center;
-	color:#b7b7b7;
-	background-color:#e8e8e8;
+	width: 45px;   
+	height: 45px;
+    border-radius: 50%;
+    font-size: 23px;
+    color: #A9B2C4;
+    float: right;
+    margin-left: 15px;
+    line-height: 55px;
+    text-align: center;
+    color: #b7b7b7;
+    background-color: #e8e8e8;
 }
 
 .header .profile
 {
 	float:right;
 	position:relative;
-	margin-top:13px;
+	margin-top:11px;
 } 
 
 .header .profile .openProfile
@@ -875,7 +882,7 @@ input[type="number"] {
 	position:absolute;
 	top:calc(100% + 10px);
 	right:0;
-	width:300px;
+	width:260px;
 	display:none;
 	z-index:10;
 	box-shadow: 0 0 6px 3px rgba(0,0,0,0.06);
@@ -891,22 +898,39 @@ input[type="number"] {
 
 .header .profile .profileStyle .head .icon
 {
-	width:80px;
-	height:80px;
+	width:60px;
+	height:60px;
 	border-radius: 50%;
 	text-align:center;
-	line-height:95px;
+	line-height:75px;
 	color:#00c5bb;
 	background-color:#fff;
-	font-size:40px;
+	font-size:30px;
 	margin:0 auto 5px;
 	display:block;
 }
 
+.header .profile .profileStyle .btnsHeader
+{
+	display:none;
+}
+
+.header .profile .profileStyle .head .iconClose
+{
+	position:absolute;
+	left:15px;
+	top:15px;
+	color:#fff;
+	font-size:25px;
+	cursor:pointer;
+	z-index:999;
+	display:none;
+}
+
 .header .profile .profileStyle .head .name
 {
-	font-weight:700;
-	font-size:20px;
+	font-family: "Tajawal-Bold";
+	font-size:17px;
 	margin-bottom:10px;
 	color:#fff;
 	margin-top:10px;
@@ -927,52 +951,52 @@ input[type="number"] {
 {
 	display:block;
 	position:relative;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	font-size:14px;
-	height:60px;
-	line-height:60px;
+	height:55px;
+	line-height:55px;
 	color:#000000;
-	padding:0 65px 0 15px
+	padding:0 55px 0 15px
 }
 
 .header .profile .profileStyle .listProfile li a i
 {
-	position:absolute;
-	right:25px;
-	top:0px;
-	color:#4E6082;
-	font-size:20px;
-	line-height:65px;
+	position: absolute;
+    right: 20px;
+    top: 0px;
+    color: #4E6082;
+    font-size:16px;
+    line-height: 62px;
 }
 
 .header .iconMenu
 {
 	float:left;
 	margin-right:30px;
-	margin-top: 17px;
+	margin-top: 14px;
 }
 
 .header .lang
 {
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	float:left;
 	margin-right:25px;
 	color:#000;
-	margin-top: 15px;
+	margin-top: 13px;
 }
 
 
 .header .btnDark {
 	display: block;
     position: relative;
-    height: 28px;
-    width: 48px;
+    height: 25px;
+    width: 45px;
     border-radius: 15px;
     border:none;
     background:#E8E8E8;
     float:left;
-    margin-top:13px;
+    margin-top:10px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
 }
@@ -980,9 +1004,9 @@ input[type="number"] {
 .header .btnDark:after {
     content: "";
     position: absolute;
-    top: 2.7px;
-    height: 21px;
-    width: 21px;
+    top: 2.8px;
+    height: 18px;
+    width: 18px;
     border-radius: 50%;
     -webkit-transition: all 1s ease-in-out;
     transition: all 1s ease-in-out;
@@ -1016,7 +1040,7 @@ input[type="number"] {
 	background-color:#F6CD02;
 	border-radius: 10px;
 	margin-bottom:30px;
-	padding:25px 30px;
+	padding:20px;
 	display:flex;
 	justify-content:space-between
 }
@@ -1024,22 +1048,22 @@ input[type="number"] {
 .Additions .title
 {
 	font-size:20px;
-	font-weight:700;
-	font-size:20px;
+	font-family: "Tajawal-Bold";
+	font-size:17px;
 	color:#000;
 	margin-top:12px;
 }
 
-.btnAdd
+.Additions .btnAdd
 {
 	border-radius: 5px;
 	background-color:#00BFB5;
 	width:160px;
-	height:50px;
-	line-height:50px;
+	height:40px;
+	line-height:40px;
 	color:#fff;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	display:block;
 	text-align: center;
 }
@@ -1056,7 +1080,7 @@ input[type="number"] {
 .stats .itemStats .title
 {
 	font-size:16px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	margin-bottom:10px;
 	color:#000
 }
@@ -1064,8 +1088,8 @@ input[type="number"] {
 .stats .itemStats .numb
 {
 	color:#fff;
-	font-size:30px;
-	font-weight:700;
+	font-size:25px;
+	font-family: "Tajawal-Bold";
 }
 
 .stats .itemStats .icon
@@ -1145,9 +1169,9 @@ input[type="number"] {
 .stats .lastNumbers .title
 {
 	padding:25px 30px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
-	font-size:20px;
+	font-size:16px;
 	border-bottom:1px solid #F8F8F8
 }
 
@@ -1160,7 +1184,7 @@ input[type="number"] {
 	padding-right:110px;
 	padding-left:100px;
 	padding-top:32px;
-	min-height:125px;
+	min-height:115px;
 	padding-bottom:30px;
 	border-bottom:1px solid #F8F8F8;
 	margin-top:-1px;
@@ -1168,23 +1192,23 @@ input[type="number"] {
 
 .stats .lastNumbers .listNumbers li .icon
 {
-	width:70px;
-	height:70px;
+	width:60px;
+	height:60px;
 	border-radius: 50%;
 	position:absolute;
 	right:30px;
-	top:24px;
+	top:27px;
 	background-color:#f1f1f1;
 	color:#dbdbdb;
-	font-size:40px;
+	font-size:35px;
 	text-align: center;
-	line-height:85px;
+	line-height:75px;
 }
 
 .stats .lastNumbers .listNumbers li .titleNumb
 {
-	font-size:20px;
-	font-weight:500;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 	color:#142546;
 	margin-bottom:5px;
 }
@@ -1194,7 +1218,7 @@ input[type="number"] {
 	margin-right:10px;
 	color:#334B7A;
 	font-size:14px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	position:relative;
 	top:-2px;
 }
@@ -1216,10 +1240,11 @@ input[type="number"] {
 	border:#E8E8E8 1px solid;
 	background-color:#F1F1F1;
 	text-align: center;
-	line-height:31px;
 	color:#777777;
 	border-radius: 50%;
 	margin-left:10px;
+	font-size:14px;
+	    line-height: 32px;
 }
 
 .stats .lastNumbers .listNumbers li .date
@@ -1228,8 +1253,8 @@ input[type="number"] {
 	left:30px;
 	top:45px;
 	color:#000;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
 .overflowTable
@@ -1239,7 +1264,8 @@ input[type="number"] {
 
 .overflowTable table
 {
-	min-width:900px
+	min-width:900px;
+	width:100%;
 }
 
 .stats .msgArchive
@@ -1254,9 +1280,9 @@ input[type="number"] {
 .stats .msgArchive .title
 {
 	padding:25px 30px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
-	font-size:20px;
+	font-size:16px;
 	border-bottom:1px solid #F8F8F8;
 	margin-bottom:40px;
 	margin-right:-40px;
@@ -1278,8 +1304,8 @@ input[type="number"] {
 .stats .msgArchive table thead tr th
 {
 	padding:15px 20px;
-	font-weight:700;
-	font-size:16px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 	color:#000;
 }
 
@@ -1303,8 +1329,8 @@ input[type="number"] {
 .stats .msgArchive table tbody tr td
 {
 	padding:20px 30px;
-	font-weight:500;
-	font-size:16px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
 	color:#1B2B4D
 }
 
@@ -1316,7 +1342,7 @@ input[type="number"] {
 .stats .msgArchive table tbody tr td .type
 {
 	display:inline-block;
-	font-size:20px;
+	font-size:16px;
 	color:#30C881
 }
 
@@ -1357,15 +1383,15 @@ input[type="number"] {
 .footer .copyrights
 {
 	color:#A7A7A7;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	font-size:14px;
 }
 
 .footer .top
 {
-	width:63px;
-	height:63px;
-	line-height:63px;
+	width:55px;
+	height:55px;
+	line-height:55px;
 	text-align: center;
 	background-color:#00BFB5;
 	color:#fff;
@@ -1406,15 +1432,20 @@ input[type="number"] {
 	padding:0 10px;
 }
 
+.categories .linkStyle
+{
+	position:relative;
+}
+
 .categories .link
 {
 	border-radius: 10px;
 	margin-bottom:20px;
-	padding:30px 90px 30px 15px;
+	padding:21px 75px 19px 15px;
 	position:relative;
 	background-color:#fff;
-	font-size:18px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	color:#000000;
 	display:block;
 	cursor: pointer;
@@ -1424,15 +1455,15 @@ input[type="number"] {
 {
 	position:absolute;
 	right:15px;
-	top:13px;
-	width:60px;
-	height:60px;
+	top:8px;
+	width:45px;
+	height:45px;
 	border-radius: 50%;
 	background-color:#F1F1F1;
 	color:#9499A4;
-	font-size:25px;
+	font-size:20px;
 	text-align: center;
-	line-height:65px;
+	line-height:51px;
 	-webkit-transition:all 0.3s;
 	-moz-transition:all 0.3s;
 	-o-transition:all 0.3s;
@@ -1441,12 +1472,13 @@ input[type="number"] {
 
 .categories .link .icon.flaticon-statistics
 {
-	line-height:70px;
+	line-height:55px;
 }
 
 .categories .link .icon svg
 {
-	margin-top:13px;
+	margin-top:7px;
+	transform: scale(0.7);
 }
 
 .categories .link:hover .icon svg path,
@@ -1501,7 +1533,12 @@ input[type="number"] {
 	background-color:#fff;
 	display:none;
 	overflow: hidden;
-	box-shadow: 0 0 6px 3px rgba(0,0,0,0.06)
+	box-shadow: 0 0 6px 3px rgba(0,0,0,0.06);
+	position:absolute;
+	top:calc(100% + 15px);
+	left:0;
+	width:100%;
+	z-index: 66
 }
 
 .categories .subMenu li:not(:last-of-type)
@@ -1514,7 +1551,7 @@ input[type="number"] {
 	display:block;
 	height:50px;
 	line-height:50px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	padding:0 30px 0 30px;
 	position:relative;
 	color:#000;
@@ -1579,15 +1616,15 @@ input[type="number"] {
 {
 	padding-top:33px;
 	padding-bottom:25px;
-	padding-right:33px;
+	padding-right:10px;
 }
 
 .breadCrumb li
 {
 	float:right;
 	color:#A8A8A8;
-	font-weight:500;
-	font-size:16px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
 }
 
 .breadCrumb li:not(:last-of-type):after {
@@ -1597,14 +1634,14 @@ input[type="number"] {
 
 .breadCrumb li a
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#A8A8A8;
 }
 
 .payment
 {
-	padding:70px 15px 50px;
+	padding:40px 20px 20px;
 	background-color:#fff;
 	border-radius: 10px;
 	margin-bottom:150px;
@@ -1613,7 +1650,7 @@ input[type="number"] {
 .steps
 {
 	max-width:1070px;
-	margin:0 auto 70px;
+	margin:0 auto 40px;
 	display:flex;
 	justify-content:space-between
 }
@@ -1621,12 +1658,11 @@ input[type="number"] {
 .steps .step
 {
 	text-align: center;
-	font-size:20px;
+	font-size:16px;
 	color:#000;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	text-align: center;
-	/*min-width:160px;*/
-	width: 108px;
+	min-width:160px;
 }
 
 .steps .step .icon
@@ -1641,7 +1677,7 @@ input[type="number"] {
 	background-color:#E2E2E2;
 	color:#A5A5A5;
 	border-radius: 50%;
-	margin:0 auto 20px;
+	margin:0 auto 15px;
 	display:block;
 	font-size:40px;
 	-webkit-transition:all 0.3s;
@@ -1689,10 +1725,10 @@ input[type="number"] {
 
 .payment .products-table thead tr th
 {
-	padding:30px 50px;
+	padding:20px;
 	color:#000;
-	font-size:25px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 }
 
 .payment .products-table tbody tr {
@@ -1705,9 +1741,9 @@ input[type="number"] {
 
 .payment .products-table tbody tr td
 {
-	padding:25px 35px;
+	padding:20px;
 	color:#515151;
-	font-size:20px;
+	font-size:14px;
 	min-height:140px;
 }
 
@@ -1742,22 +1778,22 @@ input[type="number"] {
 .payment .products-table tbody tr td .details .title
 {
 	color:#000;
-	font-size:18px;
+	font-size:14px;
 	margin-bottom:15px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 }
 
 .payment .products-table tbody tr td .details .type
 {
 	font-size:14px;
 	margin-bottom:10px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 }
 
 .payment .products-table tbody tr td .details .type span
 {
 	margin-right:3px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	color:#929292
 }
 
@@ -1771,32 +1807,32 @@ input[type="number"] {
 	margin:0 -15px;
 	border-bottom:1px solid #EEEEEE;
 	padding:20px 50px;
-	font-size:20px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#000
 }
 
 .payment .listTotal li span
 {
 	float:left;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000
 }
 
-.payment .totalConfirm
+.payment .listTotal
 {
-	padding:20px 0;
+	margin-bottom:20px;
 }
 
 .payment .totalConfirm .title
 {
-	margin-bottom:35px;
+	margin-bottom:20px;
 	background-color:#F6F6F6;
 	border-radius: 5px;
 	padding:15px 35px;
 	color:#00BFB5;
-	font-weight:700;
-	font-size:20px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 }
 
 .payment .totalConfirm .title span
@@ -1816,7 +1852,7 @@ input[type="number"] {
 .payment .totalConfirm .coupon input
 {
 	width:280px;
-	height:60px;
+	height:50px;
 	padding:0 20px;
 	color:#000;
 	border: none;
@@ -1851,13 +1887,18 @@ input[type="number"] {
 	position:absolute;
 	left:0;
 	top:0;
-	height:60px;
+	height:50px;
 	border:none;
 	width:90px;
 	background-color:#00BFB5;
 	color:#fff;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
+}
+
+.payment .totalConfirm .nextPrev
+{
+	margin-top:15px;
 }
 
 .nextPrev
@@ -1868,16 +1909,16 @@ input[type="number"] {
 .nextPrev .btnNext
 {
 	width:100px;
-	height:40px;
+	height:35px;
 	border:none;
 	background-color:#00BFB5;
 	color:#fff;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	border-radius: 5px;
 }
 
-.nextPrev .btnNext[disabled] 
+.nextPrev .btnNext.dis 
 {
 	background-color:#C2C8D5;
 	color:#3D5075
@@ -1895,20 +1936,25 @@ input[type="number"] {
 	margin:0 -15px;
 }
 
+.payment .formPayment
+{
+	padding:30px 30px 25px;
+}
+
 .formPayment label
 {
-	font-size:18px;
+	font-size:14px;
 	color:#000;
-	font-weight:700;
-	margin-bottom:20px;
+	font-family: "Tajawal-Bold";
+	margin-bottom:15px;
 }
 
 .formPayment input
 {
 	width:100%;
-	height:65px;
+	height:50px;
 	padding:0 20px;
-	margin-bottom:45px;
+	margin-bottom:35px;
 	color:#000;
 	border:none;
 	background-color:#F6F6F6;
@@ -1917,16 +1963,16 @@ input[type="number"] {
 
 .selectPayment
 {
-	padding:40px 50px;
+	padding:40px 30px 20px;
 	margin:0 -15px;
 	border-top:1px solid #F6F6F6
 }
 
 .selectPayment .title
 {
-	font-size:20px;
-	font-weight:500;
-	margin-bottom:45px;
+	font-size:16px;
+	font-family: "Tajawal-Medium";
+	margin-bottom:35px;
 	color:#000
 }
 
@@ -1935,16 +1981,16 @@ input[type="number"] {
 	border:1px solid #DBDBDB;
 	border-radius: 5px;
 	margin-bottom:15px;
-	padding:30px;
-	min-height:223px;
+	padding:20px;
+	min-height:157px;
 }
 
 .paymentStyle .titleSelect
 {
-	font-size:20px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	color:#000;
-	margin-bottom:35px;
+	margin-bottom:25px;
 }
 
 .paymentStyle .labelUpload
@@ -1956,8 +2002,8 @@ input[type="number"] {
 	cursor: pointer;
 	padding:17px 30px;
 	color:#000000;
-	font-size:20px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	width:100%;
 }
 
@@ -1972,27 +2018,37 @@ input[type="number"] {
 {
 	position:absolute;
 	left:15px;
-	top:23px;
+	top:20px;
+	font-size:17px;
 }
+.paymentStyle .listPayment
+{
+	text-align: center
+}
+
 .paymentStyle .listPayment li
 {
-	float:right;
+	display:inline-block;
 	margin-bottom:15px;
-	width: 30%;
 }
 
 .paymentStyle .listPayment li a
 {
 	display:block;
-	width:155px;
-	height:90px;
+	width:120px;
+	height:60px;
 	text-align: center;
-	line-height:90px;
+	line-height:60px;
 	background-color:#F6F6F6;
 	padding:0 20px;
 	border-radius: 5px;
 	margin:0 auto;
 	cursor: pointer;
+}
+
+.paymentStyle .listPayment li a img
+{
+	max-width:61px;
 }
 
 .paymentStyle .listPayment li:not(:last-of-type)
@@ -2022,23 +2078,23 @@ input[type="number"] {
 .plan .title
 {
 	color:#F6CD02;
-	font-weight:800;
-	margin-bottom:55px;
-	font-size:40px;
+	font-family: "Tajawal-ExtraBold";
+	margin-bottom:40px;
+	font-size:30px;
 }
 
 .plan .planFeatures
 {
 	display:inline-block;
-	margin-bottom:55px;
+	margin-bottom:30px;
 } 
 
 .plan .planFeatures li
 {
 	float:right;
 	color:#fff;
-	font-weight:500;
-	font-size:18px;
+	font-family: "Tajawal-Medium";
+	font-size:16px;
 	position:relative
 }
 
@@ -2068,8 +2124,8 @@ input[type="number"] {
 
 .plan .planFeatures li b
 {
-	font-size:40px;
-	font-weight:800;
+	font-size:30px;
+	font-family: "Tajawal-ExtraBold";
 	display:block;
 }
 
@@ -2077,20 +2133,21 @@ input[type="number"] {
 {
 	width:260px;
 	height:183px;
-	margin:0 auto 35px;
+	margin:0 auto;
 	text-align: center;
 	color:#000;
 	font-size:30px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	background:url(../images/bgPlan.png);
 	display:block;
 	padding-top:6px;
+	transform: scale(0.7);
 }
 
 .plan .sizePlan b
 {
 	font-size:68px;
-	font-weight:800;
+	font-family: "Tajawal-ExtraBold";
 	display:block;
 	margin-bottom:-10px;
 }
@@ -2098,22 +2155,23 @@ input[type="number"] {
 .plan .price
 {
 	display:block;
-	width:154px;
-	height:154px;
+	width:130px;
+	height:130px;
 	border-radius: 50%;
 	background-color:#F6CD02;
 	text-align: center;
 	margin:0 auto 35px;
 	color:#000;
-	padding-top:15px;
-	font-weight:500;
-	font-size:37px;
+	padding-top:23px;
+	font-family: "Tajawal-Medium";
+	font-size:30px;
+	transform: scale(0.8);
 }
 
 .plan .price b
 {
-    font-size: 48px;
-    font-weight: 800;
+    font-size: 30px;
+    font-family: "Tajawal-ExtraBold";
     margin-bottom: -18px;
     display: block;
     margin-top: 5px;
@@ -2126,8 +2184,8 @@ input[type="number"] {
 	left:0;
 	background-color:#fff;
 	padding:10px 20px;
-	font-size:20px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 	color:#000;
 	border-top-right-radius:30px;
 	border-bottom-right-radius: 30px; 
@@ -2148,62 +2206,84 @@ input[type="number"] {
 	padding:0;
 	margin-top:-15px;
 	margin-right:-10px;
-	margin-bottom:35px;
+	margin-bottom:25px;
 }
 
-.form
+.formNumbers .form
 {
 	border-radius: 10px;
-	background-color:#fff;
 	margin-bottom:30px;
 }
 
-.form .title
+.formNumbers .form:not(.supportForm) {
+	background-color:#fff;
+}
+
+.formNumbers .form.supportForm .content
 {
-	padding:25px;
+	background-color:#fff;
+}
+
+.formNumbers .form.supportForm .title
+{
+	border:none;
+	padding:0 0 25px;
+}
+
+.titleSupport
+{
+	padding:0 0 40px;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
+	color:#000
+}
+
+.formNumbers .form .title
+{
+	padding:20px;
 	border-bottom:1px solid #F6F6F6;
 	color:#000;
-	font-size:18px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 }
 
-.form .content
+.formNumbers .form .content
 {
-	padding:35px 30px
+	padding:35px 25px
 }
 
-.form .titleLabel
+.formNumbers .form .titleLabel
 {
-	height:60px;
+	height:50px;
 	width:100%;
-	line-height:60px;
-	font-size:18px;
+	line-height:50px;
+	font-size:14px;
 	margin-bottom:55px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
-.form .titleUpload
+.formNumbers .form .titleUpload
 {
 	line-height:32px;
 }
 
-.form input,
-.form .uploadFile,
+.formNumbers .form input,
+.formNumbers .form .uploadFile,
 .ui-selectmenu-button.ui-button,
-.form textarea
+.formNumbers .form textarea
 {
 	width:100%;
-	height:60px;
+	height:50px;
 	border:none;
 	background-color:#F6F6F6;
 	padding:0 20px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	margin-bottom:25px;
 	border-radius: 5px;
 	color:#000
 }
 
-.form textarea
+.formNumbers .form textarea
 {
 	width:100%;
 	height:110px;
@@ -2211,13 +2291,13 @@ input[type="number"] {
 	resize:none;
 }
 
-.form .selectStyle .ui-selectmenu-button.ui-button
+.formNumbers .form .selectStyle .ui-selectmenu-button.ui-button
 {
 	margin-bottom:0;
 	background:none;
 }
 
-.form .selectStyle
+.formNumbers .form .selectStyle
 {
 	margin-bottom:25px;
 	background-color:#F6F6F6;
@@ -2225,52 +2305,52 @@ input[type="number"] {
 	z-index: 1
 }
 
-.form .selectStyle i
+.formNumbers .form .selectStyle i
 {
 	position:absolute;
 	left:15px;
-	top:20px;
+	top:15px;
 	color:#707070;
 	z-index: -1;
 	font-size:23px;
 }
 
 
-.form .uploadFile
+.formNumbers .form .uploadFile
 {
 	line-height:normal;
 	height:auto;
 	padding:15px 20px;
 }
 
-.form .uploadFile span
+.formNumbers .form .uploadFile span
 {
 	color:#4650E3
 }
 
-.form .upload
+.formNumbers .form .upload
 {
 	padding:30px 20px 45px;
 	overflow: hidden;
 	position:relative;
 	cursor: pointer;
 	text-align: center;
-	font-size:15px;
+	font-size:14px;
 	color:#000000;
 	width:100%;
-	font-weight:700;
+	font-family: "Tajawal-Medium";
 	margin-bottom:25px;
 	border:1px dashed #B9B9B9;
 	border-radius: 5px;
 }
 
-.form .upload input
+.formNumbers .form .upload input
 {
 	position:absolute;
 	right:-100%;
 }
 
-.form .upload i
+.formNumbers .form .upload i
 {
 	display:block;
 	margin:0 auto 15px;
@@ -2278,11 +2358,11 @@ input[type="number"] {
 	font-size:35px;
 }
 
-.form p
+.formNumbers .form p
 {
-	font-size:16px;
-	font-weight:500;
-	padding:30px;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
+	padding:30px 25px;
 	margin-top:0;
 	color:#000;
 	width:100%;
@@ -2306,12 +2386,12 @@ input[type="number"] {
 
 .ui-selectmenu-text
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#000;
 	font-family: 'Tajawal', sans-serif;
 	margin-right:0;
-	line-height:60px;
+	line-height:50px;
 }
 
 .ui-menu .ui-menu-item-wrapper
@@ -2344,7 +2424,7 @@ input[type="number"] {
 {
 	text-align: right;
 	padding:15px 20px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	font-size:14px;
 	margin-bottom:10px;
 }
@@ -2360,16 +2440,16 @@ input[type="number"] {
 .supportForm.form .maxSize
 {
 	color:#AAAAAA;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	margin-bottom:10px;
 	font-size:14px;
 	display:block;
 }
 
-.addTitle
+.form .addTitle
 {
-	font-weight:700;
-	font-size:18px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	color:#000;
 	padding-right:45px;
 	position:relative;
@@ -2378,7 +2458,7 @@ input[type="number"] {
 	line-height:33px;
 }
 
-.addTitle i
+.form .addTitle i
 {
 	position:absolute;
 	right:0;
@@ -2388,7 +2468,7 @@ input[type="number"] {
 	border-radius: 50%;
 	background-color:#E2E2E2;
 	color:#000;
-	font-size:15px;
+	font-size:14px;
 	text-align: center;
 	line-height:35px;
 }
@@ -2397,22 +2477,22 @@ input[type="number"] {
 {
 	position:absolute;
 	right:0;
-	top:-55px;
+	top:-50px;
 }
 
 .form .btnsTabs li
 {
 	float:right;
 	width:145px;
-	height:55px;
+	height:50px;
 	background-color:#E2E2E2;
 	color:#000000;
-	font-size:18px;
-	font-weight:500;
+	font-size:15px;
+	font-family: "Tajawal-Medium";
 	margin-left:1px;
 	cursor: pointer;
 	text-align:center;
-	line-height:55px;
+	line-height:50px;
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px
 }
@@ -2437,9 +2517,9 @@ input[type="number"] {
 {
 	position:absolute;
 	right:15px;
-	top:18px;
-	font-size:16px;
-	font-weight:500;
+	top:15px;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#000000
 }
 
@@ -2447,7 +2527,7 @@ input[type="number"] {
 {
 	margin-right:10px;
 	float:left;
-	margin-top:2px;
+	margin-top:1px;
 }
 
 .form .codeSupport input
@@ -2467,7 +2547,7 @@ input[type="number"] {
 {
 	position:absolute;
 	right:15px;
-	top:22px;
+	top:15px;
 	font-size:17px;
 	color:#777777;
 }
@@ -2478,7 +2558,7 @@ input[type="number"] {
 
 .botStyle
 {
-	padding:30px 40px;
+	padding:30px ;
 	background-color:#fff;
 	border-radius: 10px;
 	margin-bottom:20px;
@@ -2486,9 +2566,9 @@ input[type="number"] {
 
 .botStyle .titleBot
 {
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
-	margin-bottom:30px;
+	margin-bottom:35px;
 	font-size:14px;
 }
 
@@ -2503,11 +2583,11 @@ input[type="number"] {
 .botStyle .stepsBot .step
 {
 	text-align: center;
-	font-size:20px;
+	font-size:14px;
 	color:#000;
 	position:relative;
-	font-weight:700;
-	padding-bottom:50px;
+	font-family: "Tajawal-Medium";
+	padding-bottom:15px;
 	min-width:110px;
 }
 
@@ -2530,13 +2610,13 @@ input[type="number"] {
 
 .botStyle .stepsBot .step i
 {
-	width:92px;
-	height:92px;
+	width:80px;
+	height:80px;
 	border-radius: 50%;
 	background-color:#E2E2E2;
 	color:#A5A5A5;
-	font-size:40px;
-	line-height:105px;
+	font-size:35px;
+	line-height:90px;
 	display:block;
 	margin:0 auto 20px;
 	-webkit-transition:all 0.3s;
@@ -2558,17 +2638,22 @@ input[type="number"] {
 
 .botStyle .settings
 {
-	padding:40px 40px 45px;
+	padding:30px 40px;
 	margin:0 -40px;
 	border-top:1px solid #F6F6F6;
 }
 
+.botStyle .settings.settingsBtns
+{
+	padding-bottom:0;
+}
+
 .botStyle .settings .titleSettings
 {
-	font-size:25px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 	color:#000;
-	margin-bottom:40px;
+	margin-bottom:25px;
 }
 
 .botStyle .settings .channel
@@ -2578,15 +2663,15 @@ input[type="number"] {
 
 .botStyle .settings .channel .titleChannel
 {
-	font-size:18px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	margin-bottom:15px;
 }
 
 .botStyle .settings .channel input
 {
 	width:100%;
-	height:60px;
+	height:50px;
 	background-color:#F6F6F6;
 	padding:0 20px;
 	border:none;
@@ -2595,18 +2680,18 @@ input[type="number"] {
 .botStyle .settings .attention
 {
 	border:1px solid #DBDBDB;
-	padding:20px 70px 20px 20px;
+	padding:14px 70px 14px 20px;
 	border-radius:10px;
 	color:#000000;
-	font-size:16px;
+	font-size:14px;
 	position:relative;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	margin-bottom:60px;
 }
 
 .botStyle .settings .attention span
 {
-	font-size:20px;
+	font-size:16px;
 	text-align: center;
 }
 
@@ -2614,33 +2699,55 @@ input[type="number"] {
 {
 	position:absolute;
 	right:15px;
-	top:15px;
-	width:40px;
-	height:40px;
+	top:10px;
+	width:35px;
+	height:35px;
 	text-align: center;
-	line-height:40px;
+	line-height:35px;
 	border-radius: 50%;
-	font-size:20px;
+	font-size:17px;
 	color:#000;
 	font-style: normal;
 	border:1px solid #E2E2E2;
 }
 
+.botStyle .settings .orangeBg
+{
+	background-color:#FEF3C1;
+	border-radius: 5px;
+	padding:20px;
+}
+
+.botStyle .settings .orangeBg .titleSettings
+{
+	margin-bottom:15px;
+}
+
+
 .botStyle .settings .qr
 {
-	padding-top:80px;
-	margin-bottom:30px;
-	padding-bottom:50px;
+	/*margin-bottom:30px;
+	padding-bottom:50px;*/
 }
 
 .botStyle .settings .qr .imgPhone
 {
-	margin-top:-80px;
+	width:65%;
+	display:block;
+	margin:0 auto
 }
 
 .botStyle .settings .qr img
 {
 	width:100%;
+}
+@media(min-width: 1400px){
+	.botStyle .settings .qr img{
+		overflow: hidden;
+		width: 150%;
+    	margin-right: -95px;
+    	margin-top: -95px;
+	}
 }
 
 .botStyle .settings .qr .stepQr
@@ -2648,20 +2755,21 @@ input[type="number"] {
 	margin-bottom:20px;
 	background-color:#F8F8F8;
 	border-radius: 5px;
-	padding:15px;
+	padding:13px;
 	text-align:center;
+	font-size:13px;
 	display:block;
 }
 
 .botStyle .settings .list li
 {
 	font-size:14px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
 .botStyle .settings .list li:not(:last-of-type)
 {
-	margin-bottom:35px;
+	margin-bottom:15px;
 }
 
 .botStyle .settings .terms
@@ -2679,7 +2787,7 @@ input[type="number"] {
 {
 	content:"|";
 	float:left;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	color:#00BFB5;
 	display:inline-block;
 	margin:0 10px;
@@ -2687,7 +2795,7 @@ input[type="number"] {
 
 .botStyle .settings .terms li a
 {
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	color:#00BFB5;
 }
 
@@ -2703,14 +2811,14 @@ input[type="number"] {
 
 .transmitters .transmitterHead
 {
-	padding:30px 20px;
+	padding:20px;
 	border-bottom:1px solid #F6F6F6;
 }
 
 .transmitters .transmitterHead .title
 {
-	font-weight:700;
-	font-size:18px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	color:#000;
 	float:right;
 	margin-top:10px;
@@ -2721,7 +2829,7 @@ input[type="number"] {
 	float:left;
 }
 
-.icon
+.transmitters .transmitterHead .icon
 {
 	float:left;
 	margin-right:10px;
@@ -2736,34 +2844,34 @@ input[type="number"] {
 	cursor: pointer;
 }
 
-.icon.iconAdditions
+.transmitters .transmitterHead .icon.iconAdditions
 {
 	background-color:#FFF4DE;
 	color:#FFAF00
 }
 
-.edit
+.transmitters .transmitterHead .edit
 {
 	padding-right:44px;
 	position:relative;
 	margin-right:10px;
 	background-color:#ECF0F3;
 	border-radius: 2px;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#000;
 	float:left;
 	height:40px;
 	padding-left:15px;
 	line-height:40px;
 }
-.edit:hover
+.transmitters .transmitterHead .edit:hover
 {
 	background-color:#1BC5BD;
 	color:#fff;
 }
 
-.edit i
+.transmitters .transmitterHead .edit i
 {
 	position:absolute;
 	right:13px;
@@ -2775,14 +2883,14 @@ input[type="number"] {
 	transition:all 0.3s;
 }
 
-.edit:hover i
+.transmitters .transmitterHead .edit:hover i
 {
 	color:#fff
 }
 
 .transmitters .content
 {
-	padding:20px 30px;
+	padding:20px 25px;
 }
 
 .transmitters .content .searchForm
@@ -2813,22 +2921,20 @@ input[type="number"] {
 	cursor: pointer;
 }
 
-.views
+.transmitters .content .views
 {
 	float:right;
-	margin-right: 10px;
-	margin-left: 10px;
 }
 
-.views span
+.transmitters .content .views span
 {
 	margin:10px;
 	color:#000;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
-.views input
+.transmitters .content .views input
 {
 	width:73px;
 	height:40px;
@@ -2857,8 +2963,8 @@ input[type="number"] {
 .transmitters .content .searchTable span
 {
 	float:left;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	margin-top:10px;
 }
 
@@ -2914,11 +3020,11 @@ input[type="number"] {
 
 .transmitters .content .numbers .numbStyl .num
 {
-	font-weight:700;
-	font-size:23px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	color:#6D7E9F;
 	direction: ltr;
-	margin-top:10px;
+	margin-top:11px;
 	display:inline-block
 }
 
@@ -2974,8 +3080,8 @@ input[type="number"] {
 
 .transmitters .content .pages .total
 {
-	font-size:18px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	margin-bottom:15px;
 	float:right;
 	margin-top:10px;
@@ -3004,8 +3110,8 @@ input[type="number"] {
 	border:none;
 	padding:0;
 	background-color:#F4F5FD;
-	font-size:18px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	border-radius: 0!important
 }
 
@@ -3021,7 +3127,6 @@ input[type="number"] {
 	border-bottom-left-radius: 5px!important;
 }
 
-.pagination li.active a,
 .pagination li a.active,
 .pagination li a:hover
 {
@@ -3052,8 +3157,8 @@ input[type="number"] {
 {
 	padding:5px 25px 25px;
 	border-bottom:1px solid #F6F6F6;
-	font-weight:700;
-	font-size:18px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	margin:0 -30px 20px;
 }
 
@@ -3064,15 +3169,15 @@ input[type="number"] {
 
 .bill  .contentBill .title
 {
-	font-size:18px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	margin-bottom:10px;
 }
 
 .bill  .contentBill .desc
 {
-	font-weight:500;
-	font-size:16px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
 }
 
 .bill  .contentBill .stat
@@ -3081,8 +3186,8 @@ input[type="number"] {
 	bottom:0;
 	left:0px;
 	color:#3D5075;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
 .bill  .contentBill .stat span
@@ -3093,8 +3198,8 @@ input[type="number"] {
 	line-height:35px;
 	background-color:#00BFB5;
 	color:#fff;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	border-radius: 30px;
 	margin-right:10px;
 	margin-top:-10px;
@@ -3110,24 +3215,24 @@ input[type="number"] {
 
 .bill  .dateFixed span
 {
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	color:#3D5075;
 	display:block;
 }
 
 .bill .dateFixed .desc
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#3D5075
 }
 
 .bill .dateStart
 {
 	float:right;
-	font-weight:500;
-	font-size:16px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
 }
 
 .bill .dateStart:not(:last-of-type)
@@ -3139,8 +3244,8 @@ input[type="number"] {
 {
 	display:block;
 	color:#00BFB5;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	margin-top:8px;
 }
 
@@ -3150,7 +3255,6 @@ input[type="number"] {
 	background-color:#F4F5FD;
 	border-radius: 5px;
 	margin-left:40px;
-	padding: 0;
 }
 
 .bill .listPDF li
@@ -3161,7 +3265,7 @@ input[type="number"] {
 .bill .listPDF li a
 {
 	padding:0 15px;
-	font-size:16px;
+	font-size:14px;
 	color:#000000;
 	height:40px;
 	line-height:40px;
@@ -3177,7 +3281,7 @@ input[type="number"] {
 {
 	position:absolute;
 	left:13px;
-	top:13px;
+	top:11px;
 	font-size:19px;
 	z-index: -1;
 }
@@ -3208,23 +3312,23 @@ input[type="number"] {
 
 .bill .tableBills thead tr th
 {
-	padding:15px 45px;
-	font-weight:700;
-	font-size:16px;
+	padding:15px 15px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 	text-align: center;
 }
 
 .bill .tableBills tbody tr
 {
-	/*background-color:#F4F5FD*/
+	background-color:#F4F5FD
 }
 
 .bill .tableBills tbody tr td
 {
-	padding:30px 45px;
+	padding:30px 15px;
 	text-align: center;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
 /* ------------------------------------------ */
@@ -3233,7 +3337,7 @@ input[type="number"] {
 
 .mybreadcrumb {
   background-color: #00bfb5;
-  padding: 70px 10px 50px 10px;
+  padding: 60px 10px 40px 10px;
   position:relative;
 	-webkit-transition:all 0.3s;
 	-moz-transition:all 0.3s;
@@ -3244,16 +3348,16 @@ input[type="number"] {
 .mybreadcrumb .listBread
 {
 	position:absolute;
-	right:25px;
-	top:35px;
+	right:15px;
+	top:15px;
 }
 
 .mybreadcrumb .listBread li
 {
 	float:right;
 	color:#fff;
-	font-weight:500;
-	font-size:16px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
 }
 
 .mybreadcrumb .listBread li:not(:last-of-type):after {
@@ -3263,8 +3367,8 @@ input[type="number"] {
 
 .mybreadcrumb .listBread li a
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#fff;
 }
 
@@ -3279,19 +3383,18 @@ input[type="number"] {
 .mybreadcrumb .breadcrumb-content p{
   color: #fff;
     display: inline-block;
-    margin-top: 30px;
+    margin-top: 15px;
 }
 
 .mybreadcrumb .breadcrumb-content h5 {
-  font-size: 40px;
-  margin-bottom: 15px;
-  font-weight: 700;
+  font-size: 30px;
+  font-family:700;
 }
 
 .mybreadcrumb .breadcrumb-content p {
   margin-bottom: 37px;
-  font-size: 25px;
-  font-weight: 500;
+  font-size: 20px;
+  font-family: "Tajawal-Medium";
 }
 
 .mybreadcrumb .breadcrumb-content .link {
@@ -3299,8 +3402,8 @@ input[type="number"] {
 }
 
 .mybreadcrumb .breadcrumb-content .link li {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 16px;
+  font-family:700;
   color: #fff;
   padding: 10px;
   text-align:center;
@@ -3347,20 +3450,20 @@ input[type="number"] {
 }
 .qutas-parent .box-style {
   background-color: #fff;
-  padding: 36px 0 0 0;
+  padding: 20px 0 0 0;
   border-radius: 10px;
   margin-bottom: 30px;
 }
 
 .qutas-parent .box-style .box-header {
   border-bottom: 1px solid #f6f6f6;
-  padding: 0 25px 36px 25px;
+  padding: 0 25px 20px 25px;
 }
 
 .qutas-parent .box-style .box-header h5 {
   margin: 0;
-  font-size: 25px;
-  font-weight: 700;
+  font-size: 16px;
+  font-family:700;
 }
 
 .qutas-parent .box-style .box-header h5 span
@@ -3369,7 +3472,7 @@ input[type="number"] {
 }
 
 .qutas-parent .box-style .box-content {
-  padding: 53px 30px 36px 30px;
+  padding: 30px 30px 10px 30px;
 }
 .quta-card {
   background-color: #eeeeee;
@@ -3381,8 +3484,8 @@ input[type="number"] {
 .qutas-parent .card-title {
   text-align: center;
   margin-bottom: 37px;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 16px;
+  font-family: "Tajawal-Medium";
   padding: 29px 0;
   padding-bottom: 0;
 }
@@ -3400,18 +3503,19 @@ input[type="number"] {
 .quta-card .quta-info li {
   width: 48%;
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 12px;
   max-width:120px;
 }
 
 .quta-card .quta-info li.price {
   border-radius: 50%;
   background-color: #f6cd02;
-  font-size: 25px;
-  font-weight: 700;
+  font-size: 22px;
+  font-family:700;
   line-height: normal;
   width: 94px;
   height: 94px;
+      line-height: 34px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3419,7 +3523,7 @@ input[type="number"] {
 }
 
 .quta-card .quta-info li.price span {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: normal;
   margin-top: -14px;
 }
@@ -3430,10 +3534,11 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top:13px;
+  padding-top:9px;
   position: relative;
   z-index: 9;
-  font-weight: 700;
+  font-family:700;
+  margin-top:12px;
 }
 
 .quta-card .quta-info li.feature .bg
@@ -3473,7 +3578,7 @@ input[type="number"] {
 }
 
 .quta-card .font-weight {
-  font-weight: 700;
+  font-family:700;
 }
 
 .quta-card .card-body {
@@ -3491,15 +3596,16 @@ input[type="number"] {
   color: #000;
   text-align: center;
   margin:10px 0;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  font-family: "Tajawal-Medium";
   display:block;
 }
 
 .quta-card .card-body .btnStyle {
   color:#fff;
-  line-height:60px;
+  line-height:50px;
   margin-top:15px;
+  height:50px;
 }
 
 .quta-card .card-body .btnStyle.active
@@ -3511,7 +3617,7 @@ input[type="number"] {
 .adding-card {
   text-align: center;
   border-radius: 10px;
-  height: 411px;
+  /*height: 411px;*/
   background-color: #f6f6f6;
   position: relative;
   margin-bottom: 20px;
@@ -3554,7 +3660,7 @@ input[type="number"] {
     z-index: 1;
     color: #000;
     opacity: 0;
-    font-weight: 500;
+    font-family: "Tajawal-Medium";
     font-family: 'Tajawal', sans-serif;
     font-size:14px;
     visibility:hidden;
@@ -3584,17 +3690,17 @@ input[type="number"] {
 
 .adding-card .card-body .card-title {
   margin: 0;
-  font-weight: 700;
-  font-size: 17px;
+  font-family:700;
+  font-size: 14px;
   padding:20px 0 0
 }
 
 .adding-card .card-body .card-text {
   color: #000;
   text-align: center;
-  margin: 15px 0 ;
+  margin: 5px 0 15px;
   font-size: 20px;
-  font-weight: 700;
+  font-family:700;
   display:block;
 }
 
@@ -3603,7 +3709,8 @@ input[type="number"] {
 }
 
 .adding-card .card-body .btnStyle {
-	line-height:60px;
+	line-height:50px;
+	height:50px;
 	color:#fff;
 	max-width:100%;
 }
@@ -3625,8 +3732,8 @@ input[type="number"] {
   float: none;
   text-align: right !important;
   padding-right: 15px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size:16px;
+  font-family: "Tajawal-Medium";
   height: 60px;
   line-height: 60px;
   background-color: #f6f6f6;
@@ -3679,7 +3786,7 @@ input[type="number"] {
 {
 	position:relative;
 	background-color:#F6F6F6;
-	margin-bottom:35px;
+	margin-bottom:20px;
 }
 
 .ui-selectmenu-button.ui-button
@@ -3692,7 +3799,7 @@ input[type="number"] {
 {
     position: absolute;
     left: 15px;
-    top: 19px;
+    top: 13px;
     font-size: 23px;
 }
 
@@ -3709,20 +3816,20 @@ input[type="number"] {
   position: relative;
 }
 .cart-sell .sell-card .card-body .card-title-2 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 14px;
+  font-family:700;
   margin-bottom: 5px;
 }
 
-.cart-sell .sell-card .card-body .card-text-2 ,
-.cart-sell .sell-card .card-body .card-text-3 {
+.cart-sell .sell-card .card-body .card-text-2 {
   color: #00bfb5;
   margin-top:0;
-  font-size:18px;
+  font-size:14px;
+  font-family: "Tajawal-Medium";
 }
 
 .cart-sell .sell-card .card-body .card-text-2 span {
-  font-weight: 700;
+  font-family:700;
 }
 
 .cart-sell .sell-card .card-body .card-text-last {
@@ -3743,7 +3850,7 @@ input[type="number"] {
   	position: absolute;
     top: 5px;
     left: -10px;
-    font-size: 15px;
+    font-size: 12px;
     color: rgb(56, 56, 56);
 }
 
@@ -3762,17 +3869,17 @@ input[type="number"] {
 
 .cart-sell .summersize li span
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
 .cart-sell .summersize li.total span {
   color: #00bfb5;
-  font-weight:700;
+  font-family: "Tajawal-Bold";
 }
 
 .cart-sell .summersize li span:last-child {
-  font-weight: 700;
+  font-family:700;
 }
 
 .cart-sell .pay {
@@ -3781,8 +3888,9 @@ input[type="number"] {
 
 
 .cart-sell .pay .btnStyle {
-  line-height:60px;
+  line-height:50px;
   color:#fff;
+  height:50px;
 }
 
 /* ------------------------------------------ */
@@ -3799,7 +3907,7 @@ input[type="number"] {
   text-align: center;
   border-radius: 10px;
   margin-bottom: 33px;
-  height:472px;
+  height:423px;
   position:relative;
   overflow: hidden;
  	-webkit-transition: all 0.3s;
@@ -3839,7 +3947,7 @@ input[type="number"] {
 	right:0;
 	width:100%;
 	height:100%;
-	padding:20px 35px 15px;
+	padding:20px 30px 15px;
 	transition: transform 0.6s;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -3872,9 +3980,9 @@ input[type="number"] {
 	top:0;
 	background-color:#F6CD02;
 	width:64px;
-	height:60px;
+	height:50px;
 	text-align:center;
-	line-height:60px;
+	line-height:50px;
 	z-index: 1;
 	padding-left:5px;
  	-webkit-transition: all 0.5s;
@@ -3903,7 +4011,7 @@ input[type="number"] {
 	width:100%;
 	z-index: 2;
 	color:#000;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	height:100%;
  	-webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
@@ -3917,27 +4025,34 @@ input[type="number"] {
 }
 
 .qutas-ards .mainquta-card .card-img {
-  width: 130px;
-  height: 130px;
-  margin: auto;
-  background-color: #f8f8f8;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 110px;
+    height: 110px;
+    margin: auto;
+    background-color: #f8f8f8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+}
+
+.qutas-ards .mainquta-card .card-img  img
+{
+	max-width:100%;
 }
 
 .qutas-ards .mainquta-card .card-back .card-text
 {
 	max-width:266px;
 	margin:10px auto 0;
-	line-height:30px;
+	line-height:25px;
 	text-align: center
 }
 
 .qutas-ards .mainquta-card .card-back .card-slag
 {
 	margin-top:10px;
+	margin-bottom:33px;
 }
 
 .qutas-ards .mainquta-card .card-back .card-link
@@ -3945,29 +4060,34 @@ input[type="number"] {
 	margin-top:20px;
 }
 
+.qutas-ards .mainquta-card .card-back .card-link .textColor
+{
+	color:#F6CD02
+}
+
 .qutas-ards .mainquta-card .card-title {
   margin-top: 16px;
-  font-size: 25px;
-  font-weight: 700;
+  font-size:16px;
+  font-family:700;
 }
 
 .qutas-ards .mainquta-card .card-text h5 {
   color: #f6cd02;
-  font-size: 50px;
-  font-weight: 800;
+  font-size: 37px;
+  font-family: "Tajawal-ExtraBold";
   margin: 0;
   margin-top: 15px;
 }
 
 .qutas-ards .mainquta-card .card-slag {
-  color: #808080;
+  color: #00bfb5;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Tajawal-Medium";
   margin-top: 17px;
 }
 
 .qutas-ards .mainquta-card .card-text span {
-  font-weight: 700;
+  font-family:700;
   color: #f6cd02;
   font-size:20px;
   display: inline-block;
@@ -3980,9 +4100,9 @@ input[type="number"] {
 
 .qutas-ards .mainquta-card .card-link
 {
-	height:60px;
+	height:50px;
 	margin-top:30px;
-	line-height:60px;
+	line-height:50px;
 	color:#fff;
 	cursor: pointer;
 }
@@ -4000,8 +4120,8 @@ input[type="number"] {
 }
 
 .offer-card .card-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size:16px;
+  font-family:700;
   width: 358px;
   max-width: 100%;
   margin: auto;
@@ -4018,7 +4138,7 @@ input[type="number"] {
 .offer-card .card-text span {
   color: #000;
   font-size: 14px;
-  font-weight: 700;
+  font-family:700;
   position: relative;
   z-index: 9;
   float:right;
@@ -4027,7 +4147,7 @@ input[type="number"] {
 
 .offer-card .card-text span.price {
     font-size: 50px;
-    font-weight: 800;
+    font-family: "Tajawal-ExtraBold";
     color: #f6cd02;
     position: relative;
     z-index: 9;
@@ -4037,7 +4157,7 @@ input[type="number"] {
 
 .offer-card .card-text span.price span {
     font-size:20px;
-    font-weight:700;
+    font-family: "Tajawal-Bold";
     margin-right:10px;
     color:#f6cd02;
     margin-top:23px;
@@ -4047,7 +4167,7 @@ input[type="number"] {
 .offer-card .card-slag {
   color: #808080;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Tajawal-Medium";
   margin-top: 5px;
   margin-bottom: 33px;
   position: relative;
@@ -4064,7 +4184,7 @@ input[type="number"] {
   color:#fff;
   max-width:320px;
   margin:0 auto;
-  line-height:60px;
+  line-height:50px;
 }
 
 .offer-card .card-link:hover {
@@ -4097,14 +4217,15 @@ input[type="number"] {
 }
 
 
+
 /************** 29/10/2021 ************/
 
 /* ------------------------------------------ */
 /*         Customers
 /* ------------------------------------------ */
 
-
-.updateBtn
+.updateBtn,
+.updateBtn:hover
 {
 	width:160px;
 	height:40px;
@@ -4112,8 +4233,8 @@ input[type="number"] {
 	text-align: center;
 	background-color:#F6CD02;
 	border-radius: 5px;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	display:block;
 	color:#000
 }
@@ -4158,7 +4279,7 @@ input[type="number"] {
 {
 	text-align: center;
 	color:#000;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	font-size:16px;
 	margin-bottom:15px;
 }
@@ -4170,13 +4291,12 @@ input[type="number"] {
 	padding:12px 15px;
 	border-radius: 5px;
 	color:#7A7A7A;
-	font-weight:500;
-	font-size:16px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
 	position:relative;
 	padding-right:50px;
 	display:block;
-	direction: ltr;
-	min-height: 46px;
+	direction: ltr
 }
 
 .customer .numb i
@@ -4200,14 +4320,14 @@ input[type="number"] {
 .helpCenter .titleHelp
 {
 	font-size:16px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	margin-bottom:10px;
 }
 
 .helpCenter .subTitle
 {
 	font-size:14px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	margin-bottom:15px;
 	display:block
 }
@@ -4226,7 +4346,7 @@ input[type="number"] {
 	background-color:#9AE2DE;
 	font-size:16px;
 	color:#000;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 }
 
 .helpCenter .contentStyle .details img
@@ -4252,15 +4372,10 @@ input[type="number"] {
 	border:1px solid #F4F4F4
 }
 
-.helpCenter .contentStyle:not(.active) ~ .emoji,
-.helpCenter .contentStyle:not(.active) ~ .ticketContent{
-	display: none;
-}
-
-
-.helpCenter .contentStyle.active ~ .emoji,
-.helpCenter .contentStyle.active ~ .ticketContent{
-	display: block;
+.helpCenter .emojs
+{
+	display:block;
+	margin:0 auto 20px;
 }
 
 .searchCategory
@@ -4273,7 +4388,7 @@ input[type="number"] {
 .searchCategory .titleSearch
 {
 	font-size:16px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	margin-bottom:20px;
 	padding:0 20px;
 }
@@ -4295,7 +4410,7 @@ input[type="number"] {
     height:60px;
     line-height:60px;
     color:#000000;
-    font-weight:500;
+    font-family: "Tajawal-Medium";
     font-size:16px;
     margin-bottom:1px;
 }
@@ -4370,8 +4485,8 @@ input[type="number"] {
 .timer .titleTimer
 {
 	color:#1B2B4D;
-	font-size:18px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 	margin-bottom:10px;
 	
 }
@@ -4388,7 +4503,7 @@ input[type="number"] {
 {
 	max-width:280px;
 	color:#1B2B4D;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	line-height:30px;
 	margin:0 auto 35px;
 }
@@ -4437,30 +4552,30 @@ input[type="number"] {
 
 .apiGuide .title
 {
-	padding:20px 30px;
-	font-weight:700;
-	font-size:20px;
+	padding:20px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	border-bottom:1px solid #F8F8F8
 }
 
 .apiGuide .details
 {
-	padding:30px;
+	padding:20px;
 }
 
 .apiGuide .details .titleApi
 {
-	font-size:20px;
+	font-size:16px;
 	color:#00BFB5;
-	font-weight:500;
-	margin-bottom:25px;
+	font-family: "Tajawal-Medium";
+	margin-bottom:15px;
 }
 
 .apiGuide .details .desc
 {
-	font-size:16px;
+	font-size:14px;
 	color:#616161;
-	line-height:40px;
+	line-height:30px;
 }
 
 .sendMsg
@@ -4472,16 +4587,16 @@ input[type="number"] {
 
 .sendMsg .title
 {
-	padding:25px 30px;
+	padding:20px;
 	background-color:#9AE2DE;
 	color:#000;
-	font-size:20px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 }
 
 .sendMsg .details
 {
-	padding:20px 30px 40px;
+	padding:20px 20px 40px;
 	background-color:#fff;
 }
 
@@ -4489,10 +4604,10 @@ input[type="number"] {
 {
 	border-radius: 10px;
 	background-color:#F4F4F4;
-	padding:20px 30px;
+	padding:20px;
 	color:#616161;
-	font-size:16px;
-	line-height:40px;
+	font-size:14px;
+	line-height:30px;
 }
 
 .formSearch
@@ -4503,10 +4618,10 @@ input[type="number"] {
 .formSearch input
 {
 	width:calc(100% - 125px);
-	height:50px;
+	height:45px;
 	padding:0 15px;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	border:none;
 	background-color:#F6F6F6;
 	border-radius: 10px;
@@ -4522,9 +4637,9 @@ input[type="number"] {
 .formSearch button
 {
 	width:115px;
-	height:50px;
-	font-weight:700;
-	font-size:18px;
+	height:45px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 	margin-right:10px;
 	border-radius: 10px;
 	border:none;
@@ -4543,26 +4658,26 @@ input[type="number"] {
 
 .abCart .titleCart
 {
-	padding:23px 20px;
+	padding:18px 15px;
 	background-color:#00BFB5;
 	color:#fff;
-	font-weight:700;
-	font-size:18px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 } 
 
 .abCart .titleCart span
 {
 	float:left;
-	font-weight:500;
-	font-size:18px;
+	font-family: "Tajawal-Medium";
+	font-size:16px;
 }
 
 .abCart .orderTitle
 {
 	padding:15px 20px;
 	color:#000;
-	font-size:18px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	display:block;
 	border-bottom:1px solid #EEEEEE
 }
@@ -4572,7 +4687,7 @@ input[type="number"] {
 	float:left;
 	font-size:14px;
 	margin-top:3px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
 .abCart .list
@@ -4584,8 +4699,8 @@ input[type="number"] {
 .abCart .list li
 {
 	padding:15px 0;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
 .abCart .list li:not(:last-of-type)
@@ -4610,8 +4725,8 @@ input[type="number"] {
 .abCart .userDetails li
 {
 	margin-bottom:15px;
-	font-size:15px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	color:#7A7A7A;
 }
 
@@ -4665,8 +4780,8 @@ input[type="number"] {
 
 .abCart .details .btnStyle
 {
-	height:50px;
-	line-height:50px;
+	height:45px;
+	line-height:45px;
 	text-align: center;
 	margin:0;
 	color:#fff;
@@ -4694,7 +4809,7 @@ input[type="number"] {
 
 .orderStyle .img img
 {
-	width:100%;
+	min-width:100%;
 }
 
 .orderStyle .details
@@ -4704,16 +4819,16 @@ input[type="number"] {
 
 .orderStyle .details .available
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	margin-bottom:5px;
 }
 
 .orderStyle .details .titleOrder
 {
 	float:right;
-	font-size:18px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 	margin-bottom:15px;
 	color:#000;
 	margin-top:3px;
@@ -4724,23 +4839,24 @@ input[type="number"] {
 {
 	float:left;
 	color:#00BFB5;
-	font-size:25px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
+	margin-top:5px;
 }
 
 .orderStyle .details .btnOrder
 {
 	width:100%;
-	height:50px;
-	line-height:50px;
+	height:45px;
+	line-height:45px;
 	text-align: center;
 	color:#fff;
-	font-size:16px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	border-radius: 5px;
 	background-color:#00BFB5;
 	display:block;
-	margin-top:20px;
+	margin-top:15px;
 }
 
 .orderStyle .details .btnOrder:hover
@@ -4753,8 +4869,8 @@ input[type="number"] {
 {
 	margin-top:80px;
 	color:#000;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
 .size
@@ -4768,23 +4884,15 @@ input[type="number"] {
 
 .size .list li
 {
-	margin-bottom:20px;
-	min-height:60px;
-	line-height:45px;
-	padding-right:80px;
-	position:relative;
-	font-weight:700;
-	padding-top: 9px;
-	color:#000;
-	transition: all ease-in-out .25s;
-	-webkit-transition: all ease-in-out .25s;
-	-moz-transition: all ease-in-out .25s;
-	-o-transition: all ease-in-out .25s;
+	margin-bottom: 15px;
+    min-height: 50px;
+    line-height: 45px;
+    padding-right: 70px;
+    position: relative;
+    font-family:700;
+    color: #000;
 }
-.size .list li:hover,
-.size .list li.active{
-	background-color: #f6f6f6;
-}
+
 .size .list li a
 {
 	color:#000
@@ -4794,9 +4902,9 @@ input[type="number"] {
 {
 	position:absolute;
 	right:20px;
-	top:9.5px;
-	width:40px;
-	height:40px;
+	top:7px;
+	width:30px;
+	height:30px;
 	border-radius: 5px;
 	background-color:#EBEBEB;
 }
@@ -4813,8 +4921,8 @@ input[type="number"] {
 
 .size .titleSize
 {
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	display:block;
 	margin-bottom:10px;
 }
@@ -4838,7 +4946,7 @@ input[type="number"] {
 
 .files
 {
-	padding:50px 20px 30px;
+	padding:30px 20px 30px;
 	background-color:#fff;
 	border-radius: 10px;
 }
@@ -4846,7 +4954,7 @@ input[type="number"] {
 .files .titleFiles
 {
 	font-size:16px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
 	margin-bottom:30px;
 	margin-right:10px;
@@ -4950,9 +5058,9 @@ input[type="number"] {
 .tickets .ticketContent .title
 {
 	padding:20px;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
-	font-size:20px;
+	font-size:16px;
 }
 
 .tickets .details .content li:nth-of-type(odd)
@@ -4964,7 +5072,7 @@ input[type="number"] {
 {
 	display:flex;
 	justify-content:space-between;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#000;
 	font-size:14px;
 	padding:15px 20px;
@@ -4972,14 +5080,14 @@ input[type="number"] {
 
 .tickets .details .content li span
 {
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	color:#888888;
 	min-width:129px;
 }
 
 .tickets .attachments
 {
-	padding:0 30px 20px;
+	padding:0 25px 15px;
 }
 
 .tickets .attachments .title
@@ -4999,16 +5107,16 @@ input[type="number"] {
 {
 	border-bottom:1px solid #EFEFEF;
 	display:flex;
-	font-size:18px;
+	font-size:16px;
 	align-items: center;
 	justify-content:space-between;
 }
 
 .tickets .ticketContent .desc
 {
-	padding:35px;
+	padding:25px;
 	color:#000;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
 .tickets .ticketContent .iconPlus
@@ -5036,7 +5144,7 @@ input[type="number"] {
 {
 	padding:20px;
 	min-height:100px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
 .comment .commentHead
@@ -5057,14 +5165,14 @@ input[type="number"] {
 .comment .commentHead .creator .name
 {
 	display:block;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	font-size:14px;
 	margin-top:5px;
 }
 
 .comment .commentHead .creator .definition
 {
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	font-size:14px;
 }
 
@@ -5107,10 +5215,11 @@ input[type="number"] {
 
 .textSub
 {
-	margin-bottom:30px;
-	font-weight:700;
-	font-size:20px;
+	margin-bottom:15px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 	padding:0 15px;
+	margin-top:-15px;
 }
 
 .ticketContent.Measures .desc
@@ -5127,7 +5236,8 @@ input[type="number"] {
 	border-radius: 5px;
 	padding:10px 15px;
 	text-align: center;
-	font-weight:700;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 }
 
 .MeasuresText.color1{background-color:#C9F7F5;color:#1D9B96}
@@ -5145,9 +5255,12 @@ input[type="number"] {
 	background-color:#fff;
 	border-radius: 10px;
 	position:relative;
-	padding-right:250px;
-	min-height:300px;
 	margin-bottom:30px;
+}
+
+.channelSub
+{
+	padding-right:250px;
 }
 
 .channel .logoChannel
@@ -5182,8 +5295,8 @@ input[type="number"] {
 
 .channel .content .colms .title
 {
-	font-weight:700;
-	font-size:16px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 	margin-bottom:10px;
 	margin-left:10px;
 }
@@ -5191,8 +5304,8 @@ input[type="number"] {
 .channel .content .colms .title .text
 {
 	color:#848484;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	direction:ltr;
 	display:inline-block;
 }
@@ -5233,13 +5346,14 @@ input[type="number"] {
 	background-color:#F4F5FD;
 	border-radius: 10px;
 	margin-bottom:25px;
+	position:relative
 }
 
 .AdditionsSub .title
 {
 	padding:20px 0 30px;
-	font-weight:700;
-	font-size:18px;
+	font-family: "Tajawal-Bold";
+	font-size:16px;
 	display:flex;
 	justify-content:space-between;
 	align-items: center;
@@ -5252,7 +5366,7 @@ input[type="number"] {
 	line-height:30px;
 	background-color:#485079;
 	font-size:16px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	color:#fff;
 	border-radius: 5px;
 	text-align: center;
@@ -5279,8 +5393,8 @@ input[type="number"] {
 
 .cartSub .titleCart
 {
-	font-weight:700;
-	font-size:20px;
+	font-family: "Tajawal-Bold";
+	font-size:17px;
 	padding-bottom:15px;
 	position:relative;
 	text-align:center;
@@ -5303,7 +5417,7 @@ input[type="number"] {
 	display:block;
 	margin-bottom:20px;
 	color:#000;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	text-align: center
 }
 
@@ -5345,7 +5459,7 @@ input[type="number"] {
 
 .planDetails .planContent .planName
 {
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	margin-bottom:10px;
 	font-size:14px;
 }
@@ -5363,7 +5477,7 @@ input[type="number"] {
 
 .planDetails .state .stateSub
 {
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	font-size:14px;
 	display:inline-block;
 	margin-left:10px;
@@ -5395,17 +5509,18 @@ input[type="number"] {
 	margin-top:5px;
 }
 
+
 .planDetails .next .titleNext
 {
-	font-size:18px;
-	font-weight:700;
+	font-size:16px;
+	font-family: "Tajawal-Bold";
 }
 
 .planDetails .dateStyle
 {
 	display:block;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	margin-top:-25px;
 }
 
@@ -5414,20 +5529,26 @@ input[type="number"] {
 	text-align: center;
 }
 
-.planDetails .days .numbs
+.planDetails .days .numbrs
 {
-	display:block;
-	font-size:30px;
-	font-weight:500;
+	position:absolute;
+	left:20px;
+	top:20px;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 }
 
+
+
+
+/*
 .planDetails .days .numbText
 {
 	font-size:16px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	margin-bottom:15px;
 	display:block;
-}
+}*/
 
 .planDetails .days .nextMonth
 {
@@ -5435,8 +5556,8 @@ input[type="number"] {
 	border-radius: 5px;
 	background-color:#485079;
 	color:#fff;
-	font-size:16px;
-	font-weight:500;
+	font-size:14px;
+	font-family: "Tajawal-Medium";
 	display:inline-block;
 }
 
@@ -5449,19 +5570,45 @@ input[type="number"] {
 
 .planDetails .next .dates li
 {
-	padding:10px 20px;
+	padding:9px 20px;
 	float:right;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 }
 
 .planDetails .next .dates li span
 {
-	font-weight:700;
+	font-family: "Tajawal-Bold";
 	color:#00BFB5;
-	font-weight:700;
-	font-size:16px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 	display:block;
 	margin-top:5px;
+}
+
+@media(max-width:1484px) {
+	
+	.AdditionsSub
+	{
+		min-height:201px;
+	    display: flex;
+    	justify-content: space-between;
+    	flex-direction: column;
+	}
+	.planDetails .next .dates
+	{
+		margin-left:0;
+		margin-bottom:15px;
+	}
+	
+	.planDetails .footerPlan.footerNext
+	{
+		display:block
+	}
+	
+	.planDetails .days .nextMonth
+	{
+		width:100%;
+	}
 }
 
 .accordion .accordion-title
@@ -5475,13 +5622,14 @@ input[type="number"] {
 	color:#000;
 	position:absolute;
 	left:20px;
-	top:22px;
+	top:18px;
 	font-size:25px;
  	-webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s;
 }
+
 .accordion.active .title .iconArrow
 {
 	transform:rotate(180deg);
@@ -5496,13 +5644,14 @@ input[type="number"] {
 {
 	display:flex;
 	justify-content:space-between;
+	margin-top:-20px
 	
 }
 
 .helpPage .helpHead .titleHelp
 {
-	font-size:20px;
-	font-weight:700;
+	font-size:14px;
+	font-family: "Tajawal-Bold";
 	margin-bottom:25px;
 	margin-top:15px;
 }
@@ -5512,7 +5661,7 @@ input[type="number"] {
 	width:130px;
 	height:40px;
 	line-height:40px;
-	font-weight:500;
+	font-family: "Tajawal-Medium";
 	border-radius: 5px;
 	margin-bottom:25px;
 	background-color:#fff;
@@ -5523,11 +5672,12 @@ input[type="number"] {
 
 .helpPage .helpHead .ticketHead
 {
-	width:320px;
+	width:300px;
 	overflow: hidden;
 	position:relative;
-	min-height:100px;
+	height:100px;
 	margin-right:20px;
+	margin-bottom:20px;
 }
 
 .helpPage .helpHead .ticketHead:after
@@ -5549,8 +5699,8 @@ input[type="number"] {
 	height:100px;
 	line-height:100px;
 	color:#000;
-	font-size:25px;
-	font-weight:700;
+	font-size:22px;
+	font-family: "Tajawal-Bold";
 	text-align: center;
 }
 
@@ -5565,8 +5715,8 @@ input[type="number"] {
 
 .helpPage .helpHead .ticketHead .numbTicket .numb
 {
-	font-weight:800;
-	font-size:25px;
+	font-family: "Tajawal-ExtraBold";
+	font-size:22px;
 	margin-bottom:5px;
 	display:block;
 	text-align: center
@@ -5579,8 +5729,8 @@ input[type="number"] {
 	border-radius: 5px;
 	background-color:#00BFB5;
 	color:#fff;
-	font-size:18px;
-	font-weight:500;
+	font-size:16px;
+	font-family: "Tajawal-Medium";
 	display:block;
 	margin:0 auto;
 	text-align: center;
@@ -5596,9 +5746,9 @@ input[type="number"] {
 
 .helpPage .detailsHelp .tableDetails thead tr th
 {
-	padding:30px;
-	font-weight:700;
-	font-size:18px;
+	padding:25px 20px;
+	font-family: "Tajawal-Bold";
+	font-size:14px;
 }
 
 .helpPage .detailsHelp .tableDetails tr th:not(:last-of-type),
@@ -5636,9 +5786,16 @@ input[type="number"] {
 
 .helpPage .detailsHelp .tableDetails tbody tr td
 {
-	padding:30px;
-	font-weight:500;
-	font-size:18px;
+	padding:25px 20px;
+	font-family: "Tajawal-Medium";
+	font-size:14px;
+}
+
+.helpPage .detailsHelp .tableDetails tbody tr td svg
+{
+	display:block;
+	margin:0 auto;
+	max-width:100px;
 }
 
 .helpPage .detailsHelp .tables 
@@ -5656,6 +5813,67 @@ input[type="number"] {
 	background-color:#C2C8D5;
 	color:#3D5075
 }
+
+
+/* ------------------------------------------ */
+/*         Menu Down
+/* ------------------------------------------ */
+
+.menuDownHeight
+{
+	height:70px;
+	display:none;
+}
+
+.menuDown
+{
+	display:none;
+	position:fixed;
+	bottom:0;
+	right:0;
+	width:100%;
+	text-align:center;
+	z-index: 999;
+	background-color:#fff;
+	box-shadow: 0 0 6px 3px rgb(0 0 0 / 2%);
+}
+
+.menuDown .linksList
+{
+	width:100%;
+}
+
+.menuDown .linksList li
+{
+	float:right;
+	width:25%
+}
+
+.menuDown .linksList li a
+{
+	display:block;
+	color:#000;
+	position:relative;
+	font-size:14px;
+	cursor:pointer;
+	text-align:center;
+	font-family: "Tajawal-Bold";
+	padding:15px 0 10px
+}
+
+.menuDown .linksList li a i
+{
+	display:block;
+	margin-bottom:3px;
+	font-size:18px;
+	color:#b9b9b9;
+	height:22px;
+	-webkit-transition:all 0.3s;
+	-moz-transition:all 0.3s;
+	-o-transition:all 0.3s;
+	transition:all 0.3s;
+}
+
 
 
 /* Touches Made By Backend */

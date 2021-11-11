@@ -241,7 +241,6 @@ class LiveChatControllers extends Controller {
         }
 
         $domain = explode('.', $request->getHost())[0];
-
         if(isset($input['messageType']) && $input['messageType'] == 'new'){
             $chats = explode(',', $input['chatId']);
             unset($input['chatId']);
@@ -289,9 +288,9 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                // $file_size = $image->getSize();
-                // $file_size = $file_size/(1024 * 1024);
-                // $file_size = number_format($file_size,2);
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
                 // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
                 // $totalStorage = Session::get('storageSize');
                 // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
@@ -308,6 +307,7 @@ class LiveChatControllers extends Controller {
                 }            
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $sendData['filename'] = $fileName;
+                $bodyData = str_replace('http://whatsloop.localhost/public/','https://3caa-156-219-248-158.ngrok.io/',$bodyData);
                 $sendData['body'] = $bodyData;
                 if($message_type == 'photo'){
                     if(isset($input['caption']) && !empty($input['caption']) ){
@@ -322,9 +322,9 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                // $file_size = $image->getSize();
-                // $file_size = $file_size/(1024 * 1024);
-                // $file_size = number_format($file_size,2);
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
                 // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
                 // $totalStorage = Session::get('storageSize');
                 // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
@@ -347,9 +347,9 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                // $file_size = $image->getSize();
-                // $file_size = $file_size/(1024 * 1024);
-                // $file_size = number_format($file_size,2);
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
                 // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
                 // $totalStorage = Session::get('storageSize');
                 // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
@@ -410,9 +410,9 @@ class LiveChatControllers extends Controller {
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
 
-                // $file_size = $image->getSize();
-                // $file_size = $file_size/(1024 * 1024);
-                // $file_size = number_format($file_size,2);
+                $file_size = $image->getSize();
+                $file_size = $file_size/(1024 * 1024);
+                $file_size = number_format($file_size,2);
                 // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
                 // $totalStorage = Session::get('storageSize');
                 // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);

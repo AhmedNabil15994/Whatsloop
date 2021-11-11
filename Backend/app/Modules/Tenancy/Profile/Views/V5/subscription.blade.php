@@ -38,7 +38,7 @@
         </div>
     </div>
     
-    <div class="channel">
+    <div class="channel channelSub">
         <div class="logoChannel">
             <img src="{{ @$data->me->avatar == null ? asset('images/logoOnly.jpg') : @$data->me->avatar }}" alt="" />
         </div>
@@ -126,8 +126,7 @@
                             
                         </div>
                         <div class="days">
-                            <span class="numbs">{{ $data->subscription->leftDays }}</span>
-                            <span class="numbText">{{ trans('main.leftDays') }}</span>
+                            <span class="numbrs">{{ $data->subscription->leftDays }} {{ trans('main.leftDays') }}</span>
                             @if(!in_array(date('d',strtotime($data->subscription->end_date)) , [1,28,29,30,31]) && IS_ADMIN)
                             <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="nextMonth">{{ trans('main.transferPayment') }}</a>
                             @endif
@@ -141,7 +140,7 @@
                 <div class="AdditionsSub">
                     <h2 class="title">
                         {{ trans('main.addons') }} 
-                        @if(IS_ADMIN)
+                        @if(IS_ADMIN && count($data->subscription->addons) < 9)
                         <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="edit">{{ trans('main.edit') }}</a>
                         @endif
                     </h2>

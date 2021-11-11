@@ -71,7 +71,8 @@
 .dark-mode .planDetails .next .dates,
 .dark-mode .cartSub,
 .dark-mode .channel,
-.dark-mode .planDetails
+.dark-mode .planDetails,
+.dark-mode .menuDown
 {
 	background:#253046
 }
@@ -204,7 +205,9 @@
 .dark-mode .cartSub .date,
 .dark-mode .channel .content .colms .title .text,
 .dark-mode .accordion .iconArrow,
-.dark-mode .helpPage .helpHead .btnHelp
+.dark-mode .helpPage .helpHead .btnHelp,
+.dark-mode .menuDown .linksList li a,
+.dark-mode .menuDown .linksList li a i
 {
 	color:#A9B2C4
 }

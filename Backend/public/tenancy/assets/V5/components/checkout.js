@@ -31,7 +31,7 @@ function next(elem){
     var nextStepItem = $('.step.active').next();
 
     currentStepDiv.removeClass('active');
-    currentStepItem.removeClass('active');
+    // currentStepItem.removeClass('active');
 
     nextStepDiv.addClass('active');
     nextStepItem.addClass('active');

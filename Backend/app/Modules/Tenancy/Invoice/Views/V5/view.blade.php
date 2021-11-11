@@ -3,23 +3,29 @@
 @section('title',$data->designElems['mainData']['title'])
 @section('styles')
 <style type="text/css" media="screen">
-	.ticketHead .nextPrev a.btnNext {
-	    margin-top: 2px;
-	    width: 49%;
-	    height: 65px;
-	    margin: 15px .5% ;
-	    display: block;
+	.helpHead .nextPrev a.btnNext {
+	    width: auto;
+	    height: auto;
+	    display: inline-block;
 	    padding: 10px;
 	    text-align: center;
-	}
-	.nextPrev.last a.btnNext{
-		padding: 12px 28px
 	}
 </style>
 @endsection
 @section('content')
 <div class="helpPage">
-	<div class="helpHead float-right">
+	<div class="helpHead">
+		<div class="btns">
+			<div class="nextPrev clearfix mt-3">
+				@if(IS_ADMIN && $data->data->status != 1)
+	            <a href="{{ URL::current().'/checkout' }}" class="btnNext"> {{ trans('main.checkout') }}</a>
+	            @endif
+	            @if(IS_ADMIN && $data->data->status == 1 && !in_array( date('d',strtotime($data->data->due_date)) , [1,28,29,30,31]) )
+	            <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="btnNext"> {{ trans('main.transferPayment') }}</a>
+	            @endif
+	            <div class="clearfix"></div>
+	        </div>
+		</div>
 		<div class="ticketHead">
 			<h2 class="title"> {{ trans('main.invoice') }}</h2>
 			<div class="numbTicket">
@@ -31,15 +37,6 @@
 	            if($paymentObj)
 	                $paymentObj = App\Models\PaymentInfo::getData($paymentObj);
 	        @endphp
-			<div class="nextPrev clearfix mt-3">
-				@if(IS_ADMIN && $data->data->status != 1)
-	            <a href="{{ URL::current().'/checkout' }}" class="btnNext float-right"> {{ trans('main.checkout') }}</a>
-	            @endif
-	            @if(IS_ADMIN && $data->data->status == 1 && !in_array( date('d',strtotime($data->data->due_date)) , [1,28,29,30,31]) )
-	            <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="btnNext float-right"> {{ trans('main.transferPayment') }}</a>
-	            @endif
-	            <div class="clearfix"></div>
-	        </div>
 		</div>
 	</div>
 
@@ -52,6 +49,7 @@
 						<th>{{ trans('main.paymentMethod') }}</th>
 						<th>{{ trans('main.appName') }}</th>
 						<th>{{ trans('main.createdFor') }}</th>
+		   				<th>{{ trans('main.eInvoice') }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -85,6 +83,9 @@
 							@if((isset($paymentObj) ? $paymentObj->tax_id : ''))
 							{{ trans('main.tax_id') }}: {{ $paymentObj->tax_id }}
 	                        @endif
+						</td>
+						<td>
+							{!! \QrCode::size(100)->generate(URL::current()) !!}
 						</td>
 					</tr>
 				</tbody>
@@ -181,8 +182,8 @@
 			</div>
 			@endif
 			<div class="nextPrev last clearfix">
-				<a href="javascript:window.print()" class="btnNext">{{ trans('main.print') }}</a>
-				<a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" class="btnNext">{{ trans('main.back') }}</a>
+				<a href="javascript:window.print()" class="btnNext btn">{{ trans('main.print') }}</a>
+				<a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" class="btnNext btn">{{ trans('main.back') }}</a>
 			</div>		  	 			
 		</div>
 	</div>

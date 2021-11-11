@@ -1,6 +1,4 @@
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('V5/css/font.css') }}" />
 
 <link rel="stylesheet" href="{{ asset('V5/css/flaticon.css') }}" />
 
@@ -24,15 +22,3 @@
 <!-- third party css -->
 @yield('styles')
 <!-- third party css end 
-plugins/sweet-alert
-libs/select2
-libs/bootstrap-datepicker
-plugins/amazeui-datetimepicker
-plugins/moment
-libs/dropzone
-libs/bootstrap-datepicker
-plugins/select2
-plugins/fancyuploder
-plugins/fileuploads
-plugins/fileuploads
--->

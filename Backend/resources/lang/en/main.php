@@ -756,4 +756,6 @@ return [
 
 	'selectDesign' => 'Please choose the design you want to apply',
 	'selectInvoice' => 'Please choose the invoice design to be applied',
+	'eInvoice' => 'E-Invoice',
+
 ];

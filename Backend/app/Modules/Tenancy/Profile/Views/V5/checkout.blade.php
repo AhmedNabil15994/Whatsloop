@@ -101,7 +101,7 @@
             <li class="clearfix">{{ trans('main.estimatedTax') }} <span><b class="estimatedTax">{{ $data->totals[2] }}</b> {{ trans('main.sar') }}</span></li>
         </ul>
 
-        <div class="totalConfirm">
+        <div class="totalConfirm clearfix">
             <h2 class="title clearfix">{{ trans('main.total') }} <span><b class="total">{{ number_format((float)$data->totals[3], 2, '.', '') }}</b> {{ trans('main.sar') }}</span></h2>
             <div class="clearfix">
                 <form class="coupon">
@@ -188,7 +188,7 @@
             <input type="hidden" name="dataType" value="2">
             <input type="hidden" name="totals" value="{{ json_encode($data->totals) }}">
             <input type="hidden" name="data" value="{{ json_encode($data->data) }}">
-            <div class="totalConfirm">
+            <div class="totalConfirm clearfix">
                 <center>
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
@@ -225,7 +225,7 @@
                 </div>
             </div>
             
-            <div class="totalConfirm clearfix">
+            <div class="totalConfirm clearfix clearfix">
                 <center>
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>

@@ -38,6 +38,14 @@
                 <li><a href="{{ URL::to('/helpCenter') }}"><i class="flaticon-life-buoy"></i> {{ trans('main.helpCenter') }}</a></li>
                 <li><a href="{{ URL::to('/logout') }}"><i class="flaticon-user"></i> {{ trans('main.logout') }}</a></li>
             </ul>
+            <div class="btnsHeader clearfix">
+                @if(DIRECTION == 'ltr')
+                <a href="#" class="lang user-langs lang-item" data-next-area="ar">ع</a>
+                @else
+                <a href="#" class="lang user-langs lang-item" data-next-area="en">EN</a>
+                @endif
+                <button class="btnDark" title="Change Mode"></button>
+            </div>
         </div>
     </div>
 
