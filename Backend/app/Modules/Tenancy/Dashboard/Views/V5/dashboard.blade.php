@@ -56,7 +56,7 @@
                 <div class="col-md-6">
                     <div class="itemStats">
                         <h2 class="title">{{ trans('main.sendStatus') }}</h2>
-                        <div data-value="0.0" data-size="85" data-value="{{ $data->sendStatus/100 }}" data-fill="{&quot;color&quot;: &quot;#00c5bb&quot;}" class="circle circle1">
+                        <div data-size="85" val-circle="{{ $data->sendStatus/100 }}" data-fill="{&quot;color&quot;: &quot;#00c5bb&quot;}" class="circle circle1">
                           <strong>{{ $data->sendStatus }}</strong>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                 <div class="col-md-6">
                     <div class="itemStats">
                         <h2 class="title">{{ trans('main.serverStatus') }}</h2>
-                        <div data-size="85" data-value="{{ $data->serverStatus/100 }}" data-fill="{&quot;color&quot;: &quot;#00c5bb&quot;}" class="circle circle2">
+                        <div data-size="85"  data-fill="{&quot;color&quot;: &quot;#00c5bb&quot;}" class="circle circle2">
                           <strong>{{ $data->serverStatus }}</strong>
                         </div>
                     </div>

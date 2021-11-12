@@ -45,9 +45,9 @@ class DashboardControllers extends Controller {
     public function Dashboard(){   
         $varObj = Variable::getVar('QRIMAGE');
         if($varObj){
-            $sendStatus = 100;
-        }else{
             $sendStatus = 0;
+        }else{
+            $sendStatus = 100;
         }
 
         $messages = (object) ChatMessage::lastMessages();

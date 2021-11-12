@@ -145,7 +145,7 @@
             </div>
             <div class="qr">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-3" style="overflow: hidden;">
                         @livewire('qr-image')
                     </div>
                     <div class="col-md-5">
@@ -214,4 +214,10 @@
 
 @section('scripts')
 <script src="{{ asset('V5/components/steps.js') }}" type="text/javascript"></script>
+<script>
+Livewire.on('statusChanged', postId => {
+    document.querySelector('#step2 .btnNext:not(.btnPrev):not(.finish)').click();
+})
+</script>
+
 @endsection

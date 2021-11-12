@@ -20,6 +20,7 @@ use Session;
 
 class MessagesWebhook extends ProcessWebhookJob{
 	public function handle(){
+        ini_set('memory_limit', '-1');
 	    $data = json_decode($this->webhookCall, true);
 	    $mainData = $data['payload'];
 

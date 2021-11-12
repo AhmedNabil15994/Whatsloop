@@ -175,12 +175,12 @@ resizeMenu();
 	/****** End scroll Top ******/
     
 	/********************************************/
-
+	var circle1Val = $('.circle1').attr("val-circle");
 	$('.circle1').circleProgress({
-		value:0.20,
+		value:circle1Val,
 		thickness:10
 	}).on('circle-animation-progress', function (event, progress) {
-		$(this).find('strong').html('<i>%</i>' + Math.round(20 * progress));
+		$(this).find('strong').html('<i>%</i>' + Math.round(100 * circle1Val));
 	});
 	
 	$('.circle2').circleProgress({

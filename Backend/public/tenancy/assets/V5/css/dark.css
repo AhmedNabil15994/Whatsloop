@@ -98,7 +98,8 @@
 .dark-mode .helpCenter .contentStyle,
 .dark-mode .sendMsg .details .desc,
 .dark-mode .comment .commentHead .creator .icon,
-.dark-mode .AdditionsSub
+.dark-mode .AdditionsSub,
+.dark-mode .botStyle .settings .orangeBg
 {
 	background-color:#1A2336
 }

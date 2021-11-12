@@ -11,6 +11,13 @@ class QrImage extends Component
     protected $url = '';
     protected $area = '';
 
+    public $showLoadingQR = 0;
+
+    public function statusChanged()
+    {
+        $this->showLoadingQR = 1;
+    }
+
     public function render(){    
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $result = $mainWhatsLoopObj->status();
@@ -36,6 +43,7 @@ class QrImage extends Component
             }else if($result['data']['accountStatus'] == 'authenticated'){
                 $data['url'] = asset('images/qr-load.png');
                 $data['area'] = 1;
+                $this->emit('statusChanged'); 
             }
         }        
         return view('livewire.qr-image')->with('data',(object) $data);

@@ -22,6 +22,7 @@ class SyncMessagesJob implements ShouldQueue
     public $messages;
     public function __construct($messages)
     {
+        ini_set('memory_limit', '-1');
         $this->messages = $messages;
     }
 

@@ -10,14 +10,19 @@
 <link rel="stylesheet" href="{{ asset('V5/css/intlTelInput.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/animate.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/bootstrap.css') }}" />
-<link rel="stylesheet" href="{{ asset('V5/css/bootstrap-rtl.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/font-awesome.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/owl.carousel.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/toastr.min.css') }}"  type="text/css">
 <link rel="stylesheet" href="{{ asset('V5/css/buttons.css') }}" />
+@if(DIRECTION == 'rtl')
+<link rel="stylesheet" href="{{ asset('V5/css/bootstrap-rtl.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/style.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/responisve.css') }}" />
+@else
+<link rel="stylesheet" href="{{ asset('V5/css/ltr.css') }}" />
+@endif
 <link rel="stylesheet" href="{{ asset('V5/css/dark.css') }}" />
+<link rel="stylesheet" href="{{ asset('V5/css/touches.css') }}" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker-standalone.min.css" integrity="sha256-SMGbWcp5wJOVXYlZJyAXqoVWaE/vgFA5xfrH3i/jVw0=" crossorigin="anonymous" />
 <!-- third party css -->
 @yield('styles')
