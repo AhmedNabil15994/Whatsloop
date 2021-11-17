@@ -22,15 +22,23 @@ use \Spatie\WebhookServer\WebhookCall;
 class CentralAuthControllers extends Controller {
 
     use \TraitsFunc;
-
+    
     public function appLogin() {
         $input =\Request::all();
         if(isset($input['type']) && !empty($input['type']) && $input['type'] == 'mob'){
             return redirect()->away('https://whatsloop.net/ar/Login.html');
         }
+        
+        if(isset($input['onesignal_push_id']) && !empty($input['onesignal_push_id']) ){
+            $data['onesignal_push_id'] = $input['onesignal_push_id'];
+            $url = 'https://whatsloop.net/ar/Login.html';
+            \Helper::RedirectWithPostForm($data,$url);
+        }
+        
         if(Session::has('user_id')){
             return redirect('/dashboard');
         }
+        return redirect()->away('https://whatsloop.net/ar/Login.html');
         $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         return view('Central.Auth.Views.V5.login')->with('data',(object) $data);
     }
@@ -329,19 +337,16 @@ class CentralAuthControllers extends Controller {
 
     public function postCheckAvailability(Request $request){
         $input = \Request::all();
-
         $userObj = CentralUser::checkUserBy('phone',$input['phone']);
         if($userObj){
             Session::flash('error', trans('main.phoneError'));
             return redirect()->back()->withInput();
         }
-
         
         $dataArr['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
         $dataArr['phone'] = $input['phone'];
         
         $clientRequestObj = ClientsRequests::getOne($input['phone']);
-        // dd($clientRequestObj);
         if($clientRequestObj){
             $dataArr['userCode'] = $clientRequestObj->code;
             return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
@@ -373,6 +378,7 @@ class CentralAuthControllers extends Controller {
 
     public function checkAvailabilityCode(){
         $input = \Request::all();
+        
         $clientRequestObj = ClientsRequests::getOne($input['phone']);
         $dataArr['phone'] = $input['phone'];
         $dataArr['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
@@ -381,7 +387,7 @@ class CentralAuthControllers extends Controller {
             return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
         }
 
-        if(isset($clientRequestObj) && $clientRequestObj->code != $input['code']){
+        if($clientRequestObj->code != $input['code']){
             Session::flash('error', trans('auth.codeError'));
             return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
         }
@@ -464,6 +470,23 @@ class CentralAuthControllers extends Controller {
             'domain' => $input['domain'],
         ]);
 
+        $baseUrl = 'https://whatsloop.net/api/v1/';
+
+        // Get User Details
+        $mainURL = $baseUrl.'user-details';
+        $isOld = 0;
+
+        $data = ['phone' => str_replace('+','',$input['phone']) /*'966570116626'*/];
+        $result =  \Http::post($mainURL,$data);
+        if($result->ok() && $result->json()){
+            $data = $result->json();
+            if($data['status'] === true){
+                // Begin Sync
+                $isOld = 1;
+            }
+        }
+        
+        
         $centralUser = CentralUser::create([
             'global_id' => (string) Str::orderedUuid(),
             'name' => $input['name'],
@@ -478,30 +501,10 @@ class CentralAuthControllers extends Controller {
             'is_approved' => 1,
             'status' => 1,
             'two_auth' => 0,
+            'is_old' => $isOld,
+            'is_synced' => 0,
         ]);
 
-        $baseUrl = 'https://whatsloop.net/api/v1/';
-
-        // Get User Details
-        $mainURL = $baseUrl.'user-details';
-        $isOld = 0;
-
-        $data = ['phone' => str_replace('+','',$input['phone']) /*'966570116626'*/];
-        $result =  \Http::post($mainURL,$data);
-        if($result->ok() && $result->json()){
-            $data = $result->json();
-            if($data['status'] == true){
-                // Begin Sync
-                $isOld = 1;
-            }
-        }
-
-        if(isset($input['old']) && $input['old'] == 'on'){
-            $centralUser->update([
-                'is_old' => $isOld,
-                'is_synced' => 0,
-            ]);
-        }
         
         \DB::connection('main')->table('tenant_users')->insert([
             'tenant_id' => $tenant->id,
@@ -535,8 +538,11 @@ class CentralAuthControllers extends Controller {
         });
 
         Session::flash('success', trans('main.addSuccess'));
-
         $token = tenancy()->impersonate($tenant,$user->id,'/menu');
+        if($isOld){
+            $token = tenancy()->impersonate($tenant,$user->id,'/sync');
+        }
+        
         Session::put('check_user_id',$user->id);
         return redirect(tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
             'token' => $token

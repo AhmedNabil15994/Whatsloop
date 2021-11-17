@@ -259,13 +259,6 @@ class ApiModsControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'channel' => [
-                'label' => trans('main.channel'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'channel',
-                'anchor-class' => '',
-            ],
             'sender' => [
                 'label' => trans('main.sender'),
                 'type' => '',

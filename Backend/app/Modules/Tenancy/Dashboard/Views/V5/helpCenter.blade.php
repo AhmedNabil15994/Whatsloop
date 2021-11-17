@@ -3,7 +3,6 @@
 @section('title',trans('main.helpCenter'))
 
 @section('styles')
-<link rel="stylesheet" type="text/css" href="{{ asset('css/touches.css') }}">
 <style type="text/css" media="screen">
     .formNumbers .form.supportForm .content{
         background-color: #fff;
@@ -26,11 +25,11 @@
     <div class="form main supportForm">
         <ul class="btnsTabs" id="tabs1">
             <li id="tab1" class="active">{{ trans('main.techSupport') }}</li>
-            <li id="tab2">{{ trans('main.changeLogs') }}</li>
-            <li id="tab3">{{ trans('main.faq_title') }}</li>
+            <li id="tab2" class="hidden">{{ trans('main.changeLogs') }}</li>
+            <li id="tab3" class="hidden">{{ trans('main.faq_title') }}</li>
         </ul>
         <div class="tabs tabs1">
-            <div class="tab tab1">
+            <div class="tab tab1 active">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="content">
@@ -138,7 +137,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tab tab2">
+            <div class="tab tab2 hidden">
                 <div class="card changLogs">
                     <div class="row">
                         <div class="col-md-8 logs-col">
@@ -202,7 +201,7 @@
                     </div> 
                 </div>
             </div>
-            <div class="tab tab3">
+            <div class="tab tab3 hidden">
                 <div class="content">
                     <div class="helpCenter">
                         <h2 class="titleHelp">{{ trans('main.faq_title') }}</h2>

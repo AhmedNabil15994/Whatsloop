@@ -2,15 +2,22 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Session;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class Bot extends Model{
 
-    use \TraitsFunc;
+    use \TraitsFunc,SearchableTrait;
 
     protected $table = 'bots';
     protected $primaryKey = 'id';
     protected $fillable = ['id','channel','message_type','message','reply_type','reply','file_name','https_url','url_title','url_desc','url_image','whatsapp_no','lat','lng','address','webhook_url','status','created_by','created_at'];    
     public $timestamps = false;
+
+    protected $searchable = [
+        'columns' => [
+            'message' => 255,
+        ],
+    ];
 
     static function getPhotoPath($id, $photo,$tenantId=null) {
         return \ImagesHelper::GetImagePath('bots', $id, $photo,false,$tenantId);
@@ -20,6 +27,14 @@ class Bot extends Model{
         return self::NotDeleted()
             ->where('id', $id)
             ->first();
+    }
+
+    static function findBotMessage($langPref,$senderMessage){
+        $botObj = self::NotDeleted()->where('status',1)->where('lang',$langPref)->where('message_type',1)->search($senderMessage)->first();
+        if(!$botObj){
+            $botObj = self::NotDeleted()->where('status',1)->where('lang',$langPref)->where('message_type',2)->search($senderMessage, null, true)->first();
+        }
+        return $botObj;
     }
 
     static function dataList($status=null) {

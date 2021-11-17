@@ -55,9 +55,9 @@ class LiveChatControllers extends Controller {
     public function pinChat(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -66,7 +66,6 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->pinChat($data);
         $result = $result->json();
-
         if($result['status']['status'] != 1){
             if( $result['status']['message'] != 'chat already pinned'){
                 return \TraitsFunc::ErrorMessage($result['status']['message']);
@@ -79,7 +78,7 @@ class LiveChatControllers extends Controller {
         $dialogObj->save();
 
         broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
-        $dataList['data'] = $result['data'];
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);        
     }
@@ -87,9 +86,9 @@ class LiveChatControllers extends Controller {
     public function unpinChat(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -109,7 +108,7 @@ class LiveChatControllers extends Controller {
         $dialogObj->save();
 
         broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
-        $dataList['data'] = $result['data'];
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);      
     }
@@ -122,14 +121,14 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
 
-        // $is_admin = IS_ADMIN;
-        // $user_id = USER_ID; 
-        // if(!$is_admin){
-        //     $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-        //     if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-        //         ChatEmpLog::newLog($input['chatId']);
-        //     }
-        // }
+        $is_admin = IS_ADMIN;
+        $user_id = USER_ID; 
+        if(!$is_admin){
+            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+            if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
+                ChatEmpLog::newLog($input['chatId']);
+            }
+        }
 
         $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
         $dataList['status'] = \TraitsFunc::SuccessMessage();
@@ -139,9 +138,9 @@ class LiveChatControllers extends Controller {
     public function readChat(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -162,7 +161,7 @@ class LiveChatControllers extends Controller {
         ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 3]);
         broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
         
-        $dataList['data'] = $result['data'];
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);   
     }
@@ -173,9 +172,9 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['liveChatId'] = $input['chatId'];
@@ -193,7 +192,7 @@ class LiveChatControllers extends Controller {
         ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 2]);
         broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
 
-        $dataList['data'] = $result['data'];
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
         return \Response::json((object) $dataList);     
     }
@@ -201,18 +200,18 @@ class LiveChatControllers extends Controller {
     public function sendMessage(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
-        // $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
-        // $dailyCount = Session::get('dailyMessageCount');
-        // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        // if($dailyCount + $extraQuotas <= $messagesCount){
-        //     return \TraitsFunc::ErrorMessage('Messages Quota Per Day Exceeded!!!');
-        // }
+        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $dailyCount = Session::get('dailyMessageCount');
+        $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
+        if($dailyCount + $extraQuotas <= $messagesCount){
+            return \TraitsFunc::ErrorMessage('Messages Quota Per Day Exceeded!!!');
+        }
 
         if(!isset($input['type']) || empty($input['type']) ){
             return \TraitsFunc::ErrorMessage("Type Field Is Required");
@@ -222,24 +221,7 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Chat ID Field Is Required");
         }
 
-        $sendData['chatId'] = $input['chatId'];
-        $caption = '';
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $checkData['phone'] = str_replace('@c.us', '', $input['chatId']);
-        $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
-        $checkNoResult = $checkResult->json();
-
-        if($checkNoResult['status']['status'] != 1){
-            $status = 0;
-        }
-
-        if(isset($checkNoResult['data'])){
-            $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
-        }
-        if(!$status){   
-            return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
-        }
-
         $domain = explode('.', $request->getHost())[0];
         if(isset($input['messageType']) && $input['messageType'] == 'new'){
             $chats = explode(',', $input['chatId']);
@@ -263,6 +245,23 @@ class LiveChatControllers extends Controller {
             }
             $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
             return \Response::json((object) $dataList);       
+        }
+
+        $sendData['chatId'] = $input['chatId'];
+        $caption = '';
+        $checkData['phone'] = str_replace('@c.us', '', $input['chatId']);
+        $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
+        $checkNoResult = $checkResult->json();
+
+        if($checkNoResult['status']['status'] != 1){
+            $status = 0;
+        }
+
+        if(isset($checkNoResult['data'])){
+            $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
+        }
+        if(!$status){   
+            return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
         }
 
         if(isset($input['replyOn']) && !empty($input['replyOn'])){
@@ -291,12 +290,12 @@ class LiveChatControllers extends Controller {
                 $file_size = $image->getSize();
                 $file_size = $file_size/(1024 * 1024);
                 $file_size = number_format($file_size,2);
-                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                // $totalStorage = Session::get('storageSize');
-                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                // }
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
 
                 $myType = explode('/', $image->getMimeType())[1];
                 $message_type = \ImagesHelper::checkExtensionType($myType);
@@ -307,7 +306,6 @@ class LiveChatControllers extends Controller {
                 }            
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $sendData['filename'] = $fileName;
-                $bodyData = str_replace('http://whatsloop.localhost/public/','https://3caa-156-219-248-158.ngrok.io/',$bodyData);
                 $sendData['body'] = $bodyData;
                 if($message_type == 'photo'){
                     if(isset($input['caption']) && !empty($input['caption']) ){
@@ -325,12 +323,12 @@ class LiveChatControllers extends Controller {
                 $file_size = $image->getSize();
                 $file_size = $file_size/(1024 * 1024);
                 $file_size = number_format($file_size,2);
-                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                // $totalStorage = Session::get('storageSize');
-                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                // }
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
 
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
@@ -350,12 +348,12 @@ class LiveChatControllers extends Controller {
                 $file_size = $image->getSize();
                 $file_size = $file_size/(1024 * 1024);
                 $file_size = number_format($file_size,2);
-                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                // $totalStorage = Session::get('storageSize');
-                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                // }
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
                 
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
@@ -413,12 +411,12 @@ class LiveChatControllers extends Controller {
                 $file_size = $image->getSize();
                 $file_size = $file_size/(1024 * 1024);
                 $file_size = number_format($file_size,2);
-                // $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                // $totalStorage = Session::get('storageSize');
-                // $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                // if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                //     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                // }
+                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                $totalStorage = Session::get('storageSize');
+                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                }
 
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
                 if($image == false || $fileName == false){
@@ -469,14 +467,14 @@ class LiveChatControllers extends Controller {
             $dialogObj = ChatDialog::getData($dialog);
             broadcast(new SentMessage($domain , $dialogObj ));
         
-            // $is_admin = IS_ADMIN;
-            // $user_id = USER_ID; 
-            // if(!$is_admin){
-            //     $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-            //     if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-            //         ChatEmpLog::newLog($input['chatId'],3);
-            //     }
-            // }
+            $is_admin = IS_ADMIN;
+            $user_id = USER_ID; 
+            if(!$is_admin){
+                $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+                if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
+                    ChatEmpLog::newLog($input['chatId'],3);
+                }
+            }
         }else{
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
@@ -487,17 +485,17 @@ class LiveChatControllers extends Controller {
     }
 
     public function liveChatLogout(){
-        // $is_admin = IS_ADMIN;
-        // $user_id = USER_ID;
-        // if(!$is_admin){
-        //     $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
-        //     if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
-        //         $lastObj->ended = 1;
-        //         $lastObj->ended_at = DATE_TIME;
-        //         $lastObj->save();
-        //         ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
-        //     }
-        // }
+        $is_admin = IS_ADMIN;
+        $user_id = USER_ID;
+        if(!$is_admin){
+            $lastObj = ChatEmpLog::where('user_id',$user_id)->where('type','!=',3)->orderBy('id','DESC')->first();
+            if($lastObj != null && $lastObj->ended == 0 && $lastObj->type == 1){
+                $lastObj->ended = 1;
+                $lastObj->ended_at = DATE_TIME;
+                $lastObj->save();
+                ChatEmpLog::newRecord($lastObj->chatId,2,$user_id,date('Y-m-d H:i:s'),1);
+            }
+        }
         return redirect()->to('/dashboard');
     }
 
@@ -511,9 +509,9 @@ class LiveChatControllers extends Controller {
     public function labelChat(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -555,9 +553,9 @@ class LiveChatControllers extends Controller {
     public function unlabelChat(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -618,9 +616,9 @@ class LiveChatControllers extends Controller {
     public function updateContact(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -669,7 +667,7 @@ class LiveChatControllers extends Controller {
 
     public function moderators(Request $request) {
         $input = \Request::all();
-        $dataList = User::dataList(2);
+        $dataList = User::getModerators();
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);        
     }
@@ -677,9 +675,9 @@ class LiveChatControllers extends Controller {
     public function assignMod(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
@@ -689,7 +687,7 @@ class LiveChatControllers extends Controller {
         }
 
         $modObj = User::getOne($input['modId']);
-        if($modObj == null || $modObj->group_id != 2){
+        if($modObj == null){
             return \TraitsFunc::ErrorMessage('Invalid Moderator');
         }
 
@@ -713,9 +711,9 @@ class LiveChatControllers extends Controller {
     public function removeMod(Request $request) {
         $input = \Request::all();
 
-        // if($this->checkPerm()){
-        //     return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        // }
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");

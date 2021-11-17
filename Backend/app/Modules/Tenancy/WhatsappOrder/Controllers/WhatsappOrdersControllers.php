@@ -97,24 +97,28 @@ class WhatsappOrdersControllers extends Controller {
         ];
         $input = \Request::all();
         if(isset($input['refresh']) && !empty($input['refresh']) && $input['refresh'] == 'refresh'){
-            $urlData['businessId'] = str_replace('+','',User::first()->phone);
             $mainWhatsLoopObj = new \MainWhatsLoop();
-            $result = $mainWhatsLoopObj->getProducts($urlData);
-            $result = $result->json();
-            if(isset($result['data']) && isset($result['data']['products'])){
-                $products = $result['data']['products'];
-                foreach($products as $oneProduct){
-                    $productObj = Product::getOne($oneProduct['id']);
-                    if(!$productObj){
-                        $productObj = new Product;
-                    }
+            $userRequestData = $mainWhatsLoopObj->me();
+            $userRequestData = $userRequestData->json();
+            if($userRequestData && isset($userRequestData['status']) && $userRequestData['status'] == 1){
+                $urlData['businessId'] = str_replace('@c.us','',$userRequestData['data']['id']);
+                $result = $mainWhatsLoopObj->getProducts($urlData);
+                $result = $result->json();
+                if(isset($result['data']) && isset($result['data']['products'])){
+                    $products = $result['data']['products'];
+                    foreach($products as $oneProduct){
+                        $productObj = Product::getOne($oneProduct['id']);
+                        if(!$productObj){
+                            $productObj = new Product;
+                        }
 
-                    $productObj->product_id =  $oneProduct['id'];
-                    $productObj->name =  $oneProduct['name'];
-                    $productObj->currency =  $oneProduct['currency'];
-                    $productObj->price =  $oneProduct['price'];
-                    $productObj->images =  serialize($oneProduct['images']);
-                    $productObj->save();
+                        $productObj->product_id =  $oneProduct['id'];
+                        $productObj->name =  $oneProduct['name'];
+                        $productObj->currency =  $oneProduct['currency'];
+                        $productObj->price =  $oneProduct['price'];
+                        $productObj->images =  serialize($oneProduct['images']);
+                        $productObj->save();
+                    }
                 }
             }
         }

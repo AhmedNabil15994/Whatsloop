@@ -11,7 +11,7 @@ return [
 	'password' => 'كلمة المرور',
 	'passwordPlaceHolder' => 'ادخل كلمة المرور',
 	'code' => 'رمز التحقق',
-	'checkCode' => 'التحقق التحقق من الرمز',
+	'checkCode' => 'التحقق من الرمز',
 	'codePlaceHolder' => 'ادخل رمز التحقق الخاص بك',
 	'loginButton' => 'تسجيل الدخول',
 	'forgotPassword' => 'نسيت كلمة المرور؟',

@@ -17,7 +17,7 @@
                 {{-- {{ dd($value) }} --}}
                 <td>{{ $value->id }}</td>
                 <td>{{ $value->group }}</td>
-                <td>{{ $value->phone }}</td>
+                <td>{{ $value->phone2 }}</td>
                 <td>{{ $value->name }}</td>
                 <td>{{ $value->email }}</td>
                 <td>{{ $value->country }}</td>

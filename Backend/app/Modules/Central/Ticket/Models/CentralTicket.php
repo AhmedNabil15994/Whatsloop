@@ -85,13 +85,13 @@ class CentralTicket extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $client = CentralUser::getData($source->Client);
+        $client = $source->Client ? CentralUser::getData($source->Client) : null;
         $data->id = $source->id;
         $data->subject = $source->subject;
         $data->description = $source->description;
         $data->user_id = $source->user_id;
-        $data->client = $source->user_id != null ? $client->name : '';
-        $data->client_image = $source->user_id != null ? $client->photo : '';
+        $data->client = $source->Client != null ? $client->name : '';
+        $data->client_image = $source->Client != null ? $client->photo : '';
         $data->department_id = $source->department_id;
         $data->department = $source->department_id != null ? $source->Department->{'title_'.LANGUAGE_PREF} : '';
         $data->priority_id = $source->priority_id;

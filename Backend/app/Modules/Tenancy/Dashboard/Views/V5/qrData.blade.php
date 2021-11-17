@@ -217,6 +217,7 @@
 <script>
 Livewire.on('statusChanged', postId => {
     document.querySelector('#step2 .btnNext:not(.btnPrev):not(.finish)').click();
+    window.location.href= '/dashboard';
 })
 </script>
 

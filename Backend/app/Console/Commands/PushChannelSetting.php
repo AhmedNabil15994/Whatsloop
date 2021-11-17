@@ -57,6 +57,7 @@ class PushChannelSetting extends Command
                     'statusNotificationsOn' => 1,
                     'ackNotificationsOn' => 1,
                     'chatUpdateOn' => 1,
+                    'ignoreOldMessages' => 1,
                     'videoUploadOn' => 1,
                     'guaranteedHooks' => 1,
                     'parallelHooks' => 1,

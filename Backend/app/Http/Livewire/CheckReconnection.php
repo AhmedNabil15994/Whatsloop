@@ -23,15 +23,17 @@ class CheckReconnection extends Component
     }
 
     public function render(){   
-        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
         \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
+        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
 
         $data = [];
         $data['haveImage'] = 0;
+        $data['dis'] = 0;
         $varObj = Variable::getVar('QRIMAGE') ;
 
         if(isset($userStatusObj) && $userStatusObj->status == 4 && $varObj != null){            
             $data['haveImage'] = 1;
+            $data['dis'] = 1;
         }
             
         $userAddonsTutorial = [];

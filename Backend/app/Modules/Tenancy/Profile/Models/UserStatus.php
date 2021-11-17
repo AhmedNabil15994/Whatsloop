@@ -34,7 +34,7 @@ class  UserStatus extends Model{
                         $query->where('created_at','>=', $input['from'].' 00:00:00')->where('created_at','<=',$input['to']. ' 23:59:59');
                     }
                 });
-        $source->orderBy('id','DESC');
+        $source->select(\DB::raw('*, max(created_at) as created_at'))->groupBy(\DB::raw('DATE(created_at)'),\DB::raw('status'))->orderBy('created_at','DESC');
         return self::getObj($source);
     }
 

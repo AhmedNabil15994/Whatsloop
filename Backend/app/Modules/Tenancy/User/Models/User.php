@@ -46,6 +46,8 @@ class User extends Authenticatable implements Syncable
         'is_approved',
         'global_id',
         'status',
+        'is_old',
+        'is_synced',
         'created_at',
         'created_by',
         'updated_by',
@@ -162,6 +164,11 @@ class User extends Authenticatable implements Syncable
         return self::generateObj($source,$langPref);
     }
 
+    static function getModerators(){
+        $source = self::NotDeleted();
+        return self::generateObj($source,null);
+    }
+
     static function generateObj($source,$langPref=null){
         $sourceArr = $source->get();
 
@@ -217,7 +224,7 @@ class User extends Authenticatable implements Syncable
         $data->emergency_number = $source->emergency_number;
         $data->two_auth = $source->two_auth;
         $data->membership_id = $source->membership_id;
-        $data->membership = $source->Membership != null ? $source->Membership->{'title_'.LANGUAGE_PREF} : '';
+        $data->membership = $source->Membership != null ? $langPref == null ? $source->Membership->{'title_'.LANGUAGE_PREF} : $source->Membership->{'title_'.$langPref} : '';
         $data->addons = $source->addons;
         $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
@@ -288,21 +295,24 @@ class User extends Authenticatable implements Syncable
         session(['name' => $userObj->name]);
         session(['domain' => $userObj->domain]);
         session(['is_admin' => $isAdmin]);
-        session(['group_name' => $userObj->Group->name_ar]);
+        session(['group_name' => $userObj->Group != null ? $userObj->Group->name_ar : ""]);
         // $channels = User::getData($userObj)->channels;
         $channels = $userObj->channels != null ? unserialize($userObj->channels) : [];
-        session(['channel' => !empty($channels) ? $channels[0] : null]);
-        session(['channelCode' => !empty($channels) ? CentralChannel::where('id',$channels[0])->first()->instanceId : null ]);
+        $channelObj = isset($channels[0]) ? CentralChannel::where('id',$channels[0])->first() : [];
+        session(['channel' => !empty($channels) ? isset($channels[0]) ? $channels[0] : null : null]);
+        session(['channelCode' => !empty($channels) ? $channelObj != null ? $channelObj->instanceId : '' : null ]);
         session(['membership' => $userObj->membership_id]);
         if($isAdmin){
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
             $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
             $invoiceObj = Invoice::getDisabled($userObj->id);
+            $rootId = $userObj->id;
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
             $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
             $invoiceObj = Invoice::getDisabled($mainUser->id);
+            $rootId = $mainUser->id;
         }
         session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
         session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
@@ -311,6 +321,7 @@ class User extends Authenticatable implements Syncable
         session(['tenant_id' => $tenantObj->tenant_id]);
         session(['is_old' => $userObj->is_old]);
         session(['is_synced' => $userObj->is_synced]);
+        session(['rootId' => $rootId]);
         session(['invoice_id' => $invoiceObj == null ? 0 : $invoiceObj->id]);
 
         // Get Membership and Extra Quotas Features

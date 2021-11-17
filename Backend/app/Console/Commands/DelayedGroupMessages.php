@@ -52,7 +52,8 @@ class DelayedGroupMessages extends Command
                     dispatch(new GroupMessageJob($data,(object)$dataObj));
                 });
             }
+            $message->later = 0;
+            $message->save();
         }
-        
     }
 }

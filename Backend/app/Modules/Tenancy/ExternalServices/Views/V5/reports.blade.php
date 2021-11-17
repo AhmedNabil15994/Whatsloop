@@ -16,7 +16,7 @@
 <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
 
 <div class="transmitters bill">
-    <div class="content">
+    <div class="content transmitterHead">
         <div class="row">
             <div class="col-md-6">
                 <h2 class="titleBills">{{ $data->designElems['mainData']['title'] }}</h2>

@@ -34,7 +34,7 @@
                       : 'https://whatsloop.net/resources/Gallery/UserDefault.png'
                   "
                   />
-                  <h2 class="name">{{ contact.name }}</h2>
+                  <h2 class="name">{{ chatName }}</h2>
               </div>
               
               <div class="contactBody">
@@ -51,12 +51,64 @@
                       <div class="desc">
                         <textarea :value="contact.contact_details.notes" placeholder="ملاحظات العميل" @blur="updateContact('notes',$event.target.value)"></textarea>
                       </div>
+                      <ul class="detailsSuper">
+                            <!-- v-if="supervisors.length > 0" -->
+                            <li class="supervisor" >تخصيص مشرف 
+
+                              <!-- v-if="supervisorValue.length !== supervisors.length" -->
+                              <multiselect 
+                              placeholder="أضف المشرف"
+                              tag-placeholder=""
+                              deselectLabel="x"
+                              selectLabel="اضغط للاضافة"
+                              selectedLabel="x"
+                              @select="plus = true"
+                              v-model="supervisorValue" 
+                              :multiple="true" 
+                              track-by="id"
+                              :taggable="true" label="name" :options="supervisors">
+                              </multiselect>
+
+                              <div class="clearfix">
+                                <span v-for="(sVal,index) in supervisorValue" :key="index" class="mat-success multiselect__tag">
+                                  <span>{{ sVal.name }}</span> 
+                                  <i aria-hidden="true" @click="removeSuper(sVal.id)"  class="multiselect__tag-icon"></i>
+                                </span>
+                              </div>
+                            
+                            </li>
+                            <!-- v-if="options.length > 0" -->
+                            <li >التصنيفات 
+
+                              <!-- v-if="value.length !== options.length" -->
+                              <multiselect 
+                              placeholder="حدد اختيارك"
+                              tag-placeholder=""
+                              deselectLabel="x"
+                              selectLabel="اضغط للاضافة"
+                              selectedLabel="x"
+                              @select="plus = true"
+                              v-model="value" 
+                              :multiple="true" 
+                              track-by="color_id"
+                              :taggable="true" label="name_ar" :options="options">
+                              </multiselect>
+
+                              <div class="clearfix">
+                                <span v-for="(val,index) in value" :key="index" :class="val.labelClass"  class="multiselect__tag">
+                                  <span>{{ val.name_ar }}</span> 
+                                  <i aria-hidden="true" @click="removeLabel(val.color_id,val.labelId)" tabindex="1" class="multiselect__tag-icon"></i>
+                                </span>
+                              </div>
+                            
+                            </li>
+                        </ul>
                       <div class="contactDetails">
                       <!--<i class="fa edit " :class="editDetails ? 'fa-close' : 'fa-edit'" @click="editDetails = !editDetails"></i>-->
                           <h2 class="title" @click="infoUser = !infoUser"><i class="fa fa-user"></i> بيانات العميل</h2>
                           <ul class="details" v-if="infoUser">
                             <li>الاسم 
-                            <input type="text" :value="contact.name" @blur="updateContact('name',$event.target.value)" />
+                            <input type="text" :value="chatName" @blur="updateContact('name',$event.target.value)" />
                             </li>
                             <li>رقم الجوال 
                             <input type="text" :value="contact.contact_details.phone" class="numb" disabled/>
@@ -79,52 +131,6 @@
                                 <option value="1" :selected="contact.contact_details.lang === 1">English</option>
                               </select>
                             </div>
-                            </li>
-                            <li class="supervisor" v-if="supervisors.length > 0">تخصيص مشرف 
-                              <br>
-                              <div class="clearfix">
-                                <span v-for="(sVal,index) in supervisorValue" :key="index" class="mat-success multiselect__tag">
-                                  <span>{{ sVal.name }}</span> 
-                                  <i aria-hidden="true" @click="removeSuper(sVal.id)"  class="multiselect__tag-icon"></i>
-                                </span>
-                              </div>
-                              <multiselect v-if="supervisorValue.length !== supervisors.length"
-                              placeholder="أضف المشرف"
-                              tag-placeholder=""
-                              deselectLabel="x"
-                              selectLabel="اضغط للاضافة"
-                              selectedLabel="x"
-                              @select="plus = true"
-                              v-model="supervisorValue" 
-                              :multiple="true" 
-                              track-by="id"
-                              :taggable="true" label="name" :options="supervisors">
-                              </multiselect>
-                            
-                            
-                            </li>
-                            <li v-if="options.length > 0">التصنيفات 
-                              <br>
-                              <div class="clearfix">
-                                <span v-for="(val,index) in value" :key="index" :class="val.labelClass"  class="multiselect__tag">
-                                  <span>{{ val.name_ar }}</span> 
-                                  <i aria-hidden="true" @click="removeLabel(val.color_id,val.labelId)" tabindex="1" class="multiselect__tag-icon"></i>
-                                </span>
-                              </div>
-                              <multiselect v-if="value.length !== options.length"
-                              placeholder="حدد اختيارك"
-                              tag-placeholder=""
-                              deselectLabel="x"
-                              selectLabel="اضغط للاضافة"
-                              selectedLabel="x"
-                              @select="plus = true"
-                              v-model="value" 
-                              :multiple="true" 
-                              track-by="color_id"
-                              :taggable="true" label="name_ar" :options="options">
-                              </multiselect>
-                            
-                            
                             </li>
                           </ul>
                           
@@ -156,7 +162,8 @@ export default {
     props:{
       "contact":{required:true},
       "openContact":{},
-      "changename":{},
+      "changeNameContact":{},
+      "changeModeratorsC":{},
       "options":{},
       "supervisors":{}
     },
@@ -242,6 +249,14 @@ export default {
                   this.$emit("input",value);
                 }*/
           });
+
+          if(name == 'name') {
+              this.$store.dispatch("chatNameAction", {chatName:value});
+            
+              this.$emit("changeNameC",value);
+          }
+
+
       },
       pinned(pinned) {
           var data = new FormData();
@@ -304,7 +319,10 @@ export default {
           data.append('chatId',this.contact.id);
           data.append('modId', id);
           this.$http.post(this.urlApi+`removeMod`,data).then(() => {
+            this.$emit("changeModeratorsC",this.supervisorValue);
           });
+
+          
             
       },
       addSuper(id) {
@@ -312,7 +330,10 @@ export default {
           data.append('chatId',this.contact.id);
           data.append('modId', id);
           this.$http.post(this.urlApi+`assignMod`,data).then(() => {
+            this.$emit("changeModeratorsC",this.supervisorValue);
           });
+
+           
             
       }
     },
@@ -323,6 +344,9 @@ export default {
     computed:{
       urlApi() {
           return this.$store.getters.urlApi;
+      },
+      chatName() {
+          return this.$store.getters["chatName"];
       }
     }
 }
@@ -486,6 +510,11 @@ cursor:default
   font-weight:normal
 }
 
+.detailsSuper li
+{
+  margin-bottom:20px;
+}
+
 .contactDiv .contactHead
 {
     padding:20px 20px 25px;
@@ -511,6 +540,7 @@ cursor:default
     color:#000;
     font-weight:normal;
     font-family: "Tajawal-Bold";
+    direction:ltr
 }
 
 .contactDiv .desc

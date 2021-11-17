@@ -7,7 +7,7 @@
                 
                 <div  class="logo" v-if="UserData === null">
                     <span class="logo-sm">
-                        <img src="public/images/logo.svg" alt="" height="30">
+                        <img src="/images/logo.svg" alt="" height="30">
                     </span>
                 </div>
             </div>
@@ -58,7 +58,7 @@
             :InstanceNumber="InstanceNumber"
             ></list-chats>
         <div class="startChat w-100 flex-lg-column overflow-hidden " v-if="chatId === 0">
-            <img v-if="chatId === 0" src="public/images/logo.svg"/>
+            <img v-if="chatId === 0" src="/images/logo.svg"/>
         </div>
         <!-- end chat-leftsidebar -->
         <transition name="slide">
@@ -72,11 +72,11 @@
         </transition>
         <!-- end chat-leftsidebar -->
         <contact 
-            :changename="newName"
-            v-model="newName"
+            v-on:changeNameC="changeNameMethod"
+            v-on:changeModeratorsC="changeModsMethod"
+            v-on:opencontct="opencontct()" 
             :options="options"
             :supervisors="supervisors"
-            v-on:opencontct="opencontct()" 
             v-if="getContact.length !== 0 && openContact == true && chatId !== 0" 
             :openContact="openContact" 
             :contact="getContact"></contact>
@@ -108,22 +108,18 @@ export default {
             newMsg:[],
             UserData:null,
             InstanceNumber:null,
-            newName:"",
             openChat:false,
             openContact:false,
             openMainMsgs:false,
             totalCount:false,
             options:[],
-            supervisors:[]
+            supervisors:[],
+            newNameContact:"",
+            moderatorsContact:[]
         }
     },
     created() {
-        window.addEventListener("scroll", this.handleScroll);
 
-        var x = window.matchMedia("(max-width: 991px)")
-        if (x.matches) { // If media query matches
-            window.location.replace("https://whatsloop.net/app/mobilelivechat/");
-        }
     },
     mounted () {
 
@@ -138,28 +134,28 @@ export default {
 
         this.getChats(this.load);
 
-        var domain =  window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
-        
-        this.testBroadCastingSentMessage(domain);
-        this.testBroadCastingIncomingMessage(domain);
-        this.testBroadCastingBotMessage(domain);
-        this.testBroadUpdateDialogPinStatus(domain);
-        this.testBroadUpdateMessageStatus(domain);
-        this.testBroadUpdateChatReadStatus(domain);
+     
+        var domain = window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+      this.testBroadCastingSentMessage(domain);
+      this.testBroadCastingIncomingMessage(domain);
+      this.testBroadCastingBotMessage(domain);
+      this.testBroadUpdateDialogPinStatus(domain);
+      this.testBroadUpdateMessageStatus(domain);
+      this.testBroadUpdateChatReadStatus(domain);
+      this.testBroadUpdateChatLabelStatus(domain);
 
-        this.$http.get(this.urlApi+`labels`)
-            .then((res) => {
-                this.options = res.data.data;
-        });
+      this.$http.get(this.urlApi+`labels`)
+      .then((res) => {
+              this.options = res.data.data;
+      });
 
-        this.$http.get(this.urlApi+`moderators`)
-            .then((res) => {
-                this.supervisors = res.data.data;
-        });
+      this.$http.get(this.urlApi+`moderators`)
+      .then((res) => {
+              this.supervisors = res.data.data;
+      });
 
-    },
-    destroyed() {
-        window.removeEventListener("scroll", this.handleScroll);
+
+
     },
     watch:{
         newMsg:{
@@ -184,14 +180,21 @@ export default {
             },
             deep:true
         },
-        newName:{
+        newNameContact:{
             handler() {
                 this.changeName();
             },
             deep:true
         },
+        moderatorsContact:{
+            handler() {
+                this.changeMods();
+            },
+            deep:true
+        },
         getContact:{
             handler() {
+                
                 if(this.getContact.labelsColors && this.getContact.labelsText) {
                     this.changeLabels();
                 }
@@ -201,38 +204,44 @@ export default {
         }
     },
     methods: {
-        handleScroll () {
-            this.$store.dispatch("setCurrentScrollY", window.scrollY);
-        },
-
         testBroadCastingSentMessage (domain) {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewSentMessage')
             .listen('SentMessage', (data) => {
-              console.log(data)
               this.searchPucher(data.message);
             })
           // End socket.io listener
         },
         testBroadCastingIncomingMessage (domain) {
-
+                
             // Start socket.io listener
             window.Echo.channel(domain+'-NewIncomingMessage')
             .listen('IncomingMessage', (data) => {
+               // console.log(data)
                 if(this.chatId !== data.message.id) {
-                    //var audio = new Audio(require('/swiftly.mp3')); // path to file
-                    //audio.play();
+                    var audio = new Audio('/ring.mpeg'); // path to file
+                    audio.play();
                 }
-                console.log(data)
                 this.searchPucher(data.message);
             });
           // End socket.io listener
         },
-        testBroadCastingBotMessage (domain) {
+        /*testBroadCastingBotMessage (domain) {
         // Start socket.io listener
         window.Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
+                    data.message.lastMessage.body = data.message.lastMessage.bot_details.message;
+                    this.searchPucher(data.message);
+                
+            })
+          // End socket.io listener
+        },*/
+        testBroadCastingBotMessage (domain) {
+        // Start socket.io listener
+          window.Echo.channel(domain+'-NewBotMessage')
+            .listen('BotMessage', (data) => {
                     //data.message.lastMessage.body = data.message.lastMessage.bot_details.message;
+                    // edited by nabil
                     if(data.message.lastMessage.bot_details.reply_type == 2){
                         if(data.message.lastMessage.whatsAppMessageType == 'image'){
                             data.message.lastMessage.caption = data.message.lastMessage.bot_details.message;
@@ -241,18 +250,18 @@ export default {
                             data.message.lastMessage.caption = data.message.lastMessage.bot_details.file_name;
                         }
                     }
-                    console.log(data)
+                   // console.log(data)
+                    // end nabil edit
                     this.searchPucher(data.message);
             })
           // End socket.io listener
         },
         testBroadUpdateDialogPinStatus (domain) {
-
+           
             // Start socket.io listener
             window.Echo.channel(domain+'-UpdateDialogPinStatus')
             .listen('DialogPinStatus', (data) => {
-              console.log(data)
-      
+                
                 for (var remBin in this.DialogsBin) {
                     if(this.DialogsBin[remBin] === data.chatId.id) {
                         this.DialogsBin.splice(remBin,1);              
@@ -267,6 +276,17 @@ export default {
                     for (var iChat1 in this.chats.Dialogs) {
                         if(data.chatId.id ===  this.chats.Dialogs[iChat1].id) {
                             this.chats.Dialogs[iChat1].is_pinned = 0;
+                        }
+                    }  
+
+                    for (var iChat11 in this.newMsg) {
+                        if(data.chatId.id ===  this.newMsg[iChat11].id) {
+                            this.newMsg[iChat11].is_pinned = 0;
+                        }
+                    }  
+                   for (var iChat33 in this.searchDiv) {
+                        if(data.chatId.id ===  this.searchDiv[iChat33].id) {
+                            this.searchDiv[iChat33].is_pinned = 0;
                         }
                     }  
                     
@@ -290,6 +310,7 @@ export default {
                     }  
                     for (var iChat2 in this.newMsg) {
                         if(data.chatId.id ===  this.newMsg[iChat2].id) {
+                            //console.log(data.chatId.id  +' ' + this.newMsg[iChat2].id)
                             this.newMsg[iChat2].is_pinned = 1;
                             if(!this.DialogsBin.includes(data.chatId.id)) {
                                 this.chatsPin.push(data.chatId);
@@ -316,8 +337,6 @@ export default {
             // Start socket.io listener
             window.Echo.channel(domain+'-UpdateMessageStatus')
                 .listen('MessageStatus', (data) => {
-              console.log(data)
-
                     this.chatsPin.forEach((element) => {
                         if (element.id) {
                             if (element.id.search(data.chatId) !== -1) {
@@ -354,9 +373,8 @@ export default {
         // Start socket.io listener
           window.Echo.channel(domain+'-UpdateChatReadStatus')
             .listen('ChatReadStatus', (data) => {
-              console.log(data)
                     
-                    this.chats.chatsPin.forEach((element) => {
+                    this.chatsPin.forEach((element) => {
                         if (element.id.search(data.chatId.id) !== -1) {
                             element.is_read =  0;
                             element.unreadCount = 0;
@@ -412,7 +430,34 @@ export default {
                     }  */
             })
           // End socket.io listener
-      },
+        },
+        testBroadUpdateChatLabelStatus (domain) {
+        // Start socket.io listener
+          window.Echo.channel(domain+'-UpdateChatLabelStatus')
+            .listen('ChatLabelStatus', (data) => {
+                this.chatsPin.forEach((element) => {
+                    if (element.id.search(data.chatId.id) !== -1) {
+                        element.labels =  data.chatId.labels;
+                    }
+                });
+                this.chats.Dialogs.forEach((element) => {
+                    if (element.id.search(data.chatId.id) !== -1) {
+                        element.labels =  data.chatId.labels;
+                    }
+                });
+                this.newMsg.forEach((element) => {
+                    if (element.id.search(data.chatId.id) !== -1) {
+                        element.labels =  data.chatId.labels;
+                    }
+                });
+                this.searchDiv.forEach((element) => {
+                    if (element.id.search(data.chatId.id) !== -1) {
+                        element.labels =  data.chatId.labels;
+                    }
+                });
+            })
+          // End socket.io listener
+        },
         openCht() {
                 this.openChat = false;
                 this.$store.dispatch("chatIdAction", {id:0});
@@ -425,40 +470,10 @@ export default {
             this.openContact = !this.openContact
         },
         logOut() {
-          window.location.href = this.urlApi + 'liveChatLogout';
+          window.location.href = '/livechat/liveChatLogout';
         },
         getChats(page) {
             this.$http.get(this.urlApi+`dialogs?limit=30&page=${page}`)
-            .then((res) => {
-                if( res.data.pagination.last_page >=  page) {
-                        var dataRes = res.data.data;
-                       /* for (var i in dataRes) {
-                            if(this.DialogID.includes(dataRes[i].id)) {
-                                dataRes.splice(i, 1);
-                            } 
-                        } */
-                        for (var p in res.data.pinnedConvs) {
-                            if(!this.DialogsBin.includes(res.data.pinnedConvs[p].id)) {
-                                this.chatsPin.push(res.data.pinnedConvs[p]);
-                                this.DialogsBin.push(res.data.pinnedConvs[p].id);
-                            }
-                        } 
-
-                        
-
-                        this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
-                      //  this.UserData = res.data.UserData;
-                       // this.InstanceNumber = res.data.InstanceNumber;
-                        this.loading = false;
-                    }
-                    else {
-                        this.totalCount = true
-                    }
-                });
-             
-        },
-        getMine(page) {
-            this.$http.get(this.urlApi+`dialogs?limit=30&mine=1&page=${page}`)
             .then((res) => {
                 if( res.data.pagination.last_page >=  page) {
                         var dataRes = res.data.data;
@@ -495,8 +510,28 @@ export default {
             this.load = 0;
             this.chats.Dialogs = null;
             this.loading = true;
-            this.getChats(1);
-            
+            this.$http.get(`https://whatsloop.net/api/v1/dialogs/page/0`,{
+            headers: {'Authorization':'Bearer ' + localStorage.getItem('token')}})
+            .then((res) => {
+                var dataRes = res.data.Dialogs;
+                for (var i in dataRes) {
+                    if(this.DialogID.includes(dataRes[i].DialogID)) {
+                        dataRes.splice(i, 1);
+                    } 
+
+                    if(dataRes[i].is_pinned === 1){
+                        this.chatsPin.push(dataRes[i]);
+ 
+                    }
+                    if(res.data.Dialogs[i].DialogID === this.chatId) {
+                        res.data.Dialogs[i].unRead = "";
+                    }
+                }   
+                this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
+                this.UserData = res.data.UserData;
+                this.InstanceNumber = res.data.InstanceNumber;
+                this.loading = false;
+            });
         
         },
         loadMore() {
@@ -564,56 +599,92 @@ export default {
 
         },
         changeName() {
-            for (var i in this.chats.Dialogs) {
-                if(this.getContact.id ===  this.chats.Dialogs[i].DialogID) {
-                    this.chats.Dialogs[i].Name_ar = this.newName
-                } 
-            }  
-            for (var c in this.chatsPin) {
-                if(this.getContact.id ===  this.chatsPin[c].DialogID) {
-                    this.chatsPin[c].Name_ar = this.newName
-                } 
-            }   
-            for (var s in this.searchDiv) {
-                if(this.getContact.id ===  this.searchDiv[s].DialogID) {
-                    this.searchDiv[s].Name_ar = this.newName
-                } 
-            }   
-            for (var y in this.newMsg) {
-                if(this.getContact.id ===  this.newMsg[y].DialogID) {
-                    this.newMsg[y].Name_ar = this.newName
-                } 
-            }   
+            //console.log("test");
+            if(this.getContact.length !== 0) {
+                for (var i in this.chats.Dialogs) {
+                //    console.log(this.getContact.id +" - "+  this.chats.Dialogs[i].id)
+                    if(this.getContact.id ===  this.chats.Dialogs[i].id) {
+                        this.chats.Dialogs[i].chatName = this.chatName
+                    } 
+                }  
+                for (var c in this.chatsPin) {
+                    if(this.getContact.id ===  this.chatsPin[c].id) {
+                        this.chatsPin[c].chatName = this.chatName
+                    } 
+                }   
+                for (var s in this.searchDiv) {
+                    if(this.getContact.id ===  this.searchDiv[s].id) {
+                        this.searchDiv[s].chatName = this.chatName
+                    } 
+                }   
+                for (var y in this.newMsg) {
+                    if(this.getContact.id ===  this.newMsg[y].id) {
+                        this.newMsg[y].chatName = this.chatName
+                    } 
+                }   
+            }
+        },
+        changeMods() {
+            //console.log("test");
+            if(this.getContact.length !== 0) {
+                for (var i in this.chats.Dialogs) {
+                //    console.log(this.getContact.id +" - "+  this.chats.Dialogs[i].id)
+                    if(this.getContact.id ===  this.chats.Dialogs[i].id) {
+                        this.chats.Dialogs[i].moderators = this.moderatorsContact
+                    } 
+                }  
+                for (var c in this.chatsPin) {
+                    if(this.getContact.id ===  this.chatsPin[c].id) {
+                        this.chatsPin[c].moderators = this.moderatorsContact
+                    } 
+                }   
+                for (var s in this.searchDiv) {
+                    if(this.getContact.id ===  this.searchDiv[s].id) {
+                        this.searchDiv[s].moderators = this.moderatorsContact
+                    } 
+                }   
+                for (var y in this.newMsg) {
+                    if(this.getContact.id ===  this.newMsg[y].id) {
+                        this.newMsg[y].moderators = this.moderatorsContact
+                    } 
+                }   
+            }
         },
         changeLabels() {
             for (var i in this.chats.Dialogs) {
-                if(this.getContact.id ===  this.chats.Dialogs[i].DialogID) {
+                if(this.getContact.id ===  this.chats.Dialogs[i].id) {
                     this.chats.Dialogs[i].Labels = this.getContact.Labels;
                     this.chats.Dialogs[i].labelsColors = this.getContact.labelsColors;
                     this.chats.Dialogs[i].labelsText = this.getContact.labelsText;
                 } 
             }   
             for (var c in this.chatsPin) {
-                if(this.getContact.id ===  this.chatsPin[c].DialogID) {
+                if(this.getContact.id ===  this.chatsPin[c].id) {
                     this.chatsPin[c].Labels = this.getContact.Labels;
                     this.chatsPin[c].labelsColors = this.getContact.labelsColors;
                     this.chatsPin[c].labelsText = this.getContact.labelsText;
                 } 
             }  
             for (var s in this.searchDiv) {
-                if(this.getContact.id ===  this.searchDiv[s].DialogID) {
+                if(this.getContact.id ===  this.searchDiv[s].id) {
                     this.searchDiv[s].Labels = this.getContact.Labels;
                     this.searchDiv[s].labelsColors = this.getContact.labelsColors;
                     this.searchDiv[s].labelsText = this.getContact.labelsText;
                 } 
             }  
             for (var y in this.newMsg) {
-                if(this.getContact.id ===  this.newMsg[y].DialogID) {
+                if(this.getContact.id ===  this.newMsg[y].id) {
                     this.newMsg[y].Labels = this.getContact.Labels;
                     this.newMsg[y].labelsColors = this.getContact.labelsColors;
                     this.newMsg[y].labelsText = this.getContact.labelsText;
                 } 
             }   
+        },
+        changeNameMethod(newVal){
+            this.newNameContact = newVal
+        },
+        changeModsMethod(newVal){
+            this.moderatorsContact = newVal
         },
         changePin() {
 /*
@@ -649,7 +720,7 @@ export default {
             */
         },
         openMain() {
-            this.openMainMsgs = false;
+            this.openMainMsgs = true;
             this.chats.Dialogs = null;
             this.load = 0;
             this.loading = true;
@@ -658,12 +729,29 @@ export default {
             this.DialogID = [];
             this.searchDiv = [];
             this.newMsg = [];
-            this.getMine(1);
+            this.$http.get(`https://whatsloop.net/api/v1/dialogs/mydialogs`,{
+            headers: {'Authorization':'Bearer ' + localStorage.getItem('token')}})
+            .then((res) => {
+                var dataRes = res.data.Dialogs;
+                for (var i in dataRes) {
+                    if(this.DialogID.includes(dataRes[i].DialogID)) {
+                        dataRes.splice(i, 1);
+                    } 
+                    if(res.data.Dialogs[i].DialogID === this.chatId) {
+                        res.data.Dialogs[i].unRead = "";
+                    }
+                }   
+                this.chats.Dialogs = dataRes;
+                this.loading = false;
+            });
         }
     },
     computed:{
         chatId() {
             return this.$store.getters.chatId;
+        },
+        chatName() {
+            return this.$store.getters.chatName;
         },
         getContact() {
             return this.$store.getters.contact;

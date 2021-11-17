@@ -131,13 +131,6 @@ class GroupMsgsControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'channel' => [
-                'label' => trans('main.channel'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'channel',
-                'anchor-class' => 'editable badge badge-dark',
-            ],
             'group' => [
                 'label' => trans('main.group'),
                 'type' => '',

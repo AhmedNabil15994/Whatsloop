@@ -185,7 +185,7 @@
                 </div>
             </div>
             <input type="hidden" name="payType" value="">
-            <input type="hidden" name="dataType" value="2">
+            <input type="hidden" name="dataType" value="{{ Request::segment(1) == 'updateSubscription' ? '3' : '2' }}">
             <input type="hidden" name="totals" value="{{ json_encode($data->totals) }}">
             <input type="hidden" name="data" value="{{ json_encode($data->data) }}">
             <div class="totalConfirm clearfix">

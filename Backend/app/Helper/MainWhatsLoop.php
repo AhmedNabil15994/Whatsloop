@@ -19,7 +19,7 @@ class MainWhatsLoop {
                 $myInstanceId = $channelObj->instanceId;
             }
         }else{
-            $channelObj = UserChannels::NotDeleted()->where('start_date','<=',date('Y-m-d'))->where('end_date','>=',date('Y-m-d'))->orderBy('id','DESC')->first();
+            $channelObj = UserChannels::NotDeleted()->orderBy('id','DESC')->first();
             if($channelObj){
                 $channelObj = CentralChannel::NotDeleted()->where('id',$channelObj->id)->first();
                 $myInstanceToken =  $channelObj->instanceToken;

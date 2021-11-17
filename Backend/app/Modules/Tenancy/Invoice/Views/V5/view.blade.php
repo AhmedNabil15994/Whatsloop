@@ -20,9 +20,6 @@
 				@if(IS_ADMIN && $data->data->status != 1)
 	            <a href="{{ URL::current().'/checkout' }}" class="btnNext"> {{ trans('main.checkout') }}</a>
 	            @endif
-	            @if(IS_ADMIN && $data->data->status == 1 && !in_array( date('d',strtotime($data->data->due_date)) , [1,28,29,30,31]) )
-	            <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="btnNext"> {{ trans('main.transferPayment') }}</a>
-	            @endif
 	            <div class="clearfix"></div>
 	        </div>
 		</div>
@@ -127,11 +124,11 @@
                             <td class="text-left">
                                 <p class="mb-2">
                                     @php 
-                                        $tax = Helper::calcTax($mainPrices);
+                                        $tax = Helper::calcTax($data->data->total);
                                     @endphp
 
                                     <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
-                                    <span class="float-right">{{ $mainPrices - $tax }} {{ trans('main.sar') }}</span>
+                                    <span class="float-right">{{ $data->data->total - $tax }} {{ trans('main.sar') }}</span>
                                     <div class="clearfix"></div>
                                 </p>
                                 <p class="mb-2">

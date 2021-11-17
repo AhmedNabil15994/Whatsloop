@@ -23,6 +23,7 @@
         <i class="flaticon-menu-1 openProfile"></i>
         <div class="profileStyle">
             <div class="head">
+                <i class="fa fa-angle-left iconClose"></i>
                 <i class="icon flaticon-user-3"></i>
                 <h2 class="name">{{ FULL_NAME }}</h2>
                 <span class="account">{{ GROUP_NAME }}</span>
@@ -49,7 +50,7 @@
         </div>
     </div>
 
-    <a href="{{ URL::to('/menu') }}" class="iconMenu">
+    {{-- <a href="{{ URL::to('/menu') }}" class="iconMenu">
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="14" viewBox="0 0 30 14">
           <g id="Group_1327" data-name="Group 1327" transform="translate(-53 -40)">
             <rect id="Rectangle_2268" data-name="Rectangle 2268" width="30" height="2" transform="translate(53 40)"/>
@@ -58,7 +59,7 @@
           </g>
         </svg>
     </a>
-
+ --}}
     @if(DIRECTION == 'ltr')
     <a href="#" class="lang user-langs lang-item" data-next-area="ar">ع</a>
     @else

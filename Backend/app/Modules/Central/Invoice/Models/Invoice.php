@@ -67,8 +67,8 @@ class Invoice extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->client_id = $source->client_id;
-        $data->client = $source->Client->name;
-        $data->company = $source->Client->company;
+        $data->client = $source->Client != null ? $source->Client->name : '';
+        $data->company = $source->Client != null ? $source->Client->company : '';
         $data->transaction_id = $source->transaction_id;
         $data->due_date = $source->due_date;
         $data->paid_date = $source->paid_date != null ? $source->paid_date : '';

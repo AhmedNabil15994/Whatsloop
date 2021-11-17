@@ -34,6 +34,7 @@ class AuthEngine
         define('GLOBAL_ID', Session::get('global_id'));
         define('TENANT_ID', Session::get('tenant_id'));
         define('DOMAIN', Session::get('domain'));
+        define('ROOT_ID', Session::get('rootId'));
 
         $userObj = User::find(USER_ID);
         $permissions = User::checkUserPermissions($userObj);

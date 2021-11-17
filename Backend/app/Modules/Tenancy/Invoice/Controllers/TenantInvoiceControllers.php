@@ -366,7 +366,7 @@ class TenantInvoiceControllers extends Controller {
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
-                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice')),
+                'returnURL' => \URL::to('/invoices/'.$id.'/pushInvoice'),
                 // 'returnURL' => \URL::to('/pushInvoice'),  // For Local 
                 'cart_id' => 'invoice-'.$invoiceObj->id,
                 'cart_amount' => $totals,
@@ -396,8 +396,10 @@ class TenantInvoiceControllers extends Controller {
         if($data['status']->status == 1){
             return $this->activate($id,$data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
+            $userObj = User::first();
+            User::setSessions($userObj);
             \Session::flash('error',$data['status']->message);
-            return redirect()->to('/');
+            return redirect()->to('/dashboard')->withInput();
         }
     }
 
@@ -410,7 +412,7 @@ class TenantInvoiceControllers extends Controller {
         }
 
         $cartObj = unserialize($invoiceObj->items);
-
+        
         dispatch(new NewClient($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'));
         // $paymentObj = new \SubscriptionHelper(); 
         // $resultData = $paymentObj->newSubscription($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old');   
@@ -418,7 +420,8 @@ class TenantInvoiceControllers extends Controller {
         //     Session::flash('error',$resultData[1]);
         //     return back()->withInput();
         // }     
-
+        $userObj = User::first();
+        User::setSessions($userObj);
         return redirect()->to('/invoices/view/'.$id);
     }
 

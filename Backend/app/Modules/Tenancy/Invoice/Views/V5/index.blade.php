@@ -69,7 +69,7 @@
     </div>
 
     <div class="transmitters bill">
-        <div class="content">
+        <div class="content transmitterHead">
             <h2 class="titleBills">{{ trans('main.invoices') }}</h2>
             <form class="searchForm"  method="get" action="{{ URL::current() }}">
                 <input type="text" placeholder=" {{ trans('main.advancedSearch') }} " />

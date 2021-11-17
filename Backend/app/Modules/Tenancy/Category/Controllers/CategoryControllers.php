@@ -84,14 +84,6 @@ class CategoryControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'channel' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'index' => '',
-                'options' => $channels,
-                'label' => trans('main.channel'),
-                'anchor-class' => 'badge badge-dark',
-            ],
             'color' => [
                 'label' => trans('main.color'),
                 'type' => '',

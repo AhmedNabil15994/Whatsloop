@@ -78,14 +78,14 @@ class UserExtraQuota extends Model{
     }
 
     static function getOneForUserByType($user_id,$type){
-        $dataObj = self::where('global_user_id',$user_id)->whereHas('ExtraQuota',function($extraQuotaQuery) use($type) {
-            $extraQuotaQuery->where('extra_type',$type);
-        })->where('status',1)->first();
+        $source = self::NotDeleted()->where('global_user_id',$user_id)->where('status',1)->withSum(['ExtraQuota'=> function($withQuery) use ($type){
+            $withQuery->where('extra_type',$type);
+        }],'extra_count')->orderBy('id','desc')->get();
 
-        if(!$dataObj){
+        if(!$source){
             return 0;
         }
-        return $dataObj->ExtraQuota->extra_count;
+        return count($source) * $source[0]->extra_quota_sum_extra_count;
     }
 
     static function getForUser($user_id){

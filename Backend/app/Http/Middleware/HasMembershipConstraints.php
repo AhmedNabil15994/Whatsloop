@@ -20,10 +20,21 @@ class HasMembershipConstraints
     public function handle(Request $request, Closure $next)
     {   
         if((!Session::has('membership') || Session::get('membership') == null) && !Session::has('hasJob') && Session::get('group_id') == 1){
-            if( (in_array($request->segment(1),['postBundle','checkout','packages','logout','completeOrder','pushInvoice','pushInvoice2']))){
+            
+            if(Session::get('is_old') == 1 &&  Session::get('is_synced') != 1 && Session::get('group_id') == 1){       
+                if( (in_array($request->segment(1),['sync','logout','menu']))){
+                    return $next($request);
+                }else{
+                    return Redirect('/sync');
+                }
+            }elseif(Session::get('is_synced') != 1){
+                if( (in_array($request->segment(1),['postBundle','checkout','packages','logout','completeOrder','pushInvoice','pushInvoice2']))){
+                    return $next($request);
+                }else{
+                    return Redirect('/packages');
+                }   
+            }elseif(Session::get('is_synced') == 1){
                 return $next($request);
-            }else{
-                return Redirect('/packages');
             }
         }elseif(Session::has('invoice_id') && Session::get('invoice_id') != 0 && Session::get('group_id') == 1){            
             if( (in_array($request->segment(1),['updateSubscription','dashboard','logout','menu','completeOrder','pushInvoice','pushInvoice2'])) ||
@@ -33,12 +44,6 @@ class HasMembershipConstraints
                 return $next($request);
             }else{
                 return Redirect('/dashboard');
-            }
-        }elseif(Session::get('is_old') == 1 && Session::get('is_synced') == 0 && Session::get('group_id') == 1){       
-            if( (in_array($request->segment(1),['sync','logout','menu']))){
-                return $next($request);
-            }else{
-                return Redirect('/sync');
             }
         }elseif(Session::has('hasJob') && Session::get('hasJob') == 1 && Session::get('group_id') == 1){
             if( (in_array($request->segment(1),['logout','completeJob','dashboard']))){

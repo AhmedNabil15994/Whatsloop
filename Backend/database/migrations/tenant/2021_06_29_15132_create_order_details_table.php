@@ -4,7 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrdersTable extends Migration
+class CreateOrderDetailsTable extends Migration
 {
     public function up()
     {
@@ -13,7 +13,7 @@ class CreateOrdersTable extends Migration
             $table->string('order_id');
             $table->string('name');
             $table->string('email');
-            $table->srting('phone');
+            $table->string('phone');
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('region')->nullable();

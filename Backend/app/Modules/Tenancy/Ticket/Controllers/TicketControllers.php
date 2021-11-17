@@ -406,12 +406,12 @@ class TicketControllers extends Controller {
     public function uploadImage(Request $request,$id=false){
         $rand = rand() . date("YmdhisA");
         $imageArr = Session::has('photos') ? Session::get('photos') : [];
-        if ($request->hasFile('files')) {
-            $files = $request->file('files');
+        if ($request->hasFile('file')) {
+            $files = $request->file('file');
             Storage::put($rand,$files);
             $imageArr[] = $rand;
             Session::put('photos',$imageArr);
-            return \TraitsFunc::SuccessResponse('');
+            return \TraitsFunc::SuccessResponse('sc');
         }
     }
 

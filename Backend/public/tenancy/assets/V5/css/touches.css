@@ -1,6 +1,12 @@
-
+.modal-full-width,.w-100{
+  width: 100%;
+}
 /* Touches Made By Backend */
-
+#toast-container,.toast{
+  width: 100% !important;
+  top: 0 !important;
+  right: 0 !important;
+}
 .d-hidden{
 	display: none !important;
 }
@@ -810,3 +816,13 @@ div.phone-footer img{
 }
 
 
+#kt_datatable_wrapper .row{
+    margin: 0;
+}
+#kt_datatable_wrapper .row .col-sm-12,
+#kt_datatable_wrapper .row .col-sm-6{
+    padding: 0;
+} 
+html[dir="rtl"] div.dataTables_wrapper div.dataTables_filter input{
+    margin-left: 0 !important;
+}

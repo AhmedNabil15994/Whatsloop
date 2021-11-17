@@ -106,10 +106,12 @@
 	    </div>
 	</div>
 	<!-- /row -->
-	<div class="row">
+	<div class="row nextPrev">
 	    <input type="hidden" name="data" value="{{ json_encode($data) }}">
-	    <button name="Submit" type="submit" class="btnAdd AddBTN" id="SubmitBTN">{{ trans('main.syncAccount') }}</button>
+	    <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.syncAccount') }}</button>
+		<div class="clearfix"></div>
 	</div>
+	<div class="clearfix"></div>
 </form>
 
 @endsection

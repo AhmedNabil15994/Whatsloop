@@ -245,5 +245,13 @@
         
     </div>
 </div>
-    
+@section('modals')
+@include('tenant.Partials.screen_modal')
+@endsection
+
+@endsection
+
+
+@section('scripts')
+<script src="{{ asset('V5/components/subscription.js') }}" type="text/javascript"></script>
 @endsection

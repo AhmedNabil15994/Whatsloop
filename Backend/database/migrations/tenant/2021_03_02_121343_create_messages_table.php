@@ -28,6 +28,7 @@ class CreateMessagesTable extends Migration
             $table->string('quotedMsgId')->nullable();
             $table->string('quotedMsgType')->nullable();
             $table->string('frontId')->nullable();
+            $table->text('metadata')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
         });

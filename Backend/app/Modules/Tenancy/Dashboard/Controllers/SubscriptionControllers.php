@@ -125,14 +125,13 @@ class SubscriptionControllers extends Controller {
         if($requiredSync){
             dispatch(new SyncOldClient($userObj,$requiredSync));
         }
-        Session::put('is_old',0);
+        Session::put('is_synced',1);
         Session::flash('success',trans('main.inPrgo'));
         return redirect()->to('/menu');
     }
 
     public function packages(){   
         $input = \Request::all();
-
         if(Session::get('membership') != null){
             return redirect('/dashboard');
         }
@@ -408,19 +407,29 @@ class SubscriptionControllers extends Controller {
 
         // }
         $url = \URL::to('/pushInvoice');
-        if(isset($input['dataType']) && $input['dataType'] == 2){
+        if(isset($input['dataType']) && $input['dataType'] > 1){
             $url = \URL::to('/pushInvoice2');
-            $nextStartMonth = date('Y-m-d',strtotime('first day of +1 month',strtotime(date('Y-m-d'))));
+            if($input['dataType'] == 2){
+                $nextStartMonth = date('Y-m-d',strtotime('first day of +1 month',strtotime(date('Y-m-d'))));
 
-            Variable::where('var_key','endDate')->firstOrCreate([
-                'var_key' => 'endDate',
-                'var_value' => $nextStartMonth, 
-            ]);
+                Variable::where('var_key','endDate')->firstOrCreate([
+                    'var_key' => 'endDate',
+                    'var_value' => $nextStartMonth, 
+                ]);
+            }else{
+                $nextStartMonth = date('Y-m-d',strtotime('+1 month',strtotime(date('Y-m-d'))));
+
+                Variable::where('var_key','endDate')->firstOrCreate([
+                    'var_key' => 'endDate',
+                    'var_value' => $nextStartMonth, 
+                ]);
+            }
             Variable::where('var_key','start_date')->firstOrCreate([
                 'var_key' => 'start_date',
                 'var_value' => date('Y-m-d'), 
             ]);
         }
+
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
@@ -517,8 +526,10 @@ class SubscriptionControllers extends Controller {
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
+            $userObj = User::first();
+            User::setSessions($userObj);
             \Session::flash('error',$data['status']->message);
-            return redirect()->to('/');
+            return redirect()->to('/dashboard')->withInput();
         }
     }
 
@@ -555,8 +566,10 @@ class SubscriptionControllers extends Controller {
 
     public function qrIndex(){
         $varObj = Variable::getVar('QRIMAGE');
+        $data['dis'] = 0;
         if($varObj){
             $data['qrImage'] = mb_convert_encoding($varObj, 'UTF-8', 'UTF-8');
+            $data['dis'] = 1;
         }
 
         
@@ -587,7 +600,6 @@ class SubscriptionControllers extends Controller {
         $names = Addons::NotDeleted()->whereIn('id',$data['data'])->pluck('title_'.LANGUAGE_PREF);
         $data['dataNames'] = reset($names);
         $data['channelName'] = trans('main.channel'). ' #'.Session::get('channelCode');
-        $data['dis'] = 0;
         if(count($data['data']) > 0){
             $data['templates'] = ModTemplate::dataList(null, ($data['data'][0] == 5 ? 1 : 2 )  )['data'];
         }else{

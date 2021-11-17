@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Jobs;
+// ini_set('memory_limit', '128M');
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -76,7 +76,7 @@ class SyncOldClient implements ShouldQueue
         $this->connectionInitiated = 0;
         $this->token = '';
         $this->instanceId = '';
-        $this->tenant_id = '';
+        $this->tenant_id = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first()->tenant_id;
         $this->addons = [];
         $this->channel = 50000;
         $this->baseUrl = 'https://whatsloop.net/api/v1/';
@@ -149,6 +149,8 @@ class SyncOldClient implements ShouldQueue
                 $extraData = [
                     'instanceId' => $central[0],
                     'instanceToken' => $central[1],
+                    'tenant_id' => $this->tenant_id,
+                    'global_user_id' => $userObj->global_id,
                 ];
 
                 $extraChannelData = array_merge($channel,$extraData);
@@ -208,152 +210,150 @@ class SyncOldClient implements ShouldQueue
             $duration_type = 2;
         }
         
-        User::where('id',$userObj->id)->update([
-            'duration_type' =>  $duration_type,
-            'membership_id' => $this->membership_id ,
-            'channels' => serialize([$this->channel]),
-            'addons' => serialize($addons),
-        ]);
-
-        CentralUser::where('id',$userObj->id)->update([
-            'duration_type' =>  $duration_type,
-            'membership_id' => $this->membership_id ,
-            'channels' => serialize([$this->channel]),
-            'addons' => serialize($addons),
-        ]);
-
-        $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-        $this->tenant_id = $tenantObj->tenant_id;
-
-        foreach($addons as $addon_id){
-            $oneAddonData = [
-                'tenant_id' => $tenantObj->tenant_id,
-                'global_user_id' => $userObj->global_id,
-                'user_id' => $userObj->id,
-                'addon_id' => $addon_id,
-                'status' => 1,
-                'duration_type' => $duration_type,
-                'start_date' => date('Y-m-d',$start_date),
-                'end_date' => date('Y-m-d',$end_date), 
-            ];
-            $userAddonObj = UserAddon::where('user_id',$userObj->id)->where('addon_id',$addon_id)->first();
-            if($userAddonObj){
-                $userAddonObj->update($oneAddonData);
-            }else{
-                UserAddon::insert($oneAddonData);
-            }
-        }
-
-        $this->addons = $addons;
-
-        if(in_array(4,$addons)){
-            $service = 'zid';
-            $baseUrl = CentralVariable::getVar('ZidURL');
-            $storeID = $instanceData['ZID_StoreID'];
-            $storeToken = CentralVariable::getVar('ZidMerchantToken');
-            $managerToken = $instanceData['ZID_MANAGER_TOKEN'];
-
-            Variable::where('var_key','ZidStoreID')->firstOrCreate([
-                'var_key' => 'ZidStoreID',
-                'var_value' => $storeID,
-            ]);
-            Variable::where('var_key','ZidStoreToken')->firstOrCreate([
-                'var_key' => 'ZidStoreToken',
-                'var_value' => $managerToken
+        if($this->channel != 50000){
+            User::where('id',$userObj->id)->update([
+                'duration_type' =>  $duration_type,
+                'membership_id' => $this->membership_id ,
+                'channels' => serialize([$this->channel]),
+                'addons' => serialize($addons),
             ]);
 
-            $models = ['customers','orders','products','abandoned-carts'];
-            foreach($models as $modelName){
-                $params = [];
-                if($modelName == 'products'){
-                    $dataURL = $baseUrl.'/'.$modelName.'/'; 
-                }elseif(in_array($modelName,['customers','orders','abandoned-carts'])){
-                    $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
+            CentralUser::where('id',$userObj->id)->update([
+                'duration_type' =>  $duration_type,
+                'membership_id' => $this->membership_id ,
+                'channels' => serialize([$this->channel]),
+                'addons' => serialize($addons),
+            ]);
+
+            foreach($addons as $addon_id){
+                $oneAddonData = [
+                    'tenant_id' => $this->tenant_id,
+                    'global_user_id' => $userObj->global_id,
+                    'user_id' => $userObj->id,
+                    'addon_id' => $addon_id,
+                    'status' => 1,
+                    'duration_type' => $duration_type,
+                    'start_date' => date('Y-m-d',$start_date),
+                    'end_date' => date('Y-m-d',$end_date), 
+                ];
+                $userAddonObj = UserAddon::where('user_id',$userObj->id)->where('addon_id',$addon_id)->first();
+                if($userAddonObj){
+                    $userAddonObj->update($oneAddonData);
+                }else{
+                    UserAddon::insert($oneAddonData);
                 }
+            }
 
-                if($modelName == 'abandoned-carts'){
-                    $params = [
-                        'page' => 1,
-                        'page_size' => 100,
+            $this->addons = $addons;
+
+            if(in_array(4,$addons)){
+                $service = 'zid';
+                $baseUrl = CentralVariable::getVar('ZidURL');
+                $storeID = $instanceData['ZID_StoreID'];
+                $storeToken = CentralVariable::getVar('ZidMerchantToken');
+                $managerToken = $instanceData['ZID_MANAGER_TOKEN'];
+
+                Variable::where('var_key','ZidStoreID')->firstOrCreate([
+                    'var_key' => 'ZidStoreID',
+                    'var_value' => $storeID,
+                ]);
+                Variable::where('var_key','ZidStoreToken')->firstOrCreate([
+                    'var_key' => 'ZidStoreToken',
+                    'var_value' => $managerToken
+                ]);
+
+                $models = ['customers','orders','products','abandoned-carts'];
+                foreach($models as $modelName){
+                    $params = [];
+                    if($modelName == 'products'){
+                        $dataURL = $baseUrl.'/'.$modelName.'/'; 
+                    }elseif(in_array($modelName,['customers','orders','abandoned-carts'])){
+                        $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
+                    }
+
+                    if($modelName == 'abandoned-carts'){
+                        $params = [
+                            'page' => 1,
+                            'page_size' => 100,
+                        ];
+                    }
+
+                    $tableName = $service.'_'.$modelName;
+
+                    $myHeaders = [
+                        "X-MANAGER-TOKEN" => $managerToken,
+                        "STORE-ID" => $storeID,
+                        "ROLE" => 'Manager',
+                        'User-Agent' => 'whatsloop/1.00.00 (web)',
                     ];
-                }
 
-                $tableName = $service.'_'.$modelName;
+                    $dataArr = [
+                        'baseUrl' => $baseUrl,
+                        'storeToken' => $storeToken,
+                        'dataURL' => $dataURL,
+                        'tableName' => $tableName,
+                        'myHeaders' => $myHeaders,
+                        'service' => $service,
+                        'params' => $params,
+                    ];
+                    // dd($dataArr);
+                    $externalHelperObj = new \ExternalServices($dataArr);
 
-                $myHeaders = [
-                    "X-MANAGER-TOKEN" => $managerToken,
-                    "STORE-ID" => $storeID,
-                    "ROLE" => 'Manager',
-                    'User-Agent' => 'whatsloop/1.00.00 (web)',
-                ];
-
-                $dataArr = [
-                    'baseUrl' => $baseUrl,
-                    'storeToken' => $storeToken,
-                    'dataURL' => $dataURL,
-                    'tableName' => $tableName,
-                    'myHeaders' => $myHeaders,
-                    'service' => $service,
-                    'params' => $params,
-                ];
-                // dd($dataArr);
-                $externalHelperObj = new \ExternalServices($dataArr);
-
-                if (!Schema::hasTable($tableName)) {
-                    $externalHelperObj->startFuncs();
-                }
-            }
-
-        }
-        
-        if(in_array(5,$addons)){
-            Variable::where('var_key','SallaStoreToken')->firstOrCreate([
-                'var_key' => 'SallaStoreToken',
-                'var_value' => $instanceData['Salla_APIKey'],
-            ]);
-
-            $service = 'salla';
-            $baseUrl = CentralVariable::getVar('SallaURL');
-            $storeToken = $instanceData['Salla_APIKey']; 
-
-            $models = ['customers','orders','products','abandonedCarts'];
-            foreach($models as $modelName){
-                $dataURL = $baseUrl.'/'.$modelName;
-                if($modelName == 'abandonedCarts'){
-                    $dataURL = $baseUrl.'/carts/abandoned';
-                }
-                $tableName = $service.'_'.$modelName;
-                $myHeaders =[];
-
-                $dataArr = [
-                    'baseUrl' => $baseUrl,
-                    'storeToken' => $storeToken,
-                    'dataURL' => $dataURL,
-                    'tableName' => $tableName,
-                    'myHeaders' => $myHeaders,
-                    'service' => $service,
-                    'params' => [],
-                ];
-
-                if($modelName == 'orders'){
-                    $newDataArr = $dataArr;
-                    $newDataArr['dataURL'] = $dataArr['dataURL'].'/statuses';
-                    $newDataArr['tableName'] = $service.'_order_status';  
-
-                    $externalHelperObj = new \ExternalServices($newDataArr);
                     if (!Schema::hasTable($tableName)) {
                         $externalHelperObj->startFuncs();
                     }
                 }
 
-                $externalHelperObj = new \ExternalServices($dataArr);
-                if ((!Schema::hasTable($tableName))) {
-                    $externalHelperObj->startFuncs();
-                }
             }
+            
+            if(in_array(5,$addons)){
+                Variable::where('var_key','SallaStoreToken')->firstOrCreate([
+                    'var_key' => 'SallaStoreToken',
+                    'var_value' => $instanceData['Salla_APIKey'],
+                ]);
 
-        }    
+                $service = 'salla';
+                $baseUrl = CentralVariable::getVar('SallaURL');
+                $storeToken = $instanceData['Salla_APIKey']; 
 
+                $models = ['customers','orders','products','abandonedCarts'];
+                foreach($models as $modelName){
+                    $dataURL = $baseUrl.'/'.$modelName;
+                    if($modelName == 'abandonedCarts'){
+                        $dataURL = $baseUrl.'/carts/abandoned';
+                    }
+                    $tableName = $service.'_'.$modelName;
+                    $myHeaders =[];
+
+                    $dataArr = [
+                        'baseUrl' => $baseUrl,
+                        'storeToken' => $storeToken,
+                        'dataURL' => $dataURL,
+                        'tableName' => $tableName,
+                        'myHeaders' => $myHeaders,
+                        'service' => $service,
+                        'params' => [],
+                    ];
+
+                    if($modelName == 'orders'){
+                        $newDataArr = $dataArr;
+                        $newDataArr['dataURL'] = $dataArr['dataURL'].'/statuses';
+                        $newDataArr['tableName'] = $service.'_order_status';  
+
+                        $externalHelperObj = new \ExternalServices($newDataArr);
+                        if (!Schema::hasTable($tableName)) {
+                            $externalHelperObj->startFuncs();
+                        }
+                    }
+
+                    $externalHelperObj = new \ExternalServices($dataArr);
+                    if ((!Schema::hasTable($tableName))) {
+                        $externalHelperObj->startFuncs();
+                    }
+                }
+
+            }    
+        }
     }
 
     public function pullGroupNumbers()
@@ -415,7 +415,7 @@ class SyncOldClient implements ShouldQueue
 
                     $labelId = '';
                     $mainWhatsLoopObj = new \MainWhatsLoop();
-                    $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
+                    $data['name'] = Category::reformLabelName($oneItemData['Title_ar'],$oneItemData['Title_en']);
                     $addResult = $mainWhatsLoopObj->createLabel($data);
                     $result = $addResult->json();
                     if($result['status']['status'] == 1){
@@ -667,7 +667,8 @@ class SyncOldClient implements ShouldQueue
             $data = $result->json();
             if($data['status'] == true){
                 $loopData = @$data['Moderatos'];
-                $channel_id = User::first()->channels;
+                $mainUser = User::first();
+                $channel_id = $mainUser->channels;
                 foreach($loopData as $oneItemData){
                     $item = [
                         'name' => $oneItemData['Username'],
@@ -684,7 +685,11 @@ class SyncOldClient implements ShouldQueue
                     ];
                     $dataObj = User::where('phone',$item['phone'])->first();
                     if($dataObj){
-                        $dataObj->update($item);
+                        if($dataObj->id == $mainUser->id){
+                            unset($item['group_id']);
+                            unset($item['password']);
+                            $dataObj->update($item);
+                        }
                     }else{
                         User::create($item);
                     }
@@ -1186,30 +1191,32 @@ class SyncOldClient implements ShouldQueue
 
     public function finalizeMigration(){
         $userObj = $this->userObj;
+        if(count(unserialize($this->userObj->channels)) > 0){
+            if(in_array(3,$this->addons)){
+                \Artisan::call('tenants:run groupMsg:send --tenants='.$this->tenant_id);
+            }
 
-        if(in_array(3,$this->addons)){
-            \Artisan::call('tenants:run groupMsg:send --tenants='.$this->tenant_id);
+            \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
+
+            if(in_array(2,$this->addons)){
+                \Artisan::call('tenants:run sync:messages --tenants='.$this->tenant_id);
+                \Artisan::call('tenants:run sync:dialogs --tenants='.$this->tenant_id);
+            }
+
+            \Artisan::call('push:channelSetting');
+            if(in_array(4,$this->addons) || in_array(5,$this->addons)){
+                \Artisan::call('push:addonSetting');
+            }
+
+            User::where('id',$userObj->id)->update([
+                'is_synced' =>  1,
+            ]);
+
+            CentralUser::where('id',$userObj->id)->update([
+                'is_synced' =>  1,
+            ]);
         }
 
-        \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
-
-        if(in_array(2,$this->addons)){
-            \Artisan::call('tenants:run sync:messages --tenants='.$this->tenant_id);
-            \Artisan::call('tenants:run sync:dialogs --tenants='.$this->tenant_id);
-        }
-
-        \Artisan::call('push:channelSetting');
-        if(in_array(4,$this->addons) || in_array(5,$this->addons)){
-            \Artisan::call('push:addonSetting');
-        }
-
-        User::where('id',$userObj->id)->update([
-            'is_synced' =>  1,
-        ]);
-
-        CentralUser::where('id',$userObj->id)->update([
-            'is_synced' =>  1,
-        ]);
     }
 
 }

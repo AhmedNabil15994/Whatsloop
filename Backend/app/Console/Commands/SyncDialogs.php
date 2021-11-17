@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Jobs\SyncDialogsJob;
+use App\Models\ChatDialog;
 
 class SyncDialogs extends Command
 {
@@ -42,9 +43,12 @@ class SyncDialogs extends Command
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
         $updateResult = $mainWhatsLoopObj->dialogs($data);
+        $updateResult = $updateResult->json();
         if(isset($updateResult['data']) && !empty($updateResult['data'])){
-            $result = $updateResult->json();
-            dispatch(new SyncDialogsJob($result['data']['dialogs']));
+            $count = count($updateResult['data']['dialogs']);
+            if($count > ChatDialog::count()){
+                dispatch(new SyncDialogsJob($updateResult['data']['dialogs']));
+            }
         }
         
     }

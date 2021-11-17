@@ -14,6 +14,10 @@ class ChatMessage extends Model{
     public $timestamps = false;
     public $incrementing = false;
 
+    public function Order(){
+        return $this->belongsTo('App\Models\Order','id','message_id');
+    }
+
     static function getOne($id){
         return self::where('id', $id)->first();
     }
@@ -23,6 +27,9 @@ class ChatMessage extends Model{
         $source = self::NotDeleted();
         if(isset($input['message']) && !empty($input['message'])){
             $source->where('body','LIKE','%'.$input['message'].'%')->orWhere('caption','LIKE','%'.$input['message'].'%');
+        }
+        if(isset($input['id']) && !empty($input['id'])){
+            $source->where('id',$input['id'])->orderBy('messageNumber','DESC');
         }
         if($chatId != null){
             $source->where('chatId',$chatId)->orderBy('messageNumber','DESC');
@@ -35,7 +42,7 @@ class ChatMessage extends Model{
     static function lastMessages() {
         $source = self::NotDeleted();
         $source->orderBy('time','DESC');
-        return self::generateObj($source,50);
+        return self::generateObj($source,30);
     }
 
     static function generateObj($source,$limit=null){
@@ -60,10 +67,12 @@ class ChatMessage extends Model{
         $source = (object) $source;
         $dataObj = self::where('id',$source->id)->first();
         $oldBody = '';
+        $oldProd = '';
         if($dataObj == null){
             $dataObj = new  self;
         }else{
             $oldBody = $dataObj->body;
+            $oldProd = $dataObj->metadata;
         }
         
         $dataObj->id = $source->id;
@@ -96,11 +105,11 @@ class ChatMessage extends Model{
         $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
         $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
         $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
+        if( isset($source->metadata) && $oldProd == ''){
+            $dataObj->metadata = json_encode($source->metadata) ;
+        }
         $dataObj->save();
 
-        if(isset($source->metadata) && $source->type == 'order'){
-            dispatch(new SyncProducts($source->metadata,$dataObj->author,$dataObj->id));
-        }
         return $dataObj;
     }
 
@@ -133,6 +142,7 @@ class ChatMessage extends Model{
             $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
             $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
             $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
+            $dataObj->metadata = isset($source->metadata) ? json_decode($source->metadata) : '';
             if($dataObj->quotedMsgId != null){
                 $dataObj->quotedMsgObj = self::getData(self::getOne($source->quotedMsgId));
             }
@@ -144,13 +154,16 @@ class ChatMessage extends Model{
                 $dataObj->contact_name = str_replace('\n','',explode('TEL',explode('FN:',$dataObj->body)[1])[0]);
                 $dataObj->contact_number = explode(':+',explode(';waid=',$dataObj->body)[1])[0];
             }
-            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'product'){
+            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'order'){
                 $dataObj->orderDetails = new \stdClass();
-                $dataObj->orderDetails->name = '';
+                $dataObj->orderDetails->name = $source->Order != null ? trans('main.order') . ' '.  $source->Order->order_id : '';
                 $dataObj->orderDetails->image = '';
-                $dataObj->orderDetails->price = '';
-                $dataObj->orderDetails->quantity = '';
-                $dataObj->orderDetails->url = '';
+                $dataObj->orderDetails->price = $source->Order != null ? $source->Order->total . ' ' . unserialize($source->Order->products)[0]['currency'] : '';
+                $dataObj->orderDetails->quantity = $source->Order !=  null ? $source->Order->products_count : '';
+                $dataObj->orderDetails->url = $source->Order != null ? \URL::to('/orders/'.$source->Order->order_id.'/view') : \URL::to('/whatsappOrders/orders');
+            }
+            if(isset($dataObj->whatsAppMessageType) && $dataObj->metadata != '' && $dataObj->whatsAppMessageType == 'product'){
+                $dataObj->productDetails = Product::getData(Product::getOne($dataObj->metadata->productId));
             }
             return $dataObj;
         }
@@ -178,11 +191,12 @@ class ChatMessage extends Model{
         $diff = (time() - $time ) / (3600 * 24);
         $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
         if(round($diff) == 0){
-            return [date('Y-m-d',$time),date('h:i A',$time)];
+            return [trans('main.today'),date('h:i A',$time)];
         }else if($diff>0 && $diff<=1){
             return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){
-            return [$date->locale(defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName,date('h:i A',$time)];
+            $myDate = \Carbon\Carbon::parse(date('Y-m-d H:i:s',$time));
+            return [$myDate->locale(defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName,date('h:i A',$time)];
         }else{
             return [date('Y-m-d',$time),date('h:i A',$time)];
         }
@@ -194,7 +208,7 @@ class ChatMessage extends Model{
         }
 
         if (filter_var($url, FILTER_VALIDATE_URL)) { 
-            $image = get_headers($url, 1);
+            $image = @get_headers($url, 1);
             $bytes = @$image["Content-Length"];
             $mb = $bytes/(1024 * 1024);
             return number_format($mb,2) . " MB ";

@@ -50,6 +50,7 @@ class Product extends Model{
             $dataObj->price = $source->price;
             $dataObj->quantity = trans('main.unlimitted');
             $dataObj->images = $source->images != null ? unserialize($source->images) : [];
+            $dataObj->mainImage = !empty($dataObj->images) ? $dataObj->images[0] : '';
             return $dataObj;
         }
     }

@@ -270,7 +270,7 @@ input[type="number"] {
 	right:23px;
 	color:#6D7E9F;
 	font-size:20px;
-	z-index: -1;
+	z-index: 1;
 	-webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     -o-transition: all 0.3s;
@@ -425,7 +425,8 @@ input[type="number"] {
 	overflow: hidden
 }
 
-.menuCpanel .menuHead img
+.menuCpanel .menuHead img,
+.menuCpanel .menuHead .logo
 {
 	transform:scale(0);
 	position:absolute;
@@ -442,7 +443,8 @@ input[type="number"] {
 	min-height:104px;
 }
 
-.menuCpanel.active .menuHead img
+.menuCpanel.active .menuHead img,
+.menuCpanel.active .menuHead .logo
 {
 	transform:scale(1);
 	right:25px;
@@ -745,7 +747,8 @@ input[type="number"] {
 	background-color:#0B162E;
 	min-width:170px;
 	display:block;
-	cursor: pointer
+	cursor: pointer;
+	z-index:999;
 }
 
 .menuCpanel .hovers .titleHover .link .arrowLeft
@@ -1354,7 +1357,7 @@ input[type="number"] {
 
 .stats .msgArchive table tbody tr .date
 {
-	direction: ltr;
+	/*direction: ltr;*/
 	text-align: right
 }
 

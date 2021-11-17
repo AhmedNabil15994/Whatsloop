@@ -237,14 +237,18 @@ class ClientControllers extends Controller {
         if($userObj == null) {
             return Redirect('404');
         }
+        
         $data['data'] = CentralUser::getData($userObj);
-
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
         $domainObj = Domain::where('domain',$data['data']->domain)->first();
         $tenant = Tenant::find($domainObj->tenant_id);
         tenancy()->initialize($tenant);
             $data['paymentInfo'] = PaymentInfo::where('user_id',$id)->first();
             $data['messages'] = ChatMessage::generateObj(ChatMessage::where('fromMe',1)->orderBy('time','DESC')->take(10))['data'];
-            $channelObj = UserChannels::first();
+            $channelObj = CentralChannel::getData(UserChannels::first());
             if($channelObj){
                 $whatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
                 $updateResult = $whatsLoopObj->me();
@@ -262,7 +266,7 @@ class ClientControllers extends Controller {
             $data['contactsCount'] = Contact::NotDeleted()->count();
 
         tenancy()->end($tenant);
-
+        
         // // Update User With Settings For Whatsapp Based On His Domain
         $myData = [
             'sendDelay' => '0',
@@ -272,12 +276,13 @@ class ClientControllers extends Controller {
             'statusNotificationsOn' => 1,
             'ackNotificationsOn' => 1,
             'chatUpdateOn' => 1,
+            'ignoreOldMessages' => 1,
             'videoUploadOn' => 1,
             'guaranteedHooks' => 1,
             'parallelHooks' => 1,
         ];
-
-        if($channelObj){
+        
+        if($channelObj && $channelObj->instanceId != null){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
             if($userObj->setting_pushed == 0){
                 $updateResult = $mainWhatsLoopObj->postSettings($myData);
@@ -287,9 +292,10 @@ class ClientControllers extends Controller {
                 $settingsArr = $myData;
             }else{
                 $updateResult = $mainWhatsLoopObj->settings([]);
-                $settingsArr = isset($updateResult->json()['data']) ? $updateResult->json()['data'] : [];
+                $settingsArr = isset($updateResult->json()['data']) ? $updateResult->json()['data'] : $myData;
             }     
         }
+        
 
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.clients') ;
@@ -299,7 +305,7 @@ class ClientControllers extends Controller {
         $data['invoices'] = Invoice::dataList(null,$id)['data']; 
         $data['addons'] = Addons::dataList(1)['data'];
         $data['userAddons'] = UserAddon::getDataForUser($id);
-        $data['settings'] = isset($settingsArr) ? $settingsArr : [];
+        $data['settings'] = isset($settingsArr) ? $settingsArr : $myData;
         return view('Central.Client.Views.view')->with('data', (object) $data);      
     }
 
@@ -323,15 +329,17 @@ class ClientControllers extends Controller {
         $domainObj = Domain::where('domain',$data['data']->domain)->first();
         $tenant = Tenant::find($domainObj->tenant_id);
         tenancy()->initialize($tenant);
-        $channelObj = UserChannels::first();
+        $channelObj = CentralChannel::getData(UserChannels::first());
         tenancy()->end($tenant);
 
-        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
-        $settings = $mainWhatsLoopObj->postSettings($myArr);       
-        $result = $settings->json();
-        if($result['status']['status'] != 1){
-            \Session::flash('error', $result['status']['message']);
-            return back()->withInput();
+        if($channelObj && $channelObj->instanceId != null){
+            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
+            $settings = $mainWhatsLoopObj->postSettings($myArr);       
+            $result = $settings->json();
+            if($result['status']['status'] != 1){
+                \Session::flash('error', $result['status']['message']);
+                return back()->withInput();
+            }
         }
         \Session::flash('success', trans('main.editSuccess'));
         return back()->withInput();

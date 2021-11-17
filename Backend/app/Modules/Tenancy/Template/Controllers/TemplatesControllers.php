@@ -70,13 +70,6 @@ class TemplatesControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'channel' => [
-                'label' => trans('main.channel'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'channel',
-                'anchor-class' => 'badge badge-dark',
-            ],
             'name_ar' => [
                 'label' => trans('main.titleAr'),
                 'type' => '',

@@ -20,10 +20,9 @@ use Session;
 
 class MessagesWebhook extends ProcessWebhookJob{
 	public function handle(){
-        ini_set('memory_limit', '-1');
+        // ini_set('memory_limit', '-1');
 	    $data = json_decode($this->webhookCall, true);
 	    $mainData = $data['payload'];
-
 	    $messages = @$mainData['messages'];
 	    $actions = @$mainData['ack'];
 		$tenantUser = User::first();
@@ -88,17 +87,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    			}
 
 	    			// Find Out Bot Object Based on incoming message
-	    			$botObj = Bot::NotDeleted()->where([
-	    				['status',1],
-	    				['lang',$langPref],
-	    				['message_type',1],
-	    				['message',$senderMessage],
-	    			])->orWhere([
-	    				['status',1],
-	    				['lang',$langPref],
-	    				['message_type',2],
-	    				['message','LIKE','%'.$senderMessage.'%'],
-	    			])->first();
+	    			$botObj = Bot::findBotMessage($langPref,$senderMessage);
 
 	    			$sendData['chatId'] = $sender;
 
@@ -237,14 +226,14 @@ class MessagesWebhook extends ProcessWebhookJob{
 	}
 
 	public function handleMessages($domain,$message,$tenantId){
-		if(strpos($message['body'], '://') !== false){
+		if(filter_var($message['body'], FILTER_VALIDATE_URL) && !in_array($message['type'],['product','order'])){
 			$message['message_type'] = \ImagesHelper::checkExtensionType(substr($message['body'], strrpos($message['body'], '.') + 1));
 			$fileName = substr($message['body'], strrpos($message['body'], '/' )+1);
 			$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
 			$succ = file_put_contents($destinationPath, file_get_contents($message['body']));
 			$message['body'] = config('app.BASE_URL').'/public/uploads/'.$tenantId.'/chats/' . $fileName;
 		}else{
-			$message['message_type'] = 'text';
+			$message['message_type'] = in_array($message['type'],['product','order']) ? $message['type'] : 'text';
 		}
         $message['sending_status'] = 1;
         $message['time'] = strtotime(date('Y-m-d H:i:s'));

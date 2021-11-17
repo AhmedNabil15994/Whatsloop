@@ -40,13 +40,13 @@ class Contact extends Model{
             ->first();
     }
 
-    static function newPhone($phone){
-        $phone = '+'.str_replace('@c.us', '', $phone);
+    static function newPhone($phone,$name){
+        $phone = str_replace('@c.us', '', $phone);
         $phone = str_replace('@g.us', '', $phone);
         $contactObj = self::where('phone',$phone)->first();
         if($contactObj == null){
             $contactObj = new self;
-            $contactObj->name = $phone;
+            $contactObj->name = $name;
             $contactObj->phone = $phone;
             $contactObj->group_id = 1;
             $contactObj->sort = self::newSortIndex();
@@ -211,12 +211,12 @@ class Contact extends Model{
             $contacts = reset($contacts);
 
             $myContacts = [];
-            $hasWhatsapp = [];
-            $hasNoWhatsapp = [];
+            $hasWhatsapp = 0;
+            $hasNoWhatsapp = 0;
             foreach ($contacts as $contact) {
                 $myContacts[] = str_replace('+', '', $contact->phone);
-                $hasWhatsapp[] = $contact->has_whatsapp  == 1 ? trans('main.yes') : '----'; 
-                $hasNoWhatsapp[] = $contact->has_whatsapp  == 0 ? trans('main.yes') : '----'; 
+                $hasWhatsapp+= $contact->has_whatsapp  == 1 ? 1 : 0; 
+                $hasNoWhatsapp+= $contact->has_whatsapp  == 0 ? 1 : 0; 
             }
             
             $list[$key] = new \stdClass();
@@ -225,9 +225,9 @@ class Contact extends Model{
             $list[$key]->group_name = $value->Group->{'name_'.LANGUAGE_PREF};
             $list[$key]->status = trans('main.done');
             $list[$key]->total = $value->total;
-            $list[$key]->hasWhatsapp = implode(' <br/> ', $hasWhatsapp);
-            $list[$key]->hasNoWhatsapp = implode(' <br/> ', $hasNoWhatsapp);
-            $list[$key]->contacts = implode(' <br/> ', $myContacts);
+            $list[$key]->hasWhatsapp = $hasWhatsapp;
+            $list[$key]->hasNoWhatsapp = $hasNoWhatsapp;
+            $list[$key]->contacts = count($myContacts);
             $list[$key]->created_at = $value->created_at;
             $i++;
         }
@@ -251,8 +251,8 @@ class Contact extends Model{
         $data->group_id = $source->group_id;
         $data->group = $source->Group != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
         $data->phone = $source->phone;
-        $data->phone2 = str_replace('+', '', $source->phone);
-        $data->name = $source->name;
+        $data->phone2 = str_replace('+', '', str_replace('@c.us','',$source->phone));
+        $data->name = $source->name != null ? $source->name : $data->phone2;
         $data->lang = $source->lang;
         $data->langText = $source->lang == 0 ? trans('main.arabic') : trans('main.english');
         $data->notes = $source->notes;

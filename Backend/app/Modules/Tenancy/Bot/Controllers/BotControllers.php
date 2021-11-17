@@ -105,13 +105,6 @@ class BotControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'channel' => [
-                'label' => trans('main.channel'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'channel',
-                'anchor-class' => ' badge badge-dark',
-            ],
             'message_type_text' => [
                 'label' => trans('main.messageType'),
                 'type' => '',

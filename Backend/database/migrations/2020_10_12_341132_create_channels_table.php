@@ -46,6 +46,8 @@ class CreateChannelsTable extends Migration
             'id' => '139624',
             'token' => '72pb2371l07ur177',
             'name' => '139624 - WhatsLoop Demo',
+            'instanceId' => 10001,
+            'instanceToken' => '72pb2371l07ur177',
             'start_date' => date('Y-m-d'),
             'end_date' => date('Y-m-d',strtotime('+5 years')),
         ]);

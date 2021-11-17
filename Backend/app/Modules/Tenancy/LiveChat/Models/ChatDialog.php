@@ -27,7 +27,7 @@ class ChatDialog extends Model{
             $source = self::with('Messages');  
         }
 
-        if(isset($input['mine']) && !empty($input['mine'])){
+        if((isset($input['mine']) && !empty($input['mine'])) || !IS_ADMIN){
             $source->where('modsArr','LIKE','%'.USER_ID.'%');
         }
 
@@ -102,6 +102,7 @@ class ChatDialog extends Model{
                 $cats = reset($cats);
                 $cats = empty($cats) ? [0] : $cats;
                 $dataObj->labels = Category::dataList(null,$cats)['data'];
+                $dataObj->labelsArr = $cats;
                 $dataObj->moderators = !empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
                 $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
                 $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('messageNumber','DESC')->first());

@@ -12,7 +12,7 @@ Vue.prototype.$http = Axios;
 import {store} from './store/index'
 
 import "vue-multiselect/dist/vue-multiselect.min.css";
-import 'remixicon/fonts/remixicon.css'
+import './../assets/css/remixicon.css'
 
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 

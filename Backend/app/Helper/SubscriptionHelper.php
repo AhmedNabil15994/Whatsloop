@@ -293,7 +293,7 @@ class SubscriptionHelper {
         }
 
         foreach($extraQuotaData as $oneItemData){
-            $userExtraQuotaObj = UserExtraQuota::where('user_id',$oneItemData['user_id'])->where('extra_quota_id',$oneItemData['extra_quota_id'])->first();
+            $userExtraQuotaObj = UserExtraQuota::where('user_id',$oneItemData['user_id'])->where('extra_quota_id',$oneItemData['extra_quota_id'])->where('status','!=',1)->first();
             if($userExtraQuotaObj){
                 $userExtraQuotaObj->update($oneItemData);
             }else{
@@ -428,7 +428,7 @@ class SubscriptionHelper {
                     'channel' => $instanceId,
                     'name_ar' => 'whatsAppOrders',
                     'name_en' => 'whatsAppOrders',
-                    'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         طلبك رقم ( {ORDERID} ) جاهز الان للشراء 😎.
 
@@ -437,7 +437,7 @@ class SubscriptionHelper {
                                         ( {ORDERURL} )
 
                                         مع تحيات فريق عمل واتس لوب ❤️',
-                    'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         طلبك رقم ( {ORDERID} ) جاهز الان للشراء 😎.
 
@@ -452,7 +452,7 @@ class SubscriptionHelper {
                     'channel' => $instanceId,
                     'name_ar' => 'whatsAppInvoices',
                     'name_en' => 'whatsAppInvoices',
-                    'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         تم تأكيد شراء طلبك رقم ( {ORDERID} )  😎.
 
@@ -461,7 +461,7 @@ class SubscriptionHelper {
                                         ( {INVOICEURL} )
 
                                         مع تحيات فريق عمل واتس لوب ❤️',
-                    'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         تم تأكيد شراء طلبك رقم ( {ORDERID} )  😎.
 

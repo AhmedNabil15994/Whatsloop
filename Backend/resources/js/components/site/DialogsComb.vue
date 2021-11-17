@@ -1,7 +1,7 @@
 <template>
-        <a @click="getId(chat.id)">
+        <a @click="getId(chat.id,chat.chatName)">
              <div class='labels d-flex flex-column'>
-                <span v-for="(label,labelKey) in chat.labels" :key="labelKey" :class="'ContactLabel '+ label.labelClass"></span>
+                <span v-for="(label,labelKey) in chat.labels" :key="labelKey" :class="'ContactLabel '+ label.labelClass" :style="{backgroundColor:label.hexColor}"></span>
             </div>
             <div class="media" :class="{'unread' : chat.unreadCount > 0}">
 
@@ -14,7 +14,7 @@
                 <div class="media-body overflow-hidden">
                     <h5 class="text-truncate DialogTitle font-size-16">
                         <h5 class="text-truncate DialogTitle font-size-16">
-                            <span>{{chat.name}}</span>
+                            <span>{{chat.chatName}}</span>
                         </h5>
                     </h5>
                     <div :dir="isUnicode(chat.lastMessage.body) ? 'rtl' : 'ltr'" class="chat-user-message text-truncate mb-0" :class="{'msgRemoved' : !chat.lastMessage.body,'text-bold' : chat.lastMessage.unRead}">
@@ -55,8 +55,22 @@
                                     <span>تم مشاركة موقع <i class="fa fa-map-marker"></i></span>
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'contact'"> 
-                                    <span>تم مشاركة جهة اتصال <i class="fa fa-contact"></i></span>
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'vcard' || chat.lastMessage.whatsAppMessageType === 'contact'"> 
+                                    <span>{{chat.lastMessage.contact_name}} <i class="fa fa-user"></i></span>
+                            </span>
+
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'order' "> 
+                                    <span>{{chat.lastMessage.orderDetails.name}} 
+                                    
+                                    <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
+                                    </span>
+                            </span>
+
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'product' "> 
+                                    <span>{{chat.lastMessage.productDetails.name}} 
+                                    
+                                    <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
+                                    </span>
                             </span>
 
                             <span v-else-if="chat.lastMessage.whatsAppMessageType === 'ptt'"> 
@@ -75,7 +89,8 @@
                         
                         
 
-                            <span v-else><i class="fa fa-ban"></i> لقد حذفت هذه الرسالة</span>
+                            <span v-else><i class="fa fa-ban"></i> 
+                            رسالة محذوفه أو غير مدعومة</span>
                     </div>
                     <p class="chatStatus clearfix mb-0" style="margin-left:3px;float:right;margin-top:-4px">
                         <span class="seen" v-if="chat.lastMessage.fromMe === 1" >
@@ -194,9 +209,9 @@ export default {
                 }
             }
         },
-        getId(id) {
+        getId(id,chatName) {
             this.$store.dispatch("chatIdAction", {id:id});
-            
+            this.$store.dispatch("chatNameAction", {chatName:chatName});
             if(this.chat.unreadCount >  0) {
                 this.chat.unreadCount = 0;
                 var data = new FormData();

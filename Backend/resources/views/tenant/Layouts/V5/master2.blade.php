@@ -27,7 +27,7 @@
 			@include('tenant.Layouts.V5.breadcrumb')
 			@endif
 			{{-- @include('tenant.Layouts.V5.userStatus') --}}
-			<div class="containerCpanel">
+			<div class="containerCpanel formNumbers">
 				@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob') && (Request::segment(1) != 'profile' && Request::segment(2) != 'apiGuide'))
 				@livewire('check-reconnection',[
 					'requestSemgent' => Request::segment(1),

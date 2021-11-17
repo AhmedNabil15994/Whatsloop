@@ -89,7 +89,7 @@
                                                                     </h5>
                                                                 </h5>
                                                                 <div>
-                                                                    <span>لقد حذفت هذه الرسالة <i class="fa fa-ban"></i></span>
+                                                                    <span>رسالة غير محذوفة او غير مدعمة <i class="fa fa-ban"></i></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -122,7 +122,7 @@
                                                                 </h5>
                                                             </h5>
                                                             <div>
-                                                                <span>لقد حذفت هذه الرسالة <i class="fa fa-ban"></i></span>
+                                                                <span>رسالة غير محذوفة او غير مدعمة <i class="fa fa-ban"></i></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -154,7 +154,7 @@
                                                                 </h5>
                                                             </h5>
                                                             <div>
-                                                                <span>لقد حذفت هذه الرسالة <i class="fa fa-ban"></i></span>
+                                                                <span>رسالة غير محذوفة او غير مدعمة <i class="fa fa-ban"></i></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -259,10 +259,10 @@ export default {
     cursor:pointer;
     font-family: "Tajawal-Bold";
     border-radius: 5px;
-	-webkit-transition:all 0.3s;
-	-moz-transition:all 0.3s;
-	-o-transition:all 0.3s;
-	transition:all 0.3s;
+    -webkit-transition:all 0.3s;
+    -moz-transition:all 0.3s;
+    -o-transition:all 0.3s;
+    transition:all 0.3s;
 }
 
 .SingleOrMul li:hover,
@@ -502,9 +502,10 @@ export default {
 {
     position: absolute;
     left: 16px;
-    bottom: 20px;
+    bottom: 23px;
     z-index: 99;
 }
+
 
 .circles .totalNew
 {
@@ -587,21 +588,23 @@ export default {
 {
     border-color:#f5f5f5;
     border-radius: 0;
+    padding:14px 20px 13px!important
 }
 
 .chat-list li .chat-user-message
 {
-    font-size: 13px;
     width: 85%;
     margin-top:-3px;
     display:inline-block
 }
 
-.chat-list li .chat-user-message .fa-ban 
+.chat-list li .chat-user-message .fa-ban,
+.chat-list li .chat-user-message .fa-map-marker
 {
-    margin-top:2.5px;
+    margin-top:4.5px;
     margin-left:3px;
     float:right;
+    font-size:13px;
 }
 
 .chat-list li .chat-user-message .fa-image
@@ -676,6 +679,8 @@ export default {
 .searchDiv .bg-light input
 {
     padding-right:5px;
+    direction:ltr;
+    text-align:right
 }
 
 .avatar-xs
@@ -704,6 +709,20 @@ export default {
     color:#919191;
     cursor:pointer;
     transform: scaleX(-1);
+}
+
+.svgStore
+{
+    float:right;
+    width:16px;
+    height:14px;
+    float:right;
+    margin-top:4px;
+    margin-left:5px;
+}
+
+.svgStore path{
+    fill:rgba(0, 0, 0, 0.45)
 }
 
 </style>

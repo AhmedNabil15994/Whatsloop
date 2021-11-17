@@ -1,6 +1,11 @@
 @extends('tenant.Layouts.V5.master2')
 @section('title',trans('main.dashboard'))
 @section('styles')
+<style type="text/css" media="screen">
+    .timer .nextPrev .btnNext{
+        padding: 10px;
+    }
+</style>
 @endsection
 
 {{-- Content --}}
@@ -109,7 +114,7 @@
                     <li>
                         <i class="icon flaticon-user-3"></i>
                         <h3 class="titleNumb">{{ $contact->name }}</h3>
-                        <a href="#" class="numbStyle"><i class="flaticon-phone-call"></i> {{ $contact->phone }}</a>
+                        <a href="#" class="numbStyle"><i class="flaticon-phone-call"></i> {{ $contact->phone2 }}</a>
                         <span class="date">{{ $contact->created_at2[0] }}</span>
                     </li>
                     @endforeach
@@ -136,7 +141,13 @@
                     @foreach($data->data as $message)
                     <tr>
                         <td><a href="#" class="numbStyle"><i class="flaticon-phone-call"></i> {{ $message->chatId2 }}</a></td>
-                        <td style="white-space: pre-line;">{{ $message->body }}</td>
+                        <td style="white-space: pre-line;">
+                            @if(strpos(' https',ltrim($message->body)) !== false || filter_var(trim($message->body), FILTER_VALIDATE_URL))
+                            📷
+                            @else
+                            {{ $message->body }}
+                            @endif
+                        </td>
                         <td>{{ $message->sending_status_text }}</td>
                         <td>
                             @if($message->fromMe)
@@ -145,7 +156,7 @@
                                 <i class="type color1 flaticon-share"></i>
                             @endif 
                         </td>
-                        <td class="date">{{ $message->created_at_day }}  {{ $message->created_at_time }} <i class="flaticon-calendar"></i></td>
+                        <td class="date" dir="{{ DIRECTION }}">{{ $message->created_at_day }}  {{ $message->created_at_time }} <i class="flaticon-calendar"></i></td>
                     </tr>
                     @endforeach
                 </tbody>

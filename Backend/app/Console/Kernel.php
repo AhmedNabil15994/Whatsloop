@@ -38,13 +38,13 @@ class Kernel extends ConsoleKernel
         foreach($tenants as $tenant){
             $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute();
             $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyMinute();
-            $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->everyMinute();
-            $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->everyMinute();
+            $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->withoutOverlapping()->everyMinute();
+            $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->withoutOverlapping()->everyMinute();
         }
         $schedule->command('set:invoices')->cron('0 9,12 * * *');
-        $schedule->command('push:channelSetting')->everyMinute();
-        $schedule->command('push:addonSetting')->daily();
-        $schedule->command('transfer:days')->cron('0 0 */3 * *');
+        // $schedule->command('push:channelSetting')->everyMinute();
+        // $schedule->command('push:addonSetting')->daily();
+        // $schedule->command('transfer:days')->cron('0 0 */3 * *');
         // $schedule->command('queue:work')->everyMinute()->withoutOverlapping();
         // $schedule->command('queue:restart')->hourly()->withoutOverlapping();
     }

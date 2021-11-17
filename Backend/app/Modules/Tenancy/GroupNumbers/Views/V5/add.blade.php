@@ -59,7 +59,7 @@
                                 <i class="flaticon-upload"></i>
                                 {{ trans('main.dropzoneP') }}
                             </label>
-                            <div class="uploadFile">{{ trans('main.excelExample') }} (<a target="_blank" href="{{ URL::to('/').'/uploads/ImportGroupNumbers.xlsx' }}">{{ trans('main.download') }}</a> )</div>
+                            <div class="uploadFile">{{ trans('main.excelExample') }} (<a target="_blank" href="{{ URL::to('/').'/public/uploads/ImportGroupNumbers.xlsx' }}">{{ trans('main.download') }}</a> )</div>
                             <div class="nextPrev clearfix">
                                 <button class="btnNext" disabled>{{ trans('main.prev') }}</button>
                                 <button class="btnNext">{{ trans('main.add') }}</button>

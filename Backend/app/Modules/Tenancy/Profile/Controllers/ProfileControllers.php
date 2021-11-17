@@ -538,7 +538,7 @@ class ProfileControllers extends Controller {
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
-                'returnURL' => str_replace('http:','https:',\URL::to('/pushInvoice2')),
+                'returnURL' => \URL::to('/pushInvoice2'),
                 // 'returnURL' => \URL::to('/pushInvoice2'),  // For Local 
                 'cart_id' => 'whatsloop-'.rand(1,100000),
                 'cart_amount' => json_decode($input['totals'])[3],
@@ -567,8 +567,10 @@ class ProfileControllers extends Controller {
         if($data['status']->status == 1){
             return $this->activate($data['data']->transaction_id,$data['data']->paymentGateaway);
         }else{
+            $userObj = User::first();
+            User::setSessions($userObj);
             \Session::flash('error',$data['status']->message);
-            return redirect()->to('/');
+            return redirect()->to('/dashboard')->withInput();
         }
     }
 
@@ -770,7 +772,7 @@ class ProfileControllers extends Controller {
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-        $dataList['image'] = $result['data']['image'];
+        $dataList['image'] = str_replace('/engine','/engine/public',$result['data']['image']);
         $dataList['status'] = \TraitsFunc::SuccessResponse();
         return \Response::json((object) $dataList);           
     }

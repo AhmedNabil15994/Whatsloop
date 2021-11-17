@@ -14,60 +14,69 @@ export const store = new Vuex.Store({
     domain: window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false,
   },
   mutations: {
-    
-    setCurrentScrollY (s, {y}) {
-      s.currentScrollY = y;
-    },
-    ChangeLangAr(state) {
-      return (state.lang = "ar");
-    },
-    ChangeLangEn(state) {
-      return (state.lang = "en");
-    },
-    setchatId(state, payload) {
-      state.chatId = payload;
-    },
-    setContact(state, payload) {
-      state.contact = payload;
-    },
-    setError(state, payload) {
-      state.error = payload;
-    },
-    clearError(state) {
-      state.error = null;
-    },
-  },
-  actions: {
-    setCurrentScrollY ({ commit }, y) {
-      commit('setCurrentScrollY', {y});
-    },
+   
+   setCurrentScrollY (s, {y}) {
+     s.currentScrollY = y;
+   },
+   ChangeLangAr(state) {
+     return (state.lang = "ar");
+   },
+   ChangeLangEn(state) {
+     return (state.lang = "en");
+   },
+   setchatId(state, payload) {
+     state.chatId = payload;
+   },
+   setChatName(state, payload) {
+     state.chatName = payload;
+   },
+   setContact(state, payload) {
+     state.contact = payload;
+   },
+   setError(state, payload) {
+     state.error = payload;
+   },
+   clearError(state) {
+     state.error = null;
+   },
+ },
+ actions: {
+   setCurrentScrollY ({ commit }, y) {
+     commit('setCurrentScrollY', {y});
+   },
 
-    logout() {
-      localStorage.removeItem("token");
-    },
-    chatIdAction({ commit }, payload) {
-      commit("setchatId", payload.id);
-    },
-    contactAction({ commit }, payload) {
-      commit("setContact", payload.contact);
-    }
-  },
-  getters: {
-    currentScrollY: s => s.currentScrollY,
-    error(state) {
-      return state.error;
-    },
-    chatId(state) {
-      return state.chatId;
-    },
-    contact(state) {
-      return state.contact;
-    },
-    urlApi(state) {
-      return state.urlApi;
-    },
-    domain(state) {
-      return state.domain;
-    }
-  },
+   logout() {
+     localStorage.removeItem("token");
+   },
+   chatIdAction({ commit }, payload) {
+     commit("setchatId", payload.id);
+   },
+   chatNameAction({ commit }, payload) {
+     commit("setChatName", payload.chatName);
+   },
+   contactAction({ commit }, payload) {
+     commit("setContact", payload.contact);
+   }
+ },
+ getters: {
+   currentScrollY: s => s.currentScrollY,
+   error(state) {
+     return state.error;
+   },
+   chatId(state) {
+     return state.chatId;
+   },
+   chatName(state) {
+     return state.chatName;
+   },
+   contact(state) {
+     return state.contact;
+   },
+   urlApi(state) {
+     return state.urlApi;
+   },
+   domain(state) {
+     return state.domain;
+   }
+ },
 });

@@ -199,7 +199,7 @@ export default {
                     //var resArr = [];
                     var numbs = "";
                     for (var numb = 0; numb < this.numbers.length;numb++) {
-                         numbs += this.numbers[numb] +"@c.us,"
+                        numbs += this.numbers[numb].replace(/^0+/, '') +"@c.us,"
                      }
                     var removeLastChar = numbs.substring(0, numbs.length - 1);
                         //this.numbers.splice(numb, 1);
@@ -213,7 +213,7 @@ export default {
                         data.append('MessageContent', this.textSend);
                         data.append('phone', this.numbers[numb]);*/
                     
-                        this.$http.post(this.urlApi+`sendMessage`,dataS).then(() => {
+                        this.$http.post(this.urlApi+`sendMessage`,data).then(() => {
                             /*resArr.push(res.data.Code);
                             if(res.data.Code === "0011" || res.data.Code === "0002") {
                                 this.showMsgErr = true;
@@ -247,9 +247,9 @@ export default {
                     //data.append('CountryCode', this.newPhone.CountryCode);
                         //this.numbers.splice(numb, 1);
                     var dataS = new FormData();
-                    var number = this.newPhone.CountryCode + this.newPhone.Mobile + "@c.us";
-                        console.log(number);
-                        dataS.append('chatId', number.toString());
+                    var number = this.newPhone.CountryCode + this.newPhone.Mobile.replace(/^0+/, '') + "@c.us";
+                        
+                        dataS.append('chatId', number);
                         dataS.append('type', 1);
                         dataS.append('messageType', "new");
                         dataS.append('message', this.textSend);

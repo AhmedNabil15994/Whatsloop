@@ -74,7 +74,7 @@ class Category extends Model{
         $data->channel = $source->channel;
         $data->color_id = $source->color_id;
         $data->color = $extraData[0];
-        $data->labelClass = 'badge badge-'.$extraData[1];
+        $data->labelClass = 'badge label label-'.$extraData[1];
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
         $data->labelId = $source->labelId;
@@ -165,4 +165,18 @@ class Category extends Model{
         return self::count() + 1;
     }
 
+    static function reformLabelName($name_ar,$name_en){
+        $fullName= '';
+        if(!empty($name_ar)){
+            $fullName = $name_ar;
+            if(!empty($name_en)){
+                $fullName.= ' - '.$name_en;
+            }
+        }else{
+            if(!empty($name_en)){
+                $fullName=$name_en;
+            }
+        }
+        return $fullName;
+    }
 }

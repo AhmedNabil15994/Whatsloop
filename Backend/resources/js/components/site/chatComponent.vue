@@ -36,7 +36,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h5 class="font-size-16 mb-0 text-truncate"><a @click="opencontc()" class="text-reset user-profile-show">
-                                    <span>{{ contact.name }}</span>
+                                    <span>{{ chatName }}</span>
                                     </a></h5>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
                                                             <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'image'">
                                                                 صورة 
                                                                 <i class="fa fa-camera"></i> 
-                                                                <img class="imgrelpy" :src="message.quotedMsgObj.body" />
+                                                                <img onerror="this.onerror=null;this.src='https://whatsloop.net/resources/Gallery/UserDefault.png';" class="imgrelpy" :src="message.quotedMsgObj.body" />
                                                             </span>
                                                     
                                                             <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'video'">
@@ -136,9 +136,23 @@
                                                                 <i class="fa fa-map-marker"></i> 
                                                             </span>
 
-                                                            <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'contact'">
-                                                                جهة اتصال 
-                                                                <i class="fa fa-contact"></i> 
+                                                            <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'contact' || message.quotedMsgObj.whatsAppMessageType === 'vcard'">
+                                                                <i class="fa fa-user"></i> 
+                                                                {{message.quotedMsgObj.contact_name}}
+                                                            </span>
+
+                                                            <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'order'">
+                                                                {{message.quotedMsgObj.orderDetails.name}}
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
+                                                                
+                                                            </span>
+                                                            
+                                                            <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'product'">
+                                                                {{message.quotedMsgObj.productDetails.name}}
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
+                                                                <img onerror="this.onerror=null;this.src='https://whatsloop.net/resources/Gallery/UserDefault.png';" class="imgrelpy" 
+                                                                :src="message.quotedMsgObj.productDetails.mainImage" />
+
                                                             </span>
 
                                                             <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'ptt'">
@@ -236,6 +250,7 @@
                                                         </div>
                                                         
                                                         <div v-else-if="message.whatsAppMessageType === 'document'">
+                                                        
                                                             <!-- end card -->
                                                             <span v-if="message.MessageFileCaption">
                                                                 <template v-if="message.MessageFileCaption.includes('*') || message.MessageFileCaption.includes('https://whatsloop.net/resources/Gallery/') && !message.MessageFileCaption.includes('iframe')">
@@ -259,15 +274,15 @@
                                                                     </div>
                                                                     <div class="media-body">
                                                                         <div class="text-left">
-                                                                            <h5 class="font-size-14 mb-1 text-truncate">{{ message.caption }}</h5>
-                                                                            <p class="text-muted font-size-13 mb-0"> {{message.fileSize}} </p>
+                                                                            <h5 class="font-size-14 mb-1 text-truncate">{{ message.file_name }}</h5>
+                                                                            <p class="text-muted font-size-13 mb-0" v-if="message.file_size"> {{message.file_size}} </p>
                                                                         </div>
                                                                     </div>
 
                                                                     <div class="ml-4">
                                                                         <ul class="list-inline mb-0 font-size-18">
-                                                                            <li class="list-inline-item">
-                                                                                <a :href="'data:text/plain;charset=UTF-8,'+message.body" download target="_blank" class="text-muted px-1">
+                                                                            <li class="list-inline-item"  v-if="message.body != undefined">
+                                                                                <a :href="message.body"  :download="message.file_name" target="_blank" class="text-muted px-1">
                                                                                     <i class="ri-download-2-line"></i>
                                                                                 </a>
                                                                             </li>
@@ -278,8 +293,48 @@
                                                             <!-- end card -->
                                                        </div>
 
-                                                        <span v-else-if="message.whatsAppMessageType === 'contact'"> 
-                                                                <span>تم مشاركة جهة اتصال <i class="fa fa-contact"></i></span>
+                                                        <span v-else-if="message.whatsAppMessageType === 'vcard' || message.whatsAppMessageType === 'contact'" class="contactSend"> 
+                                                                <i class="UserIcon fa fa-user"></i>
+                                                                <p class="contactName text-truncate">{{message.contact_name}}</p>
+                                                                <p class="contactPhone">{{message.contact_number}}</p>
+                                                        </span>
+
+                                                        <span v-else-if="message.whatsAppMessageType === 'order'" class="productStyle"> 
+                                                                <div class="head">
+                                                                    <img class="productImg" src="https://whatsloop.net/resources/Gallery/UserDefault.png"  />
+
+                                                                    <p class="productQuantity text-truncate"><i class="fa fa-shopping-cart"></i> {{message.orderDetails.quantity}}</p>
+                                                                    <p class="productPrice text-truncate">{{ message.orderDetails.price }}</p>
+                                                                </div>
+                                                                <p class="productName text-truncate">{{ message.orderDetails.name }} </p>
+                                                                <a class="productBtn text-truncate" target="_blank" :href="message.orderDetails.url">مشاهدة العربة</a>
+                                                        </span>
+
+                                                        <span v-else-if="message.whatsAppMessageType === 'product'" class="productStyle productStyle2"> 
+                                                            <transition name="fade">
+                                                                <image-viewer-vue v-if="imageViewerFlag === message.productDetails.mainImage"
+                                                                    @closeImageViewer="imageViewerFlag = false"
+                                                                    :imgUrlList="message.productDetails.mainImage.split()"
+                                                                    :closable="true"
+                                                                    :cyclical="true"
+                                                                >
+                                                                </image-viewer-vue>
+                                                            </transition>
+                                                                <img
+                                                                @click="imageViewer(message.productDetails.mainImage)"
+                                                                onerror="this.onerror=null;this.src='https://whatsloop.net/resources/Gallery/UserDefault.png';"
+                                                                class="imgMsg"
+                                                                :src="
+                                                                    message.productDetails.mainImage
+                                                                    ? message.productDetails.mainImage
+                                                                    : 'https://whatsloop.net/resources/Gallery/UserDefault.png'
+                                                                "
+                                                                />
+                                                                <div class="head">
+                                                                    <p class="productName text-truncate">{{ message.productDetails.name }} </p>
+                                                                    <p class="productPrice text-truncate">{{ message.productDetails.price }} {{ message.productDetails.currency }}</p>
+                                                                </div>
+                                                                
                                                         </span>
 
                                                         <span v-else-if="message.whatsAppMessageType === 'ptt'"> 
@@ -298,7 +353,10 @@
                                                             
                                                         </span>
 
-                                                        <p v-else> لقد حذفت هذه الرسالة <i class="fa fa-ban"></i></p>
+                                                        <p v-else>
+                                                         <i class="fa fa-ban"></i> 
+                                                        رسالة محذوفه أو غير مدعومة
+                                                        </p>
                                                        
                                                         <p class="chat-time clearfix mb-0">
                                                             <span class="seen">
@@ -397,7 +455,7 @@
                         <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'image'">
                             صورة 
                             <i class="fa fa-camera"></i> 
-                            <img class="imgrelpy" :src="replyArry.body" />
+                            <img onError="this.onerror=null;this.src='https://whatsloop.net/resources/Gallery/UserDefault.png';" class="imgrelpy" :src="replyArry.body" />
                         </span>
                 
                         <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'video'">
@@ -415,10 +473,26 @@
                             <i class="fa fa-map-marker"></i> 
                         </span>
 
-                        <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'contact'">
-                            جهة اتصال 
-                            <i class="fa fa-contact"></i> 
+                        <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'contact' || replyArry.whatsAppMessageType === 'vcard'">
+                            
+                            <i class="fa fa-user"></i> 
+                            {{replyArry.contact_name}}
                         </span>
+
+                        <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'order'">
+                            {{replyArry.orderDetails.name}}
+                            <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
+                            
+                        </span>
+                        <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'product'">
+                            {{replyArry.productDetails.name}}
+                            <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
+                            <img onerror="this.onerror=null;this.src='https://whatsloop.net/resources/Gallery/UserDefault.png';" class="imgrelpy" 
+                            :src="replyArry.productDetails.mainImage" />
+
+                        </span>
+
+
 
                         <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'ptt'">
                             مقطع صوتي
@@ -459,7 +533,7 @@
                             </li>
                             
                         </ul>
-                        <a target="_blank" :href="'/replies/add'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
+                        <a target="_blank" :href="'http://'+domain+'.wloop.net/replies'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
                     </vuescroll>
                 </div>
                 <div class="quickMsgs mobile flex" v-if="openQuick">
@@ -471,7 +545,7 @@
                         </li>
                         
                     </ul>
-                    <a :href="'/replies/add'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
+                    <a :href="'http://'+domain+'.wloop.net/replies'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
                 </div>
                 <!-- start chat input section -->
                 <form @submit.prevent class="sendMessage">
@@ -650,9 +724,10 @@ export default {
             this.getChatContent();
             this.getQuick();
            
-            var domain =  window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+            var domain = window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+            this.testBroadCastingSentMessage2(domain)
             this.testBroadCastingIncomingMessage2(domain);
-            this.testBroadCastingBotMessage2(domain);
+            //this.testBroadCastingBotMessage2(domain);
             this.testBroadUpdateMessageStatus2(domain);
 
 
@@ -666,6 +741,9 @@ export default {
     computed: {
         chatIdC() {
             return this.$store.getters.chatId;
+        },
+        chatName() {
+            return this.$store.getters["chatName"];
         },
         emojiDataAll() {
             return EmojiAllData;
@@ -687,13 +765,41 @@ export default {
         }
     },
     methods: {
+        testBroadCastingSentMessage2 (domain) {
+        // Start socket.io listener
+          window.Echo.channel(domain+'-NewSentMessage')
+            .listen('SentMessage', (data) => {
+                if(this.chatIdC === data.message.id) {
+                    setTimeout(() => {
+                        var nnm = 0;
+                        this.chat.forEach((element,index) => {
+                            if (element.id === data.message.lastMessage.id) {
+                                nnm += 1;
+                            } 
+                            if (index === this.chat.length -1) {
+                                if(nnm === 0) {
+                                    this.chat.push(data.message.lastMessage);
+                                    if(this.$refs["vs"]) {
+                                        const {v} = this.$refs["vs"].getScrollProcess();
+                                        if(v > 0.85  ) {
+                                            this.goDown(0)
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    },500);
+                }
+            })
+          // End socket.io listener
+        },
       testBroadCastingIncomingMessage2 (domain) {
 
         // Start socket.io listener
           window.Echo.channel(domain+'-NewIncomingMessage')
             .listen('IncomingMessage', (data) => {
+               console.log(data)
                 if(this.chatIdC === data.message.id) {
-                        
                     this.chat.push(data.message.lastMessage);
                     this.totalNewMsg += 1;
                     if(this.$refs["vs"]) {
@@ -705,22 +811,30 @@ export default {
                 }
             });
           // End socket.io listener
-      },
+      },/*
       testBroadCastingBotMessage2 (domain) {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
-                if(this.chatIdC === data.message.id) {
-                    this.chat.push(data.message.lastMessage);
-                }
+                 console.log(data)
+                    if(data.message.lastMessage.bot_details.reply_type == 2){
+                        if(data.message.lastMessage.whatsAppMessageType == 'image'){
+                            data.message.lastMessage.caption = data.message.lastMessage.bot_details.message;
+                            data.message.lastMessage.body = data.message.lastMessage.bot_details.file;
+                        }else{
+                            data.message.lastMessage.caption = data.message.lastMessage.bot_details.file_name;
+                        }
+                    }
+                    this.searchPucher(data.message);
                 
             })
           // End socket.io listener
-      },
+      },*/
     testBroadUpdateMessageStatus2 (domain) {
         // Start socket.io listener
           window.Echo.channel(domain+'-UpdateMessageStatus')
             .listen('MessageStatus', (data) => {
+              //  console.log(data)
                 if(this.chat !== []) {
                 this.chat.forEach((element) => {
                 if (element.id) {
@@ -873,16 +987,18 @@ export default {
             });
         },
         FixDates() {
-            this.chat.forEach((element) => {
-            if (element.created_at_day) {
-                if (this.messageDates.includes(element.created_at_day)) {
-                element.isToday = false;
-                } else {
-                element.isToday = true;
-                this.messageDates.push(element.created_at_day);
+            if(this.chat !== []) {
+                this.chat.forEach((element) => {
+                if (element.created_at_day) {
+                    if (this.messageDates.includes(element.created_at_day)) {
+                    element.isToday = false;
+                    } else {
+                    element.isToday = true;
+                    this.messageDates.push(element.created_at_day);
+                    }
                 }
+                });
             }
-            });
         },
         sendMsg(event) {
             if(this.$refs.textContent) {
@@ -930,7 +1046,7 @@ export default {
                         if(this.replyArry !== null ) {
                             data.append("replyOn", this.replyArry.id);
                         }
-                        console.log(this.$refs.myVueDropzone.dropzone.files[i].type)
+                      //  console.log(this.$refs.myVueDropzone.dropzone.files[i].type)
                         data.append("file", this.$refs.myVueDropzone.dropzone.files[i]);
 
                         x++;
@@ -946,10 +1062,15 @@ export default {
                         var time1 = today1.getHours() + ":" + today1.getMinutes() + " " + ampm1;
                         var idRandom1 = "id_"+ Math.floor(Math.random() * 99999) + 1 + Math.floor(Math.random() * 9999) + seconds1;
                         data.append("frontId", idRandom1);
+                        var textMsg = this.$refs.myVueDropzone.dropzone.files[i].name;
+                        if(type === 'image') {
+                             textMsg = this.messageSend;
+                        }
+                        //this.messageSend
                         var objMsg1 = {
                             author:this.chatIdC,
                             body:this.$refs.myVueDropzone.dropzone.files[i].dataURL,
-                            caption:this.messageSend,
+                            file_name:textMsg,
                             created_at_time:time1,
                             fromMe:1,
                             id:"",
@@ -965,21 +1086,21 @@ export default {
 
                         this.goDown(0);
 
-
+                       
                         this.$http
                         .post(this.urlApi+`sendMessage`, data).then((res) => {
-                            console.log(res.data)
                             this.chat.forEach((element) => {
-                            if (element.frontId) {
+                            if (element.frontId !== '' && res.data.data.frontId !== '') {
                                 if (element.frontId.search(res.data.data.frontId) !== -1) {
                                     element.author = res.data.data.author;
                                     element.body = res.data.data.body;
-                                    element.caption = res.data.data.caption;
+                                    element.file_name = res.data.data.file_name;
                                     element.created_at_time = res.data.data.created_at_time;
                                     element.fromMe = res.data.data.fromMe;
                                     element.id = res.data.data.id;
                                     element.quotedMsgObj = res.data.data.quotedMsgObj;
                                     element.frontId = res.data.data.frontId;
+                                    element.file_size = res.data.data.file_size;
                                     element.isForwarded = res.data.data.isForwarded;
                                     element.sending_status= res.data.data.sending_status;
                                     element.testMsg = res.data.data.testMsg;
@@ -1033,27 +1154,28 @@ export default {
 
                     this.$http
                     .post(this.urlApi+`sendMessage`, data).then((res) => {
-                        
-                        this.chat.forEach((element) => {
-                        if (element.frontId) {
-                            if (element.frontId.search(res.data.data.frontId) !== -1) {
-                                element.author = res.data.data.author;
-                                element.body = res.data.data.body;
-                                element.caption = res.data.data.caption;
-                                element.created_at_time = res.data.data.created_at_time;
-                                element.fromMe = res.data.data.fromMe;
-                                element.id = res.data.data.id;
-                                element.quotedMsgObj = res.data.data.quotedMsgObj;
-                                element.frontId = res.data.data.frontId;
-                                element.isForwarded = res.data.data.isForwarded;
-                                element.sending_status= res.data.data.sending_status;
-                                element.testMsg = res.data.data.testMsg;
-                                element.status = res.data.data.status;
-                                element.whatsAppMessageType = res.data.data.whatsAppMessageType;
-                            }
-                        }
+                        if(res.data.status.message !== 'Chat ID Is Invalid') {
+                            this.chat.forEach((element) => {
+                                if (element.frontId) {
+                                    
+                                    if (element.frontId.search(res.data.data.frontId) !== -1) {
+                                        element.author = res.data.data.author;
+                                        element.body = res.data.data.body;
+                                        element.caption = res.data.data.caption;
+                                        element.created_at_time = res.data.data.created_at_time;
+                                        element.fromMe = res.data.data.fromMe;
+                                        element.id = res.data.data.id;
+                                        element.quotedMsgObj = res.data.data.quotedMsgObj;
+                                        element.frontId = res.data.data.frontId;
+                                        element.isForwarded = res.data.data.isForwarded;
+                                        element.sending_status= res.data.data.sending_status;
+                                        element.testMsg = res.data.data.testMsg;
+                                        element.status = res.data.data.status;
+                                        element.whatsAppMessageType = res.data.data.whatsAppMessageType;
+                                    }
+                                }
                         });
-                       
+                       }
                         
                     });
                 }
@@ -1114,7 +1236,6 @@ export default {
            
         },
         reply(arry) {
-            delete  arry.quotedMsgObj;
             delete  arry.quotedMsgBody;
             delete  arry.quotedMsgType;
             this.replyArry = arry;
@@ -1146,7 +1267,7 @@ export default {
     text-align: left;
     height:23px;
     opacity: 0;
-	transition:all 0.3s;
+    transition:all 0.3s;
     background: linear-gradient(-15deg,rgba(0,0,0,0),
     rgba(0,0,0,0) 45%,
     rgba(0,0,0,.08) 70%,rgb(0 0 0 / 8%))
@@ -1222,6 +1343,12 @@ export default {
     background-color:#e4e4e4
 }
 
+.chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content .replyMsg .fa-user
+{
+    font-size:13px;
+    margin-top:4px
+}
+
 .replyMsg
 {
     padding:10px 15px;
@@ -1235,9 +1362,15 @@ export default {
     border-right:none;
 }
 
-.right .replyMsg
+.right .replyMsg,
+.right .contactSend .UserIcon
 {
     background-color:#cfe9ba;
+}
+
+.right .contactSend .UserIcon
+{
+   color:#9f9f9f
 }
 
 .replyMsg.withImage
@@ -1384,7 +1517,7 @@ export default {
     pointer-events:none ;
     width:100%;
     height:100%;
-    background:url(/images/bg-chat-tile-light_04fcacde539c58cca6745483d4858c52.png);
+    background:url(/public/images/bg-chat-tile-light_04fcacde539c58cca6745483d4858c52.png);
     opacity: 0.06;
 }
 #listChat
@@ -1403,6 +1536,7 @@ export default {
 {
     float:left;
 }
+
 
 .chat-conversation .conversation-list .conversation-name
 {
@@ -1472,7 +1606,139 @@ export default {
     width:250px;
     display: block;
     margin-bottom: 10px;
-    cursor:pointer
+    cursor:pointer;
+}
+
+.contactSend
+{
+    padding-right:65px;
+    position:relative;
+    display:block;
+    min-height:55px;
+}
+
+.contactSend .UserIcon
+{
+    position:absolute;
+    right:5px;
+    top:-5px;
+    width:50px;
+    height:50px;
+    line-height:50px;
+    border-radius:50%;
+    margin:0;
+    background:#f9f9f9;
+    color:#c2c2c2;
+    font-size:23px;
+    margin:0;
+    text-align:center;
+}
+
+.contactSend .contactName 
+{
+    font-family: "Tajawal-Bold";
+    margin-bottom:3px;
+    font-size:14px;
+    min-width:160px;
+    margin-top:5px;
+}
+
+
+.contactSend .contactPhone
+{
+    direction:ltr;
+    display:block;
+    text-align:right
+}
+
+.productStyle .head
+{
+    background-color:#f9f9f9;
+    border:2px solid #f9f9f9;
+    overflow:hidden;
+    position:relative;
+    padding:9px 15px 15px 69px;
+    direction:ltr;
+    text-align:left;
+    margin-bottom:10px;
+    min-width:240px;
+    height:60px;
+}
+
+.productStyle2.productStyle .head
+{
+    padding: 5px  8px 6px;
+    height:auto;
+}
+
+.productStyle2.productStyle .head .productName
+{
+    padding-bottom:0;
+    font-family: "Tajawal-Bold";
+}
+
+.productStyle2.productStyle .head .productPrice
+{
+    font-family: "Tajawal-Medium";
+}
+
+.productStyle .head .productImg
+{
+    position:absolute;
+    left:0;
+    top:0;
+    width:60px!important;
+    height:60px;
+    background:#fff;
+    padding:10px;
+}
+
+.productStyle .head .productQuantity
+{
+    font-size:13px;
+    font-family: "Tajawal-Bold";
+    display:block;
+    
+}
+
+.productStyle .head .productPrice
+{
+    font-size:12px;
+    display:block;
+    padding-left:2px;
+}
+
+.productStyle .productName
+{
+    border-bottom:1px solid #f9f9f9;
+    padding-bottom:10px;
+    text-align:left;
+}
+
+.productStyle .productBtn
+{
+    text-align:center;
+    color:#6bcbef;
+    padding:5px;
+    display:block;
+    border-bottom:1px solid #f9f9f9;
+    margin-bottom:10px;
+}
+
+.right .productStyle .head {
+    background-color:#cfe9ba;
+}
+
+.right .productStyle .productBtn,
+.right .productStyle .productName,
+.right .productStyle .head
+{
+    border-color:#cfe9ba
+}
+
+.right .productStyle .productBtn
+{
+    color:#343a40
 }
 
 .chat-conversation .right
@@ -1716,9 +1982,14 @@ transition:all 0.3s;
 
 .chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content
 {
-    white-space: pre-wrap;
     min-width:100px;
     text-align: right;
+    white-space:unset!important
+}
+
+.chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content p
+{
+    white-space: pre-wrap;
 }
 
 .chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content:before
@@ -1754,7 +2025,19 @@ transition:all 0.3s;
     
 }
 
+.chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content .fa-ban
+{
+    margin-top:4px;
+    margin-left:5px;
+    float:right;
+}
 
+.chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content .fa-user
+{
+    float:right;
+    margin-left:5px;
+    margin-top:2px;
+}
 
 .avatar-xs {
     cursor:pointer!important;
@@ -1848,6 +2131,11 @@ transition:all 0.3s;
     color:#00c5bb;
     font-size:17px;
     margin-top:-2px
+}
+
+.media-body
+{
+    margin-top:0
 }
 
 .conversation-list .media-body
@@ -1961,6 +2249,19 @@ transition:all 0.3s;
     display:none;
 }
 
+.svgStore
+{
+    float:right;
+    width:16px;
+    height:14px;
+    float:right;
+    margin-top:4px;
+    margin-left:5px;
+}
+
+.svgStore path{
+    fill:rgba(0, 0, 0, 0.45)
+}
 
 
 </style>

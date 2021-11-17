@@ -99,14 +99,24 @@ resizeMenu();
 
 	}
     
-    $(".menuCpanel.active .linksCpanel li .subToggle").click(function() {
+    $(".menuCpanel .linksCpanel li .subToggle").click(function() {
 		if($(".menuCpanel").hasClass("active")) {
 			$(".menuCpanel.active .linksCpanel li .subMenu").not($(this).siblings()).slideUp();
 			$(".menuCpanel.active .linksCpanel li .subToggle").not($(this)).removeClass("active");
 			$(this).siblings().slideToggle();
     		$(this).toggleClass("active");
+			
 		}
-    	
+		setTimeout(function() {
+			$(".linksCpanel").niceScroll({
+				cursorwidth: 6,
+				cursorborder: 0,
+				cursorcolor: '#707d94',
+				zindex: 1500,
+				horizrailenabled: false
+		
+			}).resize();
+		},300);
     });
 
     $(".menuCpanel .linksCpanel li").hover(function() {

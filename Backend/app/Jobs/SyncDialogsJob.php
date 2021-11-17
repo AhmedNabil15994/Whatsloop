@@ -36,7 +36,7 @@ class SyncDialogsJob implements ShouldQueue
         if(!empty($this->dialogs)){
             foreach ($this->dialogs as $dialog) {
                 ChatDialog::newDialog($dialog);
-                Contact::newPhone($dialog['id']);
+                Contact::newPhone($dialog['id'],$dialog['name']);
             }
         }
     }

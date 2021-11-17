@@ -58,20 +58,22 @@
                         @if(\Helper::checkRules('uploadImage-ticket'))
                         <div class="row">
                             <div class="col-md-4">
-                                <label class="titleLabel">{{ trans('main.files') }}:</label>
+                                <label class="titleLabel">{{ trans('main.files') }} :</label>
                             </div>
                             <div class="col-md-8">
-                                <label class="upload">
-                                    <input type="file" name="files" />
-                                    <i class="flaticon-upload"></i>
-                                    {{ trans('main.attachFiles') }}
-                                </label>
-                                <span class="maxSize">{{ trans('main.maxFiles') }}</span>
-                                
-                                <div class="nextPrev clearfix">
-                                    <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                    <button type="submit" name="Submit" class="btnNext AddBTN">{{ trans('main.add') }}</button>
+                                <div class="dropzone" id="kt_dropzone_1">
+                                    <div class="fallback">
+                                        <input name="files" type="file" />
+                                    </div>
+                                    <div class="dz-message needsclick">
+                                        <i class="h1 si si-cloud-upload"></i>
+                                        <h3>{{ trans('main.dropzoneP') }}</h3>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="nextPrev clearfix">
+                                <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
+                                <button type="submit" name="Submit" class="btnNext AddBTN">{{ trans('main.add') }}</button>
                             </div>
                         </div>
                         @endif

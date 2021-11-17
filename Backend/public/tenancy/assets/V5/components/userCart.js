@@ -163,7 +163,7 @@ $(function(){
 		$('span.cartCount').html(parseInt(parseInt(count) + parseInt(1)));
 
 		// ReCalculate Prices
-		calcPrices(itemPrice,itemAfterVat,'plus');
+		calcPrices(itemPrice,itemAfterVat,'plus',classType);
 
 		$(this).empty();
 		$(this).html(butIcon + added);
@@ -202,17 +202,28 @@ $(function(){
 	// });
 
 
-	function calcPrices(itemPrice,itemAfterVat,operator){
+	function calcPrices(itemPrice,itemAfterVat,operator,classType=null){
 		var oldGrandTotal = $('span.grandTotal').text();
 		var oldEstimatedTax = $('span.estimatedTax').text();
 		var oldTotal = $('span.total').text();
+		var userCredits = $('input[name="background"]').val();
 
-		if(operator == 'minus'){
-			oldGrandTotal = parseInt(oldGrandTotal) - parseInt(itemPrice);
-			oldTotal = parseInt(oldTotal) - parseInt(itemAfterVat);
+		if(classType == 'membership'){
+			if(operator == 'minus'){
+				oldGrandTotal = parseInt(itemPrice) - parseFloat(userCredits);
+				oldTotal = parseInt(itemAfterVat) - parseFloat(userCredits);
+			}else{
+				oldGrandTotal = parseInt(itemPrice) - parseFloat(userCredits);
+				oldTotal = parseInt(itemAfterVat) - parseFloat(userCredits);
+			}
 		}else{
-			oldGrandTotal = parseInt(oldGrandTotal) + parseInt(itemPrice);
-			oldTotal = parseInt(oldTotal) + parseInt(itemAfterVat);
+			if(operator == 'minus'){
+				oldGrandTotal = parseInt(oldGrandTotal) - parseInt(itemPrice);
+				oldTotal = parseInt(oldTotal) - parseInt(itemAfterVat);
+			}else{
+				oldGrandTotal = parseInt(oldGrandTotal) + parseInt(itemPrice);
+				oldTotal = parseInt(oldTotal) + parseInt(itemAfterVat);
+			}
 		}
 
 		calcTaxes(oldTotal);
@@ -222,11 +233,17 @@ $(function(){
 		var oldGrandTotal = 0;
 		var oldEstimatedTax = 0;
 		var oldTotal = 0;
+		var userCredits = $('input[name="background"]').val();
 		$.each($('.sellCards .card-body .sell-card'),function(index,item){
 			var currentPrice = $(item).find('.card-text-2.d-hidden').text();
 			var currentPriceWithVat = $(item).find('.card-text-2.d-hidden').data('tabs');
-			oldGrandTotal = parseInt(oldGrandTotal) + parseInt(currentPrice);			
-			oldTotal = parseInt(oldTotal) + parseInt(currentPriceWithVat);
+			if($(item).hasClass('extra_quota')){
+				oldGrandTotal = (parseInt(oldGrandTotal) + (parseInt(currentPrice) * $(item).find('input[type="text"]').val())) - parseFloat(userCredits);
+				oldTotal = (parseInt(oldTotal) + (parseInt(currentPriceWithVat) * $(item).find('input[type="text"]').val())) - parseFloat(userCredits);
+			}else {
+				oldGrandTotal = (parseInt(oldGrandTotal) + parseInt(currentPrice)) - parseFloat(userCredits);
+				oldTotal = (parseInt(oldTotal) + parseInt(currentPriceWithVat)) - parseFloat(userCredits);
+			}
 		});
 		
 		calcTaxes(oldTotal);

@@ -11,18 +11,19 @@ body,html
   text-align: right;
   background-color:#fff;
   direction: rtl;
+  font-family: "Tajawal-Regular"!important;
 }
 
 .overflowHidden
 {
-	overflow: hidden
+  overflow: hidden
 }
 
 body
 {
-	font-family: "Tajawal-Regular"!important;
-	overflow-x: hidden;
-	margin:0;
+  
+  overflow-x: hidden;
+  margin:0;
 }
 
 .labels .badge
@@ -68,15 +69,15 @@ bold
 
 h1,h2,h3,h4,h5,h6
 {
-	margin-top:0;
-	margin-bottom:0
+  margin-top:0;
+  margin-bottom:0
 }
 
 ul
 {
-	margin-bottom:0;
-	padding-right:0;
-	list-style:none;
+  margin-bottom:0;
+  padding-right:0;
+  list-style:none;
     -webkit-appearance:none;
     -moz-appearance:none;
     appearance:none;
@@ -84,18 +85,18 @@ ul
 
 p
 {
-	margin-bottom:0
+  margin-bottom:0
 }
 
 a
 {
-	text-decoration:none!important;
+  text-decoration:none!important;
   outline:none;
   cursor:pointer;
-	-webkit-transition:all 0.3s;
-	-moz-transition:all 0.3s;
-	-o-transition:all 0.3s;
-	transition:all 0.3s;
+  -webkit-transition:all 0.3s;
+  -moz-transition:all 0.3s;
+  -o-transition:all 0.3s;
+  transition:all 0.3s;
 }
 
 .bold{
@@ -196,15 +197,15 @@ a:hover, a:active, a:focus {
 
 .center-block
 {
-	float:none
+  float:none
 }
 
 .background-cover
 {
-	-webkit-background-size:cover!important;
-	-moz-background-size:cover!important;
-	-o-background-size:cover!important;
-	background-size:cover!important;
+  -webkit-background-size:cover!important;
+  -moz-background-size:cover!important;
+  -o-background-size:cover!important;
+  background-size:cover!important;
 }
 
 input,
@@ -212,7 +213,7 @@ textarea,
 button,
 select
 {
-	outline:none;
+  outline:none;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
@@ -255,7 +256,7 @@ input[type="number"] {
 
 .nicescroll-rails
 {
-	right:0!important
+  right:0!important
 }
 
 .text-bold
@@ -525,10 +526,10 @@ input[type="number"] {
     border-right:none!important;
     border-left:none!important;
     border-top: 1px solid #e5e5e5;
-	  -webkit-transition:all 0.3s;
-	  -moz-transition:all 0.3s;
-	  -o-transition:all 0.3s;
-	  transition:all 0.3s;
+    -webkit-transition:all 0.3s;
+    -moz-transition:all 0.3s;
+    -o-transition:all 0.3s;
+    transition:all 0.3s;
 }
 
 .dropzone.dz-clickable .dz-message, .dropzone.dz-clickable .dz-message *
@@ -802,8 +803,7 @@ z-index:105
   margin-right:auto;
   margin-left:10px;
   border-radius: 35px;
-  margin-top:5px;
-  margin-bottom:5px;
+  margin-top:15px;
   font-size: 13px;
   float:right;
 
