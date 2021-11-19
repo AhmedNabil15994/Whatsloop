@@ -25,7 +25,7 @@
 <div class="tickets">
                 
     <div class="ticketContent Measures text-center">
-        <h2 class="title">الاجراءات</h2>
+        <h2 class="title">{{ trans('main.actions') }}</h2>
         <div class="desc">
             <a href="#" class="MeasuresText screen color1">{{ trans('main.screenshot') }}</a>
             <a href="{{ URL::to('/profile/subscription/sync') }}" class="MeasuresText color2">{{ trans('main.sync') }}</a>

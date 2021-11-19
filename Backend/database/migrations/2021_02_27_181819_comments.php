@@ -18,6 +18,7 @@ class Comments extends Migration
             $table->text('comment');
             $table->integer('ticket_id');
             $table->integer('reply_on');
+            $table->string('file_name')->nullable();
             $table->integer('status');
             $table->integer('sort');
             $table->integer('created_by')->nullable();

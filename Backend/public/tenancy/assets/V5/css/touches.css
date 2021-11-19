@@ -309,7 +309,8 @@ table{
 }
 .LastUpdate{
 	margin-top: -15px;
-    margin-bottom: 25px !important;
+  margin-bottom: 25px !important;
+  display: block;
 }
 .col-md-3 .titleLabel{
 	margin-bottom: 0;
@@ -825,4 +826,102 @@ div.phone-footer img{
 } 
 html[dir="rtl"] div.dataTables_wrapper div.dataTables_filter input{
     margin-left: 0 !important;
+}
+
+
+
+.label-1{
+  background-color: #ff9dff;
+}
+
+.label-2{
+  background-color: #d3a91d;
+}
+
+.label-3{
+  background-color: #6d7cce;
+}
+
+.label-4{
+  background-color: #d7e752;
+}
+
+.label-5{
+  background-color: #00d0e2;
+}
+
+.label-6{
+  background-color: #ffc5c7;
+}
+
+.label-7{
+  background-color: #93ceac;
+}
+
+.label-8{
+  background-color: #f74848;
+}
+
+.label-9{
+  background-color: #00a0f2;
+}
+
+.label-10{
+  background-color: #83e422;
+}
+
+.label-11{
+  background-color: #ffaf04;
+}
+
+.label-12{
+  background-color: #b5ebff;
+}
+
+.label-13{
+  background-color: #9ba6ff;
+}
+
+.label-14{
+  background-color: #9368cf;
+}
+
+.label-15{
+  background-color: #ff9485;
+}
+
+.label-16{
+  background-color: #64c4ff;
+}
+
+.label-17{
+  background-color: #ffd429;
+}
+
+.label-18{
+  background-color: #dfaef0;
+}
+
+.label-19{
+  background-color: #99b6c1;
+}
+
+.label-20{
+  background-color: #55ccb3;
+}
+.label:empty,
+.badge:empty{
+  display: block;
+  width: 56px;
+  margin: auto;
+  padding: 15px;
+}
+.dark-mode .transmitters .transmitterHead td a{
+  background-color: unset ;
+}
+.mr-2{
+  margin-right: 20px;
+}
+html[dir="ltr"] .mr-2{
+  margin-left: 20px;
 }

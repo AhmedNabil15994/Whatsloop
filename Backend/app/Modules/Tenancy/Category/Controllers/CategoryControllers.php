@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
+use App\Models\Variable;
+use App\Jobs\SyncLabelsJob;
 use DataTables;
 use Storage;
 
@@ -88,7 +90,7 @@ class CategoryControllers extends Controller {
                 'label' => trans('main.color'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'color_id',
+                'data-col' => '',
                 'anchor-class' => '',
             ],
             'name_ar' => [
@@ -173,8 +175,8 @@ class CategoryControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.categories') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.User.Views.edit')->with('data', (object) $data);
+        $data['colors'] = Category::getColors();
+        return view('Tenancy.Category.Views.edit')->with('data', (object) $data);
     }
 
     public function update($id) {
@@ -220,7 +222,7 @@ class CategoryControllers extends Controller {
         }
 
         if($colorUpdateFlag == 1){
-            $data['color'] = Category::getColor($input['color_id'])[3];
+            $data['color'] = Category::getColorData($input['color_id'])[2];
             $updateResult = $mainWhatsLoopObj->updateLabel($data);
             $result = $updateResult->json();
 
@@ -247,8 +249,8 @@ class CategoryControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.categories') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
-        return view('Tenancy.User.Views.add')->with('data', (object) $data);
+        $data['colors'] = Category::getColors();
+        return view('Tenancy.Category.Views.add')->with('data', (object) $data);
     }
 
     public function create() {
@@ -290,7 +292,7 @@ class CategoryControllers extends Controller {
         $dataObj->save();
 
         if(isset($input['color_id']) && !empty($input['color_id'])){
-            $updateDate['color'] = Category::getColor($input['color_id'])[3];
+            $updateDate['color'] = Category::getColorData($input['color_id'])[2];
             $updateDate['labelId'] = $dataObj->labelId;
             $updateResult = $mainWhatsLoopObj->updateLabel($updateDate);
             $result = $updateResult->json();
@@ -306,6 +308,21 @@ class CategoryControllers extends Controller {
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
+        return redirect()->to($this->getData()['mainData']['url'].'/');
+    }
+
+    public function syncLabels(){
+        $varObj = Variable::where('var_key','BUSINESS')->first();
+        if(!$varObj || $varObj->var_value == 1){
+            return redirect('404');
+        }
+
+        $labels = Category::dataList()['data'];
+        dispatch(new SyncLabelsJob($labels));
+        
+        $varObj->var_value = 1;
+        $varObj->save();
+        Session::flash('success', trans('main.inPrgo'));
         return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 

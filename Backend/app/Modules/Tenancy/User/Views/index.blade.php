@@ -34,6 +34,16 @@
 <input type="hidden" name="data-tests" value="{{ \Helper::checkRules('export-contacts') }}">
 @endif
 
+@if($data->designElems['mainData']['url'] == 'categories' && \App\Models\Variable::getVar('BUSINESS') == 0)
+    <div class="Additions">
+        <h2 class="title">{{ trans('main.labelsConfigure') }}</h2>
+        @if(\Helper::checkRules('sync-categories'))
+        <a href="{{ URL::to('/categories/syncLabels') }}" class="btnAdd">{{ trans('main.syncLabels') }}</a>
+        @endif
+    </div> 
+@endif
+
+
 <div class="transmitters bill">
     <div class="content transmitterHead">
         <div class="row">

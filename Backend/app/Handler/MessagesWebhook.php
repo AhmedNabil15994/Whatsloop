@@ -10,6 +10,9 @@ use App\Events\IncomingMessage;
 use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
 use App\Models\Variable;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\Template;
 use App\Events\BotMessage;
 use App\Events\SentMessage;
 use App\Events\MessageStatus;
@@ -124,6 +127,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    					$whats_message_type = 'ppt';
 		    				$sendData['audio'] = $botObj->file;
 			    			$result = $mainWhatsLoopObj->sendPTT($sendData);
+		    				$sendData['body'] = $botObj->file;
 		    			}elseif($botObj->reply_type == 5){
 	    					$message_type = 'link';
 	    					$whats_message_type = 'link';
@@ -135,8 +139,9 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    			}elseif($botObj->reply_type == 6){
 	    					$message_type = 'contact';
 	    					$whats_message_type = 'contact';
-		    				$sendData['contactId'] = str_replace('+','',$botObj->whatsapp_no);
+		    				$sendData['body'] = str_replace('+','',$botObj->whatsapp_no);
 			    			$result = $mainWhatsLoopObj->sendContact($sendData);
+		    				$sendData['contactId'] = str_replace('+','',$botObj->whatsapp_no);
 		    			}elseif($botObj->reply_type == 7){
 	    					$message_type = 'location';
 	    					$whats_message_type = 'location';
@@ -144,6 +149,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				$sendData['lng'] = $botObj->lng;
 		    				$sendData['address'] = $botObj->address;
 			    			$result = $mainWhatsLoopObj->sendLocation($sendData);
+		    				$sendData['body'] = $botObj->address;
 		    			}elseif($botObj->reply_type == 8){
 	    					$message_type = 'webhook';
 	    					$whats_message_type = 'webhook';
@@ -226,14 +232,55 @@ class MessagesWebhook extends ProcessWebhookJob{
 	}
 
 	public function handleMessages($domain,$message,$tenantId){
+		$hasOrders = 0;
+		$lastOrder = [];
 		if(filter_var($message['body'], FILTER_VALIDATE_URL) && !in_array($message['type'],['product','order'])){
 			$message['message_type'] = \ImagesHelper::checkExtensionType(substr($message['body'], strrpos($message['body'], '.') + 1));
 			$fileName = substr($message['body'], strrpos($message['body'], '/' )+1);
 			$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
-			$succ = file_put_contents($destinationPath, file_get_contents($message['body']));
+			$succ = @file_put_contents($destinationPath, @file_get_contents($message['body']));
 			$message['body'] = config('app.BASE_URL').'/public/uploads/'.$tenantId.'/chats/' . $fileName;
 		}else{
 			$message['message_type'] = in_array($message['type'],['product','order']) ? $message['type'] : 'text';
+			if($message['message_type'] == 'order' && $message['metadata']){
+				$orderDetails = $message['metadata'];
+				$orderDetails['sellerJid'] = str_replace('@s.whatsapp.net','',$orderDetails['sellerJid']);
+				unset($orderDetails['currency']);
+				unset($orderDetails['orderTitle']);
+				unset($orderDetails['totalAmount']);
+                // Fetch Orders Data
+	    		$mainWhatsLoopObj = new \MainWhatsLoop();
+                $ordersCall = $mainWhatsLoopObj->getOrder($orderDetails);
+                $ordersCall = $ordersCall->json();
+
+                if($ordersCall && $ordersCall['status'] && $ordersCall['status']['status'] == 1 && isset($ordersCall['data']['orders']) && !empty($ordersCall['data']['orders'])  ){
+
+               		$count = 0;
+                    $ordersData = $ordersCall['data']['orders'];
+                    foreach($ordersData as $orderData){
+                        $orderObj = Order::getOne($orderData['id']);
+                        if(!$orderObj){
+                            $orderObj = new Order;
+                            $orderObj->status = 1;
+                        }
+
+                        $count+= count($orderData['products']);
+
+                        $orderObj->order_id =  $orderData['id'];
+                        $orderObj->subtotal = $orderData['subtotal'];
+                        $orderObj->tax = $orderData['tax'];
+                        $orderObj->total = $orderData['total'];
+                        $orderObj->message_id = $message['id'];
+                        $orderObj->products = serialize($orderData['products']);
+                        $orderObj->client_id = $message['author'];
+                        $orderObj->products_count = $count;
+                        $orderObj->created_at = $orderData['createdAt'];
+                        $orderObj->save();
+                        $hasOrders = 1;
+                        $lastOrder = (object) $orderObj;
+                    }
+                }
+			}
 		}
         $message['sending_status'] = 1;
         $message['time'] = strtotime(date('Y-m-d H:i:s'));
@@ -259,6 +306,9 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$dialogObj = ChatDialog::getData($dialog); 
 		if($message['fromMe'] == 0){
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
+	    	if($hasOrders){
+				$this->sendLink($domain,$lastOrder);
+			}
 		}else{
 	    	broadcast(new SentMessage($domain , $dialogObj ));
 		}
@@ -273,5 +323,57 @@ class MessagesWebhook extends ProcessWebhookJob{
 			   ->doNotSign()
 			   ->dispatch();
 		}
+	}
+
+	public function sendLink($domain,$oldOrderObj){
+		$orderObj = Order::getData($oldOrderObj);
+        $sendData['chatId'] = $orderObj->client_id;
+        $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/view';
+        $url = str_replace('localhost',$domain.'.wloop.net',$url);
+        foreach($orderObj->products as $product){
+            $productObj = Product::where('product_id',$product['id'])->first();
+            if(!$productObj || $productObj->category_id == null){
+                return 0;     
+            }
+        }
+
+    
+        $templateObj = Template::NotDeleted()->where('name_ar','whatsAppOrders')->first();
+        if($templateObj){
+            $content = $templateObj->description_ar;
+            $content = str_replace('{CUSTOMERNAME}', str_replace('@c.us','',str_replace('+','',$orderObj->client->name)), $content);
+            $content = str_replace('{ORDERID}', $orderObj->order_id, $content);
+            $content = str_replace('{ORDERURL}', $url, $content);
+
+            $message_type = 'text';
+            $whats_message_type = 'chat';
+            $sendData['body'] = $content;
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $result = $mainWhatsLoopObj->sendMessage($sendData);
+            $result = $result->json();
+            if(isset($result['data']) && isset($result['data']['id'])){
+                $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
+                $messageId = $result['data']['id'];
+                $lastMessage['status'] = 'APP';
+                $lastMessage['id'] = $messageId;
+                $lastMessage['fromMe'] = 1;
+                $lastMessage['chatId'] = $sendData['chatId'];
+                $lastMessage['time'] = strtotime(date('Y-m-d H:i:s'));
+                $lastMessage['body'] = $sendData['body'];
+                $lastMessage['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
+                $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+                $lastMessage['message_type'] = $message_type;
+                $lastMessage['sending_status'] = 1;
+                $lastMessage['type'] = $whats_message_type;
+                $messageObj = ChatMessage::newMessage($lastMessage);
+                $dialog = ChatDialog::getOne($sendData['chatId']);
+                $dialog->last_time = $lastMessage['time'];
+                $dialogObj = ChatDialog::getData($dialog);
+                broadcast(new SentMessage($domain , $dialogObj ));
+            }else{
+            }
+            $oldOrderObj->channel = $templateObj->channel;
+            $oldOrderObj->save();
+        }   
 	}
 }

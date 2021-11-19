@@ -136,6 +136,12 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/tickets/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
+            case "comments":
+                $checkFile = public_path() . '/uploads';
+                $fullPath = $path.'/uploads' . '/tickets/comments/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/tickets/comments/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
             case "bank_transfers":
                 $checkFile = public_path() . '/uploads';
                 $fullPath = $path.'/uploads' . '/bank_transfers/' . $id . '/' . $filename;
@@ -234,6 +240,11 @@ class ImagesHelper {
         if ($strAction == 'tickets') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'tickets/' . $id;
+        }
+
+        if ($strAction == 'comments') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'tickets/comments/' . $id;
         }
 
         if ($strAction == 'bank_transfers') {
@@ -346,6 +357,11 @@ class ImagesHelper {
             $directory = $path . 'tickets/' . $id;
         }
 
+        if ($strAction == 'comments') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'tickets/comments/' . $id;
+        }
+
         if ($strAction == 'bank_transfers') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'bank_transfers/' . $id;
@@ -436,6 +452,11 @@ class ImagesHelper {
         if ($strAction == 'tickets') {
             $path = public_path() . '/uploads/';
             $directory = $path . 'tickets/' . $id;
+        }
+
+        if ($strAction == 'comments') {
+            $path = public_path() . '/uploads/';
+            $directory = $path . 'tickets/comments/' . $id;
         }
 
         if ($strAction == 'bankAccounts') {

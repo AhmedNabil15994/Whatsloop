@@ -32,6 +32,6 @@ Route::group(['prefix' => '/tickets'] , function () {
     Route::post('/view/{id}/addComment', [$controller,'addComment']);
     Route::post('/view/{id}/updateComment', [$controller,'updateComment']);
     Route::get('/view/{id}/removeComment/{commentId}', [$controller,'removeComment']);
-
+    Route::post('/view/{id}/uploadCommentFile', [$controller,'uploadImage']);
 
 });

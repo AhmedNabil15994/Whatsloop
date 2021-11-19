@@ -14,8 +14,10 @@
 		@livewireStyles
 	</head>
 	<!--end::Head-->
-	
-	<body class="bodyCpanel overflowH">
+	@php 
+		$mode = \App\Models\UserTheme::where('user_id',USER_ID)->first();
+	@endphp
+	<body class="bodyCpanel overflowH {{ $mode && $mode->theme == 1 ? 'dark-mode' : '' }}">
 		<!-- Begin page -->
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
 		@include('tenant.Layouts.V5.sidebar')

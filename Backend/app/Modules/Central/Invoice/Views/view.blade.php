@@ -120,11 +120,11 @@
                                         <td class="text-left">
                                             <p>
                                                 @php 
-                                                    $tax = Helper::calcTax($mainPrices);
+                                                    $tax = Helper::calcTax($data->data->total);
                                                 @endphp
 
                                                 <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
-                                                <span>{{ $mainPrices - $tax }} {{ trans('main.sar') }}</span>
+                                                <span>{{ $data->data->total - $tax }} {{ trans('main.sar') }}</span>
                                             </p>
                                             <p>
                                                 <span class="tx-bold">{{ trans('main.estimatedTax') }} :</span>

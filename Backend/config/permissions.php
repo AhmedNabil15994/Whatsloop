@@ -126,6 +126,7 @@ return [
     'CategoryControllers@sort' => 'sort-category',
     'CategoryControllers@arrange' => 'sort-category',
     'CategoryControllers@charts' => 'charts-category',
+    'CategoryControllers@syncLabels' => 'sync-categories',
 
     'RepliesControllers@index' => 'list-replies',
     'RepliesControllers@edit' => 'edit-reply',

@@ -262,16 +262,26 @@ class SetInvoices extends Command
                         $data['body'] = 'Invoice #'.$invoiceObj->id. ' For '.date('M').' has been created';
                         $test = $whatsLoopObj->sendMessage($data);
 
+                        $extraData = [
+                            'subject' => 'تم انشاء فاتورة رقم #'.$invoiceObj->id,
+                            'content' => 'تم انشاء فاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                        ];
                     }else if($oneItem['data']['leftDays'] == 3 && (int) date('H') == 12){
                         // First Reminder
                         $data['body'] = 'First Reminder for Invoice #'.$invoiceObj->id;
                         $test = $whatsLoopObj->sendMessage($data);
-
+                        $extraData = [
+                            'subject' => 'التذكير الاول لفاتورة رقم #'.$invoiceObj->id,
+                            'content' => 'التذكير الاول لفاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                        ];
                     }else if($oneItem['data']['leftDays'] == 1 && (int) date('H') == 12){
                         // Second Reminder
                         $data['body'] = 'Second Reminder for Invoice #'.$invoiceObj->id;
                         $test = $whatsLoopObj->sendMessage($data);
-
+                        $extraData = [
+                            'subject' => 'التذكير الثاني لفاتورة رقم #'.$invoiceObj->id,
+                            'content' => 'التذكير الثاني لفاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                        ];
                     }else if($oneItem['data']['leftDays'] < 0){
                         // Suspend 
                         if($invoiceObj->status == 2  && (int) date('H') == 9 ){
@@ -329,8 +339,20 @@ class SetInvoices extends Command
                             $subscriptions = substr($subscriptions, 0, -1). ' )';
                             $data['body'] = 'Subscription of '.$subscriptions. ' For '.date('M').' has been ended due to unpaid invoice #'.$invoiceObj->id;
                             $test = $whatsLoopObj->sendMessage($data);
+
+                            $extraData = [
+                                'subject' => 'تم تعطيل الحساب',
+                                'content' => 'نأسف لابلاغكم انه تم تعطيل حسابك بسبب عد دفع فاتورة رقم #' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                            ];
                         }   
                     }
+
+                    $emailData = [
+                        'name' => $userObj->name,
+                        'email' => $userObj->email,
+                    ];
+                    $allData = array_merge($emailData,$extraData);
+                    \MailHelper::prepareEmail($emailData);
 
                 }
             }

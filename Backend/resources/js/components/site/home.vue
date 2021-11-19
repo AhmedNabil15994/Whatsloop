@@ -182,6 +182,7 @@ export default {
         },
         newNameContact:{
             handler() {
+                this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
                 this.changeName();
             },
             deep:true
@@ -604,22 +605,26 @@ export default {
                 for (var i in this.chats.Dialogs) {
                 //    console.log(this.getContact.id +" - "+  this.chats.Dialogs[i].id)
                     if(this.getContact.id ===  this.chats.Dialogs[i].id) {
-                        this.chats.Dialogs[i].chatName = this.chatName
+                         this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
+                        this.chats.Dialogs[i].chatName = this.newNameContact
                     } 
                 }  
                 for (var c in this.chatsPin) {
                     if(this.getContact.id ===  this.chatsPin[c].id) {
-                        this.chatsPin[c].chatName = this.chatName
+                        this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
+                        this.chatsPin[c].chatName = this.newNameContact
                     } 
                 }   
                 for (var s in this.searchDiv) {
                     if(this.getContact.id ===  this.searchDiv[s].id) {
-                        this.searchDiv[s].chatName = this.chatName
+                        this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
+                        this.searchDiv[s].chatName = this.newNameContact
                     } 
                 }   
                 for (var y in this.newMsg) {
                     if(this.getContact.id ===  this.newMsg[y].id) {
-                        this.newMsg[y].chatName = this.chatName
+                        this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
+                        this.newMsg[y].chatName = this.newNameContact
                     } 
                 }   
             }

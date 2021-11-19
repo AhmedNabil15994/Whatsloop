@@ -713,6 +713,9 @@ return [
 
 
 	'addonsConfigure' => 'You need to finish configuring some addons',
+	'labelsConfigure' => "Your Account isn't Business Account, please change account type then sync labels",
+	'syncLabels' => 'Sync Labels',
+
 	'reconfigure' => 'Configure Addons',
 	'upgrade' => 'Upgrade',
 
@@ -758,5 +761,6 @@ return [
 	'selectInvoice' => 'Please choose the invoice design to be applied',
 	'eInvoice' => 'E-Invoice',
 	'today' => 'Today',
+	'syncNote' => 'When syncing is finished, Moderators must recover the password.',
 
 ];

@@ -144,8 +144,8 @@ class HomeControllers extends Controller {
             $messagesObj = $dataList['data']['messages'];
             $messagesArr = [];
             foreach ($messagesObj as $key => $message) {
-                if(in_array($message['type'], ['image','ppt','video','document']) && strpos($message['body'],'upload disabled') !== true){
-                    $folder = 'uploads/messages/'.CHANNEL_ID.'/'.$message['id'];
+                if(in_array($message['type'], ['image','ppt','video','document','product']) && strpos($message['body'],'upload disabled') !== true){
+                    $folder = '/uploads/messages/'.CHANNEL_ID.'/'.$message['id'];
                     $url = $message['body'];
                     $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
                     $directory = public_path().$folder;
@@ -156,7 +156,7 @@ class HomeControllers extends Controller {
                         mkdir($directory, 0777, true);
                         $succ = file_put_contents($image, $content);   
                     }
-                    $message['body'] = asset('/').$folder.'/chatFile.'.$extension; 
+                    $message['body'] = asset('/').'public'.$folder.'/chatFile.'.$extension; 
                     // $message['body'] = URL::to('/').$folder.'/chatFile.'.$extension; 
                 }
                 $message['time'] = date('Y-m-d H:i:s',$message['time']);

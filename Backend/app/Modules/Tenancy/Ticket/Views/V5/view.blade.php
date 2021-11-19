@@ -13,6 +13,17 @@
         padding: 25px;
         font-size: 15px;
     }
+    .files{
+        width: 100%;
+    }
+    .files img,
+    .files video{
+        width: 100%;
+        height: 400px;
+    }
+    .files a{
+        padding: 15px;
+    }
 </style>
 @endsection
 
@@ -39,6 +50,19 @@
                         </div>
                         <div class="commentContent">
                             {!! $comment->comment !!}
+                            <div class="files">
+                                @if($comment->file_type == 'photo')
+                                <img src="{{ $comment->file }}" alt="">
+                                @elseif($comment->file_type == 'video')
+                                <video width="320" height="240" controls>
+                                    <source src="{{ $comment->file }}" type="video/mp4">
+                                </video>
+                                @else
+                                <div class="nextPrev">
+                                    <a href="{{ $comment->file }}" class="btnNext" target="_blank">{{ trans('main.download') }}</a>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     @endforeach
@@ -46,10 +70,20 @@
             </div>
             <div class="ticketContent">
                 <h2 class="title">{{ trans('main.addComment') }} <i class="iconPlus fa fa-plus"></i></h2>
-                <form class="desc addComment comment-area-box">
+                <form class="desc addComment comment-area-box" enctype="multipart/form-data">
                     <textarea class="comment" name="comment" placeholder="{{ trans('main.comment') }}..."></textarea>
+                    <div class="dropzone hidden" id="commentFile">
+                        <div class="fallback">
+                            <input name="file" type="commentAttachment" />
+                        </div>
+                        <div class="dz-message needsclick">
+                            <i class="h1 si si-cloud-upload"></i>
+                            <h3 class="text-center">{{ trans('main.dropzoneP') }}</h3>
+                        </div>
+                    </div>
                     <div class="clearfix">
                         <button type="submit" data-area="0" class="newComm btnStyle"> {{ trans('main.comment') }}</button>
+                        <button type="submit" data-area="0" class="attach btnStyle mr-2"> {{ trans('main.attachments') }}</button>
                     </div>
                 </form>
             </div>

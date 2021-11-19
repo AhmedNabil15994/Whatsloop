@@ -624,7 +624,7 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
         
-        $contactObj =  Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->first();
+        $contactObj =  Contact::NotDeleted()->where('phone',str_replace('@c.us', '', $input['chatId']))->first();
         if(!$contactObj){
             return \TraitsFunc::ErrorMessage("Invalid Contact");
         }

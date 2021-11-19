@@ -143,7 +143,7 @@ class TicketControllers extends Controller {
 
     public function view($id) {
         $id = (int) $id;
-
+        Session::forget('attachs');
         $dataObj = Ticket::NotDeleted()->find($id);
         if($dataObj == null || $dataObj->Client->global_id != GLOBAL_ID ) {
             return Redirect('404');
@@ -406,18 +406,29 @@ class TicketControllers extends Controller {
     public function uploadImage(Request $request,$id=false){
         $rand = rand() . date("YmdhisA");
         $imageArr = Session::has('photos') ? Session::get('photos') : [];
+        $attachArr = Session::has('attachs') ? Session::get('attachs') : '';
         if ($request->hasFile('file')) {
             $files = $request->file('file');
             Storage::put($rand,$files);
             $imageArr[] = $rand;
             Session::put('photos',$imageArr);
             return \TraitsFunc::SuccessResponse('sc');
+        }elseif ($request->hasFile('attachs')) {
+            $files = $request->file('attachs');
+            Storage::put($rand,$files);
+            $attachArr = $rand;
+            Session::put('attachs',$attachArr);
+            return \TraitsFunc::SuccessResponse('sc');
         }
     }
 
-    public function addImage($images,$nextID=false){
+    public function addImage($images,$nextID=false,$modelType=null){
         $type = \ImagesHelper::checkFileExtension($images);
-        $fileName = \ImagesHelper::UploadFile($this->getData()['mainData']['name'], $images, $nextID,$type);
+        if($modelType == 'attachs'){
+            $fileName = \ImagesHelper::UploadFile('comments', $images, $nextID,$type);
+        }else{
+            $fileName = \ImagesHelper::UploadFile($this->getData()['mainData']['name'], $images, $nextID,$type);
+        }
         if($fileName == false){
             return false;
         }
@@ -476,12 +487,19 @@ class TicketControllers extends Controller {
         $commentObj->created_at = date('Y-m-d H:i:s');
         $commentObj->save();
 
-        if($videoObj->user_id == USER_ID){
-            $videoObj->status = 3;
-        }else{
-            $videoObj->status = 2;
+        $photo_name = Session::get('attachs');
+        if($photo_name && $photo_name != ''){
+            $photo = Storage::files($photo_name);
+            $photo = $photo[0];
+
+            $images = self::addImage($photo,$commentObj->id,'attachs');
+            if ($images == false) {
+                Session::flash('error', trans('main.uploadProb'));
+                return redirect()->back()->withInput();
+            }
+            $commentObj->file_name = $images;
+            $commentObj->save();  
         }
-        $videoObj->save();
 
         return \TraitsFunc::SuccessResponse(trans('main.commentSaved'));
     }

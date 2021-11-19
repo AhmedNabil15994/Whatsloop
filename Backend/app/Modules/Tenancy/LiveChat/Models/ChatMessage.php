@@ -156,11 +156,13 @@ class ChatMessage extends Model{
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'order'){
                 $dataObj->orderDetails = new \stdClass();
+                $domain = User::first()->domain;
                 $dataObj->orderDetails->name = $source->Order != null ? trans('main.order') . ' '.  $source->Order->order_id : '';
                 $dataObj->orderDetails->image = '';
                 $dataObj->orderDetails->price = $source->Order != null ? $source->Order->total . ' ' . unserialize($source->Order->products)[0]['currency'] : '';
                 $dataObj->orderDetails->quantity = $source->Order !=  null ? $source->Order->products_count : '';
                 $dataObj->orderDetails->url = $source->Order != null ? \URL::to('/orders/'.$source->Order->order_id.'/view') : \URL::to('/whatsappOrders/orders');
+                $dataObj->orderDetails->url = str_replace('localhost',$domain.'.wloop.net',$dataObj->orderDetails->url);
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->metadata != '' && $dataObj->whatsAppMessageType == 'product'){
                 $dataObj->productDetails = Product::getData(Product::getOne($dataObj->metadata->productId));

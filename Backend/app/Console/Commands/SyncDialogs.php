@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Jobs\SyncDialogsJob;
 use App\Models\ChatDialog;
+use App\Models\User;
 
 class SyncDialogs extends Command
 {
@@ -39,7 +40,9 @@ class SyncDialogs extends Command
      */
     public function handle()
     {   
-
+        if(User::first()->setting_pushed == 0){
+            sleep(120);
+        }
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
         $updateResult = $mainWhatsLoopObj->dialogs($data);

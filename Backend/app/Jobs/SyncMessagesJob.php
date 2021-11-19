@@ -55,71 +55,72 @@ class SyncMessagesJob implements ShouldQueue
                 }
             }
 
-            // $whatsProductsArr = array_unique($whatsProductsArr);
+            $whatsProductsArr = array_unique($whatsProductsArr);
 
-            // // Init Whatsloop Helper
-            // $mainWhatsLoopObj = new \MainWhatsLoop();
+            // Init Whatsloop Helper
+            $mainWhatsLoopObj = new \MainWhatsLoop();
 
-            // // Fetch Products Data
-            // $urlData['businessId'] = str_replace('+','',User::first()->phone);
-            // $productsCall = $mainWhatsLoopObj->getProducts($urlData);
-            // $productsCall = $productsCall->json();
+            // Fetch Products Data
+            $urlData['businessId'] = str_replace('+','',User::first()->phone);
+            $productsCall = $mainWhatsLoopObj->getProducts($urlData);
+            $productsCall = $productsCall->json();
 
-            // if(isset($productsCall['data']) && isset($productsCall['data']['products'])){
-            //     $products = $productsCall['data']['products'];
+            if(isset($productsCall['data']) && isset($productsCall['data']['products'])){
+                $products = $productsCall['data']['products'];
 
-            //     foreach($products as $oneProduct){
-            //         $productObj = Product::getOne($oneProduct['id']);
-            //         if(!$productObj){
-            //             $productObj = new Product;
-            //         }
+                foreach($products as $oneProduct){
+                    $productObj = Product::getOne($oneProduct['id']);
+                    if(!$productObj){
+                        $productObj = new Product;
+                    }
                     
-            //         $productObj->product_id =  $oneProduct['id'];
-            //         $productObj->name =  $oneProduct['name'];
-            //         $productObj->currency =  $oneProduct['currency'];
-            //         $productObj->price =  $oneProduct['price'];
-            //         $productObj->images =  serialize($oneProduct['images']);
-            //         $productObj->save();
-            //     }
-            // }
-
+                    $productObj->product_id =  $oneProduct['id'];
+                    $productObj->name =  $oneProduct['name'];
+                    $productObj->currency =  $oneProduct['currency'];
+                    $productObj->price =  $oneProduct['price'];
+                    $productObj->images =  serialize($oneProduct['images']);
+                    $productObj->save();
+                }
+            }
             
-            // foreach($whatsOrdersArr as $oneOrder){
+            foreach($whatsOrdersArr as $oneOrder){
 
-            //     $messageId = $oneOrder['messageId'];
-            //     $author = $oneOrder['author'];
-            //     $count = 0;
+                $messageId = $oneOrder['messageId'];
+                $author = $oneOrder['author'];
+                $count = 0;
 
-            //     unset($oneOrder['messageId']);
-            //     unset($oneOrder['author']);
+                unset($oneOrder['messageId']);
+                unset($oneOrder['author']);
+                $oneOrder['sellerJid'] = str_replace('@c.us','',$urlData['businessId']);
+                // Fetch Orders Data
+                $ordersCall = $mainWhatsLoopObj->getOrder($oneOrder);
+                $ordersCall = $ordersCall->json();
 
-            //     // Fetch Orders Data
-            //     $ordersCall = $mainWhatsLoopObj->getOrder($oneOrder);
-            //     $ordersCall = $ordersCall->json();
+                if($ordersCall && $ordersCall['status'] && $ordersCall['status']['status'] == 1 && isset($ordersCall['data']['orders']) && !empty($ordersCall['data']['orders'])  ){
 
-            //     if($ordersCall && $ordersCall['status'] && $ordersCall['status']['status'] == 1 && isset($ordersCall['data']['orders']) && !empty($ordersCall['data']['orders'])  ){
-            //         $orderObj = Order::getOne($oneOrder['orderId']);
-            //         if(!$orderObj){
-            //             $orderObj = new Order;
-            //             $orderObj->status = 1;
-            //         }
+                    $ordersData = $ordersCall['data']['orders'];
+                    foreach($ordersData as $orderData){
+                        $orderObj = Order::getOne($orderData['id']);
+                        if(!$orderObj){
+                            $orderObj = new Order;
+                            $orderObj->status = 1;
+                        }
 
-            //         foreach($ordersCall['data']['orders'][0]['products'] as $oneProduct){
-            //             $count+= $oneProduct['quantity'];
-            //         }
+                        $count+= count($orderData['products']);
 
-            //         $orderObj->order_id =  $oneOrder['orderId'];
-            //         $orderObj->subtotal = $ordersCall['data']['orders'][0]['subtotal'];
-            //         $orderObj->tax = $ordersCall['data']['orders'][0]['tax'];
-            //         $orderObj->total = $ordersCall['data']['orders'][0]['total'];
-            //         $orderObj->message_id = $messageId;
-            //         $orderObj->products = serialize($ordersCall['data']['orders'][0]['products']);
-            //         $orderObj->client_id = $author;
-            //         $orderObj->products_count = $count;
-            //         $orderObj->created_at = $ordersCall['data']['orders'][0]['createdAt'];
-            //         $orderObj->save();
-            //     }
-            // }
+                        $orderObj->order_id =  $orderData['id'];
+                        $orderObj->subtotal = $orderData['subtotal'];
+                        $orderObj->tax = $orderData['tax'];
+                        $orderObj->total = $orderData['total'];
+                        $orderObj->message_id = $messageId;
+                        $orderObj->products = serialize($orderData['products']);
+                        $orderObj->client_id = $author;
+                        $orderObj->products_count = $count;
+                        $orderObj->created_at = $orderData['createdAt'];
+                        $orderObj->save();
+                    }
+                }
+            }
         }
     }
 }

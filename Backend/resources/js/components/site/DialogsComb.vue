@@ -210,6 +210,7 @@ export default {
             }
         },
         getId(id,chatName) {
+            console.log(chatName);
             this.$store.dispatch("chatIdAction", {id:id});
             this.$store.dispatch("chatNameAction", {chatName:chatName});
             if(this.chat.unreadCount >  0) {

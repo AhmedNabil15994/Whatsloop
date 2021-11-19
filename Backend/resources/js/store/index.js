@@ -29,6 +29,7 @@ export const store = new Vuex.Store({
    },
    setChatName(state, payload) {
      state.chatName = payload;
+     console.log(payload);
    },
    setContact(state, payload) {
      state.contact = payload;

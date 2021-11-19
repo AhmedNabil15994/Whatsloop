@@ -846,17 +846,19 @@ class ProfileControllers extends Controller {
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         // // Update User With Settings For Whatsapp Based On His Domain
+        $domain = User::first()->domain;
         $myData = [
-            'sendDelay' => 0,
-            'webhookUrl' => '',
-            'instanceStatuses' => 0,
-            'webhookStatuses' => 0,
-            'statusNotificationsOn' => 0,
-            'ackNotificationsOn' => 0,
-            'chatUpdateOn' => 0,
-            'videoUploadOn' => 0,
-            'guaranteedHooks' => 0,
-            'parallelHooks' => 0,
+            'sendDelay' => '0',
+            'webhookUrl' => str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/messages-webhook',
+            'instanceStatuses' => 1,
+            'webhookStatuses' => 1,
+            'statusNotificationsOn' => 1,
+            'ackNotificationsOn' => 1,
+            'chatUpdateOn' => 1,
+            'ignoreOldMessages' => 1,
+            'videoUploadOn' => 1,
+            'guaranteedHooks' => 1,
+            'parallelHooks' => 1,
         ];
         $updateResult = $mainWhatsLoopObj->postSettings($myData);
         $result = $updateResult->json();

@@ -138,7 +138,7 @@ class ChatDialog extends Model{
         }else if($diff>0 && $diff<=1){
             return trans('main.yesterday');
         }else if($diff > 1 && $diff < 7){
-            return $date->locale(LANGUAGE_PREF)->dayName;
+            return $date->locale(defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName;
         }else{
             return date('Y-m-d',$time);
         }

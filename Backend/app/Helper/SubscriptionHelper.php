@@ -254,12 +254,28 @@ class SubscriptionHelper {
             $invoiceObj->created_at = DATE_TIME;
             $invoiceObj->created_by = $userObj->id;
             $invoiceObj->save();
+
+            $emailData = [
+                'name' => $userObj->name,
+                'subject' => 'حساب جديد',
+                'content' => 'تم التسجيل في واتس لووب بنجاح وهذا رابط النطاق الخاص بك:' . 'https://'.$userObj->domain.'.wloop.net',
+                'email' => $userObj->email,
+            ];
+            \MailHelper::prepareEmail($emailData);
         }elseif($type == 'payInvoice'){
             $invoiceObj->status = 1;
             $invoiceObj->paid_date = DATE_TIME;
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
             $invoiceObj->save();
+
+            $emailData = [
+                'name' => $userObj->name,
+                'subject' => 'دفع فاتورة رقم #'.$invoiceObj->id,
+                'content' => 'تم دفع فاتورة رقم #:' . $invoiceObj->id . ' والاجمالي هو : '. $invoiceObj->total,
+                'email' => $userObj->email,
+            ];
+            \MailHelper::prepareEmail($emailData);
         }elseif($type == 'transferRequest'){
             $invoiceObj = new Invoice;
             $invoiceObj->client_id = $userObj->id;
@@ -423,7 +439,7 @@ class SubscriptionHelper {
             if($tenant){
                 tenancy()->initialize($tenant);
             }
-            ModTemplate::insert([
+            Template::insert([
                 [
                     'channel' => $instanceId,
                     'name_ar' => 'whatsAppOrders',

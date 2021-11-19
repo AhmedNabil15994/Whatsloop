@@ -70,16 +70,16 @@ class Category extends Model{
     static function getData($source) {
         $data = new  \stdClass();
         $data->id = $source->id;
-        $extraData = self::getColor($source->color_id);
+        $extraData = self::getColorData($source->color_id);
         $data->channel = $source->channel;
         $data->color_id = $source->color_id;
-        $data->color = $extraData[0];
-        $data->labelClass = 'badge label label-'.$extraData[1];
+        $data->color = '';
+        $data->labelClass = 'badge label label-'.$source->color_id;
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
         $data->labelId = $source->labelId;
-        $data->hexColor = $extraData[2];
-        $data->colorName = $extraData[3];
+        $data->hexColor = $extraData[1];
+        $data->colorName = $extraData[2];
         $data->title = \Session::has('group_id') ? $source->{'name_'.LANGUAGE_PREF} : $source->name_ar;
         $data->whatsappName = self::getName($source->name_ar,$source->name_en);
         $data->status = $source->status;
@@ -161,6 +161,75 @@ class Category extends Model{
         return [$color,$labelClass,$hexColor,$colorName];
     }
 
+    static function getColors(){
+        return [
+            ['id' => 1,'color' => '#ff9dff' , 'title' => 'LavenderRose',],
+            ['id' => 2,'color' => '#d3a91d' , 'title' => 'Galliano',],
+            ['id' => 3,'color' => '#6d7cce' , 'title' => 'MoodyBlue',],
+            ['id' => 4,'color' => '#d7e752' , 'title' => 'Manz',],
+            ['id' => 5,'color' => '#00d0e2' , 'title' => 'DarkTurquoise',],
+            ['id' => 6,'color' => '#ffc5c7' , 'title' => 'Pink',],
+            ['id' => 7,'color' => '#93ceac' , 'title' => 'Chinook',],
+            ['id' => 8,'color' => '#f74848' , 'title' => 'SunsetOrange',],
+            ['id' => 9,'color' => '#00a0f2' , 'title' => 'DeepSkyBlue',],
+            ['id' => 10,'color' => '#83e422' , 'title' => 'InchWorm',],
+            ['id' => 11,'color' => '#ffaf04' , 'title' => 'Orange',],
+            ['id' => 12,'color' => '#b5ebff' , 'title' => 'ColumbiaBlue',],
+            ['id' => 14,'color' => '#9368cf' , 'title' => 'Amethyst',],
+            ['id' => 15,'color' => '#ff9485' , 'title' => 'MonaLisa',],
+            ['id' => 16,'color' => '#64c4ff' , 'title' => 'MayaBlue',],
+            ['id' => 17,'color' => '#ffd429' , 'title' => 'Sunglow',],
+            ['id' => 18,'color' => '#dfaef0' , 'title' => 'Lavender',],
+            ['id' => 19,'color' => '#99b6c1' , 'title' => 'Nepal',],
+            ['id' => 20,'color' => '#55ccb3' , 'title' => 'MediumAquamarine',],
+        ];
+    }
+
+    static function getColorData($hexColor){
+        if($hexColor == '#ff9dff' || $hexColor == 1){
+            return [1,'#ff9dff','LavenderRose'];
+        }elseif($hexColor == '#d3a91d' || $hexColor == 2){
+            return [2,'#d3a91d','Galliano'];
+        }elseif($hexColor == '#6d7cce' || $hexColor == 3){
+            return [3,'#6d7cce','MoodyBlue'];
+        }elseif($hexColor == '#d7e752' || $hexColor == 4){
+            return [4,'#d7e752','Manz'];
+        }elseif($hexColor == '#00d0e2' || $hexColor == 5){
+            return [5,'#00d0e2','DarkTurquoise'];
+        }elseif($hexColor == '#ffc5c7' || $hexColor == 6){
+            return [6,'#ffc5c7','Pink'];
+        }elseif($hexColor == '#93ceac' || $hexColor == 7){
+            return [7,'#93ceac','Chinook'];
+        }elseif($hexColor == '#f74848' || $hexColor == 8){
+            return [8,'#f74848','SunsetOrange'];
+        }elseif($hexColor == '#00a0f2' || $hexColor == 9){
+            return [9,'#00a0f2','DeepSkyBlue'];
+        }elseif($hexColor == '#83e422' || $hexColor == 10){
+            return [10,'#83e422','InchWorm'];
+        }elseif($hexColor == '#ffaf04' || $hexColor == 11){
+            return [11,'#ffaf04','Orange'];
+        }elseif($hexColor == '#b5ebff' || $hexColor == 12){
+            return [12,'#b5ebff','ColumbiaBlue'];
+        }elseif($hexColor == '#9ba6ff' || $hexColor == 13){
+            return [13,'#9ba6ff',''];
+        }elseif($hexColor == '#9368cf' || $hexColor == 14){
+            return [14,'#9368cf','Amethyst'];
+        }elseif($hexColor == '#ff9485' || $hexColor == 15){
+            return [15,'#ff9485','MonaLisa'];
+        }elseif($hexColor == '#64c4ff' || $hexColor == 16){
+            return [16,'#64c4ff','MayaBlue'];
+        }elseif($hexColor == '#ffd429' || $hexColor == 17){
+            return [17,'#ffd429','Sunglow'];
+        }elseif($hexColor == '#dfaef0' || $hexColor == 18){
+            return [18,'#dfaef0','Lavender'];
+        }elseif($hexColor == '#99b6c1' || $hexColor == 19){
+            return [19,'#99b6c1','Nepal'];
+        }elseif($hexColor == '#55ccb3' || $hexColor == 20){
+            return [20,'#55ccb3','MediumAquamarine'];
+        }
+
+    }
+
     static function newSortIndex(){
         return self::count() + 1;
     }
@@ -178,5 +247,27 @@ class Category extends Model{
             }
         }
         return $fullName;
+    }
+
+    static function newCategory($labelObj){
+        $labelId = '';
+        $labelObj = self::find($labelObj->id);
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['name'] = self::reformLabelName($labelObj->name_ar,$labelObj->name_en);
+        $addResult = $mainWhatsLoopObj->createLabel($data);
+        $result = $addResult->json();
+        // dd($result);
+        if($result && isset($result['status']) && $result['status']['status'] == 1){
+            $labelId = $result['data']['label']['id'];
+            $labelObj->labelId = $labelId;
+            $labelObj->save();
+
+            if(isset($labelObj->color_id) && !empty($labelObj->color_id)){
+                $updateDate['color'] = Category::getColorData($labelObj->color_id)[2];
+                $updateDate['labelId'] = $labelObj->labelId;
+                $updateResult = $mainWhatsLoopObj->updateLabel($updateDate);
+                $result = $updateResult->json();
+            }
+        }
     }
 }

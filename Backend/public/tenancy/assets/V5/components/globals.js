@@ -681,3 +681,31 @@ $('img.designStyle').on('click',function(e){
         $(this).parent('div').siblings('input').val('');
     }
 });
+
+
+$('.btnDark').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    if($(this).hasClass('active')){
+        var darkVal = 0;
+    }else{
+        var darkVal = 1;
+    }
+
+    var _token = $('meta[name="csrf-token"]').attr('content');
+    $.ajax({
+        url : '/changeTheme',
+        type : 'POST',
+        data:{
+            "_token" : _token,
+            'type' : 'theme',
+            'value' : darkVal,
+        },
+        datatype: "json",
+        complete:function(data){
+            window.location.reload(true);
+        }
+
+    });
+});

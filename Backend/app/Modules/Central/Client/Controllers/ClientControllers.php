@@ -248,7 +248,7 @@ class ClientControllers extends Controller {
         tenancy()->initialize($tenant);
             $data['paymentInfo'] = PaymentInfo::where('user_id',$id)->first();
             $data['messages'] = ChatMessage::generateObj(ChatMessage::where('fromMe',1)->orderBy('time','DESC')->take(10))['data'];
-            $channelObj = CentralChannel::getData(UserChannels::first());
+            $channelObj = UserChannels::first();
             if($channelObj){
                 $whatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
                 $updateResult = $whatsLoopObj->me();
@@ -281,7 +281,7 @@ class ClientControllers extends Controller {
             'guaranteedHooks' => 1,
             'parallelHooks' => 1,
         ];
-        
+        $channelObj = CentralChannel::where('id',$channelObj->id)->first();
         if($channelObj && $channelObj->instanceId != null){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
             if($userObj->setting_pushed == 0){
@@ -291,8 +291,8 @@ class ClientControllers extends Controller {
                 $userObj->save();
                 $settingsArr = $myData;
             }else{
-                $updateResult = $mainWhatsLoopObj->settings([]);
-                $settingsArr = isset($updateResult->json()['data']) ? $updateResult->json()['data'] : $myData;
+                $testResult = $mainWhatsLoopObj->settings([]);
+                $settingsArr = isset($testResult->json()['data']) ? $testResult->json()['data'] : $myData;
             }     
         }
         
@@ -329,9 +329,9 @@ class ClientControllers extends Controller {
         $domainObj = Domain::where('domain',$data['data']->domain)->first();
         $tenant = Tenant::find($domainObj->tenant_id);
         tenancy()->initialize($tenant);
-        $channelObj = CentralChannel::getData(UserChannels::first());
+        $channelObj = UserChannels::first();
         tenancy()->end($tenant);
-
+        $channelObj = $channelObj != null ? CentralChannel::where('id',$channelObj->id)->first() : [];
         if($channelObj && $channelObj->instanceId != null){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
             $settings = $mainWhatsLoopObj->postSettings($myArr);       

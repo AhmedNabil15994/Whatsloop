@@ -100,7 +100,8 @@ class WhatsappOrdersControllers extends Controller {
             $mainWhatsLoopObj = new \MainWhatsLoop();
             $userRequestData = $mainWhatsLoopObj->me();
             $userRequestData = $userRequestData->json();
-            if($userRequestData && isset($userRequestData['status']) && $userRequestData['status'] == 1){
+
+            if($userRequestData && isset($userRequestData['status']) && $userRequestData['status']['status'] == 1){
                 $urlData['businessId'] = str_replace('@c.us','',$userRequestData['data']['id']);
                 $result = $mainWhatsLoopObj->getProducts($urlData);
                 $result = $result->json();

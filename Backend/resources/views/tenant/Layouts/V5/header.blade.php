@@ -45,7 +45,7 @@
                 @else
                 <a href="#" class="lang user-langs lang-item" data-next-area="en">EN</a>
                 @endif
-                <button class="btnDark" title="Change Mode"></button>
+                <button class="btnDark {{ $mode && $mode->theme == 1 ? 'active' : '' }}" title="Change Mode"></button>
             </div>
         </div>
     </div>
@@ -65,5 +65,5 @@
     @else
     <a href="#" class="lang user-langs lang-item" data-next-area="en">EN</a>
     @endif
-    <button class="btnDark" title="Change Mode"></button>
+    <button class="btnDark {{ $mode && $mode->theme == 1 ? 'active' : '' }}" title="Change Mode"></button>
 </div>

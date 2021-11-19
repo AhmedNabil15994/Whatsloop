@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Jobs\SyncMessagesJob;
+use App\Models\User;
 use App\Models\ChatMessage;
 
 class SyncMessages extends Command
@@ -39,12 +40,14 @@ class SyncMessages extends Command
      */
     public function handle()
     {   
-
+        
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
-        $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
-        if($lastMessageObj != null && $lastMessageObj->time != null){
-            $data['min_time'] = $lastMessageObj->time - 7200;
+        if(User::first()->setting_pushed == 1){
+            $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
+            if($lastMessageObj != null && $lastMessageObj->time != null){
+                $data['min_time'] = $lastMessageObj->time - 7200;
+            }
         }
         $updateResult = $mainWhatsLoopObj->messages($data);
         if(isset($updateResult['data']) && !empty($updateResult['data'])){

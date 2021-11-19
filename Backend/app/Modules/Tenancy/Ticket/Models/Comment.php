@@ -11,6 +11,10 @@ class Comment extends Model{
     protected $primaryKey = 'id';
     public $timestamps = false;
 
+    static function getPhotoPath($id, $photo) {
+        return \ImagesHelper::GetImagePath('comments', $id, $photo,false);
+    }
+
     public function Creator(){
         return $this->belongsTo('App\Models\CentralUser','created_by','id');
     }
@@ -80,6 +84,10 @@ class Comment extends Model{
         $data->replies = $source->reply_on == 0 ? self::dataList($source->ticket_id,$source->id) : [];
         $data->image = User::selectImage($source->Creator);
         $data->creator = $source->Creator->name;
+        $data->file_name = $source->file_name;
+        $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name) : "";
+        $data->file_size = $data->file != '' ? \ImagesHelper::getPhotoSize($data->file) : '';
+        $data->file_type = $data->file != '' ? \ImagesHelper::checkFileExtension($data->file_name) : '';
         $data->created_at = \Carbon\Carbon::createFromTimeStamp(strtotime($source->created_at))->diffForHumans();
         return $data;
     }

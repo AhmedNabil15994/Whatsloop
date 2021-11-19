@@ -43,6 +43,9 @@ class DashboardControllers extends Controller {
     }
 
     public function Dashboard(){   
+        // $data = \CheckSendButtons::sendButtons();
+        // dd($data);
+
         $varObj = Variable::getVar('QRIMAGE');
         if($varObj){
             $sendStatus = 0;

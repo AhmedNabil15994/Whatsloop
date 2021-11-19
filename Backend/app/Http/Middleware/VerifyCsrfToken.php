@@ -34,6 +34,7 @@ class VerifyCsrfToken extends Middleware
         
         '/tickets/add/uploadImage',
         '/tickets/edit/*/editImage',
+        '/tickets/view/*/uploadCommentFile',
 
         '/changeLogs/add/uploadImage',
         '/changeLogs/edit/*/editImage',

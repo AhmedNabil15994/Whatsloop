@@ -82,7 +82,7 @@ class UserExtraQuota extends Model{
             $withQuery->where('extra_type',$type);
         }],'extra_count')->orderBy('id','desc')->get();
 
-        if(!$source){
+        if(!$source || !isset($source[0])){
             return 0;
         }
         return count($source) * $source[0]->extra_quota_sum_extra_count;

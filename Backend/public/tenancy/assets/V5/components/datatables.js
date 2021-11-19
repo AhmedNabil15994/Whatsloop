@@ -102,7 +102,7 @@ $(function(){
 					'className': item['className'],
 					render: function(data, type, full, meta) {
 						var labelClass = '';
-						if(getIndex(index,item) == 2){
+						if(getIndex(index,item) == 1){
 							labelClass = full.labelClass;
 						}
 						if(index == 'statusIDText'){

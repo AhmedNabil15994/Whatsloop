@@ -12,6 +12,7 @@ class CheckReconnection extends Component
 {
     protected $haveImage = '';
     protected $tutorials = '';
+    protected $seconds = 2;
     public $requestSemgent;
     public $addons;
     public $tenant_id;
@@ -29,11 +30,14 @@ class CheckReconnection extends Component
         $data = [];
         $data['haveImage'] = 0;
         $data['dis'] = 0;
+        $data['seconds'] = 2;
         $varObj = Variable::getVar('QRIMAGE') ;
 
         if(isset($userStatusObj) && $userStatusObj->status == 4 && $varObj != null){            
             $data['haveImage'] = 1;
             $data['dis'] = 1;
+        }elseif(isset($userStatusObj) && in_array($userStatusObj->status,[2,3])){
+            $data['seconds'] = 60;
         }
             
         $userAddonsTutorial = [];

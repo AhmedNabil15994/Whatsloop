@@ -1,14 +1,22 @@
 @extends('tenant.Layouts.V5.master2')
 @section('title',trans('main.syncAccount'))
 @section('styles')
-
+<style type="text/css" media="screen">
+	.Additions h2.title p {
+		margin-top: 5px;
+    	font-size: 14px;
+	}
+</style>
 @endsection
 
 
 {{-- Content --}}
 @section('content')
 <div class="Additions">
-    <h2 class="title">{{ trans('main.sync_p') }} (<span class="num">{{ count($data) }}</span>)</h2>
+    <h2 class="title">
+    	{{ trans('main.sync_p') }} (<span class="num">{{ count($data) }}</span>) <br>
+	    <p>{{ trans('main.syncNote') }}</p>
+    </h2>
     <a href="#" class="btnAdd sync"></a>
 </div> 
 

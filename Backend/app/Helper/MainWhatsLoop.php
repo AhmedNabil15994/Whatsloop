@@ -264,7 +264,7 @@ class MainWhatsLoop {
         ])->post($mainURL,$data);
     }
 
-    public function labelsList(){
+    public function labelsList($data){
         $mainURL = $this->baseUrl.'instances/labelsList';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,

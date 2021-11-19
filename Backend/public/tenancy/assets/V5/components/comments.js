@@ -79,3 +79,33 @@ $('button.newComm').on('click',function(e){
     e.stopPropagation();
     sendComment($(this).attr('data-area'));
 });
+
+$('.attach').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).parent('div.clearfix').siblings('.dropzone').trigger('click');
+});
+
+Dropzone.options.myAwesomeDropzone = false;
+Dropzone.autoDiscover = false;
+$('#commentFile').dropzone({
+    url: myURL + "/uploadCommentFile", // Set the url for your upload script location
+    paramName: "attachs", // The name that will be used to transfer the file
+    maxFiles: 1,
+    maxFilesize: 10, // MB
+    addRemoveLinks: true,
+    accept: function(file, done) {
+        if (file.name == "justinbieber.jpg") {
+            done("Naha, you don't.");
+        } else {
+            done();
+        }
+    },
+    success:function(file,data){
+        if(data){
+            if(data.status.status != 1){
+                errorNotification(data.status.message);
+            }
+        }
+    },
+});  
