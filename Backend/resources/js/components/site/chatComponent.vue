@@ -36,7 +36,8 @@
                                 </div>
                                 <div class="media-body">
                                     <h5 class="font-size-16 mb-0 text-truncate"><a @click="opencontc()" class="text-reset user-profile-show">
-                                    <span>{{ chatName }}</span>
+                                    <span v-if="contact.chatName != ''">{{ contact.chatName }}</span>
+                                    <span v-else>{{ contact.id | removeUs }}</span>
                                     </a></h5>
                                 </div>
                             </div>
@@ -724,7 +725,7 @@ export default {
             this.getChatContent();
             this.getQuick();
            
-            var domain = window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+            var domain = "taha";
             this.testBroadCastingSentMessage2(domain)
             this.testBroadCastingIncomingMessage2(domain);
             //this.testBroadCastingBotMessage2(domain);
@@ -743,7 +744,10 @@ export default {
             return this.$store.getters.chatId;
         },
         chatName() {
-            return this.$store.getters["chatName"];
+            return this.$store.getters.chatName;
+        },
+        getContact() {
+            return this.$store.getters.contact;
         },
         emojiDataAll() {
             return EmojiAllData;
@@ -768,29 +772,31 @@ export default {
         testBroadCastingSentMessage2 (domain) {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewSentMessage')
-            .listen('SentMessage', (data) => {
-                if(this.chatIdC === data.message.id) {
-                    setTimeout(() => {
-                        var nnm = 0;
-                        this.chat.forEach((element,index) => {
-                            if (element.id === data.message.lastMessage.id) {
-                                nnm += 1;
-                            } 
-                            if (index === this.chat.length -1) {
-                                if(nnm === 0) {
-                                    this.chat.push(data.message.lastMessage);
-                                    if(this.$refs["vs"]) {
-                                        const {v} = this.$refs["vs"].getScrollProcess();
-                                        if(v > 0.85  ) {
-                                            this.goDown(0)
+                .listen('SentMessage', (data) => {
+                    if(this.chatIdC === data.message.id) {
+                        setTimeout(() => {
+                            var nnm = 0;
+                            this.chat.forEach((element,index) => {
+                                if (element.id === data.message.lastMessage.id) {
+                                    nnm += 1;
+                                } 
+                                if (index === this.chat.length -1) {
+                                    if(nnm === 0) {
+                                        this.chat.push(data.message.lastMessage);
+                                        if(this.$refs["vs"]) {
+                                            const {v} = this.$refs["vs"].getScrollProcess();
+                                            if(v > 0.85  ) {
+                                                this.goDown(0)
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        });
-                    },500);
-                }
-            })
+                            });
+                        },500);
+                    }
+                })
+
+          
           // End socket.io listener
         },
       testBroadCastingIncomingMessage2 (domain) {
@@ -798,7 +804,7 @@ export default {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewIncomingMessage')
             .listen('IncomingMessage', (data) => {
-               console.log(data)
+             //  console.log(data)
                 if(this.chatIdC === data.message.id) {
                     this.chat.push(data.message.lastMessage);
                     this.totalNewMsg += 1;
@@ -1517,7 +1523,7 @@ export default {
     pointer-events:none ;
     width:100%;
     height:100%;
-    background:url(/public/images/bg-chat-tile-light_04fcacde539c58cca6745483d4858c52.png);
+    background:url(/images/bg-chat-tile-light_04fcacde539c58cca6745483d4858c52.png);
     opacity: 0.06;
 }
 #listChat
@@ -1982,6 +1988,7 @@ transition:all 0.3s;
 
 .chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content
 {
+    
     min-width:100px;
     text-align: right;
     white-space:unset!important

@@ -34,7 +34,8 @@
                       : 'https://whatsloop.net/resources/Gallery/UserDefault.png'
                   "
                   />
-                  <h2 class="name">{{ chatName }}</h2>
+                  <h2 class="name" v-if="contact.chatName != ''">{{ contact.chatName }}</h2>
+                  <h2 class="name" v-else>{{ contact.id | removeUs }}</h2>
               </div>
               
               <div class="contactBody">
@@ -108,7 +109,7 @@
                           <h2 class="title" @click="infoUser = !infoUser"><i class="fa fa-user"></i> بيانات العميل</h2>
                           <ul class="details" v-if="infoUser">
                             <li>الاسم 
-                            <input type="text" :value="chatName" @blur="updateContact('name',$event.target.value)" />
+                            <input type="text" :value="contact.chatName" @blur="updateContact('name',$event.target.value)" />
                             </li>
                             <li>رقم الجوال 
                             <input type="text" :value="contact.contact_details.phone" class="numb" disabled/>
@@ -156,13 +157,13 @@ export default {
         supervisorValue:[],
         infoUser:true,
         checkActive:false,
-        plus:false
+        plus:false,
+        name:""
       }
     },
     props:{
       "contact":{required:true},
       "openContact":{},
-      "changeNameContact":{},
       "changeModeratorsC":{},
       "options":{},
       "supervisors":{}
@@ -240,21 +241,25 @@ export default {
         this.imageViewerFlag = image;
       },
       updateContact(name,value) {
-          var data = new FormData();
-          data.append('chatId',this.contact.id);
 
-          data.append(name, value);
-          this.$http.post(this.urlApi+`updateContact`,data).then(() => {
-              /*if(name === "Name_ar") {
-                  this.$emit("input",value);
-                }*/
-          });
 
           if(name == 'name') {
-              this.$store.dispatch("chatNameAction", {chatName:value});
-            
-              this.$emit("changeNameC",value);
+              if(value == '') {
+                value = this.contact.id.replace("@c.us","");
+              }
           }
+
+          var data = new FormData();
+          data.append('chatId',this.contact.id);
+          data.append(name, value);
+
+
+
+          this.$http.post(this.urlApi+`updateContact`,data).then(() => {
+              if(name == 'name') {
+                this.contact.chatName = value;
+              }
+          });
 
 
       },
@@ -344,9 +349,6 @@ export default {
     computed:{
       urlApi() {
           return this.$store.getters.urlApi;
-      },
-      chatName() {
-          return this.$store.getters["chatName"];
       }
     }
 }
@@ -530,7 +532,8 @@ cursor:default
     height:130px;
     border-radius:50%;
     border:4px solid #f5f5f5;
-    margin-bottom:20px;
+    display: block;
+    margin: 0 auto 20px;
     cursor:pointer
 }
 

@@ -1,7 +1,7 @@
 <template>
-        <a @click="getId(chat.id,chat.chatName)">
+        <a @click="getId(chat.id,chat)">
              <div class='labels d-flex flex-column'>
-                <span v-for="(label,labelKey) in chat.labels" :key="labelKey" :class="'ContactLabel '+ label.labelClass" :style="{backgroundColor:label.hexColor}"></span>
+                <span v-for="(label,labelKey) in chat.labels" :key="labelKey" :style="{backgroundColor:label.hexColor}" :class="'ContactLabel '+ label.labelClass"></span>
             </div>
             <div class="media" :class="{'unread' : chat.unreadCount > 0}">
 
@@ -14,7 +14,8 @@
                 <div class="media-body overflow-hidden">
                     <h5 class="text-truncate DialogTitle font-size-16">
                         <h5 class="text-truncate DialogTitle font-size-16">
-                            <span>{{chat.chatName}}</span>
+                            <span v-if="chat.chatName != ''">{{chat.chatName}}</span>
+                            <span v-else>{{chat.id | removeUs}}</span>
                         </h5>
                     </h5>
                     <div :dir="isUnicode(chat.lastMessage.body) ? 'rtl' : 'ltr'" class="chat-user-message text-truncate mb-0" :class="{'msgRemoved' : !chat.lastMessage.body,'text-bold' : chat.lastMessage.unRead}">
@@ -175,7 +176,10 @@ export default {
     name:"dialogscomb",
     data() {
         return {
-            token:null
+            token:null,
+            myStyle:{
+                backgroundColor:"#16a085" 
+            }
         }
     },
     mounted () {
@@ -209,10 +213,8 @@ export default {
                 }
             }
         },
-        getId(id,chatName) {
-            console.log(chatName);
+        getId(id) {
             this.$store.dispatch("chatIdAction", {id:id});
-            this.$store.dispatch("chatNameAction", {chatName:chatName});
             if(this.chat.unreadCount >  0) {
                 this.chat.unreadCount = 0;
                 var data = new FormData();

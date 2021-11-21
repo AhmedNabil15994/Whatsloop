@@ -72,7 +72,6 @@
         </transition>
         <!-- end chat-leftsidebar -->
         <contact 
-            v-on:changeNameC="changeNameMethod"
             v-on:changeModeratorsC="changeModsMethod"
             v-on:opencontct="opencontct()" 
             :options="options"
@@ -114,7 +113,6 @@ export default {
             totalCount:false,
             options:[],
             supervisors:[],
-            newNameContact:"",
             moderatorsContact:[]
         }
     },
@@ -122,7 +120,7 @@ export default {
 
     },
     mounted () {
-
+    
         var btns = document.getElementsByClassName("nav-link");
         for (var i = 0; i < btns.length; i++) {
         btns[i].addEventListener("click", function() {
@@ -135,7 +133,7 @@ export default {
         this.getChats(this.load);
 
      
-        var domain = window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+        var domain = "taha";
       this.testBroadCastingSentMessage(domain);
       this.testBroadCastingIncomingMessage(domain);
       this.testBroadCastingBotMessage(domain);
@@ -180,13 +178,6 @@ export default {
             },
             deep:true
         },
-        newNameContact:{
-            handler() {
-                this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
-                this.changeName();
-            },
-            deep:true
-        },
         moderatorsContact:{
             handler() {
                 this.changeMods();
@@ -195,7 +186,7 @@ export default {
         },
         getContact:{
             handler() {
-                
+                this.changeName();
                 if(this.getContact.labelsColors && this.getContact.labelsText) {
                     this.changeLabels();
                 }
@@ -220,7 +211,7 @@ export default {
             .listen('IncomingMessage', (data) => {
                // console.log(data)
                 if(this.chatId !== data.message.id) {
-                    var audio = new Audio('/ring.mpeg'); // path to file
+                    var audio = new Audio('https://taha.wloop.net/swiftly.mp3'); // path to file
                     audio.play();
                 }
                 this.searchPucher(data.message);
@@ -471,7 +462,7 @@ export default {
             this.openContact = !this.openContact
         },
         logOut() {
-          window.location.href = '/livechat/liveChatLogout';
+          window.location.href = 'https://taha.wloop.net/livechatApi/liveChatLogout';
         },
         getChats(page) {
             this.$http.get(this.urlApi+`dialogs?limit=30&page=${page}`)
@@ -605,26 +596,22 @@ export default {
                 for (var i in this.chats.Dialogs) {
                 //    console.log(this.getContact.id +" - "+  this.chats.Dialogs[i].id)
                     if(this.getContact.id ===  this.chats.Dialogs[i].id) {
-                         this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
-                        this.chats.Dialogs[i].chatName = this.newNameContact
+                        this.chats.Dialogs[i].chatName = this.getContact.chatName
                     } 
                 }  
                 for (var c in this.chatsPin) {
                     if(this.getContact.id ===  this.chatsPin[c].id) {
-                        this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
-                        this.chatsPin[c].chatName = this.newNameContact
+                        this.chatsPin[c].chatName = this.getContact.chatName
                     } 
                 }   
                 for (var s in this.searchDiv) {
                     if(this.getContact.id ===  this.searchDiv[s].id) {
-                        this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
-                        this.searchDiv[s].chatName = this.newNameContact
+                        this.searchDiv[s].chatName = this.getContact.chatName
                     } 
                 }   
                 for (var y in this.newMsg) {
                     if(this.getContact.id ===  this.newMsg[y].id) {
-                        this.$store.dispatch("chatNameAction", {chatName:this.newNameContact});
-                        this.newMsg[y].chatName = this.newNameContact
+                        this.newMsg[y].chatName = this.getContact.chatName
                     } 
                 }   
             }
@@ -754,9 +741,6 @@ export default {
     computed:{
         chatId() {
             return this.$store.getters.chatId;
-        },
-        chatName() {
-            return this.$store.getters.chatName;
         },
         getContact() {
             return this.$store.getters.contact;

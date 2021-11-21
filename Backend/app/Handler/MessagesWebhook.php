@@ -234,7 +234,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	public function handleMessages($domain,$message,$tenantId){
 		$hasOrders = 0;
 		$lastOrder = [];
-		if(filter_var($message['body'], FILTER_VALIDATE_URL) && !in_array($message['type'],['product','order'])){
+		if(filter_var($message['body'], FILTER_VALIDATE_URL) && !in_array($message['type'],['product','order','chat'])){
 			$message['message_type'] = \ImagesHelper::checkExtensionType(substr($message['body'], strrpos($message['body'], '.') + 1));
 			$fileName = substr($message['body'], strrpos($message['body'], '/' )+1);
 			$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
