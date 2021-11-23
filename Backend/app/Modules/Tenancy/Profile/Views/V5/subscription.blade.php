@@ -140,7 +140,7 @@
                 <div class="AdditionsSub">
                     <h2 class="title">
                         {{ trans('main.addons') }} 
-                        @if(IS_ADMIN && count($data->subscription->addons) < 9)
+                        @if(IS_ADMIN && count($data->subscription->addons) < 10)
                         <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="edit">{{ trans('main.edit') }}</a>
                         @endif
                     </h2>

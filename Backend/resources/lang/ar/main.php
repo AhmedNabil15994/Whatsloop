@@ -629,6 +629,7 @@ return [
 	'youRated' => "لقد قمت بالتقييم على هذا العنصر من قبل",
 	'sendLinkToClient' => 'ارسال رابط الشراء الى العميل',
 	'menu' => 'القائمة الرئيسية',
+	'menu1' => 'القائمة',
 	'clickHere' => 'اضغط هنا',
 	'reconnect' => 'إعادة الاتصال',
 
@@ -718,6 +719,7 @@ return [
 	'sendStatus' => 'حالة الارسال',
 	'lastContactsAdded' => 'اخر الارقام المضافة ',
 	'dialog' => 'المحادثة',
+	'dialogs' => 'المحادثات',
 	'multimedia' => 'وسائط متعددة',
 	'activityLog' => 'سجل الانشطة',
 	'chatEntered' => 'تم فتح المحادثة',

@@ -174,9 +174,7 @@ class BotPlusControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['channels'] = $channels;
         $checkAsvail = UserAddon::checkUserAvailability(USER_ID,1);
-        if($checkAsvail){
-            $data['bots'] = Bot::dataList(1)['data'];
-        }
+        $data['bots'] = $checkAsvail ? Bot::dataList(1)['data'] : [];
         $data['botPlus'] = BotPlus::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
         return view('Tenancy.BotPlus.Views.edit')->with('data', (object) $data);      
@@ -295,9 +293,7 @@ class BotPlusControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['channels'] = $channels;
         $checkAsvail = UserAddon::checkUserAvailability(USER_ID,1);
-        if($checkAsvail){
-            $data['bots'] = Bot::dataList(1)['data'];
-        }
+        $data['bots'] = $checkAsvail ? Bot::dataList(1)['data'] : [];
         $data['botPlus'] = BotPlus::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
         return view('Tenancy.BotPlus.Views.add')->with('data', (object) $data);

@@ -632,6 +632,8 @@ class LiveChatControllers extends Controller {
         $dataObj = ChatDialog::getData($chatObj,true);
         $dataObj->contact_details = $contact_details;
         $dataList['data'] = $dataObj;
+        $dataList['data']->moderators = !empty($dataList['data']->modsArr)  ? User::dataList(null,$dataList['data']->modsArr,'ar')['data'] : [];
+        $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList(null,$dataList['data']->metadata['labels'])['data'] : [];
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);      
     }

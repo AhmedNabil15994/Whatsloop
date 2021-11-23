@@ -632,6 +632,7 @@ return [
 	'youRated' => "You've Rated this item before",
 	'sendLinkToClient' => 'Send Checkout link to the client',
 	'menu' => 'Main Menu',
+	'menu1' => 'Menu',
 
 	'clickHere' => 'Click Here',
 	'reconnect' => 'Reconnect',
@@ -723,6 +724,7 @@ return [
 	'sendStatus' => 'Sending Status',
 	'lastContactsAdded' => 'Lastest Contacts Added ',
 	'dialog' => 'Dialog',
+	'dialogs' => 'Dialogs',
 	'multimedia' => 'Multimedia',
 	'activityLog' => 'Activities Log',
 	'chatEntered' => 'Chat Entered',
