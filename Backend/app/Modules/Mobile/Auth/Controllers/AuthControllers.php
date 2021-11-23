@@ -18,6 +18,32 @@ use Session;
 class AuthController extends Controller {
 
     use \TraitsFunc;
+    
+    public function oldClient(){
+        $input = \Request::all();
+        if(!isset($input['phone']) || empty($input['phone'])){
+            return \TraitsFunc::ErrorMessage('Phone Field is required');
+        }
+
+        $userObj = CentralUser::checkUserBy('phone','+'.$input['phone']);
+
+        if ($userObj == null || $userObj->group_id != 0 || $userObj->is_old == 0 || $userObj->is_synced == 0) {
+            $dataObj = [
+                'found' => false,
+                'domain' => null,
+            ];
+        }else{
+            $userObj = CentralUser::getData($userObj);
+            $dataObj = [
+                'found' => true,
+                'domain' => 'https://'.$userObj->domain.'.wloop.net',
+            ];
+        }
+
+        $statusObj['data'] = $dataObj;  
+        $statusObj['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $statusObj);
+    }
 
 	public function login() {
         $input = \Request::all();

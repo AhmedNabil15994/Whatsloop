@@ -7,6 +7,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::post('login', 'AuthController@login');
     Route::post('checkByCode', 'AuthController@checkByCode');
     Route::post('logout', 'AuthController@logout');
+    Route::post('oldClient', 'AuthController@oldClient');
 
     // Route::post('register', 'AuthController@register');
 

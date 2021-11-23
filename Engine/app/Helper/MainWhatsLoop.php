@@ -617,4 +617,10 @@ class MainWhatsLoop {
         $result = Http::post($fullURL,[]);
         return $result;     
     }
+
+    public function sendButtons($data){
+        $mainURL = $this->baseUrl.$this->instanceId.'/sendButtons?token='.$this->token;
+        $data['url'] = $mainURL;
+        return \SendButtons::send($data);
+    }
 }

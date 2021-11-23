@@ -39,6 +39,13 @@ class LiveChatControllers extends Controller {
 
     public function dialogs(Request $request) {
         $input = \Request::all();
+
+        if((!isset($input['mine']) || empty($input['mine'])) && !\Helper::checkRules('list-dialogs')){
+            $dataList['data'] = 'disabled';
+            $dataList['status'] = \TraitsFunc::SuccessMessage();
+            return \Response::json((object) $dataList);        
+        }
+
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
         $data['name'] = isset($input['name']) && !empty($input['name']) ? $input['name'] : null;
 
@@ -121,13 +128,21 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
 
-        $is_admin = IS_ADMIN;
-        $user_id = USER_ID; 
-        if(!$is_admin){
-            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-            if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-                ChatEmpLog::newLog($input['chatId']);
-            }
+        // $is_admin = IS_ADMIN;
+        // $user_id = USER_ID; 
+        // if(!$is_admin){
+        //     $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+        //     if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
+        //         ChatEmpLog::newLog($input['chatId']);
+        //     }
+        // }
+
+        if(isset($input['message_id']) && !empty($input['message_id'])){
+            $lastMessage = ChatMessage::orderBy('messageNumber','DESC')->first();
+            $replyMessage = ChatMessage::where('id',$input['message_id'])->first();
+            $dataList = ChatMessage::generateObj(ChatMessage::where('messageNumber','>=',$replyMessage->messageNumber)->orderBy('messageNumber','DESC') , $lastMessage->messageNumber - $replyMessage->messageNumber + 3);
+            $dataList['status'] = \TraitsFunc::SuccessMessage();
+            return \Response::json((object) $dataList);        
         }
 
         $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
@@ -223,6 +238,12 @@ class LiveChatControllers extends Controller {
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $domain = explode('.', $request->getHost())[0];
+
+        $senderStatus = 'APP';
+        if(!IS_ADMIN){
+            $senderStatus = FULL_NAME;
+        }
+
         if(isset($input['messageType']) && $input['messageType'] == 'new'){
             $chats = explode(',', $input['chatId']);
             unset($input['chatId']);
@@ -241,7 +262,7 @@ class LiveChatControllers extends Controller {
                 if(!$status){   
                     return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
                 }
-                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain));
+                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus));
             }
             $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
             return \Response::json((object) $dataList);       
@@ -263,6 +284,8 @@ class LiveChatControllers extends Controller {
         if(!$status){   
             return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
         }
+
+
 
         if(isset($input['replyOn']) && !empty($input['replyOn'])){
             $quotedMessageObj = ChatMessage::where('id',$input['replyOn'])->first();
@@ -441,7 +464,7 @@ class LiveChatControllers extends Controller {
         if(isset($result['data']) && isset($result['data']['id'])){
             $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
             $messageId = $result['data']['id'];
-            $lastMessage['status'] = 'APP';
+            $lastMessage['status'] = $senderStatus;
             $lastMessage['id'] = $messageId;
             $lastMessage['fromMe'] = 1;
             $lastMessage['chatId'] = $sendData['chatId'];

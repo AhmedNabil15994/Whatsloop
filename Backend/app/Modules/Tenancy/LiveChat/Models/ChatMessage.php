@@ -130,7 +130,7 @@ class ChatMessage extends Model{
             $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
             $dataObj->chatId2 = isset($source->chatId) ? self::reformChatId($source->chatId) : '';
             $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
-            $dataObj->status = $source->status != null ? $source->status : ($source->status == null && $source->fromMe == 0 ? $source->senderName : '');
+            $dataObj->status = self::getSenderStatus($source);
             $dataObj->message_type = $source->message_type  == null ? 'text' :  $source->message_type ;
             $dataObj->whatsAppMessageType = $source->type  != null ? $source->type : '';
             $dataObj->senderName = isset($source->senderName) && $source->senderName != null ? $source->senderName : $source->chatName ;
@@ -183,6 +183,18 @@ class ChatMessage extends Model{
         }
     }
 
+    static function getSenderStatus($source){
+        if($source->status != null){
+            return $source->status;
+        }else{
+            if($source->fromMe == 0){
+                return $source->senderName;
+            }else{
+                return 'API';
+            }
+        }        
+    }
+
     static function reformChatId($chatId){
         $chatId = str_replace('@c.us','',$chatId);
         $chatId = str_replace('@g.us','',$chatId);
@@ -198,7 +210,7 @@ class ChatMessage extends Model{
             return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){
             $myDate = \Carbon\Carbon::parse(date('Y-m-d H:i:s',$time));
-            return [$myDate->locale(defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName,date('h:i A',$time)];
+            return [$myDate->locale(@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName,date('h:i A',$time)];
         }else{
             return [date('Y-m-d',$time),date('h:i A',$time)];
         }

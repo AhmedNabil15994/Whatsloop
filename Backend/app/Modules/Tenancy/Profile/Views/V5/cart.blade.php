@@ -113,13 +113,14 @@
                                         ['color' => '#79B55B','image' => 'shopify-ecommerce-for-sale.png'],
                                         ['color' => '#0E6177','image' => 'logo-design.png'],
                                         ['color' => '#5CCAD2','image' => 'layers.png'],
+                                        ['color' => '#373FBC','image' => 'Page-1.png'],
                                     ];
                                     @endphp
                                     @foreach($data->addons as $key => $addon)
                                     <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3 item-parent">
                                         <div class="adding-card">
-                                            <div class="card-img" style="background-color: {{ $addonsArr[$key]['color'] }};">
-                                                <img src="{{ asset('V5/images/'.$addonsArr[$key]['image']) }}" alt="">
+                                            <div class="card-img" style="background-color: {{ $addonsArr[$addon->id - 1]['color'] }};">
+                                                <img src="{{ asset('V5/images/'.$addonsArr[$addon->id - 1]['image']) }}" alt="">
                                             </div>
                                             <div class="card-body">
                                                 {{-- <span class="tooltip">تساعدك هذه الإضافة في ارسال تنبيهات لعملائك</span> --}}

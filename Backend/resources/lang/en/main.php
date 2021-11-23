@@ -763,4 +763,23 @@ return [
 	'today' => 'Today',
 	'syncNote' => 'When syncing is finished, Moderators must recover the password.',
 
+	'botPlus' => 'Bot Plus',
+	'title' => 'Title',
+	'body' => 'Body',
+	'footer' => 'Footer',
+	'buttons' => '# of Buttons',
+	'titleValidate' => 'Title Field is required',
+	'bodyValidate' => 'Body Field is required',
+	'footerValidate' => 'Footer Field is required',
+	'buttonsValidate' => 'Number of Buttons Field is required',
+	'invalidType'  => 'Button :button Reply Type Field is required',
+	'invalidReply' => 'Button :button Reply Field is required',
+	'invalidMsg'   => 'Button :button Bot Message Field is required',
+	'invalidText'  => 'Button :button Text Field is required',
+	'newReply' => 'New Reply',
+	'botMsg' => 'Bot Message',
+	'btnData' => 'Button :button Data',
+
+
+
 ];

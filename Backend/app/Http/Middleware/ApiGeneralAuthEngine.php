@@ -11,6 +11,10 @@ class ApiGeneralAuthEngine
 {
 
     public function handle($request, Closure $next){
+        if($request->segment(1) != 'oldClient' || $request->segment(2) != 'oldClient'){
+            return $next($request);
+        }
+        
         if (!isset($_SERVER['HTTP_APIKEY'])) {
             return \TraitsFunc::ErrorMessage("API key is invalid", 401);
         }

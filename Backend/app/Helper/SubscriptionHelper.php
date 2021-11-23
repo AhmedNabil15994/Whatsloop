@@ -151,7 +151,7 @@ class SubscriptionHelper {
                             'duration_type' => $one[3],
                             'end_date' => $myEndDate, 
                         ];
-                        if($type == 'new' && $start_date != null){
+                        if($type == 'new' || $start_date != null){
                             $item = array_merge($item,['start_date'=>$start_date]);
                         }
                         $addonData[] = $item;
@@ -181,7 +181,7 @@ class SubscriptionHelper {
                                 'status' => 1,
                                 'end_date' => $myEndDate, 
                             ];
-                            if($type == 'new' && $start_date != null){
+                            if($type == 'new' || $start_date != null){
                                 $item = array_merge($item,['start_date'=>$start_date]);
                             }
                             $extraQuotaData[] = $item;

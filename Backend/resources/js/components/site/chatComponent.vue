@@ -725,7 +725,7 @@ export default {
             this.getChatContent();
             this.getQuick();
            
-            var domain = "taha";
+            var domain = window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
             this.testBroadCastingSentMessage2(domain)
             this.testBroadCastingIncomingMessage2(domain);
             //this.testBroadCastingBotMessage2(domain);

@@ -122,6 +122,13 @@
             </a>
         </div>
         @endif
+        @if(\Helper::checkRules('list-bots-plus'))
+        <div class="linkStyle">
+            <a href="{{ URL::to('/botPlus') }}" class="link">
+                <i class="icon flaticon-robot"></i> {{ trans('main.botPlus') }}
+            </a>
+        </div>
+        @endif
         @if(\Helper::checkRules('list-contacts'))
         <div class="linkStyle">
             <a href="{{ URL::to('/contacts') }}" class="link">

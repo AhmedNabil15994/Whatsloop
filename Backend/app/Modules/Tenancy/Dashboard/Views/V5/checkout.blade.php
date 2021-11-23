@@ -60,6 +60,7 @@
                                 ['color' => '#79B55B','image' => 'shopify-ecommerce-for-sale.png'],
                                 ['color' => '#0E6177','image' => 'logo-design.png'],
                                 ['color' => '#5CCAD2','image' => 'layers.png'],
+                                ['color' => '#373FBC','image' => 'Page-1.png'],
                             ];
                             $extraQuotasArr = [
                                 ['color' => '#449DE6','image' => 'text-message.png'],

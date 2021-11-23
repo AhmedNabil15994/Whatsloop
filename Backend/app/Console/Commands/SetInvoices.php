@@ -275,7 +275,7 @@ class SetInvoices extends Command
                             'content' => 'التذكير الاول لفاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
                         ];
                     }else if($oneItem['data']['leftDays'] == 1 && (int) date('H') == 12){
-                        // Second Reminder
+                        // Second Reminder // تذكير بسداد الفاتورة
                         $data['body'] = 'Second Reminder for Invoice #'.$invoiceObj->id;
                         $test = $whatsLoopObj->sendMessage($data);
                         $extraData = [
@@ -342,7 +342,7 @@ class SetInvoices extends Command
 
                             $extraData = [
                                 'subject' => 'تم تعطيل الحساب',
-                                'content' => 'نأسف لابلاغكم انه تم تعطيل حسابك بسبب عد دفع فاتورة رقم #' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                                'content' => 'نأسف لابلاغكم انه تم تعطيل حسابك بسبب عدم دفع فاتورة رقم #' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
                             ];
                         }   
                     }

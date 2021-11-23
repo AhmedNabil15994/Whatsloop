@@ -352,8 +352,7 @@
                                         @foreach($data->templates as $template)
                                         <div class="checkbox checkbox-blue checkbox-single float-left">
                                             <input type="checkbox" name="templates[]" value="{{ $template->id }}" {{ $data->data->reply_type == 8 && in_array($template->id,$data->data->templates) ? 'checked' : '' }}>
-                                            <label></label>
-                                            {{ $template->title }}
+                                            <label>{{ $template->title }}</label>
                                         </div>
                                         @endforeach
                                     </div>

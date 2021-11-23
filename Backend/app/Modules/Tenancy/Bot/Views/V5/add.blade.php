@@ -269,8 +269,7 @@
                                         @foreach($data->templates as $template)
                                         <div class="checkbox checkbox-blue checkbox-single float-left">
                                             <input type="checkbox" name="templates[]" value="{{ $template->id }}">
-                                            <label></label>
-                                            {{ $template->title }}
+                                            <label>{{ $template->title }}</label>
                                         </div>
                                         @endforeach
                                     </div>

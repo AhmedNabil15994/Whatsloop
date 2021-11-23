@@ -20,26 +20,43 @@
 }
 .select2-container{
 	width: 100% !important;
-	height: 60px !important;
+	height: 50px !important;
+  /*overflow: hidden;*/
 }
-
+.buts .row.mains{
+  margin: 0;
+}
+.form{
+  overflow-x: hidden;
+}
+body:not(.dark-mode) .select2-container .select2-selection--single{
+  background-color:#F6F6F6 !important;
+  color:#000  !important;
+}
+body:not(.dark-mode) .select2-container--default .select2-selection--single .select2-selection__rendered{
+  color:#000  !important;
+}
+body:not(.bodyCpanel) .select2-container{
+  margin-bottom: 25px;
+}
+.select2-selection select2-selection--single{
+  border: 0 !important;
+}
 .select2-container .select2-selection--single
 {
 	width:100% !important;
-	height:60px !important;
-	border:none !important;
-	background-color:#F6F6F6 !important;
+	height:50px !important;
+	border:0 !important;
 	padding:0 20px !important;
 	font-weight:500 !important;
 	margin-bottom:25px;
 	border-radius: 5px !important;
-	color:#000 !important
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered{
-	padding-top: 15px !important;
+	padding-top: 12px !important;
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow{
-	top: 15px !important;
+	top: 12px !important;
 }
 .mt-3{
 	margin-top: 30px;
@@ -91,7 +108,7 @@ html[dir="rtl"] #SubmitBTN.btnAdd{
 }
 html[dir="rtl"] .form:not(.main) input[type="checkbox"]{
 	left: unset;
-	right: 33%;
+	/*right: 33%;*/
 }
 #colData div li{
 	padding: 20px;
@@ -109,7 +126,7 @@ html[dir="rtl"] .form p.data{
 	padding-right: 0;
 }
 .checkbox-single{
-	width: 50px;
+	width: 50%;
 	display: inline-block;
 }
 

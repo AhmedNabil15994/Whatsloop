@@ -133,7 +133,7 @@ export default {
         this.getChats(this.load);
 
      
-        var domain = "taha";
+        var domain =  window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
       this.testBroadCastingSentMessage(domain);
       this.testBroadCastingIncomingMessage(domain);
       this.testBroadCastingBotMessage(domain);
@@ -209,9 +209,9 @@ export default {
             // Start socket.io listener
             window.Echo.channel(domain+'-NewIncomingMessage')
             .listen('IncomingMessage', (data) => {
-               // console.log(data)
+             //   console.log(data)
                 if(this.chatId !== data.message.id) {
-                    var audio = new Audio('https://taha.wloop.net/swiftly.mp3'); // path to file
+                    var audio = new Audio('/public/swiftly.mp3'); // path to file
                     audio.play();
                 }
                 this.searchPucher(data.message);
@@ -462,7 +462,7 @@ export default {
             this.openContact = !this.openContact
         },
         logOut() {
-          window.location.href = 'https://taha.wloop.net/livechatApi/liveChatLogout';
+          window.location.href = '/livechat/liveChatLogout';
         },
         getChats(page) {
             this.$http.get(this.urlApi+`dialogs?limit=30&page=${page}`)

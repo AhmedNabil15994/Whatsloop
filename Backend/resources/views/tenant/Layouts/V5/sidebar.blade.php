@@ -137,6 +137,12 @@
 		</li>
 		@endif
 
+		@if(\Helper::checkRules('list-bots-plus'))
+		<li titlehover="link6">
+			<a href="{{ URL::to('/botPlus') }}" class="{{ Active( URL::to('/botPlus*') ) }}"><i class="flaticon-robot"></i> {{ trans('main.botPlus') }}</a>
+		</li>
+		@endif
+
 		@if(\Helper::checkRules('list-templates'))
 		<li titlehover="link7">
 			<a href="{{ URL::to('/templates') }}" class="{{ Active( URL::to('/templates*') ) }}"><i class="flaticon-layer"></i> {{ trans('main.templates') }}</a>

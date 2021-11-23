@@ -17,7 +17,7 @@ class Template extends Model{
             ->first();
     }
 
-    static function dataList($status=null) {
+    static function dataList($status=null,$ids=null) {
         $input = \Request::all();
 
         $source = self::NotDeleted()->where(function ($query) use ($input) {
@@ -33,6 +33,9 @@ class Template extends Model{
                 });
         if($status != null){
             $source->where('status',$status);
+        }
+        if($ids != null){
+            $source->whereIn('id',$ids);
         }
         if(isset($input['channel']) && !empty($input['channel'])){
             $source->where('channel',$input['channel']);
@@ -62,7 +65,8 @@ class Template extends Model{
         $data->id = $source->id;
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
-        $data->title = $source->{'name_'.LANGUAGE_PREF};
+        $data->title = $source->{'name_'.(@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')};
+        $data->description = $source->{'description_'.(@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')};
         $data->channel = $source->channel;
         $data->description_ar = $source->description_ar;
         $data->description_en = $source->description_en;

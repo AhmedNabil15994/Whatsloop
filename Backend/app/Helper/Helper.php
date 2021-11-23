@@ -234,22 +234,22 @@ class Helper
                 }elseif($addon == 2){
                     $externalPermissions = [
                         'LiveChatControllers@index' => 'list-livechat',
-                        'LiveChatControllers@dialogs' => 'list-livechat',
-                        'LiveChatControllers@pinChat' => 'list-livechat',
-                        'LiveChatControllers@unpinChat' => 'list-livechat',
-                        'LiveChatControllers@readChat' => 'list-livechat',
-                        'LiveChatControllers@unreadChat' => 'list-livechat',
-                        'LiveChatControllers@messages' => 'list-livechat',
-                        'LiveChatControllers@sendMessage' => 'list-livechat',
-                        'LiveChatControllers@labels' => 'list-livechat',
-                        'LiveChatControllers@labelChat' => 'list-livechat',
-                        'LiveChatControllers@unlabelChat' => 'list-livechat',
-                        'LiveChatControllers@contact' => 'list-livechat',
-                        'LiveChatControllers@updateContact' => 'list-livechat',
-                        'LiveChatControllers@quickReplies' => 'list-livechat',
-                        'LiveChatControllers@moderators' => 'list-livechat',
-                        'LiveChatControllers@assignMod' => 'list-livechat',
-                        'LiveChatControllers@removeMod' => 'list-livechat',
+                        'LiveChatControllers@dialogs' => 'list-dialogs',
+                        'LiveChatControllers@pinChat' => 'pin-chat',
+                        'LiveChatControllers@unpinChat' => 'unpin-chat',
+                        'LiveChatControllers@readChat' => 'read-chat',
+                        'LiveChatControllers@unreadChat' => 'unread-chat',
+                        'LiveChatControllers@messages' => 'list-messages',
+                        'LiveChatControllers@sendMessage' => 'sendMessage',
+                        'LiveChatControllers@labels' => 'list-labels',
+                        'LiveChatControllers@labelChat' => 'label-chat',
+                        'LiveChatControllers@unlabelChat' => 'unlabel-chat',
+                        'LiveChatControllers@contact' => 'list-contact-details',
+                        'LiveChatControllers@updateContact' => 'update-contact-details',
+                        'LiveChatControllers@quickReplies' => 'list-quickReplies',
+                        'LiveChatControllers@moderators' => 'list-moderators',
+                        'LiveChatControllers@assignMod' => 'assign-moderator',
+                        'LiveChatControllers@removeMod' => 'remove-moderator',
                         'LiveChatControllers@liveChatLogout' => 'list-livechat',
                     ];
                 }elseif($addon == 3){
@@ -320,6 +320,20 @@ class Helper
                         'WhatsAppCouponControllers@arrange' => 'sort-coupon',
                         'WhatsAppCouponControllers@sort' => 'sort-coupon',
                         'WhatsAppCouponControllers@charts' => 'charts-coupon',
+                    ];
+                }elseif($addon == 10){
+                    $externalPermissions = [
+                        'BotPlusControllers@index' => 'list-bots-plus',
+                        'BotPlusControllers@edit' => 'edit-bot-plus',
+                        'BotPlusControllers@update' => 'edit-bot-plus',
+                        'BotPlusControllers@fastEdit' => 'edit-bot-plus',
+                        'BotPlusControllers@add' => 'add-bot-plus',
+                        'BotPlusControllers@create' => 'add-bot-plus',
+                        'BotPlusControllers@copy' => 'copy-bot-plus',
+                        'BotPlusControllers@delete' => 'delete-bot-plus',
+                        'BotPlusControllers@sort' => 'sort-bot-plus',
+                        'BotPlusControllers@arrange' => 'sort-bot-plus',
+                        'BotPlusControllers@charts' => 'charts-bot-plus',
                     ];
                 }
             }

@@ -25,12 +25,13 @@ class NewDialogJob implements ShouldQueue
     public $contacts;
     public $messageObj;
     
-    public function __construct($chatId,$inputs,$file,$domain)
+    public function __construct($chatId,$inputs,$file,$domain,$senderStatus)
     {
         $this->chatId = $chatId;
         $this->inputs = $inputs;
         $this->file   = $file;
         $this->domain = $domain;  
+        $this->senderStatus = $senderStatus;  
     }
 
     /**
@@ -167,7 +168,7 @@ class NewDialogJob implements ShouldQueue
             if(isset($result['data']) && isset($result['data']['id'])){
                 $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
                 $messageId = $result['data']['id'];
-                $lastMessage['status'] = 'APP';
+                $lastMessage['status'] = $this->senderStatus;
                 $lastMessage['id'] = $messageId;
                 $lastMessage['fromMe'] = 1;
                 $lastMessage['chatId'] = $sendData['chatId'];

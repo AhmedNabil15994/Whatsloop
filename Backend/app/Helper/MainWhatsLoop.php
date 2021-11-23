@@ -702,4 +702,12 @@ class MainWhatsLoop {
             'CHANNELTOKEN' => $this->token,
         ])->post($mainURL);
     }
+
+    public function sendButtons($data){
+        $mainURL = $this->baseUrl.'messages/sendButtons';
+        return Http::withHeaders([
+            'CHANNELID' => $this->instanceId,
+            'CHANNELTOKEN' => $this->token,
+        ])->post($mainURL,$data);
+    }
 }

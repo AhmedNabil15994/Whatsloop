@@ -160,6 +160,8 @@ class UserAddon extends Model{
     }
 
     static function checkUserAvailability($userId,$addonId){
+        $first = User::first()->id;
+        $userId = $userId != $first ? $first : $userId;
         return self::where('user_id',$userId)->where('addon_id',$addonId)->where('status',1)->first();
     }
 }

@@ -78,7 +78,7 @@ class HomeControllers extends Controller {
             }
         }
 
-    	if(in_array($status, ['dialogs','pinChat','unpinChat','readChat','unreadChat','archiveChat','unarchiveChat','disappearingChat','clearChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory'])){
+    	if(in_array($status, ['dialogs','pinChat','unpinChat','readChat','unreadChat','archiveChat','unarchiveChat','disappearingChat','clearChat','removeChat','leaveGroup','typing','recording','labelChat','unlabelChat','dialog','allMessages','messagesHistory','sendButtons'])){
     		if(isset($input['chatId']) && !empty($input['chatId'])){
     			$input['chatId'] = $input['chatId'].'@c.us';
     		}
@@ -116,12 +116,20 @@ class HomeControllers extends Controller {
     	// Whatsapp Integration
     	$whatsLoopObj =  new \MainWhatsLoop();
         $serverResult = $whatsLoopObj->$status($input);
-
-        $formatResponeResult = $this->formatResponse($serverResult,$status);
-        if($formatResponeResult[0] == 0){
-        	return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
+        if($status == 'sendButtons' && (isset($serverResult->sent) && $serverResult->sent)){
+            $dataList['data'] = (object)[
+                'sent' => true,
+                'id' => $serverResult->id
+            ];
+            $dataList['status'] = \TraitsFunc::SuccessResponse();
+            return \Response::json((object) $dataList);        
+        }else{
+            $formatResponeResult = $this->formatResponse($serverResult,$status);
+            if($formatResponeResult[0] == 0){
+                return \TraitsFunc::ErrorMessage($formatResponeResult[1]);
+            }
         }
-
+        
         $dataList['data'] = $serverResult->json();
         // Customization For QR Code Images
         if(in_array($status, ['status','qr_code','screenshot'])){

@@ -11,7 +11,7 @@ class Instance
             'status','qr_code','logout','screenshot','takeover','expiry','retry','reboot','settings','updateSettings','outputIP','me','updateName','updateStatus','repeatHook','labelsList','createLabel','updateLabel','removeLabel','clearInstance',
 
             // Messages
-            'sendMessage','sendFile','sendPTT','sendLink','sendContact','sendLocation','sendVCard','forwardMessage','allMessages','messagesHistory','deleteMessage',
+            'sendMessage','sendFile','sendPTT','sendLink','sendContact','sendLocation','sendVCard','forwardMessage','allMessages','messagesHistory','deleteMessage','sendButtons',
             
             // Webhooks
             'webhook',

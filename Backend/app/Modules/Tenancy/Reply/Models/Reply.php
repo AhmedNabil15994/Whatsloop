@@ -64,7 +64,7 @@ class Reply extends Model{
         $data->id = $source->id;
         $data->name_ar = $source->name_ar;
         $data->name_en = $source->name_en;
-        $data->title = $source->{'name_'.LANGUAGE_PREF};
+        $data->title = $source->{'name_'.@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar'};
         $data->channel = $source->channel;
         $data->description_ar = $source->description_ar;
         $data->description_en = $source->description_en;

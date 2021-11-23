@@ -86,7 +86,7 @@ class Order extends Model{
         }else if($diff>0 && $diff<=1){
             return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){
-            return [$date->locale(defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName,date('h:i A',$time)];
+            return [$date->locale(@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName,date('h:i A',$time)];
         }else{
             return [date('Y-m-d',$time),date('h:i A',$time)];
         }

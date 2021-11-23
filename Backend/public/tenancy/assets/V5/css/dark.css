@@ -1,5 +1,7 @@
 .dark-mode input,
-.dark-mode textarea
+.dark-mode textarea,
+.select2-container .select2-selection--single,
+.select2-container--default .select2-selection--single .select2-selection__rendered
 {
 	color:#fff!important
 }
@@ -306,9 +308,10 @@
 .dark-mode .tickets .attachments .uploads,
 .dark-mode .helpPage .helpHead .ticketHead .numbTicket,
 .dark-mode .helpPage .helpHead .btnHelp,
-.dark-mode .helpPage .detailsHelp
+.dark-mode .helpPage .detailsHelp,
+.select2-container .select2-selection--single
 {
-	background-color:#384560
+	background-color:#384560 !important
 }
 
 .dark-mode .payment .totalConfirm .coupon input,

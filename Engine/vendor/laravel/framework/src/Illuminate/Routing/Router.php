@@ -646,6 +646,8 @@ class Router implements BindingRegistrar, RegistrarContract
     {
         $this->current = $route = $this->routes->match($request);
 
+        $route->setContainer($this->container);
+
         $this->container->instance(Route::class, $route);
 
         return $route;
@@ -703,11 +705,13 @@ class Router implements BindingRegistrar, RegistrarContract
      */
     public function gatherRouteMiddleware(Route $route)
     {
+        $computedMiddleware = $route->gatherMiddleware();
+
         $excluded = collect($route->excludedMiddleware())->map(function ($name) {
             return (array) MiddlewareNameResolver::resolve($name, $this->middleware, $this->middlewareGroups);
         })->flatten()->values()->all();
 
-        $middleware = collect($route->gatherMiddleware())->map(function ($name) {
+        $middleware = collect($computedMiddleware)->map(function ($name) {
             return (array) MiddlewareNameResolver::resolve($name, $this->middleware, $this->middlewareGroups);
         })->flatten()->reject(function ($name) use ($excluded) {
             if (empty($excluded)) {
@@ -783,6 +787,7 @@ class Router implements BindingRegistrar, RegistrarContract
                     $response instanceof Jsonable ||
                     $response instanceof ArrayObject ||
                     $response instanceof JsonSerializable ||
+                    $response instanceof \stdClass ||
                     is_array($response))) {
             $response = new JsonResponse($response);
         } elseif (! $response instanceof SymfonyResponse) {
@@ -1292,6 +1297,19 @@ class Router implements BindingRegistrar, RegistrarContract
     }
 
     /**
+     * Set the container instance used by the router.
+     *
+     * @param  \Illuminate\Container\Container  $container
+     * @return $this
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
+
+        return $this;
+    }
+
+    /**
      * Dynamically handle calls into the router instance.
      *
      * @param  string  $method
@@ -1308,6 +1326,6 @@ class Router implements BindingRegistrar, RegistrarContract
             return (new RouteRegistrar($this))->attribute($method, is_array($parameters[0]) ? $parameters[0] : $parameters);
         }
 
-        return (new RouteRegistrar($this))->attribute($method, $parameters[0]);
+        return (new RouteRegistrar($this))->attribute($method, array_key_exists(0, $parameters) ? $parameters[0] : true);
     }
 }
