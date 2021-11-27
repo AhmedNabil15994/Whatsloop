@@ -20,7 +20,7 @@
                     </h5>
                     <div :dir="isUnicode(chat.lastMessage.body) ? 'rtl' : 'ltr'" class="chat-user-message text-truncate mb-0" :class="{'msgRemoved' : !chat.lastMessage.body,'text-bold' : chat.lastMessage.unRead}">
                             
-                            <span v-if="chat.lastMessage.whatsAppMessageType === 'chat' || chat.lastMessage.whatsAppMessageType === 'link'"> 
+                            <span v-if="chat.lastMessage.whatsAppMessageType === 'chat' || chat.lastMessage.whatsAppMessageType === 'link' || chat.lastMessage.type === 'chat' || chat.lastMessage.type === 'link'"> 
                             
                                 <template v-if="chat.lastMessage.body.includes('*') || chat.lastMessage.body.includes('https://whatsloop.net/resources/Gallery/') && !chat.lastMessage.body.includes('iframe')">
                                     <span :inner-html.prop="chat.lastMessage.body | removeAst"></span>
@@ -30,7 +30,7 @@
                             </span>
                             
                         
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'image' ||  chat.lastMessage.whatsAppMessageType === 'video'">
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'image' ||  chat.lastMessage.whatsAppMessageType === 'video' || chat.lastMessage.type === 'image' || chat.lastMessage.type === 'video'">
                                 <template v-if="chat.lastMessage.caption">
                                     <i class="fa fa-image"></i> 
                                     <template v-if="chat.lastMessage.caption.includes('*') || chat.lastMessage.caption.includes('https://whatsloop.net/resources/Gallery/') && !chat.lastMessage.caption.includes('iframe')">
@@ -48,37 +48,37 @@
 
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'document'"> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'document' || chat.lastMessage.type === 'document'"> 
                                     <span>تم مشاركة ملف <i class="fa fa-file"></i></span>
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'location'"> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'location' || chat.lastMessage.type === 'location'"> 
                                     <span>تم مشاركة موقع <i class="fa fa-map-marker"></i></span>
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'vcard' || chat.lastMessage.whatsAppMessageType === 'contact'"> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'vcard' || chat.lastMessage.whatsAppMessageType === 'contact' || chat.lastMessage.type === 'vcard' || chat.lastMessage.type === 'contact'"> 
                                     <span>{{chat.lastMessage.contact_name}} <i class="fa fa-user"></i></span>
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'order' "> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'order' || chat.lastMessage.type === 'order' "> 
                                     <span>{{chat.lastMessage.orderDetails.name}} 
                                     
                                     <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
                                     </span>
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'product' "> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'product' || chat.lastMessage.type === 'product' "> 
                                     <span>{{chat.lastMessage.productDetails.name}} 
                                     
                                     <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
                                     </span>
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'ptt'"> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'ptt' || chat.lastMessage.type === 'ptt'"> 
                                     <span>تم مشاركة مقطع صوتي <i class="fa fa-microphone"></i></span>                                                                           
                             </span>
 
-                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'call_log'"> 
+                            <span v-else-if="chat.lastMessage.whatsAppMessageType === 'call_log' || chat.lastMessage.type === 'call_log'"> 
                                 <template v-if="chat.lastMessage.fromMe == 1">
                                     <span>مكالمة صادرة <i style="color:#0f0;margin-left:5px;float:right;margin-top:4px" class="fa fa-phone"></i></span>
                                 </template>

@@ -312,7 +312,20 @@ resizeMenu();
 	/****** End accordion ******/
 	
 	
-	
-	
-	
+	$('.flat2.fa').on('click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		
+		if($(this).hasClass('fa-eye-slash')){
+			$(this).siblings('input[name="password"]').attr('type','password');
+			$(this).removeClass('fa-eye-slash');
+			$(this).addClass('fa-eye');
+		}else{
+			$(this).siblings('input[name="password"]').attr('type','text');
+			$(this).removeClass('fa-eye');
+			$(this).addClass('fa-eye-slash');
+		}
+	});
+
+			
 });

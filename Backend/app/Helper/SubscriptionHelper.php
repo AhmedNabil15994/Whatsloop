@@ -444,7 +444,7 @@ class SubscriptionHelper {
                     'channel' => $instanceId,
                     'name_ar' => 'whatsAppOrders',
                     'name_en' => 'whatsAppOrders',
-                    'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         طلبك رقم ( {ORDERID} ) جاهز الان للشراء 😎.
 
@@ -453,7 +453,7 @@ class SubscriptionHelper {
                                         ( {ORDERURL} )
 
                                         مع تحيات فريق عمل واتس لوب ❤️',
-                    'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         طلبك رقم ( {ORDERID} ) جاهز الان للشراء 😎.
 
@@ -468,7 +468,7 @@ class SubscriptionHelper {
                     'channel' => $instanceId,
                     'name_ar' => 'whatsAppInvoices',
                     'name_en' => 'whatsAppInvoices',
-                    'content_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         تم تأكيد شراء طلبك رقم ( {ORDERID} )  😎.
 
@@ -477,7 +477,7 @@ class SubscriptionHelper {
                                         ( {INVOICEURL} )
 
                                         مع تحيات فريق عمل واتس لوب ❤️',
-                    'content_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
                                         تم تأكيد شراء طلبك رقم ( {ORDERID} )  😎.
 

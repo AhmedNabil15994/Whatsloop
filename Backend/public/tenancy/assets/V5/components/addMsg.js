@@ -123,9 +123,9 @@ $(function(){
 			message = $('textarea[name="messageText"]').val();
 		}else if(message_type == 2){
 			message = $('input[name="message"]').val();
-		}else if(message_type == 5){
+		}else if(message_type == 4){
 			message = $('input[name="https_url"]').val();
-		}else if(message_type == 6){
+		}else if(message_type == 5){
 			message = $('input[name="whatsapp_no"]').val();
 		}
 

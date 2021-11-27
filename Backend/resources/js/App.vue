@@ -18,7 +18,7 @@ export default {
 
     var x = window.matchMedia("(max-width: 991px)")
       if (x.matches) { // If media query matches
-        window.location.replace("https://whatsloop.net/app/mobilelivechat/");
+        //window.location.replace("https://whatsloop.net/app/mobilelivechat/");
       }
 
   

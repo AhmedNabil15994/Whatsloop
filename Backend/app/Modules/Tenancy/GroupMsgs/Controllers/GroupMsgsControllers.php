@@ -337,9 +337,9 @@ class GroupMsgsControllers extends Controller {
         }else if($input['message_type'] == 2){
             $message = $input['message']; 
             $checkMessage = $input['message'];
+        }else if($input['message_type'] == 4){
+            $checkMessage = $input['url_desc'];
         }else if($input['message_type'] == 5){
-            $checkMessage = $input['https_url'];
-        }else if($input['message_type'] == 6){
             $checkMessage = $input['whatsapp_no'];
         }
 
@@ -368,14 +368,14 @@ class GroupMsgsControllers extends Controller {
         $dataObj->messages_count = count($messagesArr);
         $dataObj->sort = GroupMsg::newSortIndex();
         $dataObj->status = $input['status'];
-        if($input['message_type'] == 6){
+        if($input['message_type'] == 5){
             $dataObj->whatsapp_no = $input['whatsapp_no'];
         }
         $dataObj->created_at = DATE_TIME;
         $dataObj->created_by = USER_ID;
         $dataObj->save();
 
-        if($input['message_type'] == 5){
+        if($input['message_type'] == 4){
             $dataObj->https_url = $input['https_url'];
             $dataObj->url_title = $input['url_title'];
             $dataObj->url_desc = $input['url_desc'];
@@ -394,7 +394,7 @@ class GroupMsgsControllers extends Controller {
             }
         }
 
-        if(in_array($input['message_type'], [2,4])){
+        if(in_array($input['message_type'], [2,3])){
             $file = Session::get('msgFile');
             if($file){
                 $storageFile = Storage::files($file);
@@ -443,6 +443,13 @@ class GroupMsgsControllers extends Controller {
             return Redirect('404');
         }
         $data['data'] = GroupMsg::getData($groupMsgObj);
+
+        $dataObj = GroupMsg::getData($groupMsgObj);
+        $chunks = 400;
+        $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+            dispatch(new GroupMessageJob($data,$dataObj));
+            dispatch(new CheckWhatsappJob($data));
+        });
         $data['contacts'] = Contact::getFullContactsInfo($groupMsgObj->group_id,$groupMsgObj->id)['data'];
         $data['designElems']['mainData'] = $this->getData()['mainData'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;

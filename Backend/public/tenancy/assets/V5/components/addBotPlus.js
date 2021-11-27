@@ -14,7 +14,7 @@ $(function(){
 		choose = "حدد اختيارك";
 	}
 
-	$('input[name="buttons"]').on('keyup',function(e) {
+	$('select[name="buttons"]').on('change',function(e) {
 		e.preventDefault();
 		e.stopPropagation();
 

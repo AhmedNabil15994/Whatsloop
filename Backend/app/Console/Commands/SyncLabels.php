@@ -60,7 +60,7 @@ class SyncLabels extends Command
                 $varObj->var_key = 'BUSINESS';
             }
             $varObj->var_value = $value;
-            // $varObj->save();
+            $varObj->save();
 
             $channelObj = CentralChannel::where('global_user_id',User::first()->global_id)->first();
             foreach($labels as $label){

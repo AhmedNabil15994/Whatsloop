@@ -64,7 +64,7 @@
 
                 <!-- start chat conversation -->
                 
-                <div class="chat-conversation p-2 p-lg-3" data-simplebar="init">
+                <div class="chat-conversation p-2 p-lg-3" ref="vs2" data-simplebar="init">
                     <div class="bg"></div>
                             <vuescroll @handle-scroll="handleScroll" ref="vs">
                                 <div class="loading" v-if="!loading">
@@ -81,7 +81,7 @@
                                     <li v-for="(message, index) in chat"
                                     :key="index"
                                     class="clearfix"
-                                    :class="message.fromMe  ? 'right' : ''">
+                                    :class="message.fromMe  ? 'right' : ''" :id="message.id">
                                        <div class="chat-day-title" v-if="message.isToday">
                                             <span class="title">{{ message.created_at_day }}</span>
                                             <div class="clearfix"></div>
@@ -104,8 +104,9 @@
                                                             </ul>
                                                         </div>
                                                         <!-- withImage:message.quotedMsgBody !== '' -->
-                                                        <div class="replyMsg" v-if="message.quotedMsgObj" :class="{fromMe:message.quotedMsgObj.fromMe === 1,withImage:message.quotedMsgObj.whatsAppMessageType === 'image'}">
+                                                        <div class="replyMsg" v-if="message.quotedMsgObj" @click="replyClick(message.quotedMsgObj.id)" :class="{fromMe:message.quotedMsgObj.fromMe === 1,withImage:message.quotedMsgObj.whatsAppMessageType === 'image'}">
                                                             <span class="text-truncate replyName">
+                                                            
                                                                 <template v-if="message.quotedMsgObj.fromMe === 1">
                                                                     انت 
                                                                 </template>
@@ -353,10 +354,16 @@
                                                             </template>
                                                             
                                                         </span>
+                                                        <!--
+                                                        <span class="optionsStyle"> 
+                                                                <div class="head">
+                                                                    
+                                                                </div>
+                                                        </span>-->
 
                                                         <p v-else>
                                                          <i class="fa fa-ban"></i> 
-                                                        رسالة محذوفه أو غير مدعومة
+                                                        رسالة محذوفة أو غير مدعومة
                                                         </p>
                                                        
                                                         <p class="chat-time clearfix mb-0">
@@ -583,7 +590,7 @@
                             @keydown="sendMsg"
                             tabindex="-1"
                             contenteditable="true"
-                            type="text"
+                        type="text"
                         ></div>
                     </vuescroll>
                     </div>
@@ -596,7 +603,7 @@
                     ref="myVueDropzone"
                     @vdropzone-removed-file="checkFile = false"
                     @vdropzone-file-added="checkFile = true"
-                    acceptedFileTypes=".png,.jpg,jpeg,.gif,.bmp"
+                    acceptedFileTypes=".png,.jpg,jpeg,.gif,.bmp,.txt,.pdf,.xlsx"
                     id="dropzone"
                     :useCustomSlot="true"
                     :options="dropzoneOptions"
@@ -658,7 +665,8 @@ export default {
             quickReplies:[],
             closeEmoji:false,
             emoj:"",
-            replyArry:null
+            replyArry:null,
+            limit:0
         };
     },
     watch:{
@@ -975,21 +983,33 @@ export default {
         loadMore() {
             this.load++;
             this.messageDates = [];
-            this.$http.get(this.urlApi+`messages?chatId=${this.chatIdC}&page=${this.load}`)
+            var limitIf = "";
+            if(this.limit !== 0) {
+                limitIf = `&limit=${this.limit}`;
+            }
+            if(this.chat) {
+                var firstMsg = this.chat[0].id;
+            }
+            this.$http.get(this.urlApi+`messages?chatId=${this.chatIdC}&page=${this.load}${limitIf}`)
             .then((res) => {
-                
                 if (res.data.data.length) {
                     this.chat.unshift(...res.data.data.reverse());
                     this.FixDates();
-                    if(this.$refs["vs"]) {
-                        this.$refs["vs"].scrollTo(
-                        {
-                            y: "3770"
-                        },1);
-                    }
+                    setTimeout(() => {
+                        
+                        if(this.$refs["vs"]) {
+                            // 3770
+                            this.$refs["vs"].scrollTo(
+                            {
+                                y: document.getElementById(firstMsg).offsetTop - 150
+                            },1);
+                        }
+                    },1)
+                    
                 } else {
                     this.loading = true
                 }
+                limitIf = "";
             });
         },
         FixDates() {
@@ -1039,7 +1059,7 @@ export default {
                         if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("image")) {
                             data.append("type", "2");
                             type = 'image';
-                        } else if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("text")) {
+                        } else if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("text") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("sheet") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("pdf")) {
                             data.append("type", "2");
                             type = 'document';
                         } else if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("video")) {
@@ -1249,7 +1269,60 @@ export default {
         },
         closeReply() {
             this.replyArry = null;
+        },
+        replyClick(id) {
+            if(document.getElementById(id) !== null) {
+               var offsetTop =  document.getElementById(id).offsetTop
+                if(this.$refs["vs"]) {
+                    this.$refs["vs"].scrollTo(
+                    {
+                        y: offsetTop - 200
+                    },1);
+                }
+                document.getElementById(id).classList.add("active");
+                setTimeout(function() {
+                    document.getElementById(id).classList.remove("active");
+                },500)
+                
+            } else {
+
+                this.$http.get(this.urlApi+`messages?chatId=${this.chatIdC}&message_id=${id}`)
+                .then((res) => {
+                    if (res.data.data.length) {
+                        this.chat = res.data.data.reverse();
+                        this.load = 1;
+                        this.limit = res.data.pagination.count;
+                        setTimeout(() => {
+
+                            document.getElementById(id).classList.add("active");
+                            setTimeout(function() {
+                                document.getElementById(id).classList.remove("active");
+                            },500)
+
+                            if(this.$refs["vs"]) {
+                                this.$refs["vs"].scrollTo(
+                                {
+                                    y: document.getElementById(id).offsetTop
+                                },1);
+                            }
+                        },500);
+
+                        /*if(this.$refs["vs"]) {
+                            this.$refs["vs"].scrollTo(
+                            {
+                                y: offsetTop2 - 200
+                            },1);
+                        }*/
+                        
+                        
+                        
+                    }
+                })
+            }
+            
         }
+    
+    
     },
     components:{
         audioplayer:audioplayer,
@@ -1357,6 +1430,7 @@ export default {
 
 .replyMsg
 {
+    cursor:pointer;
     padding:10px 15px;
     position:relative;
     margin: -4px -4px 10px;
@@ -1528,6 +1602,7 @@ export default {
 }
 #listChat
 {
+    scroll-behavior: smooth;
     padding-left:20px;
     padding-right:20px;
     padding-top:20px;
@@ -1541,6 +1616,8 @@ export default {
 .chat-conversation .right .conversation-list
 {
     float:left;
+    width:300px;
+    max-width:100%;
 }
 
 
@@ -1609,7 +1686,7 @@ export default {
 
 .chat-conversation .conversation-list .ctext-wrap-content img
 {
-    width:250px;
+    width:100%;
     display: block;
     margin-bottom: 10px;
     cursor:pointer;
@@ -1986,6 +2063,37 @@ transition:all 0.3s;
     justify-content: flex-start;
 }
 
+.chat-conversation .conversation-list .ctext-wrap
+{
+    position:relative
+}
+
+.chat-conversation .ctext-wrap:before
+{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    background-color:rgba(0,0,0,0.09);
+    width:100%;
+    height:100%;
+    z-index:5;
+    border-radius:10px;
+    border-bottom-left-radius:0;
+    opacity:0;
+    visibility:hidden;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chat-conversation .active .ctext-wrap:before
+{
+    opacity:1;
+    visibility:visible;
+}
+
 .chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content
 {
     
@@ -1994,7 +2102,7 @@ transition:all 0.3s;
     white-space:unset!important
 }
 
-.chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content p
+.chat-conversation .conversation-list .ctext-wrap .ctext-wrap-content p p
 {
     white-space: pre-wrap;
 }

@@ -224,7 +224,7 @@ class Category extends Model{
             return [18,'#dfaef0','Lavender'];
         }elseif($hexColor == '#99b6c1' || $hexColor == 19){
             return [19,'#99b6c1','Nepal'];
-        }elseif($hexColor == '#55ccb3' || $hexColor == 20){
+        }else{
             return [20,'#55ccb3','MediumAquamarine'];
         }
 

@@ -199,7 +199,7 @@ export default {
                     //var resArr = [];
                     var numbs = "";
                     for (var numb = 0; numb < this.numbers.length;numb++) {
-                        numbs += this.numbers[numb].replace(/^0+/, '') +"@c.us,"
+                         numbs += this.numbers[numb].replace(/^0+/, '') +"@c.us,"
                      }
                     var removeLastChar = numbs.substring(0, numbs.length - 1);
                         //this.numbers.splice(numb, 1);

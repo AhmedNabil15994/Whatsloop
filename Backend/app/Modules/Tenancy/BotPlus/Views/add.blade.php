@@ -86,11 +86,54 @@
                                 <label for="inputPassword3" class="titleLabel">{{ trans('main.buttons') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input type="tel" value="{{ old('buttons') }}" max="10" name="buttons" placeholder="{{ trans('main.buttons') }}">
+                                <select data-toggle="select2" data-style="btn-outline-myPR" name="buttons">
+                                    <option value="1" {{ old('buttons') == 1 ? 'selected' : '' }}>1</option>
+                                    <option value="2" {{ old('buttons') == 2 ? 'selected' : '' }}>2</option>
+                                    <option value="3" {{ old('buttons') == 3 ? 'selected' : '' }}>3</option>
+                                    <option value="4" {{ old('buttons') == 4 ? 'selected' : '' }}>4</option>
+                                    <option value="5" {{ old('buttons') == 5 ? 'selected' : '' }}>5</option>
+                                    <option value="6" {{ old('buttons') == 6 ? 'selected' : '' }}>6</option>
+                                    <option value="7" {{ old('buttons') == 7 ? 'selected' : '' }}>7</option>
+                                    <option value="8" {{ old('buttons') == 8 ? 'selected' : '' }}>8</option>
+                                    <option value="9" {{ old('buttons') == 9 ? 'selected' : '' }}>9</option>
+                                    <option value="10" {{ old('buttons') == 10 ? 'selected' : '' }}>10</option>
+                                </select>
                             </div>
                             <div class="clearfix"></div>
                             <div class="buts">
-                                
+                                <div class='row mains'>
+                                    <div class='col-md-3'>
+                                        <label class='titleLabel'>{{ trans('main.btnData',['button'=>1]) }} :</label>
+                                    </div>
+                                    <div class='col-md-9'>
+                                        <div class='row'>
+                                            <div class='col-md-4'>
+                                                <input type='text' name='btn_text_1' value="" placeholder='{{ trans('main.text') }}'>
+                                            </div>
+                                            <div class='col-md-4'>
+                                                <select data-toggle='select2' class='reply_types' name='btn_reply_type_1'>
+                                                    <option value='1' selected>{{ trans('main.newReply') }}</option>
+                                                    <option value='2'>{{ trans('main.botMsg') }}</option>
+                                                </select>
+                                            </div>
+                                            <div class='col-md-4 repy'>
+                                                <textarea class="" name='btn_reply_1' placeholder='{{ trans('main.messageContent') }}'></textarea>
+                                                <select data-toggle="" class='dets hidden' name='btn_msg_1'>
+                                                    <option value='' selected>{{ trans('main.choose') }}</optin>
+                                                    @foreach($data->bots as $bot)
+                                                    <option value="{{ $bot->id }}" data-type="1">{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>
+                                                    @endforeach
+                                                    @foreach($data->botPlus as $plusBot)
+                                                    @if($plusBot->id != $data->data->id)
+                                                    <option value="{{ $plusBot->id }}" data-type="2">{{ trans('main.clientMessage') . ' ( ' .$plusBot->message . ' ) ==== ' . trans('main.botPlus') }}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                                <input type='hidden' name='btn_msg_type_1' value=''>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> 
                             </div>
                         </div>
                         <hr class="mt-5">

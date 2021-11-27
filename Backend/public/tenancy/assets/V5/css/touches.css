@@ -559,10 +559,14 @@ div.phone-footer img{
 .message:first-child {
     margin: 16px 0 8px;
 }
+td a[data-col="message"]{
+    white-space: pre-line;
+}
 .message.received {
     background: #fff;
     border-radius: 0px 5px 5px 5px;
     float: left;
+    white-space: pre-line;
 }
 .metadata {
     display: inline-block;

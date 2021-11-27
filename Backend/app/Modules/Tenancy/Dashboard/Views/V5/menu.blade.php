@@ -157,13 +157,13 @@
             </a>
         </div>
         @endif
-        @if(\Helper::checkRules('list-messages-archive'))
+        {{-- @if(\Helper::checkRules('list-messages-archive'))
         <div class="linkStyle">
             <a href="{{ URL::to('/msgsArchive') }}" class="link">
                 <i class="icon flaticon-inbox"></i> {{ trans('main.groupMsgsArc') }}
             </a>
         </div>
-        @endif
+        @endif --}}
         @if(\Helper::checkRules('list-tickets'))
         <div class="linkStyle">
             <a href="{{ URL::to('/tickets') }}" class="link">

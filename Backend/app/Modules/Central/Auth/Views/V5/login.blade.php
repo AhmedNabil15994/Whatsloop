@@ -73,6 +73,7 @@
                             <i class="flaticon-phone-call"></i>
                         </div>
                         <div class="inputStyle">
+                            <i class="fa fa-eye flat2"></i>
                             <input type="password" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}" />
                             <i class="flaticon-shopping-bag"></i>
                         </div>

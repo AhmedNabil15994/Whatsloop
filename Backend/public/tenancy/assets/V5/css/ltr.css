@@ -296,7 +296,10 @@ input[type="number"] {
   -o-transition: all 0.3s;
   transition: all 0.3s;
 }
-
+.loginPage .right .center .formLogin .inputStyle i.flat2{
+  right: 23px;
+  left: unset;
+}
 .loginPage .right .center .formLogin .telStyle {
   z-index: 10
 }

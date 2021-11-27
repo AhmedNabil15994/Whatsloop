@@ -529,8 +529,12 @@ class SubscriptionControllers extends Controller {
             $userObj = User::first();
             User::setSessions($userObj);
             \Session::flash('error',$data['status']->message);
-            return redirect()->to('/dashboard')->withInput();
+            return redirect()->to('/paymentError')->withInput();
         }
+    }
+
+    public function paymentError(){
+        return view('Tenancy.Dashboard.Views.V5.paymentError');
     }
 
     public function activate($transaction_id = null , $paymentGateaway = null){
@@ -576,8 +580,9 @@ class SubscriptionControllers extends Controller {
         $userAddonsTutorial = [];
         $userAddons = array_unique(Session::get('addons'));
         $addonsTutorial = [1,2,4,5];
+        $userObj = User::first();
         for ($i = 0; $i < count($addonsTutorial) ; $i++) {
-            if(in_array($addonsTutorial[$i],$userAddons)){
+            if(in_array($addonsTutorial[$i],$userAddons) && UserAddon::where('status',1)->where('addon_id',$addonsTutorial[$i])->where('user_id',$userObj->id)->first()){
                 $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
                 if($checkData == ''){
                     $varObj = new Variable;

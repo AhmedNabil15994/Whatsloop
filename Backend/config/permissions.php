@@ -21,6 +21,7 @@ return [
     'SubscriptionControllers@updateAddonStatus' => 'general',
     'SubscriptionControllers@sync' => 'general',
     'SubscriptionControllers@postSync' => 'general',
+    'SubscriptionControllers@paymentError' => 'general',
     
     'SubscriptionControllers@checkout' => 'general',
     'SubscriptionControllers@postCheckout' => 'general',

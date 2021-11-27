@@ -88,7 +88,7 @@
                                 <label class="titleLabel">{{ trans('main.message_content') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input disabled name="name_ar" value="{{ $data->data->message }}">
+                                <textarea disabled name="name_ar">{{ $data->data->message }}</textarea>
                             </div>
                         </div> 
                         <div class="row">

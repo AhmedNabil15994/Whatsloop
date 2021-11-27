@@ -399,7 +399,7 @@ class TenantInvoiceControllers extends Controller {
             $userObj = User::first();
             User::setSessions($userObj);
             \Session::flash('error',$data['status']->message);
-            return redirect()->to('/dashboard')->withInput();
+            return redirect()->to('/paymentError')->withInput();
         }
     }
 

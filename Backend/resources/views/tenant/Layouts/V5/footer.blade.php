@@ -17,7 +17,7 @@
 		@if(\Helper::checkRules('list-livechat'))
 		<li><a href="{{ URL::to('/livechat') }}"><i class="flaticon-statistics"></i>{{ trans('main.dialogs') }}</a></li>
 		@endif
-		<li><a href="{{ URL::to('/profile/personalInfo') }}" class="openProfile"><i class="flaticon-user-3"></i>{{ trans('main.myAccount') }}</a></li>
+		<li><a href="{{ URL::to('/profile/subscription') }}" class="openProfile"><i class="flaticon-user-3"></i>{{ trans('main.myAccount') }}</a></li>
 		<li><a class="iconMenuCpanel"><i class="fa fa-bars"></i>{{ trans('main.menu1') }}</a></li>
 	</ul>
 </div>

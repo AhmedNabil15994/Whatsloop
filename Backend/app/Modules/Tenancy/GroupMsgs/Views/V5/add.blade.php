@@ -13,8 +13,13 @@
     .grpmsg{
         border-top: 0;
     }
+    p.label-dark{
+        padding: 15px !important;
+        display: block;
+    }
 </style>
 {{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/touches.css') }}"> --}}
+
 @endsection
 @section('content')
 <!-- Start Content-->
@@ -26,6 +31,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <h4 class="title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
+                            <p class="label label-dark text-left">{{ trans('main.groupMsgsVars') }}</p>
                         </div>
                     </div>
                     <form class="formPayment grpmsg" method="POST" action="{{ URL::to('/groupMsgs/create') }}">
@@ -81,9 +87,9 @@
                                         <option value="">{{ trans('main.choose') }}</option>
                                         <option value="1" {{ !Request::has('message_type') || old('message_type') == 1 ? 'selected' : '' }}>{{ trans('main.text') }}</option>
                                         <option value="2" {{ old('message_type') == 2 ? 'selected' : '' }}>{{ trans('main.photoOrFile') }}</option>
-                                        <option value="4" {{ old('message_type') == 4 ? 'selected' : '' }}>{{ trans('main.sound') }}</option>
-                                        <option value="5" {{ old('message_type') == 5 ? 'selected' : '' }}>{{ trans('main.link') }}</option>
-                                        <option value="6" {{ old('message_type') == 6 ? 'selected' : '' }}>{{ trans('main.whatsappNos') }}</option>
+                                        <option value="3" {{ old('message_type') == 3 ? 'selected' : '' }}>{{ trans('main.sound') }}</option>
+                                        <option value="4" {{ old('message_type') == 4 ? 'selected' : '' }}>{{ trans('main.link') }}</option>
+                                        <option value="5" {{ old('message_type') == 5 ? 'selected' : '' }}>{{ trans('main.whatsappNos') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -124,7 +130,7 @@
                                     <label class="titleLabel">{{ trans('main.textWithPhoto') }} :</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" value="{{ old('message') }}" name="message" placeholder="{{ trans('main.textWithPhoto') }}">
+                                    <textarea name="message" placeholder="{{ trans('main.textWithPhoto') }}">{{ old('message') }}</textarea>
                                 </div>
                             </div>
                             <div class="row hidden">
@@ -144,7 +150,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="reply" data-id="4">
+                        <div class="reply" data-id="3">
                             <div class="row hidden">
                                 <div class="col-md-3">
                                     <label class="titleLabel">{{ trans('main.attachFile') }} :</label>
@@ -183,7 +189,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="reply" data-id="5">
+                        <div class="reply" data-id="4">
                             <div class="row hidden">
                                 <div class="col-md-3">
                                     <label class="titleLabel">{{ trans('main.url') }} :</label>
@@ -225,7 +231,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="reply" data-id="6">
+                        <div class="reply" data-id="5">
                             <div class="row hidden">
                                 <div class="col-md-3">
                                     <label class="titleLabel">{{ trans('whatsappNo') }} :</label>

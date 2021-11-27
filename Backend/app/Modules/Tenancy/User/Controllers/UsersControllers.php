@@ -172,7 +172,7 @@ class UsersControllers extends Controller {
             'name' => 'required',
             'phone' => 'required',
             'password' => 'required|min:6',
-            'email' => 'required',
+            // 'email' => 'required',
         ];
 
         $message = [
@@ -181,7 +181,7 @@ class UsersControllers extends Controller {
             'phone.required' => trans('main.phoneValidate'),
             'password.required' => trans('main.passwordValidate'),
             'password.min' => trans('main.passwordValidate2'),
-            'email.required' => trans('main.emailValidate'),
+            // 'email.required' => trans('main.emailValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -194,14 +194,14 @@ class UsersControllers extends Controller {
             'group_id' => 'required',
             'name' => 'required',
             'phone' => 'required',
-            'email' => 'required',
+            // 'email' => 'required',
         ];
 
         $message = [
             'group_id.required' => trans('main.groupValidate'),
             'name.required' => trans('main.nameValidate'),
             'phone.required' => trans('main.phoneValidate'),
-            'email.required' => trans('main.emailValidate'),
+            // 'email.required' => trans('main.emailValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -251,11 +251,14 @@ class UsersControllers extends Controller {
             return redirect()->back();
         }
 
-        $userObj = User::checkUserBy('email',$input['email'],$id);
-        if($userObj){
-            Session::flash('error', trans('main.emailError'));
-            return redirect()->back()->withInput();
+        if(isset($input['email']) && !empty($input['email'])){
+            $userObj = User::checkUserBy('email',$input['email'],$id);
+            if($userObj){
+                Session::flash('error', trans('main.emailError'));
+                return redirect()->back()->withInput();
+            }
         }
+        
 
         if(isset($input['phone']) && !empty($input['phone'])){
             $userObj = User::checkUserBy('phone',$input['phone'],$id);
@@ -369,12 +372,15 @@ class UsersControllers extends Controller {
             return redirect()->back()->withInput();
         }
         
-        $userObj = User::checkUserBy('email',$input['email']);
-        if($userObj){
-            Session::flash('error', trans('main.emailError'));
-            return redirect()->back()->withInput();
-        }
 
+        if(isset($input['email']) && !empty($input['email'])){
+            $userObj = User::checkUserBy('email',$input['email']);
+            if($userObj){
+                Session::flash('error', trans('main.emailError'));
+                return redirect()->back()->withInput();
+            }
+        }
+        
         if(isset($input['phone']) && !empty($input['phone'])){
             $userObj = User::checkUserBy('phone',$input['phone']);
             if($userObj){

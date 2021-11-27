@@ -40,7 +40,7 @@ class GroupMessageJob implements ShouldQueue
         $unsent = $this->messageObj->unsent_msgs;
         $sent = $this->messageObj->sent_msgs;
         foreach ($this->contacts as $contact) {
-            $result = $this->sendData(str_replace('+', '', $contact->phone),(array) $this->messageObj);
+            $result = $this->sendData($contact,(array) $this->messageObj);
             if($result == 1){
                 $sent+=1;
             }else{
@@ -54,9 +54,9 @@ class GroupMessageJob implements ShouldQueue
     }
 
     public function sendData($contact,$messageObj){
-        $sendData['chatId'] = $contact.'@c.us';
+        $sendData['chatId'] = str_replace('+', '', $contact->phone).'@c.us';
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $check = $mainWhatsLoopObj->checkPhone(['phone' => $contact]);
+        $check = $mainWhatsLoopObj->checkPhone(['phone' => str_replace('+', '', $contact->phone)]);
         $check = $check->json();
         $status = 0;
         if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
@@ -65,12 +65,12 @@ class GroupMessageJob implements ShouldQueue
 
         if($status){
             if($messageObj['message_type'] == 1){
-                $sendData['body'] = $messageObj['message'];
+                $sendData['body'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
                 $result = $mainWhatsLoopObj->sendMessage($sendData);
             }elseif($messageObj['message_type'] == 2){
                 $sendData['filename'] = $messageObj['file_name'];
                 $sendData['body'] = $messageObj['file'];
-                $sendData['caption'] = $messageObj['reply'];
+                $sendData['caption'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }elseif($messageObj['message_type'] == 3){
                 $sendData['audio'] = $messageObj['file'];
@@ -78,17 +78,19 @@ class GroupMessageJob implements ShouldQueue
             }elseif($messageObj['message_type'] == 4){
                 $sendData['body'] = $messageObj['https_url'];
                 $sendData['title'] = $messageObj['url_title'];
-                $sendData['description'] = $messageObj['url_desc'];
-                $sendData['previewBase64'] = base64_encode(file_get_contents($messageObj['photo']));
-                $result = $mainWhatsLoopObj->sendFile($sendData);
+                $sendData['description'] = $this->reformMessage($messageObj['url_desc'],$contact->name,str_replace('+', '', $contact->phone));
+                //$sendData['previewBase64'] = base64_encode(file_get_contents($messageObj['url_image']));
+                $result = $mainWhatsLoopObj->sendLink($sendData);
             }elseif($messageObj['message_type'] == 5){
-                $sendData['contactId'] = $messageObj['whatsapp_no'];
+                $sendData['contactId'] = str_replace('+','',$messageObj['whatsapp_no']);
                 $result = $mainWhatsLoopObj->sendContact($sendData);
             }
-            $result = $result->json();
-            $status = 1;
-            if($result['status']['status'] != 1){
-                $status = 0;
+            if($result){
+                $result = $result->json();
+                $status = 1;
+                if($result['status']['status'] != 1){
+                    $status = 0;
+                }
             }
         }
 
@@ -103,5 +105,11 @@ class GroupMessageJob implements ShouldQueue
 
         ContactReport::newStatus('+'.$contact,$messageObj['group_id'],$messageObj['id'],$status,$messageId);
         return $status;
+    }
+
+    public function reformMessage($text,$contactName,$contactPhone){
+        $text = str_replace("{CUSTOMER_NAME}",$contactName,$text);
+        $text = str_replace("{CUSTOMER_PHONE}",$contactPhone,$text);
+        return $text;
     }
 }

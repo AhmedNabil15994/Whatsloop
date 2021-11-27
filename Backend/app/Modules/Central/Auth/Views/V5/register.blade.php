@@ -85,10 +85,12 @@
                             <i class="flaticon-email"></i>
                         </div>
                         <div class="inputStyle">
+                            <i class="fa fa-eye flat2"></i>
                             <input type="password" name="password" placeholder="{{ trans('auth.passwordPlaceHolder') }}"/>
                             <i class="flaticon-shopping-bag"></i>
                         </div>
                         <div class="inputStyle">
+                            <i class="fa fa-eye flat2"></i>
                             <input type="password" name="password_confirmation" placeholder="{{ trans('auth.passwordPlaceHolder') }}"/>
                             <i class="flaticon-shopping-bag"></i>
                         </div>

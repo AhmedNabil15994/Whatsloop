@@ -13,7 +13,7 @@ class GroupMsg extends Model{
     public $timestamps = false;
 
     static function getPhotoPath($id, $photo) {
-        return \ImagesHelper::GetImagePath('group_messages', $id, $photo,false);
+        return \ImagesHelper::GetImagePath('groupMessages', $id, $photo,false);
     }
 
     public function Group(){
@@ -100,7 +100,7 @@ class GroupMsg extends Model{
         $data->https_url = $source->https_url;
         $data->url_title = $source->url_title;
         $data->url_desc = $source->url_desc;
-        $data->url_image = $source->url_image;
+        $data->url_image = $source->url_image != null ? self::getPhotoPath($source->id, $source->url_image) : "";
         $data->contacts_count = $source->contacts_count;
         $data->messages_count = $source->messages_count;
         $data->sent_msgs = $source->sent_count;

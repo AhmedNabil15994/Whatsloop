@@ -16,18 +16,18 @@
             <!-- Start side-menu nav -->
             <div class="flex-lg-column my-auto" id="navDiv">
                 <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
-                    <li class="nav-item">
-                        <a @click="getChatsClick();" class="nav-link active" v-b-tooltip.hover  title="المحادثات">
+                    <li class="nav-item" v-if="reference === true">
+                        <a @click="getChatsClick();activeList();"  class="nav-link active" v-b-tooltip.hover  title="المحادثات">
                             <i class="ri-message-3-line"></i>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a @click="openMain()" class="nav-link" v-b-tooltip.hover title="محادثاتي">
+                            <a @click="openMain();activeList();"  class="nav-link" :class="reference == false ?  'active' : ''" v-b-tooltip.hover title="محادثاتي">
                             <i class="ri-pie-chart-line"></i>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" @click="logOut()" v-b-tooltip.hover title="خروج" href="#">
+                        <a class="nav-link" @click="logOut();activeList();" v-b-tooltip.hover title="خروج" href="#">
                             <i class="ri-user-settings-line"></i>
                         </a>
                     </li>
@@ -87,7 +87,6 @@ import chatComponent from './chatComponent.vue';
 import Contact from './contact';
 
 
-
 export default {
     name:"home",
     data() {
@@ -113,7 +112,8 @@ export default {
             totalCount:false,
             options:[],
             supervisors:[],
-            moderatorsContact:[]
+            moderatorsContact:[],
+            reference:false
         }
     },
     created() {
@@ -121,14 +121,7 @@ export default {
     },
     mounted () {
     
-        var btns = document.getElementsByClassName("nav-link");
-        for (var i = 0; i < btns.length; i++) {
-        btns[i].addEventListener("click", function() {
-            var current = document.getElementsByClassName("active");
-            current[0].className = current[0].className.replace(" active", "");
-            this.className += " active";
-        });
-        }
+        this.activeList();
 
         this.getChats(this.load);
 
@@ -209,9 +202,9 @@ export default {
             // Start socket.io listener
             window.Echo.channel(domain+'-NewIncomingMessage')
             .listen('IncomingMessage', (data) => {
-             //   console.log(data)
+               // console.log(data)
                 if(this.chatId !== data.message.id) {
-                    var audio = new Audio('/public/swiftly.mp3'); // path to file
+                    var audio = new Audio('/swiftly.mp3'); // path to file
                     audio.play();
                 }
                 this.searchPucher(data.message);
@@ -458,6 +451,16 @@ export default {
         {
             this.openChat = true
         },
+        activeList() {
+            var btns = document.getElementsByClassName("nav-link");
+            for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function() {
+                var current = document.getElementsByClassName("active");
+                current[0].className = current[0].className.replace(" active", "");
+                this.className += " active";
+            });
+            }
+        },
         opencontct() {
             this.openContact = !this.openContact
         },
@@ -467,31 +470,42 @@ export default {
         getChats(page) {
             this.$http.get(this.urlApi+`dialogs?limit=30&page=${page}`)
             .then((res) => {
-                if( res.data.pagination.last_page >=  page) {
-                        var dataRes = res.data.data;
-                       /* for (var i in dataRes) {
-                            if(this.DialogID.includes(dataRes[i].id)) {
-                                dataRes.splice(i, 1);
+                if(res.data.data != "disabled") {
+                    this.reference = true;
+                    if( res.data.pagination.last_page >=  page) {
+                            var dataRes = res.data.data;
+                        /* for (var i in dataRes) {
+                                if(this.DialogID.includes(dataRes[i].id)) {
+                                    dataRes.splice(i, 1);
+                                } 
+                            } */
+                            for (var p in res.data.pinnedConvs) {
+                                if(!this.DialogsBin.includes(res.data.pinnedConvs[p].id)) {
+                                    this.chatsPin.push(res.data.pinnedConvs[p]);
+                                    this.DialogsBin.push(res.data.pinnedConvs[p].id);
+                                }
                             } 
-                        } */
-                        for (var p in res.data.pinnedConvs) {
-                            if(!this.DialogsBin.includes(res.data.pinnedConvs[p].id)) {
-                                this.chatsPin.push(res.data.pinnedConvs[p]);
-                                this.DialogsBin.push(res.data.pinnedConvs[p].id);
-                            }
-                        } 
 
-                        
+                            
 
-                        this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
-                      //  this.UserData = res.data.UserData;
-                       // this.InstanceNumber = res.data.InstanceNumber;
-                        this.loading = false;
-                    }
-                    else {
-                        this.totalCount = true
-                    }
-                });
+                            this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
+                        //  this.UserData = res.data.UserData;
+                        // this.InstanceNumber = res.data.InstanceNumber;
+                            this.loading = false;
+                        }
+                        else {
+                            this.totalCount = true
+                        }
+                
+                }  else {
+                    this.reference = false;
+                    this.openMain();
+                }
+                
+                
+                    });
+                
+
              
         },
         getChatsClick() {
@@ -499,32 +513,34 @@ export default {
             this.chatsPin = [];
             this.DialogID = [];
             this.newMsg = [];
-            this.load = 0;
-            this.chats.Dialogs = null;
+            this.load = 1;
+            this.chats.Dialogs = [];
             this.loading = true;
-            this.$http.get(`https://whatsloop.net/api/v1/dialogs/page/0`,{
-            headers: {'Authorization':'Bearer ' + localStorage.getItem('token')}})
+           this.$http.get(this.urlApi+`dialogs?limit=30&page=1`)
             .then((res) => {
-                var dataRes = res.data.Dialogs;
+                this.chatsPin = [];
+                this.DialogID = [];
+                this.newMsg = [];
+                this.load = 1;
+                this.chats.Dialogs = [];
+                var dataRes = res.data.data;
                 for (var i in dataRes) {
-                    if(this.DialogID.includes(dataRes[i].DialogID)) {
+                    if(this.DialogID.includes(dataRes[i].id)) {
                         dataRes.splice(i, 1);
                     } 
 
                     if(dataRes[i].is_pinned === 1){
                         this.chatsPin.push(dataRes[i]);
- 
                     }
-                    if(res.data.Dialogs[i].DialogID === this.chatId) {
-                        res.data.Dialogs[i].unRead = "";
+                    if(dataRes[i].id === this.chatId) {
+                        dataRes[i].is_read = 0;
+                        dataRes[i].unreadCount = 0;
                     }
                 }   
-                this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
-                this.UserData = res.data.UserData;
-                this.InstanceNumber = res.data.InstanceNumber;
+                this.chats.Dialogs = [];
+                this.chats.Dialogs =  dataRes;
                 this.loading = false;
-            });
-        
+            })
         },
         loadMore() {
             this.load++;
@@ -713,27 +729,37 @@ export default {
         },
         openMain() {
             this.openMainMsgs = true;
-            this.chats.Dialogs = null;
-            this.load = 0;
+            this.load = 1;
             this.loading = true;
             this.searchTo = "";
             this.chatsPin = [];
             this.DialogID = [];
             this.searchDiv = [];
+            this.chats.Dialogs = [];
             this.newMsg = [];
-            this.$http.get(`https://whatsloop.net/api/v1/dialogs/mydialogs`,{
-            headers: {'Authorization':'Bearer ' + localStorage.getItem('token')}})
+            this.$http.get(this.urlApi+`dialogs?mine=3`)
             .then((res) => {
-                var dataRes = res.data.Dialogs;
+                var dataRes = res.data.data;
+                this.chatsPin = [];
+                this.DialogID = [];
+                this.searchDiv = [];
+                this.chats.Dialogs = [];
+                this.newMsg = [];
+                
                 for (var i in dataRes) {
-                    if(this.DialogID.includes(dataRes[i].DialogID)) {
+                    if(this.DialogID.includes(dataRes[i].id)) {
                         dataRes.splice(i, 1);
                     } 
-                    if(res.data.Dialogs[i].DialogID === this.chatId) {
-                        res.data.Dialogs[i].unRead = "";
+                    if(dataRes[i].is_pinned === 1){
+                        this.chatsPin.push(dataRes[i]);
                     }
-                }   
+                    if(dataRes[i].id === this.chatId) {
+                        dataRes[i].is_read = 0;
+                        dataRes[i].unreadCount = 0;
+                    }
+                }
                 this.chats.Dialogs = dataRes;
+                
                 this.loading = false;
             });
         }

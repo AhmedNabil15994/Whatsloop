@@ -43,20 +43,20 @@ class LiveChatControllers extends Controller {
         if((!isset($input['mine']) || empty($input['mine'])) && !\Helper::checkRules('list-dialogs')){
             $dataList['data'] = 'disabled';
             $dataList['status'] = \TraitsFunc::SuccessMessage();
-            return \Response::json((object) $dataList);        
+            return \Response::json((object) $dataList);
         }
 
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
         $data['name'] = isset($input['name']) && !empty($input['name']) ? $input['name'] : null;
 
         $dialogs = ChatDialog::dataList($data['limit'],$data['name']);
- 
+
         $dataList = $dialogs;
         if($data['name'] == null){
             $dataList['pinnedConvs'] = ChatDialog::getPinned()['data'];
         }
         $dataList['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $dataList);        
+        return \Response::json((object) $dataList);
     }
 
     public function pinChat(Request $request) {
@@ -87,7 +87,7 @@ class LiveChatControllers extends Controller {
         broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
         $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);        
+        return \Response::json((object) $dataList);
     }
 
     public function unpinChat(Request $request) {
@@ -117,7 +117,7 @@ class LiveChatControllers extends Controller {
         broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
         $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);      
+        return \Response::json((object) $dataList);
     }
 
     public function messages(Request $request) {
@@ -128,26 +128,29 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = isset($input['chatId']) && !empty($input['chatId']) ? $input['chatId'] : null;
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
 
-        // $is_admin = IS_ADMIN;
-        // $user_id = USER_ID; 
-        // if(!$is_admin){
-        //     $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-        //     if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-        //         ChatEmpLog::newLog($input['chatId']);
-        //     }
-        // }
+        $is_admin = IS_ADMIN;
+        $user_id = USER_ID;
+        if(!$is_admin){
+            $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
+            if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
+                ChatEmpLog::newLog($input['chatId']);
+            }
+        }
 
         if(isset($input['message_id']) && !empty($input['message_id'])){
             $lastMessage = ChatMessage::orderBy('messageNumber','DESC')->first();
             $replyMessage = ChatMessage::where('id',$input['message_id'])->first();
-            $dataList = ChatMessage::generateObj(ChatMessage::where('messageNumber','>=',$replyMessage->messageNumber)->orderBy('messageNumber','DESC') , $lastMessage->messageNumber - $replyMessage->messageNumber + 3);
+            if(!$lastMessage || !$replyMessage){
+                return \TraitsFunc::ErrorMessage("Invalid Message or Message ID");
+            }
+            $dataList = ChatMessage::generateObj(ChatMessage::where('chatId',$input['chatId'])->where('messageNumber','>=',$replyMessage->messageNumber)->orderBy('messageNumber','DESC') , $lastMessage->messageNumber - $replyMessage->messageNumber - 3);
             $dataList['status'] = \TraitsFunc::SuccessMessage();
-            return \Response::json((object) $dataList);        
+            return \Response::json((object) $dataList);
         }
 
         $dataList = ChatMessage::dataList($data['liveChatId'],$data['limit']);
         $dataList['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $dataList);        
+        return \Response::json((object) $dataList);
     }
 
     public function readChat(Request $request) {
@@ -199,6 +202,7 @@ class LiveChatControllers extends Controller {
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
+        
         $domain = explode('.', $request->getHost())[0];
         $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
         $dialogObj->is_read = 0;
@@ -270,22 +274,6 @@ class LiveChatControllers extends Controller {
 
         $sendData['chatId'] = $input['chatId'];
         $caption = '';
-        $checkData['phone'] = str_replace('@c.us', '', $input['chatId']);
-        $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
-        $checkNoResult = $checkResult->json();
-
-        if($checkNoResult['status']['status'] != 1){
-            $status = 0;
-        }
-
-        if(isset($checkNoResult['data'])){
-            $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
-        }
-        if(!$status){   
-            return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
-        }
-
-
 
         if(isset($input['replyOn']) && !empty($input['replyOn'])){
             $quotedMessageObj = ChatMessage::where('id',$input['replyOn'])->first();
@@ -623,7 +611,7 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage("Dialog Is Missing");
         }
 
-        $contactObj = Contact::NotDeleted()->where('phone','+'.str_replace('@c.us', '', $input['chatId']))->first();
+        $contactObj = Contact::NotDeleted()->where('phone',str_replace('@c.us', '', $input['chatId']))->first();
         $contact_details = [];
         if($contactObj != null){
             $contact_details = Contact::getData($contactObj,null,null,true);
@@ -633,7 +621,7 @@ class LiveChatControllers extends Controller {
         $dataObj->contact_details = $contact_details;
         $dataList['data'] = $dataObj;
         $dataList['data']->moderators = !empty($dataList['data']->modsArr)  ? User::dataList(null,$dataList['data']->modsArr,'ar')['data'] : [];
-        $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList(null,$dataList['data']->metadata['labels'])['data'] : [];
+        $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList($dataList['data']->metadata['labels'],null)['data'] : [];
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);      
     }
@@ -748,7 +736,7 @@ class LiveChatControllers extends Controller {
         }
 
         $modObj = User::getOne($input['modId']);
-        if($modObj == null || $modObj->group_id != 2){
+        if($modObj == null){
             return \TraitsFunc::ErrorMessage('Invalid Moderator');
         }
 

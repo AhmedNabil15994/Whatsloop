@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\UserStatus;
+use App\Models\UserAddon;
+use App\Models\User;
 use App\Models\Variable;
 use App\Models\Tenant;
 use Session;
@@ -43,8 +45,9 @@ class CheckReconnection extends Component
         $userAddonsTutorial = [];
         $userAddons = array_unique($this->addons);
         $addonsTutorial = [1,2,4,5];
+        $userObj = User::first();
         for ($i = 0; $i < count($addonsTutorial) ; $i++) {
-            if(in_array($addonsTutorial[$i],$userAddons)){
+            if(in_array($addonsTutorial[$i],$userAddons) && UserAddon::where('status',1)->where('addon_id',$addonsTutorial[$i])->where('user_id',$userObj->id)->first()){
                 $checkData = Variable::getVar('MODULE_'.$addonsTutorial[$i]);
                 if($checkData == ''){
                     $varObj = new Variable;

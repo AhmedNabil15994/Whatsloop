@@ -27,7 +27,7 @@ class ChatDialog extends Model{
             $source = self::with('Messages');  
         }
 
-        if((isset($input['mine']) && !empty($input['mine'])) || !IS_ADMIN){
+        if((isset($input['mine']) && !empty($input['mine']))){
             $source->where('modsArr','LIKE','%'.USER_ID.'%');
         }
 
@@ -71,7 +71,15 @@ class ChatDialog extends Model{
         
         $dataObj->id = $source->id;
         $dataObj->name = $dataObj->name != null ? $dataObj->name : (isset($source->name) ? self::reformName($source->name) : '');
-        $dataObj->image = isset($source->image) ? $source->image : '';
+        if(isset($source->image) && !empty($source->image)){
+            $path = $source->image;
+            $type = pathinfo(
+                parse_url($path, PHP_URL_PATH), 
+                PATHINFO_EXTENSION
+            );
+            $data = file_get_contents($path);
+            $dataObj->image = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
         $dataObj->metadata = isset($source->metadata) ? serialize($source->metadata) : '';
         $dataObj->last_time = isset($source->last_time) ? $source->last_time : '';
         if(isset($source->is_pinned)){
@@ -91,7 +99,7 @@ class ChatDialog extends Model{
             $dataObj->id = $source->id;
             $dataObj->name = isset($source->name) ? $source->name : '';
             $dataObj->chatName = isset($source->name) ? self::reformChatId($source->name) : '';
-            $dataObj->image = isset($source->image) ? $source->image : '';
+            $dataObj->image = isset($source->image) ? mb_convert_encoding($source->image, 'UTF-8', 'UTF-8') : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
             $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
             $dataObj->is_pinned = $source->is_pinned;

@@ -50,4 +50,7 @@ Route::group(['prefix' => '/'] , function () {
 
     Route::get('/updateAddonStatus/{addon_id}/{status}', [App\Http\Controllers\SubscriptionControllers::class,'updateAddonStatus']);
     Route::get('/updateQuotaStatus/{extra_quota_id}/{status}', [App\Http\Controllers\SubscriptionControllers::class,'updateQuotaStatus']);
+
+    Route::get('/paymentError', [App\Http\Controllers\SubscriptionControllers::class,'paymentError']);
+
 });

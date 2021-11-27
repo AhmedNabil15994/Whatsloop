@@ -290,6 +290,11 @@ input[type="number"] {
     -o-transition: all 0.3s;
     transition: all 0.3s;
 }
+.loginPage .right .center .formLogin .inputStyle i.flat2{
+	left: 23px;
+    right: unset;
+    cursor: pointer;
+}
 
 .loginPage .right .center .formLogin .telStyle
 {

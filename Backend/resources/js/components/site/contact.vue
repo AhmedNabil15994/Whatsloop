@@ -91,12 +91,12 @@
                               @select="plus = true"
                               v-model="value" 
                               :multiple="true" 
-                              track-by="color_id"
+                              track-by="labelId"
                               :taggable="true" label="name_ar" :options="options">
                               </multiselect>
 
                               <div class="clearfix">
-                                <span v-for="(val,index) in value" :key="index" :class="val.labelClass"  class="multiselect__tag">
+                                <span v-for="(val,index) in value" :key="index" :class="val.labelClass" :style="{backgroundColor:val.hexColor}"  class="multiselect__tag">
                                   <span>{{ val.name_ar }}</span> 
                                   <i aria-hidden="true" @click="removeLabel(val.color_id,val.labelId)" tabindex="1" class="multiselect__tag-icon"></i>
                                 </span>
@@ -254,11 +254,26 @@ export default {
           data.append(name, value);
 
 
-
           this.$http.post(this.urlApi+`updateContact`,data).then(() => {
               if(name == 'name') {
                 this.contact.chatName = value;
               }
+              if(name == 'notes') {
+                this.contact.contact_details.notes = value;
+              }
+              if(name == 'email') {
+                this.contact.contact_details.email = value;
+              }
+              if(name == 'country') {
+                this.contact.contact_details.country = value;
+              }
+              if(name == 'city') {
+                this.contact.contact_details.city = value;
+              }
+              if(name == 'lang') {
+                this.contact.contact_details.lang = value;
+              }
+
           });
 
 

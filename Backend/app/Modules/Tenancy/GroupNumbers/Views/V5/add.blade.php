@@ -2,6 +2,20 @@
 @extends('tenant.Layouts.V5.master2')
 @section('title',$data->designElems['mainData']['title'])
 
+@section('styles')
+    <style type="text/css">
+        .checkbox-single{
+            width: 50px;
+        }
+        html[dir="rtl"] .form:not(.main) input[type="checkbox"]{
+            right: 20px;
+        }
+        .form p.data{
+            display: inline-block;
+        }
+    </style>
+@endsection
+
 @section('content')
 <div class="formNumbers">
     <input type="hidden" name="modelProps" value="{{ json_encode($data->modelProps) }}">

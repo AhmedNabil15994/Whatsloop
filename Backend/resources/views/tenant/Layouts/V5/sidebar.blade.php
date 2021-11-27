@@ -178,11 +178,11 @@
 		</li>
 		@endif
 
-		@if(\Helper::checkRules('list-messages-archive'))
+		{{-- @if(\Helper::checkRules('list-messages-archive'))
 		<li titlehover="link14">
 			<a href="{{ URL::to('/msgsArchive') }}" class="{{ Active( URL::to('/msgsArchive*') ) }}"><i class="flaticon-inbox"></i> {{ trans('main.groupMsgsArc') }}</a>
 		</li>
-		@endif
+		@endif --}}
 
 		@if(\Helper::checkRules('list-tickets'))
 		<li titlehover="link15">
@@ -237,6 +237,11 @@
 		<li titlehover="link20">
 			<a href="{{ URL::to('/profile/personalInfo') }}" class="{{ Active( URL::to('/profile/personalInfo*') ) }}"><i class="flaticon-pages"></i> {{ trans('main.account_setting') }}</a>
 		</li>
+		@if(\Helper::checkRules('subscription'))
+		<li titlehover="link20">
+			<a href="{{ URL::to('/profile/subscription') }}" class="{{ Active( URL::to('/profile/subscription*') ) }}"><i class="flaticon-settings-1"></i> {{ trans('main.subscriptionManage') }}</a>
+		</li>
+		@endif
 		<li titlehover="link21">
 			<a href="{{ URL::to('/helpCenter') }}" class="{{ Active( URL::to('/helpCenter*') ) }}"><i class="flaticon-life-buoy"></i> {{ trans('main.helpCenter') }}</a>
 		</li>
@@ -262,7 +267,7 @@
 			<li class="titleHover" id="link11"><a href="{{ URL::to('/groupNumbers') }}" class="link">{{ trans('main.groupNumbers') }}</a></li>
 			<li class="titleHover" id="link12"><a href="{{ URL::to('/groupMsgs') }}" class="link">{{ trans('main.groupMsgs') }}</a></li>
 			<li class="titleHover" id="link13"><a href="{{ URL::to('/statuses') }}" class="link">{{ trans('main.statuses') }}</a></li>
-			<li class="titleHover" id="link14"><a href="{{ URL::to('/msgsArchive') }}" class="link">{{ trans('main.msgsArchive') }}</a></li>
+			{{-- <li class="titleHover" id="link14"><a href="{{ URL::to('/msgsArchive') }}" class="link">{{ trans('main.msgsArchive') }}</a></li> --}}
 			<li class="titleHover" id="link15"><a href="{{ URL::to('/tickets') }}" class="link">{{ trans('main.tickets') }}</a></li>
 			<li class="titleHover" id="link16"><a href="{{ URL::to('/storage') }}" class="link">{{ trans('main.storage') }}</a></li>
 			<li class="titleHover" id="link17"><a href="{{ URL::to('/invoices') }}" class="link">{{ trans('main.invoices') }}</a></li>

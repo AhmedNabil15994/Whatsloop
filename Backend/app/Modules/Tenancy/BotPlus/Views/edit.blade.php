@@ -88,7 +88,18 @@
                                 <label for="inputPassword3" class="titleLabel">{{ trans('main.buttons') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input type="tel" value="{{ $data->data->buttons }}" max="10" name="buttons" placeholder="{{ trans('main.buttons') }}">
+                                <select data-toggle="select2" data-style="btn-outline-myPR" name="buttons">
+                                    <option value="1" {{ $data->data->buttons == 1 ? 'selected' : '' }}>1</option>
+                                    <option value="2" {{ $data->data->buttons == 2 ? 'selected' : '' }}>2</option>
+                                    <option value="3" {{ $data->data->buttons == 3 ? 'selected' : '' }}>3</option>
+                                    <option value="4" {{ $data->data->buttons == 4 ? 'selected' : '' }}>4</option>
+                                    <option value="5" {{ $data->data->buttons == 5 ? 'selected' : '' }}>5</option>
+                                    <option value="6" {{ $data->data->buttons == 6 ? 'selected' : '' }}>6</option>
+                                    <option value="7" {{ $data->data->buttons == 7 ? 'selected' : '' }}>7</option>
+                                    <option value="8" {{ $data->data->buttons == 8 ? 'selected' : '' }}>8</option>
+                                    <option value="9" {{ $data->data->buttons == 9 ? 'selected' : '' }}>9</option>
+                                    <option value="10" {{ $data->data->buttons == 10 ? 'selected' : '' }}>10</option>
+                                </select>
                             </div>
                             <div class="clearfix"></div>
                             <div class="buts">

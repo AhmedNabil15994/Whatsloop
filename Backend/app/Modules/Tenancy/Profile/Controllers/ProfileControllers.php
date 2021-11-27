@@ -570,7 +570,7 @@ class ProfileControllers extends Controller {
             $userObj = User::first();
             User::setSessions($userObj);
             \Session::flash('error',$data['status']->message);
-            return redirect()->to('/dashboard')->withInput();
+            return redirect()->to('/paymentError')->withInput();
         }
     }
 
@@ -589,7 +589,7 @@ class ProfileControllers extends Controller {
 
         $userObj = User::first();
         User::setSessions($userObj);
-        return redirect()->to('/dashboard');
+        return redirect()->to('/paymentError');
     }
 
 

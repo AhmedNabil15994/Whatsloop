@@ -782,6 +782,8 @@ return [
 	'botMsg' => 'Bot Message',
 	'btnData' => 'Button :button Data',
 
-
+	'groupMsgsVars' => 'You Can use {CUSTOMER_NAME} as a variable to match client name && {CUSTOMER_PHONE} as a variable to match client phone',
+	'paymentFailed' => 'Payment Failed',
+	'paymentFailedP' => 'Payment Failed,Please try again later or use different payment menthod.',
 
 ];

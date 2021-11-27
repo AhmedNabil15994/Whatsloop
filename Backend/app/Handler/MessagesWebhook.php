@@ -203,7 +203,9 @@ class MessagesWebhook extends ProcessWebhookJob{
 			$sendData['body'] = $botObj->https_url;
 			$sendData['title'] = $botObj->url_title;
 			$sendData['description'] = $botObj->url_desc;
-			$sendData['previewBase64'] = substr(base64_encode(file_get_contents($botObj->photo)),20000)[0];
+			if($botObj->photo){
+				$sendData['previewBase64'] = substr(base64_encode(@file_get_contents($botObj->photo)),20000)[0];
+			}
 			$result = $mainWhatsLoopObj->sendLink($sendData);
 		}elseif($botObj->reply_type == 6){
 			$message_type = 'contact';
@@ -350,7 +352,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		if($message['fromMe'] == 0){
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
 	    	if($hasOrders){
-				$this->sendLink($domain,$lastOrder);
+				$this->sendLink($message,$domain,$lastOrder);
 			}
 		}else{
 	    	broadcast(new SentMessage($domain , $dialogObj ));
@@ -376,7 +378,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		}
 	}
 
-	public function sendLink($domain,$oldOrderObj){
+	public function sendLink($message,$domain,$oldOrderObj){
 		$orderObj = Order::getData($oldOrderObj);
         $sendData['chatId'] = $orderObj->client_id;
         $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/view';
@@ -389,7 +391,7 @@ class MessagesWebhook extends ProcessWebhookJob{
         }
     
         $templateObj = Template::NotDeleted()->where('name_ar','whatsAppOrders')->first();
-        if($templateObj){
+        if($templateObj && $orderObj->client){
             $content = $templateObj->description_ar;
             $content = str_replace('{CUSTOMERNAME}', str_replace('@c.us','',str_replace('+','',$orderObj->client->name)), $content);
             $content = str_replace('{ORDERID}', $orderObj->order_id, $content);

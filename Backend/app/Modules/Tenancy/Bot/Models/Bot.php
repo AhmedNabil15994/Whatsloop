@@ -109,7 +109,7 @@ class Bot extends Model{
         $data->lng = $source->lng;
         $data->address = $source->address;
         $data->webhook_url = $source->webhook_url;
-        $data->templates = $source->templates != null ? unserialize($source->templates) : [];
+        $data->templates = $source->templates != null ? unserialize(@$source->templates) : [];
         $data->status = $source->status;
         $data->lang = $source->lang;
         $data->langText = $source->lang == 0 ? trans('main.arabic') : trans('main.english');
