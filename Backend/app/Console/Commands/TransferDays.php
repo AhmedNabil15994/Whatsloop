@@ -74,20 +74,22 @@ class TransferDays extends Command
                 $activeChannels[] = $value->id; 
             }
         }
-
-        foreach($allChannels as $channel){
-            $later = new \DateTime(date('Y-m-d',$mainChannel['paidTill'] / 1000));
-            $earlier = new \DateTime(date('Y-m-d'));
-            $duration = abs($later->diff($earlier)->format("%a"));
-            if(in_array($channel['id'],$activeChannels) && $duration <= 2){
-                $transferDaysData = [
-                    'receiver' => $channel['id'],
-                    'days' => 3,
-                    'source' => $channelObj->id,
-                ];
-
-                $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-                $result = $updateResult->json();
+        
+        foreach($allChannels as $key => $channel){
+            if($key !=0 ){
+                $later = new \DateTime(date('Y-m-d',$channel['paidTill'] / 1000));
+                $earlier = new \DateTime(date('Y-m-d'));
+                $duration = abs($later->diff($earlier)->format("%a"));
+                if(in_array($channel['id'],$activeChannels) && $duration <= 2){
+                    $transferDaysData = [
+                        'receiver' => $channel['id'],
+                        'days' => 3,
+                        'source' => $channelObj->id,
+                    ];
+    
+                    $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+                    $result = $updateResult->json();
+                }
             }
         }
 
