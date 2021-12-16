@@ -24,6 +24,11 @@
     .files a{
         padding: 15px;
     }
+    .attach{
+        width: auto;
+        margin-left: 15px;
+        margin-right: 15px;
+    }
 </style>
 @endsection
 
@@ -51,6 +56,7 @@
                         <div class="commentContent">
                             {!! $comment->comment !!}
                             <div class="files">
+                                @if($comment->file_name != null)
                                 @if($comment->file_type == 'photo')
                                 <img src="{{ $comment->file }}" alt="">
                                 @elseif($comment->file_type == 'video')
@@ -61,6 +67,7 @@
                                 <div class="nextPrev">
                                     <a href="{{ $comment->file }}" class="btnNext" target="_blank">{{ trans('main.download') }}</a>
                                 </div>
+                                @endif
                                 @endif
                             </div>
                         </div>

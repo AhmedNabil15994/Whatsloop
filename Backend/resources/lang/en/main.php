@@ -397,6 +397,8 @@ return [
 	'screenshot' => 'Screenshot',
 	'sync' => 'Sync',
 	'syncAll' => 'Sync All Messages',
+	'syncDialogs' => 'Sync All Clients',
+	'syncOrdersProducts' => 'Sync Whatsapp Orders & Products',
 	'restoreAccountSettings' => 'Restore Account Settings',
 	'reestablish' => 'Re-establish Connection',
 	'closeConn' => 'Close Connection',
@@ -785,5 +787,13 @@ return [
 	'groupMsgsVars' => 'You Can use {CUSTOMER_NAME} as a variable to match client name && {CUSTOMER_PHONE} as a variable to match client phone',
 	'paymentFailed' => 'Payment Failed',
 	'paymentFailedP' => 'Payment Failed,Please try again later or use different payment menthod.',
+	'pleaseWait' => 'Please Wait.',
+	'resetOld' => 'Please reset your password to access the new version',
 
+	'notificationTemplates' => 'Notification Templates',
+	'templateType' => 'Type',
+	'whatsAppMessage' => 'WhatsApp Message',
+	'emailMessage' => 'Email',
+	'contentArValidate' => 'Content Arabic Field is required',
+	'templateTypeValidate' => 'Type Field is required',
 ];

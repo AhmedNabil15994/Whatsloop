@@ -94,7 +94,7 @@
 <script>
 //import { mapState } from 'vuex'
 export default {
-    props: ["url", "playerid","pauseall"],
+    props: ["url", "playerid","pauseall","timesec"],
     /**
      * playbackTime = local var that syncs to audio.currentTime
      * audioDuration = duration of audio file in seconds
@@ -130,7 +130,16 @@ export default {
             var audio = this.$refs.player;
             if (audio) {
                 var seconds = audio.duration;
-                return this.convertTime(seconds);
+                //console.log(seconds)
+                if(this.timesec !== false) {
+                    var mins = this.timesec.mins < 10 ? '0'+ this.timesec.mins :'' + this.timesec.mins;
+                    var secs = this.timesec.secs < 10 ? '0'+ this.timesec.secs:'' +this.timesec.secs;
+                    return  mins+":"+secs;
+                    
+                } else {
+                    return this.convertTime(seconds);
+                }
+                
             } else {
                 return '00:00';
             }

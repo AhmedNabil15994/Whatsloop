@@ -9,6 +9,7 @@ use App\Models\ChatDialog;
 use App\Events\IncomingMessage;
 use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
+use App\Models\UserChannels;
 use App\Models\Variable;
 use App\Models\Order;
 use App\Models\Product;
@@ -38,9 +39,11 @@ class MessagesWebhook extends ProcessWebhookJob{
         $dis2 = 0;
         if(in_array(1,$disabled)){
             $dis = 1;
+            return $dis;
         }
         if(in_array(10,$disabled)){
             $dis2 = 1;
+            return $dis2;
         }
 
 		$startDay = strtotime(date('Y-m-d 00:00:00'));
@@ -65,7 +68,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		$senderMessage = $message['body'];
 	    		// Fire Incoming Message Event For Web Application
 				$this->handleMessages($userObj->domain,$message,$tenantObj->tenant_id);
-	    		
+	    		Logger($message);
 	    		if($message['fromMe'] == false){			
 
 	    			if($message['type'] == 'buttons_response' && !$dis2){
@@ -81,7 +84,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				$sendData['body'] = json_decode($replyData['msg']);
 		    				$sendData['chatId'] = $sender;
 	    					$result = $mainWhatsLoopObj->sendMessage($sendData);
-        					$this->handleRequest($message,$userObj->domain,$result,$sendData,'BOT','text','chat','BotMessage');
+        					$this->handleRequest($message,$userObj->domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage');
 	    				}else if($replyData['reply_type'] == 2){
 	    					if($replyData['msg_type'] == 2){
 	    						$botObj = BotPlus::getData(BotPlus::getOne(json_decode($replyData['msg'])->id));
@@ -253,7 +256,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$sendData['chatId'] = str_replace('@c.us','',$sender);
 		$result = $mainWhatsLoopObj->sendButtons($sendData);
 		$sendData['chatId'] = $sender;
-        $this->handleRequest($message,$domain,$result,$sendData,'BOT','text','chat','BotMessage',$botObj);
+        $this->handleRequest($message,$domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage',$botObj);
 	}
 
 	public function handleUpdates($domain,$actions){
@@ -282,7 +285,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 		if(filter_var($message['body'], FILTER_VALIDATE_URL) && !in_array($message['type'],['product','order','chat'])){
 			$message['message_type'] = \ImagesHelper::checkExtensionType(substr($message['body'], strrpos($message['body'], '.') + 1));
 			$fileName = substr($message['body'], strrpos($message['body'], '/' )+1);
+			$destination = public_path().'/uploads/'.$tenantId.'/chats/';
 			$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
+			if (!file_exists($destination)) {
+	            mkdir($destination, 0777, true);
+	        }
 			$succ = @file_put_contents($destinationPath, @file_get_contents($message['body']));
 			$message['body'] = config('app.BASE_URL').'/public/uploads/'.$tenantId.'/chats/' . $fileName;
 		}else{
@@ -331,7 +338,10 @@ class MessagesWebhook extends ProcessWebhookJob{
         $message['time'] = strtotime(date('Y-m-d H:i:s'));
         $checkMessageObj = ChatMessage::where('chatId',$message['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
         $message['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
+        $message['status'] = $message['fromMe'] == 1 ? (isset($message['metadata']) && isset($message['metadata']['replyButtons']) ? 'BOT PLUS' : 'APP') : '';
+        Logger($message);
         $messageObj = ChatMessage::newMessage($message);
+        Logger((array) $messageObj);
         $dialog = ChatDialog::getOne($message['chatId']);
         if(!$dialog){
             $dialogObj = new ChatDialog;
@@ -401,7 +411,7 @@ class MessagesWebhook extends ProcessWebhookJob{
             $mainWhatsLoopObj = new \MainWhatsLoop();
             $result = $mainWhatsLoopObj->sendMessage($sendData);
             $result = $result->json();
-            $this->handleRequest($message,$domain,$result,$sendData,'APP','text','chat','SentMessage',$botObj);
+            $this->handleRequest($message,$domain,$result,$sendData,UserChannels::first()->name,'text','chat','SentMessage',$orderObj);
             $oldOrderObj->channel = $templateObj->channel;
             $oldOrderObj->save();
         }   
@@ -411,7 +421,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		if(isset($result['data']) && isset($result['data']['id'])){
             $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
             $messageId = $result['data']['id'];
-            $lastMessage['status'] = $status;
+            $lastMessage['status'] = $channel == 'SentMessage' ? (isset($message['metadata']) && isset($message['metadata']['replyButtons']) ? 'BOT PLUS' : 'APP') : $status;
             $lastMessage['id'] = $messageId;
             $lastMessage['fromMe'] = 1;
             if($status == 'BOT' && $message_type == 'photo'){

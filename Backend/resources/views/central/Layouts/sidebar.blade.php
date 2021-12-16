@@ -178,6 +178,18 @@
             </li> 
             @endif
 
+            @if(\Helper::checkRules('list-notificationTemplates'))
+            <li class="slide">
+                <a class="side-menu__item {{ Active(URL::to('/notificationTemplates')) }}" href="{{ URL::to('/notificationTemplates') }}">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/administration.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.notificationTemplates') }}</span>
+                </a>
+            </li> 
+            @endif
+
             @if(\Helper::checkRules('list-tickets,list-departments'))
                <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">

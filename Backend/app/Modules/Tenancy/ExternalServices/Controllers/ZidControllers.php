@@ -728,14 +728,14 @@ class ZidControllers extends Controller {
                 'anchor-class' => 'pre-space',
             ],   
             'statusText' => [
-                'label' => trans('main.type'),
+                'label' => trans('main.status'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusText',
                 'anchor-class' => '',
             ],  
             'statusIDText' => [
-                'label' => trans('main.status'),
+                'label' => trans('main.type'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusIDText',
@@ -765,7 +765,7 @@ class ZidControllers extends Controller {
         $service = $this->service;
         
 
-        $dataObj = ModTemplate::NotDeleted()->find($id);
+        $dataObj = ModTemplate::NotDeleted()->where('mod_id',2)->where('id',$id)->first();
         if($dataObj == null) {
             return Redirect('404');
         }
@@ -790,7 +790,7 @@ class ZidControllers extends Controller {
         $service = $this->service;
        
         $input = \Request::all();
-        $dataObj = ModTemplate::NotDeleted()->find($id);
+        $dataObj = ModTemplate::NotDeleted()->where('mod_id',2)->where('id',$id)->first();
         if($dataObj == null) {
             return Redirect('404');
         }

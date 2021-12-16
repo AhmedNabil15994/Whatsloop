@@ -1150,3 +1150,53 @@ animation: dash 1.5s ease-in-out infinite;
   stroke-dashoffset: -124;  /* -99% circumference */
 }
 }
+.user-chat #btn-emoji-default > div > img.emoji
+{
+    margin-right: 5px;
+    margin-top: -2px;
+}
+.vue-audio-recorder:before,
+.vue-audio-recorder span
+{
+    display:none!important;
+}
+.layout-wrapper.paddingTop .ChatDiv
+{
+    height: calc(100vh - 38.5px)!important;
+}
+
+.layout-wrapper.paddingTop
+{
+    position:relative;
+    padding-top:38.5px;
+}
+
+.alertSub
+{
+    padding: 8px 15px 9px;
+    background-color: #fbe267;
+    color: #000;
+    text-align: center;
+    font-family: "Tajawal-Bold";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position:absolute;
+    top:0;
+    right:0;
+    z-index:999;
+    width:100%;
+}
+
+.alertSub i
+{
+    top: 0;
+    margin-left:7px;
+}
+.layout-wrapper
+{
+  -webkit-transition:all 0.3s;
+  -moz-transition:all 0.3s;
+  -o-transition:all 0.3s;
+  transition:all 0.3s;
+}

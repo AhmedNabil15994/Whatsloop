@@ -65,7 +65,7 @@ class ModTemplate extends Model{
         $data->content_ar = $source->content_ar;
         $data->content_en = $source->content_en;
         $data->content = $source->{'content_'.LANGUAGE_PREF};
-        $data->statusText = $source->statusText;
+        $data->statusText = self::getStatusText($source->statusText);
         $data->mod_id = $source->mod_id;
         $data->status = $source->status;
         $data->statusIDText = $source->status == 1 ? trans('main.active') : trans('main.notActive');
@@ -75,6 +75,24 @@ class ModTemplate extends Model{
 
     static function newSortIndex(){
         return self::count() + 1;
+    }
+
+    static function getStatusText($status){
+        $text = $status;
+        if($status == 'ordernew'){
+            $text = 'جديد';
+        }elseif($status == 'orderpreparing'){
+            $text = 'جاري التجهيز';
+        }elseif($status == 'orderready'){
+            $text = 'جاهز';
+        }elseif($status == 'orderindelivery'){
+            $text = 'جارى التوصيل';
+        }elseif($status == 'orderdelivered'){
+            $text = 'تم التوصيل';
+        }elseif($status == 'ordercancelled'){
+            $text = 'تم الالغاء';
+        }
+        return $text;
     }
 
 }

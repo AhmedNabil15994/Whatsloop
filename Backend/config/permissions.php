@@ -10,6 +10,7 @@ return [
     'DashboardControllers@changeThemeToDefault' => 'general',
 
     'DashboardControllers@faqs' => 'general',
+    'DashboardControllers@syncData' => 'general',
     'DashboardControllers@helpCenter' => 'general',
     'DashboardControllers@addRate' => 'general',
 
@@ -77,6 +78,9 @@ return [
     'ProfileControllers@closeConn' => 'subscription',
     'ProfileControllers@sync' => 'subscription',
     'ProfileControllers@syncAll' => 'subscription',
+    'ProfileControllers@syncDialogs' => 'subscription',
+    'ProfileControllers@syncLabels' => 'subscription',
+    'ProfileControllers@syncOrdersProducts' => 'subscription',
     'ProfileControllers@restoreAccountSettings' => 'subscription',
     'ProfileControllers@read' => 'subscription',
     'ProfileControllers@transferPayment' => 'subscription',

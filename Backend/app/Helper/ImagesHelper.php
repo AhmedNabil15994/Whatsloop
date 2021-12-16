@@ -418,6 +418,7 @@ class ImagesHelper {
             return false;
         }
 
+        $oldExtension = $fileObj->getClientOriginalExtension();
         $extensionExplode = explode('/' , $fileObj->getMimeType()); // getting image extension
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
@@ -464,7 +465,7 @@ class ImagesHelper {
             $directory = $path . 'bankAccounts/' . $id;
         }
 
-        $fileName_full = $fileName . '.' . ($extension == 'plain' ? 'txt' : $extension);
+        $fileName_full = $fileName . '.' . ($oldExtension == 'plain' ? 'txt' : $oldExtension);
 
         if ($directory == '') {
             return false;
@@ -484,9 +485,12 @@ class ImagesHelper {
     // \ImagesHelper::deleteDirectory(public_path('/').'/uploads/users/15');
     // \ImagesHelper::deleteDirectory(public_path('/').'/uploads/users/15/filename.png');
     static function deleteDirectory($dir) {
-        system('rm -r ' . escapeshellarg($dir), $retval);
-        // \File::deleteDirectory($dir);
-        return $retval == 0; // UNIX commands return zero on success
+        // system('rm -r ' . escapeshellarg($dir), $retval);
+        // // \File::deleteDirectory($dir);
+        // return $retval == 0; // UNIX commands return zero on success
+        // 
+        unlink($dir);
+        return 0; // UNIX commands return zero on success
     }
 
 }

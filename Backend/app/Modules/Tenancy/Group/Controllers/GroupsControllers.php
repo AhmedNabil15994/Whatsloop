@@ -144,7 +144,7 @@ class GroupsControllers extends Controller {
 
         $input = \Request::all();
         $dataObj = Group::NotDeleted()->find($id);
-        if($dataObj == null) {
+        if($dataObj == null || $id == 1) {
             return Redirect('404');
         }
 
@@ -221,6 +221,9 @@ class GroupsControllers extends Controller {
     public function delete($id) {
         $id = (int) $id;
         $dataObj = Group::getOne($id);
+        if($id == 1){
+            return \TraitsFunc::ErrorMessage(trans('main.notDeleted'));
+        }
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
     }

@@ -96,7 +96,7 @@ class NoonControllers extends Controller {
             ],
             "configuration" => [
                 "tokenizeCc" => "true",
-                "returnUrl" => URL::to('/noon/testResult?date='.strtotime($date)),
+                "returnUrl" => URL::to('/noon/pushResult?date='.strtotime($date)),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
             ],
@@ -157,7 +157,7 @@ class NoonControllers extends Controller {
             'auth_key' => $transactionObj->auth_key,
             'orderId' => $transactionObj->tran_ref,
         ];
-
+        
         $noon = \Noon::queryTransaction($data);
         $noon = json_decode($noon);
 
@@ -171,12 +171,11 @@ class NoonControllers extends Controller {
         $fullData['order']  = $order;
 
         if(isset($noon->resultCode) && $noon->resultCode == 0 ){
-
-            if($noon->result->order->status == "FAILED"){
-                $fullData['message'] = $noon->result->order->errorMessage;
-                $dataList['status'] = \TraitsFunc::ErrorMessage($noon->result->order->errorMessage)->original->status;
-            }else{
+            if($noon->result->order->status == 'CAPTURED'){
                 $dataList['status'] = \TraitsFunc::SuccessMessage();
+            }else{
+                $fullData['message'] = isset($noon->result->order->errorMessage) ? $noon->result->order->errorMessage : $noon->result->order->status;
+                $dataList['status'] = \TraitsFunc::ErrorMessage(isset($noon->result->order->errorMessage) ? $noon->result->order->errorMessage : $noon->result->order->status)->original->status;
             }
             $dataList['data'] = $fullData;
             $dataList['data']['paymentGateaway'] = 'Noon';
@@ -218,7 +217,7 @@ class NoonControllers extends Controller {
             ],
             "configuration" => [
                 "tokenizeCc" => "true",
-                "returnUrl" => URL::to('/noon/testResult'),
+                "returnUrl" => URL::to('/noon/pushResult'),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
             ],
@@ -281,7 +280,7 @@ class NoonControllers extends Controller {
                 "channel" => "web",
             ],
             "configuration" => [
-                "returnUrl" => URL::to('/noon/testResult'),
+                "returnUrl" => URL::to('/noon/pushResult'),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
             ],
@@ -344,7 +343,7 @@ class NoonControllers extends Controller {
                 "channel" => "web",
             ],
             "configuration" => [
-                "returnUrl" => URL::to('/noon/testResult'),
+                "returnUrl" => URL::to('/noon/pushResult'),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
             ],

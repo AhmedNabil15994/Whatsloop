@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Category;
+use App\Models\Variable;
 
 class SyncLabelsJob implements ShouldQueue
 {
@@ -32,10 +33,15 @@ class SyncLabelsJob implements ShouldQueue
      */
     public function handle()
     {
+        Variable::insert([
+            'var_key' => 'SYNCING',
+            'var_value' => 1,
+        ]);
         if(!empty($this->labels)){
             foreach ($this->labels as $label) {
                 Category::newCategory($label);
             }
         }
+        Variable::where('var_key','SYNCING')->delete();
     }
 }

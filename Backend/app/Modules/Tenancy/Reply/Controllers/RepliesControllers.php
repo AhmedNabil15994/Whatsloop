@@ -126,12 +126,12 @@ class RepliesControllers extends Controller {
     protected function validateInsertObject($input){
         $rules = [
             'name_ar' => 'required',
-            'name_en' => 'required',
+            // 'name_en' => 'required',
         ];
 
         $message = [
             'name_ar.required' => trans('main.titleArValidate'),
-            'name_en.required' => trans('main.titleEnValidate'),
+            // 'name_en.required' => trans('main.titleEnValidate'),
         ];
 
         $validate = \Validator::make($input, $rules, $message);
@@ -215,7 +215,7 @@ class RepliesControllers extends Controller {
         $dataObj = new Reply;
         $dataObj->channel = Session::get('channelCode');
         $dataObj->name_ar = $input['name_ar'];
-        $dataObj->name_en = $input['name_en'];
+        $dataObj->name_en = !empty($input['name_en']) ? $input['name_en'] : ' ';
         $dataObj->description_ar = $input['description_ar'];
         $dataObj->description_en = $input['description_en'];
         $dataObj->sort = Reply::newSortIndex();

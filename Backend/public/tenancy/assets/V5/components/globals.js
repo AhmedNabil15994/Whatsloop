@@ -92,7 +92,7 @@ function deleteStorageFile($url) {
             $.get($url,function(data) {
                 if (data.status.original.status.status == 1) {
                     successNotification(data.status.original.status.message);
-                    window.location.href = '/storage';
+                    window.location.href = data.url;
                 } else {
                     errorNotification(data.status.original.status.message);
                 }
@@ -325,7 +325,7 @@ $('select[name="country"]').on('change',function(e){
                 $('select[name="region"] option.data').remove();
                 var elemString = '';
                 $.each(data.regions,function(index,item){
-                    elemString+= '<option value="'+index+'" class="data">'+item.name+'</option>'
+                    elemString+= '<option value="'+index+'" class="data">'+(item.Name_ar == '' ? item.Name_en : item.Name_ar)+'</option>'
                 });
                 $('select[name="region"]').append(elemString)
             }else{

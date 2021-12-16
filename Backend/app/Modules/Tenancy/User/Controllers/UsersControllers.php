@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\UserExtraQuota;
 use App\Models\WebActions;
+use App\Models\UserData;
 use App\Models\CentralUser;
 use DataTables;
 use Storage;
@@ -333,6 +334,19 @@ class UsersControllers extends Controller {
             }
         }
 
+        $editedData = [
+            'email' => $dataObj->email,
+            'domain' => $dataObj->domain,
+            'phone' => $dataObj->phone,
+            'password' => $dataObj->password,
+        ];
+        $itemObj = UserData::where('phone',$editedData['phone'])->first();
+        if($itemObj){
+            $itemObj->update($editedData);
+        }else{
+            UserData::create($editedData);
+        }
+
         Session::forget('photos');
         WebActions::newType(2,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.editSuccess'));
@@ -437,6 +451,19 @@ class UsersControllers extends Controller {
             }
         }
 
+        $item = [
+            'domain' => $mainUser->domain,
+            'email' => $dataObj->email,
+            'phone' => $dataObj->phone,
+            'password' => $dataObj->password,
+        ];
+        $itemObj = UserData::where('phone',$item['phone'])->first();
+        if($itemObj){
+            $itemObj->update($item);
+        }else{
+            UserData::create($item);
+        }
+
         Session::forget('photos');
         WebActions::newType(1,$this->getData()['mainData']['modelName']);
         Session::flash('success', trans('main.addSuccess'));
@@ -477,6 +504,19 @@ class UsersControllers extends Controller {
             $dataObj->updated_at = DATE_TIME;
             $dataObj->updated_by = USER_ID;
             $dataObj->save();
+
+            $editedData = [
+                'email' => $dataObj->email,
+                'domain' => $dataObj->domain,
+                'phone' => $dataObj->phone,
+                'password' => $dataObj->password,
+            ];
+            $itemObj = UserData::where('phone',$editedData['phone'])->first();
+            if($itemObj){
+                $itemObj->update($editedData);
+            }else{
+                UserData::create($editedData);
+            }
         }
 
         WebActions::newType(4,$this->getData()['mainData']['modelName']);

@@ -223,12 +223,6 @@ class ContactsControllers extends Controller {
             return Redirect('404');
         }
 
-        $validate = $this->validateInsertObject($input);
-        if($validate->fails()){
-            Session::flash('error', $validate->messages()->first());
-            return redirect()->back();
-        }
-
         if(!isset($input['phone']) || empty($input['phone'])){
             Session::flash('error', trans('main.phoneValidate'));
             return redirect()->back()->withInput();
@@ -291,6 +285,11 @@ class ContactsControllers extends Controller {
 
         $type = $input['vType'];
 
+        if(!isset($input['vType']) || empty($input['vType'])){
+            Session::flash('error', trans('main.phoneValidate'));
+            return redirect()->back()->withInput();
+        }
+        
         if($type == 2){
             if(!isset($input['phone']) || empty($input['phone'])){
                 Session::flash('error', trans('main.phoneValidate'));
@@ -368,20 +367,22 @@ class ContactsControllers extends Controller {
                     return redirect()->back();
                 }
 
-                for ($i = 0; $i < count($userInputs['phone']); $i++) {
-                    if(!isset($storeData[$i])){
-                        $storeData[$i] = [];
-                    }
-                    if(!isset($storeData[$i][$key])){
-                        $storeData[$i][$key] = '';
-                    }
-                    $storeData[$i][$key] = $userInput[$i];
-                    $storeData[$i]['status'] = $input['status'];
-                    $storeData[$i]['group_id'] = $input['group_id'];
-                    $storeData[$i]['created_at'] = DATE_TIME;
-                    $storeData[$i]['created_by'] = USER_ID;
-                    $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
+                if(!empty($userInputs['phone'])){
+                    for ($i = 0; $i < count($userInputs['phone']); $i++) {
+                        if(!isset($storeData[$i])){
+                            $storeData[$i] = [];
+                        }
+                        if(!isset($storeData[$i][$key])){
+                            $storeData[$i][$key] = '';
+                        }
+                        $storeData[$i][$key] = $userInput[$i];
+                        $storeData[$i]['status'] = $input['status'];
+                        $storeData[$i]['group_id'] = $input['group_id'];
+                        $storeData[$i]['created_at'] = DATE_TIME;
+                        $storeData[$i]['created_by'] = USER_ID;
+                        $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
 
+                    }
                 }
             }
 
@@ -401,8 +402,15 @@ class ContactsControllers extends Controller {
                     }
                     $value['phone'] = trim($phone);
                     $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
-                    $consForQueue[] = $value;
-                    Contact::insert($value);
+                    $value['status'] = 1;
+
+                    $contactObj = new Contact;
+                    foreach($value as $attr => $val){
+                        $contactObj->$attr = $val;
+                    }
+                    $contactObj->save();
+
+                    $consForQueue[] = $contactObj;
                 }else{
                     $foundData[] = $phone;
                 }

@@ -27,7 +27,7 @@
     </div>
     <div class="content">
         <form class="searchForm"  method="get" action="{{ URL::current() }}">
-            <input type="text" placeholder=" {{ trans('main.advancedSearch') }} " />
+            <input type="text" name="keyword" placeholder=" {{ trans('main.advancedSearch') }} " />
             <button class="fa fa-search"></button>
         </form>
         <div class="clearfix">
@@ -67,7 +67,7 @@
                             </svg>
                         </i>
                         <h2 class="name">{{ $customer->name }}</h2>
-                        <a href="mail:to{{ $customer->email }}" class="numb">{{ $customer->email }} <i class="flaticon-email"></i></a>
+                        <a href="mailto:{{ $customer->email }}" class="numb">{{ $customer->email }} <i class="flaticon-email"></i></a>
                         <a href="tel:{{ $customer->phone }}" class="numb">{{ $customer->phone }} <i class="flaticon-phone-call"></i></a>
                         <a href="#" class="numb">{{ $customer->country . ($customer->city != '' && $customer->country != '' ? " | "  : '') . $customer->city }} <i class="flaticon-map"></i></a>
                     </div>

@@ -4318,7 +4318,8 @@ input[type="number"] {
 	position:relative;
 	padding-right:50px;
 	display:block;
-	direction: ltr
+	direction: ltr;
+	min-height: 44px;
 }
 
 .customer .numb i
@@ -4925,6 +4926,7 @@ input[type="number"] {
 	position:absolute;
 	right:20px;
 	top:7px;
+	text-align: center;
 	width:30px;
 	height:30px;
 	border-radius: 5px;
@@ -5895,5 +5897,7 @@ input[type="number"] {
 	-o-transition:all 0.3s;
 	transition:all 0.3s;
 }
-
+.menuCpanel .linksCpanel li a.active + .subMenu{
+	display: block;
+}
 

@@ -96,7 +96,7 @@
                                     <label class="titleLabel">{{ trans('main.textWithPhoto') }} :</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" value="{{ $data->data->reply_type == 2 ?  $data->data->reply : '' }}" name="reply" placeholder="{{ trans('main.textWithPhoto') }}">
+                                    <textarea name="reply" placeholder="{{ trans('main.textWithPhoto') }}">{{ $data->data->reply_type == 2 ?  $data->data->reply : '' }}</textarea>
                                 </div>
                             </div>
                             <div class="row {{ $data->data->reply_type == 2 ? '' : 'hidden' }}">

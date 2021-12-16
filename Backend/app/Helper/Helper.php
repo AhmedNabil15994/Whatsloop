@@ -273,7 +273,7 @@ class Helper
                         'ZidControllers@templatesUpdate' => 'edit-zid-template',
                         'ZidControllers@templatesAdd' => 'add-zid-template',
                         'ZidControllers@templatesCreate' => 'add-zid-template',
-                        'ZidControllers@templatesDelete' => 'delete-zid-template',
+                        // 'ZidControllers@templatesDelete' => 'delete-zid-template',
                         'ProfileControllers@updateZid' => 'updateZid',
                     ];
                 }elseif($addon == 5){
@@ -288,7 +288,7 @@ class Helper
                         'SallaControllers@templatesUpdate' => 'edit-salla-template',
                         'SallaControllers@templatesAdd' => 'add-salla-template',
                         'SallaControllers@templatesCreate' => 'add-salla-template',
-                        'SallaControllers@templatesDelete' => 'delete-salla-template',
+                        // 'SallaControllers@templatesDelete' => 'delete-salla-template',
                         'ProfileControllers@updateSalla' => 'updateSalla',
                     ];
                 }elseif($addon == 6){

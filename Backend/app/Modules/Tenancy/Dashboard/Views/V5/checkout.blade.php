@@ -144,9 +144,7 @@
                     <select name="country" data-toggle="select2">
                         <option value="">{{ trans('main.choose') }}</option>
                         @foreach($data->countries as $key => $country)
-                        @if($key != 'il')
-                        <option value="{{ $key }}" {{ isset($data->payment) ? ($data->payment->country == $key ? 'selected' : '') : '' }} >{{ LANGUAGE_PREF == 'ar' ? $country['native_official_name'] : $country['official_name'] }}</option>
-                        @endif
+                        <option value="{{ $country->id }}" {{ isset($data->payment) ? ($data->payment->country == $country->id ? 'selected' : '') : '' }} >{{ $country->{'Name_'.LANGUAGE_PREF} }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -155,7 +153,7 @@
                     <select name="region" data-toggle="select2">
                         <option value="">{{ trans('main.choose') }}</option>
                         @foreach($data->regions as $key => $region)
-                        <option value="{{ $key }}" {{ isset($data->payment) ? ($data->payment->region == $key ? 'selected' : '') : '' }} >{{ $region['name'] }}</option>
+                        <option value="{{ $region->id }}" {{ isset($data->payment) ? ($data->payment->region == $region->id ? 'selected' : '') : '' }} >{{ $region->Name_ar == '' ? $region->Name_en : $region->Name_ar }}</option>
                         @endforeach
                     </select>
                 </div>

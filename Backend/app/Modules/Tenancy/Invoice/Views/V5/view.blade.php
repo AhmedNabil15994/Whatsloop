@@ -26,7 +26,7 @@
 		<div class="ticketHead">
 			<h2 class="title"> {{ trans('main.invoice') }}</h2>
 			<div class="numbTicket">
-				<span class="numb">#{{ $data->data->id }}</span>
+				<span class="numb">#{{ $data->data->id + 10000 }}</span>
 				<a href="#">{{ trans('main.invoice_status_'.$data->data->status) }}</a>
 			</div>
 			@php 
@@ -122,6 +122,11 @@
                         <tr>
                             <td colspan="5"></td>
                             <td class="text-left">
+                            	<p class="mb-2">
+                                    <span class="tx-bold">{{ trans('main.discount') }} :</span>
+                                    <span class="float-right">{{ $mainPrices - $data->data->total }} {{ trans('main.sar') }}</span>
+                                    <div class="clearfix"></div>
+                                </p>
                                 <p class="mb-2">
                                     @php 
                                         $tax = Helper::calcTax($data->data->total);

@@ -549,16 +549,14 @@ class WhatsappOrdersControllers extends Controller {
         
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
-        $data['countries'] = countries();
+        $data['countries'] = \DB::connection('main')->table('country')->get();
         $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
         return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.paymentInfo')->with('data', (object) $data);
     }
 
     public function getCities(){
         $input = \Request::all();
-        $egypt = country($input['id']); 
-
-        $statusObj['regions'] = $egypt->getDivisions();
+        $statusObj['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$input['id'])->get();
         $statusObj['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $statusObj);
     }

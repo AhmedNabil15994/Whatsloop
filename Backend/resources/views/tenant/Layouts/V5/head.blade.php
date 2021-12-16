@@ -21,6 +21,7 @@
 @else
 <link rel="stylesheet" href="{{ asset('V5/css/ltr.css') }}" />
 @endif
+<link rel="stylesheet" href="{{ asset('V5/css/photoswipe.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/dark.css') }}" />
 <link rel="stylesheet" href="{{ asset('V5/css/touches.css') }}" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker-standalone.min.css" integrity="sha256-SMGbWcp5wJOVXYlZJyAXqoVWaE/vgFA5xfrH3i/jVw0=" crossorigin="anonymous" />

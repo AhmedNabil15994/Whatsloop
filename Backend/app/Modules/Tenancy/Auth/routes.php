@@ -25,6 +25,9 @@ Route::group(['prefix' => '/'] , function () {
     Route::post('/checkResetPassword', [$authController,'checkResetPassword']);
     Route::post('/completeReset', [$authController,'completeReset']);
 
+    // Route::get('/changeData', [$authController,'changeData']);
+    // Route::post('/changeData', [$authController,'completeChangeData']);
+
     Route::post('/changeLang', [$authController,'changeLang'])->name('changeLang');
 
     Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');

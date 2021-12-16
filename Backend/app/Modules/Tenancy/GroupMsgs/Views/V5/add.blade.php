@@ -13,9 +13,11 @@
     .grpmsg{
         border-top: 0;
     }
-    p.label-dark{
-        padding: 15px !important;
+    p.label-darks{
+        padding: 20px !important;
         display: block;
+        background: #F6CD02;
+        color: #000;
     }
 </style>
 {{-- <link rel="stylesheet" type="text/css" href="{{ asset('css/touches.css') }}"> --}}
@@ -31,7 +33,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <h4 class="title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
-                            <p class="label label-dark text-left">{{ trans('main.groupMsgsVars') }}</p>
+                            <p class="label label-darks text-left">{{ trans('main.groupMsgsVars') }}</p>
                         </div>
                     </div>
                     <form class="formPayment grpmsg" method="POST" action="{{ URL::to('/groupMsgs/create') }}">

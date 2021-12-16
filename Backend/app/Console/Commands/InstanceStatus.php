@@ -63,13 +63,12 @@ class InstanceStatus extends Command
                     $destinationPath = public_path() . $image;
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
                     $data['url'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
+                    Variable::where('var_key','QRIMAGE')->delete();
+                    Variable::insert([
+                        'var_key' => 'QRIMAGE',
+                        'var_value' => $result['data']['qrCode'],
+                    ]);
                 }
-                Variable::where('var_key','QRIMAGE')->delete();
-                Variable::insert([
-                    'var_key' => 'QRIMAGE',
-                    'var_value' => $result['data']['qrCode'],
-                ]);
-
             }
         }
 

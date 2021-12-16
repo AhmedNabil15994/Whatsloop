@@ -15,15 +15,15 @@ class MainWhatsLoop {
         if($instanceId != null && $token != null){
             $channelObj = CentralChannel::where('id',$instanceId)->orWhere('instanceId',$instanceId)->first();
             if($channelObj){
-                $myInstanceToken =  $channelObj->instanceToken;
-                $myInstanceId = $channelObj->instanceId;
+                $myInstanceToken =  $channelObj->instanceToken != null ? $channelObj->instanceToken : '';
+                $myInstanceId = $channelObj->instanceId != null ? $channelObj->instanceId : '';
             }
         }else{
             $channelObj = UserChannels::NotDeleted()->orderBy('id','DESC')->first();
             if($channelObj){
                 $channelObj = CentralChannel::NotDeleted()->where('id',$channelObj->id)->first();
-                $myInstanceToken =  $channelObj->instanceToken;
-                $myInstanceId = $channelObj->instanceId;
+                $myInstanceToken =  $channelObj->instanceToken != null ? $channelObj->instanceToken : '';
+                $myInstanceId = $channelObj->instanceId != null ? $channelObj->instanceId : '';
             }
         }
 

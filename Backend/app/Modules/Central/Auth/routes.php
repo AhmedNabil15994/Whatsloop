@@ -26,6 +26,8 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/', function(){ return redirect()->to('/login'); });
 
     Route::get('/login', [$authController,'login']);
+    Route::get('/syncData', [$authController,'syncData']);
+
     Route::get('/appLogin', [$authController,'appLogin']);
     Route::post('/login', [$authController,'doLogin']);
     Route::post('/checkByCode', [$authController,'checkByCode']);

@@ -10,7 +10,8 @@ class Template extends Model{
     protected $table = 'templates';
     protected $primaryKey = 'id';
     public $timestamps = false;
-
+    protected $fillable = ['id','channel','name_ar','name_en','description_ar','description_en','status','created_by','created_at'];    
+    
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)

@@ -3,6 +3,9 @@
 @section('title',$data->designElems['mainData']['title'])
 @section('styles')
 <style type="text/css" media="screen">
+    .form{
+        overflow: unset;
+    }
     .form .btnsTabs li{
         width: 200px;
     }
@@ -18,6 +21,7 @@
     .form .content{
         padding-bottom: 0;
     }
+
 </style>
 @endsection
 @section('content')

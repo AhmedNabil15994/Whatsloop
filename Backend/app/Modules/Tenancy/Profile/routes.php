@@ -47,6 +47,9 @@ Route::group(['prefix' => '/profile'] , function () {
     Route::get('/subscription/closeConn', [$controller,'closeConn']);
     Route::get('/subscription/sync', [$controller,'sync']);
     Route::get('/subscription/syncAll', [$controller,'syncAll']);
+    Route::get('/subscription/syncDialogs', [$controller,'syncDialogs']);
+    Route::get('/subscription/syncLabels', [$controller,'syncLabels']);
+    Route::get('/subscription/syncOrdersProducts', [$controller,'syncOrdersProducts']);
     Route::get('/subscription/restoreAccountSettings', [$controller,'restoreAccountSettings']);
     Route::get('/subscription/read/{status}', [$controller,'read']);
     Route::get('/subscription/transferPayment',[$controller,'transferPayment']);

@@ -96,7 +96,7 @@
                                     <label class="titleLabel" for="textWithPhoto"> {{ trans('main.textWithPhoto') }}</label>            
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" value="{{ old('reply') }}" name="reply" placeholder="{{ trans('main.textWithPhoto') }}">
+                                    <textarea name="reply" placeholder="{{ trans('main.textWithPhoto') }}">{{ old('reply') }}</textarea>
                                 </div>
                             </div>
                             <div class="row hidden">

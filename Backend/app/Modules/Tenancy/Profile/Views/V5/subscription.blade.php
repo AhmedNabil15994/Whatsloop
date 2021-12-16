@@ -17,6 +17,12 @@
         margin: 0;
         width: 100%;
     }
+    .modal-full-width{
+        width: 75%;
+    }
+    .modal-header .close{
+        margin-top: -25px;
+    }
 </style>
 @endsection
 
@@ -34,7 +40,12 @@
             <a href="{{ URL::to('/profile/subscription/reconnect') }}" class="MeasuresText color5">{{ trans('main.reestablish') }}</a>
             <a href="{{ URL::to('/profile/subscription/closeConn') }}" class="MeasuresText color6">{{ trans('main.closeConn') }}</a>
             <a href="{{ URL::to('/profile/subscription/read/1') }}" class="MeasuresText color7">{{ trans('main.readAll') }}</a>
-            <a href="{{ URL::to('/profile/subscription//read/0') }}" class="MeasuresText color8">{{ trans('main.unreadAll') }}</a>
+            <a href="{{ URL::to('/profile/subscription/read/0') }}" class="MeasuresText color8">{{ trans('main.unreadAll') }}</a>
+            <a href="{{ URL::to('/profile/subscription/syncDialogs') }}" class="MeasuresText color0">{{ trans('main.syncDialogs') }}</a>
+            <a href="{{ URL::to('/profile/subscription/syncLabels') }}" class="MeasuresText color1">{{ trans('main.syncLabels') }}</a>
+            @if(\Helper::checkRules('whatsapp-orders,whatsapp-products'))
+            <a href="{{ URL::to('/profile/subscription/syncOrdersProducts') }}" class="MeasuresText color2">{{ trans('main.syncOrdersProducts') }}</a>
+            @endif
         </div>
     </div>
     

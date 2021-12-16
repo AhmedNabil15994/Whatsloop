@@ -20,6 +20,9 @@
     textarea[name="notes"]{
         margin-top: 25px !important;
     }
+    li:not([titlehover="link4"]) i:not(.flaticon-left-arrow){
+        margin-top: 15px;
+    }
 </style>
 @section('content')
 <!-- Start Content-->
@@ -75,7 +78,7 @@
                                                 <label class="titleLabel"> {{ trans('main.phone') }}</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <input type="tel" name="phone" class="teles" value="{{ $data->data->phone2 }}" placeholder="{{ trans('main.phone') }}">
+                                                <input type="tel" name="phone" class="teles" value="{{ '+'.$data->data->phone2 }}" placeholder="{{ trans('main.phone') }}">
                                             </div>
                                         </div>
                                     </div> <!-- end col -->

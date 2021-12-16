@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Models\GroupMsg;
+use App\Models\CentralChannel;
 
 class Kernel extends ConsoleKernel
 {
@@ -35,13 +35,15 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $tenants = \DB::table('tenants')->get();
-        foreach($tenants as $tenant){
-            $schedule->command('tenants:run groupMsg:send --tenants='.$tenant->id)->everyMinute();
-            $schedule->command('tenants:run instance:status --tenants='.$tenant->id)->everyMinute();
-            $schedule->command('tenants:run sync:labels --tenants='.$tenant->id)->everyMinute();
-            $schedule->command('tenants:run sync:messages --tenants='.$tenant->id)->withoutOverlapping()->everyMinute();
-            $schedule->command('tenants:run sync:dialogs --tenants='.$tenant->id)->withoutOverlapping()->everyMinute();
+        $channels = CentralChannel::dataList()['data'];
+        foreach($channels as $channel){
+            if($channel->leftDays > 0 && $channel->tenant_id != null){
+                $schedule->command('tenants:run groupMsg:send --tenants='.$channel->tenant_id)->everyMinute();
+                $schedule->command('tenants:run instance:status --tenants='.$channel->tenant_id)->everyMinute();
+                $schedule->command('tenants:run sync:labels --tenants='.$channel->tenant_id)->everyMinute();
+                $schedule->command('tenants:run sync:messages --tenants='.$channel->tenant_id)->withoutOverlapping()->everyMinute();
+                $schedule->command('tenants:run sync:dialogs --tenants='.$channel->tenant_id)->withoutOverlapping()->everyMinute();
+            }
         }
         $schedule->command('set:invoices')->cron('0 9,12 * * *');
         // $schedule->command('push:channelSetting')->everyMinute();

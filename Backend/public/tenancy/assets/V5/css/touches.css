@@ -380,7 +380,7 @@ border-radius: 4px;
 .dropzone .dz-preview .dz-details {
     z-index: 20;
     position: absolute;
-    top: 155px;
+    top: 180px;
     right: 0;
     opacity: 1;
     font-size: 13px;
@@ -390,6 +390,9 @@ border-radius: 4px;
     text-align: center;
     color: rgba(0,0,0,0.9);
     line-height: 150%;
+}
+.dz-image{
+  margin-top: 20px;
 }
 form .form .formPayment{
 	border-top: 0;

@@ -13,6 +13,7 @@ use App\Models\UserAddon;
 use App\Models\User;
 use App\Models\UserExtraQuota;
 use App\Models\ChatEmpLog;
+use App\Models\UserChannels;
 use App\Events\SentMessage;
 use App\Events\DialogPinStatus;
 use App\Events\ChatReadStatus;
@@ -243,7 +244,7 @@ class LiveChatControllers extends Controller {
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $domain = explode('.', $request->getHost())[0];
 
-        $senderStatus = 'APP';
+        $senderStatus = trans('main.channel'). ' #'.Session::get('channelCode');
         if(!IS_ADMIN){
             $senderStatus = FULL_NAME;
         }
@@ -353,29 +354,36 @@ class LiveChatControllers extends Controller {
                 $result = $mainWhatsLoopObj->sendFile($sendData);
             }
         }elseif($input['type'] == 4){
-            if ($request->hasFile('file')) {
-                $image = $request->file('file');
 
-                $file_size = $image->getSize();
-                $file_size = $file_size/(1024 * 1024);
-                $file_size = number_format($file_size,2);
-                $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-                $totalStorage = Session::get('storageSize');
-                $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-                if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                    return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
-                }
-                
-                $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
-                if($image == false || $fileName == false){
-                    return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
-                }            
-                $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
-                $message_type = "sound";
-                $whats_message_type = 'ppt';
-                $sendData['audio'] = $bodyData;
-                $result = $mainWhatsLoopObj->sendFile($sendData);
+            $file_size = $input['size'];
+            $file_size = $file_size/(1024 * 1024);
+            $file_size = number_format($file_size,2);
+            $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+            $totalStorage = Session::get('storageSize');
+            $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+            if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
             }
+            if($input['file'] == false){
+                return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
+            }          
+
+            $fileName = 'record'.time();
+            $destinationPath = public_path().'/uploads/'.TENANT_ID.'/chats/' . $fileName.'.ogg';
+            
+            $filelocationtmp = $_FILES['file']['tmp_name'];
+
+            // call ffmpeg script to convert file
+            shell_exec("ffmpeg -y -i ".$filelocationtmp." -c:a libopus -vn -b:a 48k ".$filelocationtmp.".ogg");
+
+            // rename oga file to original file (overrides original)
+            shell_exec("mv ".$filelocationtmp.".ogg ".$destinationPath);
+
+            $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/' . $fileName.'.ogg';
+            // dd($bodyData);
+            $message_type = "sound";
+            $whats_message_type = 'ppt';
+            $sendData['audio'] = $bodyData;
             $result = $mainWhatsLoopObj->sendPTT($sendData);
         }elseif($input['type'] == 5){
             if(!isset($input['contact']) || empty($input['contact']) ){

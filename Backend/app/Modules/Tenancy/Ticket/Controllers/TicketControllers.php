@@ -155,7 +155,7 @@ class TicketControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
         $data['assigns'] = CentralUser::NotDeleted()->where('status',1)->whereNotIn('group_id',[0,1])->get();
-        $data['userObj'] = CentralUser::getData(\App\Models\CentralUser::getOne(USER_ID));
+        $data['userObj'] = User::getData(\App\Models\User::getOne(USER_ID));
         $data['comments'] = Comment::dataList($id);
         $data['commentsCount'] = Comment::NotDeleted()->where('status',1)->where('ticket_id',$id)->count();
         return view('Tenancy.Ticket.Views.V5.view')->with('data', (object) $data);      
@@ -175,7 +175,7 @@ class TicketControllers extends Controller {
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['clients'] = CentralUser::NotDeleted()->where('status',1)->where('global_id',GLOBAL_ID)->where('group_id',0)->get();
         $data['departments'] = Department::dataList(1)['data'];
-        $data['userObj'] = CentralUser::getData(\App\Models\CentralUser::getOne(USER_ID));
+        $data['userObj'] = User::getData(\App\Models\User::getOne(USER_ID));
         return view('Tenancy.Ticket.Views.edit')->with('data', (object) $data);      
     }
 
@@ -483,7 +483,7 @@ class TicketControllers extends Controller {
         $commentObj->reply_on = 0;
         $commentObj->ticket_id = $id;
         $commentObj->status = 1;
-        $commentObj->created_by = CentralUser::NotDeleted()->where('phone',User::getOne(USER_ID)->phone)->first()->id;
+        $commentObj->created_by = CentralUser::NotDeleted()->where('phone',User::first()->phone)->first()->id;
         $commentObj->created_at = date('Y-m-d H:i:s');
         $commentObj->save();
 

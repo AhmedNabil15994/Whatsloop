@@ -674,14 +674,14 @@ class SallaControllers extends Controller {
                 'anchor-class' => 'pre-space',
             ],   
             'statusText' => [
-                'label' => trans('main.type'),
+                'label' => trans('main.status'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusText',
                 'anchor-class' => '',
             ],  
             'statusIDText' => [
-                'label' => trans('main.status'),
+                'label' => trans('main.type'),
                 'type' => '',
                 'className' => '',
                 'data-col' => 'statusIDText',
@@ -710,7 +710,7 @@ class SallaControllers extends Controller {
         $id = (int) $id;
         $service = $this->service;
 
-        $dataObj = ModTemplate::NotDeleted()->find($id);
+        $dataObj = ModTemplate::NotDeleted()->where('mod_id',1)->where('id',$id)->first();
         if($dataObj == null) {
             return Redirect('404');
         }
@@ -735,7 +735,7 @@ class SallaControllers extends Controller {
         $service = $this->service;
 
         $input = \Request::all();
-        $dataObj = ModTemplate::NotDeleted()->find($id);
+        $dataObj = ModTemplate::NotDeleted()->where('mod_id',1)->where('id',$id)->first();
         if($dataObj == null) {
             return Redirect('404');
         }

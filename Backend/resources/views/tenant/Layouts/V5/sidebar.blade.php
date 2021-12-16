@@ -239,7 +239,7 @@
 		</li>
 		@if(\Helper::checkRules('subscription'))
 		<li titlehover="link20">
-			<a href="{{ URL::to('/profile/subscription') }}" class="{{ Active( URL::to('/profile/subscription*') ) }}"><i class="flaticon-settings-1"></i> {{ trans('main.subscriptionManage') }}</a>
+			<a href="{{ URL::to('/profile/subscription') }}" class="{{ Active( URL::to('/profile/subscription*') ) }}"><i class="flaticon-settings-1"></i> {{ trans('main.myAccount') }}</a>
 		</li>
 		@endif
 		<li titlehover="link21">

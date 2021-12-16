@@ -82,13 +82,20 @@
                                 @else
                                     @if($data->type == 'chats')
                                     @foreach($data->data as $oneItem)
+                                    @php
+                                        $fileType = \ImagesHelper::checkExtensionType(array_reverse(explode('.' , $oneItem->file_name))[0],'getData')[0];
+                                    @endphp
                                     <tr class="tr{{ $oneItem->id }} {{ $oneItem->file_name != null ? 'hasImage' : '' }}">
                                         <td>
                                             <a href="{{ $oneItem->file }}" target="_blank" class="text-reset">
-                                                <img class="float-left thumb" src="{{ $oneItem->file }}" alt="{{ $oneItem->file_name }}">
+                                                @if($fileType == 'photo')
+                                                <img class="float-left thumb" src="{{ $oneItem->file }}">
+                                                @endif
                                             </a>
                                             <span class="name">
+                                                @if($fileType != 'photo')
                                                 <i class="iconFile flaticon-folder"></i> 
+                                                @endif
                                                 {{ $oneItem->file_name }}
                                             </span>
                                             
@@ -109,13 +116,21 @@
                                     </tr>
                                     @endforeach
                                     @else
+                                    @php
+                                        $fileName = isset($data->data->photo) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name;
+                                        $fileType = \ImagesHelper::checkExtensionType(array_reverse(explode('.' , $fileName))[0],'getData')[0];
+                                    @endphp
                                     <tr class="tr{{ isset($data->data->photo) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }} {{ isset($data->data->photo) && $data->data->photo_name != null ? 'hasImage' : '' }}">
                                         <td>
                                             <a href="{{ isset($data->data->photo) && $data->data->photo != null ? $data->data->photo : $data->data->file }}" target="_blank" class="text-reset">
-                                                <img class="float-left thumb" src="{{ isset($data->data->photo) && $data->data->photo != null ? $data->data->photo : $data->data->file }}" alt="{{ isset($data->data->photo_name) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }}">
+                                                @if($fileType == 'photo')
+                                                <img class="float-left thumb" src="{{ isset($data->data->photo) && $data->data->photo != null ? $data->data->photo : $data->data->file }}">
+                                                @endif
                                             </a>
                                             <span class="name">
+                                                @if($fileType != 'photo')
                                                 <i class="iconFile flaticon-folder"></i>
+                                                @endif
                                                 {{ isset($data->data->photo_name) && $data->data->photo_name != null ? $data->data->photo_name : $data->data->file_name }}
                                             </span>
                                         </td>

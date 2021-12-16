@@ -281,21 +281,22 @@ class ClientControllers extends Controller {
             'guaranteedHooks' => 1,
             'parallelHooks' => 1,
         ];
-        $channelObj = CentralChannel::where('id',$channelObj->id)->first();
-        if($channelObj && $channelObj->instanceId != null){
-            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
-            if($userObj->setting_pushed == 0){
-                $updateResult = $mainWhatsLoopObj->postSettings($myData);
-                $result = $updateResult->json();
-                $userObj->setting_pushed = 1;
-                $userObj->save();
-                $settingsArr = $myData;
-            }else{
-                $testResult = $mainWhatsLoopObj->settings([]);
-                $settingsArr = isset($testResult->json()['data']) ? $testResult->json()['data'] : $myData;
-            }     
+        if($channelObj){
+            $channelObj = CentralChannel::where('id',$channelObj->id)->first();
+            if($channelObj && $channelObj->instanceId != null){
+                $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
+                if($userObj->setting_pushed == 0){
+                    $updateResult = $mainWhatsLoopObj->postSettings($myData);
+                    $result = $updateResult->json();
+                    $userObj->setting_pushed = 1;
+                    $userObj->save();
+                    $settingsArr = $myData;
+                }else{
+                    $testResult = $mainWhatsLoopObj->settings([]);
+                    $settingsArr = isset($testResult->json()['data']) ? $testResult->json()['data'] : $myData;
+                }     
+            }
         }
-        
 
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.clients') ;

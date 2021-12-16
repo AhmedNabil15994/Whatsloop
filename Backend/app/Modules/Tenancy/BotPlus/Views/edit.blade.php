@@ -218,14 +218,11 @@
                                 @foreach($data->botPlus as $bot)                                    
                                 <div class="message received">
                                     {{ $bot->message }}
-                                    <span class="metadata">
-                                        <span class="time">{{ trans('main.now') }}</span>
-                                    </span>
                                     @if(\Helper::checkRules('edit-bot-plus'))
-                                    <a href="{{ URL::to('/bots/edit/'.$bot->id) }}" class="btn btn-xs btn-primary btn-inline">{{ trans('main.edit') }}</a>
+                                    <a href="{{ URL::to('/botPlus/edit/'.$bot->id) }}" class="btn btn-xs btn-primary btn-block">{{ trans('main.edit') }}</a>
                                     @endif
                                     @if(\Helper::checkRules('copy-bot-plus'))
-                                    <a href="{{ URL::to('/bots/copy/'.$bot->id) }}" class="btn btn-xs btn-warning btn-inline">{{ trans('main.repeat') }}</a>
+                                    <a href="{{ URL::to('/botPlus/copy/'.$bot->id) }}" class="btn btn-xs btn-warning btn-block">{{ trans('main.repeat') }}</a>
                                     @endif
                                 </div>
                                 <div class="message sent" style="white-space: pre-line;text-align:right;">

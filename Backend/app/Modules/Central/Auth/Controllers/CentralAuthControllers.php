@@ -7,7 +7,9 @@ use App\Models\CentralWebActions;
 use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\UserData;
 use App\Models\ClientsRequests;
+use App\Models\NotificationTemplate;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
@@ -18,11 +20,78 @@ use URL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use \Spatie\WebhookServer\WebhookCall;
+use App\Jobs\SyncHugeOld;
 
 class CentralAuthControllers extends Controller {
 
     use \TraitsFunc;
+
+
     
+    // public function syncData(){
+    //     return view('tenant.emailUsers.default');
+    //     $syncData = [
+    //         '966556351235','966501000975','966597889373','966555100651','966553270140','966535399530','966582972674','966563909811','966505241489',
+    //         '966508045510','966570350011','966556686060','966555992837','966546325966','966502097362','966555465200','966541973828','966592905003',
+    //         '966558510483','966547228770','966509732281','966555579717','966567944274','966507414222','966501838226','966500074730','966554928877',
+    //         '966550781810','966596555008','966546775950','966565559900','966591101607','966555609559','966581713123','966561172636','966554666887',
+    //         '966564666673','966509793074','966550581041','966504460624','966533458061','966503233776','966549492525','0581222019','‪966567925217',
+    //         '966535455298','96894951228','966501141150','966122255301','966532683521','966595998884','966560383854','966559722200','966534115111',
+    //         '966543434787','966560013232','966544422577','966562963194','966543434787','966532330313','966556671348','966580045706','966544288796',
+    //         '966566695111','966580913392','966536753582','966556494105','966566577000','966555522831','966548226089','966558448545','966503814831',
+    //         '966568499560','966504463699','966503120111','966596147619','966532777799','966506277646','966554607294','966566114147','201553108896',
+    //         '970597886679','966549999293','966543994510','966548183979','966504423403','966508694587','966500700114','966549494948','966565577774',
+    //         '966500438877','966502146010','966568863652','966507988847','966545888855','966555871138','966560888499','966538102020','966548655704',
+    //         '966560200200','962792808526','966555804031','966558131437','966570116626','96899825492','966546452530','966504662917','966557841489',
+    //         '966590116867','966500947441','966542777712','966501650423','966507977900','966540066878','966500625386','97333972222','966502222494',
+    //         '966503061646','97333233633','966552581638','966548898033','966552122345','966599944586','966591122229','966501119735','966114816063',
+    //         '966556001269','966501141152','966552997099','966500412244','966505241303','966544577857','966556909069','966543333995','966556937540',
+    //         '966537770857','966566699657','966534170748','966549343624','966558242442','966505866686','966536273816','966540784847','966501219477',
+    //         '966536759524','966530632838','971507049234','966554765656','966508740770','966502414006','966549822298','966504585587','966555730969',
+    //         '966506029947','966555264943','966550045457','966550909656','966530123494','96560087760','966560000934','966531055880','966509208611',
+    //         '966541818185','966551507205','966549558858','966549425442','966593300133','966599062499','966546850651','966125333337','966535108080',
+    //         '966502414401','966126929522','966544596160','966562396115','966500870519','966509485081','966560807992','966559385000','966580552231',
+    //         '966505190280','966507044838','966503724211','966559084991','966504446617','966558458045','966555252415','966502616329','966504434465',
+    //         '966555266516','966548709773','966554969877','966114500821','966553020199','966500279598','966126108400','966509411829','966559996095',
+    //         '966599118483','966541405420','966543787870','966122156110','966540020724','966558336023','966531133979','966534249538','966590355888',
+    //         '966580987069','966564113618','966509191040','966581752030','966501385699','966570676431','966590858850','966504866118','966504509093',
+    //         '966563119119','966564779014','966568472554','966552347332','966590070708','966551046926','966556800680','966563488666','966503223482',
+    //         '966590185604','966548961888','966505594790','966537600200','966594152288','966566006771','966500648889','966553696947','966546683996',
+    //         '966502762140','966567838310','966553810951','966560781768','966506509728','966560716214','966550288808','966535222712','966598463373',
+    //         '966559601000','966500223677','966564990916','966565088966','966555606553','966533790855','966555663242','966594326488','966164234445',
+    //         '966507611950','966554414494','966560056224','966569148737','966539155551','966566670147','966543713714','966556617448','966595555764',
+    //         '966593661064','966553692103','966548277655','966567470990','966532111277','966504367476','966544444437','966501207711','966555023350',
+    //         '966599778824','966546864151','966539090659','966560020589','966571207777','966594496153','966598444403','966557070575','966581119696',
+    //         '966503209934','966561609756','966536951026','966508788021','966548039979','966566180281','966549735534','966530002925','966597673915',
+    //         '966553211974','966503433063','966568071487','966537623352','966555553656','966553339691','966563394680','966555031419','966504440344',
+    //         '966551682092','966505254315','966550180096','966500395533','966564239993','966581068773','966581282427','966559559859','966566715816',
+    //         '96896007203','966563622999','966558877294','966501914028','966581665077','966555602485','966556771520','966543252229','966500087545',
+    //         '966508900919','966558020013','966554323372','966555304346','966508992896','966569929153','966500878056','966568939992','966122610216',
+    //         '966502489223','966504446692','966503046617','966560707733','966554142160','966563159486','966564941413','966506646420','966550311377',
+    //         '966595147787','966501239936','966566899829','966598344464','966539084366','966551008883','966507490903','966503760177','966500442257',
+    //         '966591012184','966599997579','966566700035','966551109899','966555909944','966540222140','966122255303','966509040552','966535707495',
+    //         '966504113880','966557744447','966557591611','966581841004','971564777332','966561013129','966500459364','966138088863','966568333310',
+    //         '13305646228','971521787524','966544696753','966569118339','966567522522','966535553479','966552205500','966500381000','966550427396',
+    //         '966506148020','966591161126','966530976456','966563222197','966560616263','966505666097','966504649162','966559923433','966580272847',
+    //         '966555459000','966581986620','966563613730','966547589688','966570116626','966570116646','966501583191','966552334335','966509761477',
+    //         '966506630764','966551360094','966562227440','966555949405','966500909381','966552030131','0538982875','966506059934','966580541244',
+    //         '966552335821','966112368888','966501182708','96566668998','966552931114','966567700065','966544806964','966551427430','96899808290',
+    //         '966561453338','971544300330','966505336536','966559900198','966532297986','966564033089','966540545423','966565732050','966538724733',
+    //         '966508433566','966506300222','966550579337','966505321409','966565655741','966558705245','966112364000','966562112929','966552952003',
+    //         '966502066526','966565046261','966559768888','966542364967','966531288857','966582400666','966920016626','966556550094','96550228899',
+    //         '97466870704','966500359049','966559663167','96566992982','966536351555','966506230054','966565184326','966560080085','966562650822',
+    //         '966558455610','966125334500','971526074348','966570288247','96597445655','201008277336','966566333427','966552299577','966565538076',
+    //         '96550531333','966502957331','966556274033','966500866200','966549963355','966533475051','966507464887','966570549490','966558380299',
+    //         '966559736463',
+    //     ];
+
+    //     foreach (array_unique($syncData) as $key => $value) {
+    //         dispatch(new SyncHugeOld($value,$key+1));        
+    //     }
+    //     dd('syncing......');
+    // }
+
+
     public function appLogin() {
         $input =\Request::all();
         if(isset($input['type']) && !empty($input['type']) && $input['type'] == 'mob'){
@@ -81,12 +150,39 @@ class CentralAuthControllers extends Controller {
 
         $userObj = CentralUser::checkUserBy('phone',$input['phone']);
         if ($userObj == null) {
+            $userObj = UserData::where('phone',$input['phone'])->first();
+            if($userObj){
+                $checkPassword = Hash::check($input['password'], $userObj->password);
+                if ($checkPassword == null) {
+                    $statusObj['data'] = \URL::to('/getResetPassword?type=old');
+                    $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.invalidPassword'));
+                    return \Response::json((object) $statusObj);
+                }
+
+                $domainObj = Domain::where('domain',$userObj->domain)->first();
+                $tenant = Tenant::find($domainObj->tenant_id);
+                tenancy()->initialize($tenant->id);
+                $dataObj = User::where('phone',$input['phone'])->first();
+                tenancy()->end();
+                if(isset($dataObj)){
+                     $token = tenancy()->impersonate($tenant,$dataObj->id,'/dashboard');
+                    Session::put('check_user_id',$dataObj->id);
+                    $statusObj['data'] = tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
+                        'token' => $token
+                    ]);
+                    $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.welcome') . ucwords($dataObj->name));
+                    return \Response::json((object) $statusObj);
+                }
+                return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
+            }
             return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
         }
 
         $checkPassword = Hash::check($input['password'], $userObj->password);
         if ($checkPassword == null) {
-            return \TraitsFunc::ErrorMessage(trans('auth.invalidPassword'));
+            $statusObj['data'] = \URL::to('/getResetPassword?type=old');
+            $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.invalidPassword'));
+            return \Response::json((object) $statusObj);
         }
 
         if($userObj->group_id == 0){
@@ -135,6 +231,10 @@ class CentralAuthControllers extends Controller {
             $channelObj = \DB::connection('main')->table('channels')->first();
             $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
             $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+            $notificationTemplateObj = NotificationTemplate::getOne(1,'phoneConfirmation');
+            if($notificationTemplateObj){
+                $data['body'] = str_replace('{CODE}',$code,$notificationTemplateObj->content_ar);
+            }
             $data['phone'] = str_replace('+','',$input['phone']);
             $test = $whatsLoopObj->sendMessage($data);
             $result = $test->json();
@@ -228,6 +328,40 @@ class CentralAuthControllers extends Controller {
         $userObj = CentralUser::checkUserBy('phone',$phone);
 
         if ($userObj == null) {
+            $userObj = UserData::where('phone',$input['phone'])->first();
+            if($userObj){
+                $domainObj = Domain::where('domain',$userObj->domain)->first();
+                $tenant = Tenant::find($domainObj->tenant_id);
+                tenancy()->initialize($tenant->id);
+                $dataObj = User::where('phone',$input['phone'])->first();
+                tenancy()->end();
+                if(isset($dataObj)){
+                    $code = rand(1000,10000);
+                    tenancy()->initialize($tenant->id);
+                    $dataObj->code = $code;
+                    $dataObj->save();
+                    tenancy()->end();
+                    $userObj->code = $code;
+                    $userObj->save();
+                    $channelObj = \DB::connection('main')->table('channels')->first();
+                    $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
+                    $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+                    $notificationTemplateObj = NotificationTemplate::getOne(1,'phoneConfirmation');
+                    if($notificationTemplateObj){
+                        $data['body'] = str_replace('{CODE}',$code,$notificationTemplateObj->content_ar);
+                    }
+                    $data['phone'] = str_replace('+','',$input['phone']);
+                    $test = $whatsLoopObj->sendMessage($data);
+                    $result = $test->json();
+                    if($result['status']['status'] != 1){
+                        return \TraitsFunc::ErrorMessage(trans('auth.codeProblem'));
+                    }
+
+                    Session::put('check_user_id',$userObj->phone);
+                    return \TraitsFunc::SuccessResponse(trans('auth.codeSuccess'));
+                }
+                return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
+            }
             return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
         }
 
@@ -249,6 +383,10 @@ class CentralAuthControllers extends Controller {
         $channelObj = \DB::connection('main')->table('channels')->first();
         $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
         $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+        $notificationTemplateObj = NotificationTemplate::getOne(1,'phoneConfirmation');
+        if($notificationTemplateObj){
+            $data['body'] = str_replace('{CODE}',$code,$notificationTemplateObj->content_ar);
+        }
         $data['phone'] = str_replace('+','',$input['phone']);
         $test = $whatsLoopObj->sendMessage($data);
         $result = $test->json();
@@ -264,10 +402,19 @@ class CentralAuthControllers extends Controller {
         $input = \Request::all();
         $code = $input['code'];
         $user_id = Session::get('check_user_id');
-        $userObj = CentralUser::getOne($user_id);
-        if($code != $userObj->code){
-            return \TraitsFunc::ErrorMessage(trans('auth.codeError'));
+        $userObj = UserData::where('phone',$user_id)->first();
+        if($userObj){
+            if($code != $userObj->code){
+                return \TraitsFunc::ErrorMessage(trans('auth.codeError'));
+            }
+        }else{
+            $userObj = CentralUser::getOne($user_id);
+            if($code != $userObj->code){
+                return \TraitsFunc::ErrorMessage(trans('auth.codeError'));
+            }
+
         }
+
 
         Session::flash('success', trans('auth.validated'));
         return \TraitsFunc::SuccessResponse(trans('auth.validated'));
@@ -301,33 +448,70 @@ class CentralAuthControllers extends Controller {
 
         $password = $input['password'];
         $user_id = Session::get('check_user_id');
-        $userObj = CentralUser::NotDeleted()->find($user_id);
-        if($userObj == null){
-            Session::flash('error', trans('auth.invalidUser'));
-            return back()->withInput();
-        }
 
-        $userObj->password = Hash::make($password);
-        $userObj->save();
-        Session::forget('check_user_id');
+        $userObj = UserData::where('phone',$user_id)->first();
+        if($userObj){
+            $userObj->password = Hash::make($password);
+            $userObj->save();
 
-        $isAdmin = in_array($userObj->group_id, [1,]);
-        session(['group_id' => $userObj->group_id]);
-        session(['user_id' => $userObj->id]);
-        session(['email' => $userObj->email]);
-        session(['name' => $userObj->name]);
-        session(['is_admin' => $isAdmin]);
-        session(['group_name' => $userObj->Group->name_ar]);
-        $channels = CentralUser::getData($userObj)->channels;
-        if(!empty($channels)){
-            session(['channel' => $channels[0]->id]);
-        }
-        if($isAdmin){
-            session(['central' => 1]);
-        }
+            $domainObj =  Domain::getOneByDomain($userObj->domain);
+            $tenant = Tenant::find($domainObj->tenant_id);
+            tenancy()->initialize($domainObj->tenant_id);
+            $userObj = User::where('phone',$user_id)->first();
+            $userObj->update(['password'=>Hash::make($password)]);
+            tenancy()->end();
+            $token = tenancy()->impersonate($tenant,$userObj->id,'/dashboard');
+            Session::put('check_user_id',$userObj->id);
+            return redirect(tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
+                'token' => $token
+            ]));
 
-        Session::flash('success', trans('auth.passwordChanged'));
-        return redirect('/dashboard');
+        }else{
+            $userObj = CentralUser::NotDeleted()->find($user_id);
+            if($userObj == null){
+                Session::flash('error', trans('auth.invalidUser'));
+                return back()->withInput();
+            }
+
+            if($userObj->group_id == 0){
+                $userObj->password = Hash::make($password);
+                $userObj->save();
+
+                $channelObj = CentralChannel::where('global_user_id',$userObj->global_id)->first();
+                $tenant = Tenant::find($channelObj->tenant_id);
+                tenancy()->initialize($channelObj->tenant_id);
+                User::where('id',$user_id)->update(['password'=>Hash::make($password)]);
+                tenancy()->end();
+                $token = tenancy()->impersonate($tenant,$user_id,'/dashboard');
+                Session::put('check_user_id',$userObj->id);
+                return redirect(tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[
+                    'token' => $token
+                ]));
+            }else{
+
+                $userObj->password = Hash::make($password);
+                $userObj->save();
+                Session::forget('check_user_id');
+
+                $isAdmin = in_array($userObj->group_id, [1,]);
+                session(['group_id' => $userObj->group_id]);
+                session(['user_id' => $userObj->id]);
+                session(['email' => $userObj->email]);
+                session(['name' => $userObj->name]);
+                session(['is_admin' => $isAdmin]);
+                session(['group_name' => $userObj->Group->name_ar]);
+                $channels = CentralUser::getData($userObj)->channels;
+                if(!empty($channels)){
+                    session(['channel' => $channels[0]->id]);
+                }
+                if($isAdmin){
+                    session(['central' => 1]);
+                }
+
+                Session::flash('success', trans('auth.passwordChanged'));
+                return redirect('/dashboard');
+            }
+        }
     }
 
     public function checkAvailability(){
@@ -348,32 +532,34 @@ class CentralAuthControllers extends Controller {
         
         $clientRequestObj = ClientsRequests::getOne($input['phone']);
         if($clientRequestObj){
-            $dataArr['userCode'] = $clientRequestObj->code;
-            return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
-        }else{
-            $channelObj = \DB::connection('main')->table('channels')->first();
-            $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            
-            $code = rand(1000,10000);
-            $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
-            $data['phone'] = str_replace('+','',$input['phone']);
-
-            $test = $whatsLoopObj->sendMessage($data);
-            $result = $test->json();
-
-            if($result['status']['status'] != 1){
-                Session::flash('error', trans('auth.codeProblem'));
-                return redirect()->back()->withInput();
-            }
-
-            $clientRequestObj = new ClientsRequests();
-            $clientRequestObj->phone = $input['phone'];
-            $clientRequestObj->code = $code;
-            $clientRequestObj->ip_address = $request->ip();
-            $clientRequestObj->created_at = DATE_TIME;
-            $clientRequestObj->save();
-            return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
+            $clientRequestObj->delete();
         }
+        $channelObj = \DB::connection('main')->table('channels')->first();
+        $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        
+        $code = rand(1000,10000);
+        $notificationTemplateObj = NotificationTemplate::getOne(1,'phoneConfirmation');
+        $data['body'] = 'كود التحقق الخاص بك هو : '.$code;
+        if($notificationTemplateObj){
+            $data['body'] = str_replace('{CODE}',$code,$notificationTemplateObj->content_ar);
+        }
+        $data['phone'] = str_replace('+','',$input['phone']);
+
+        $test = $whatsLoopObj->sendMessage($data);
+        $result = $test->json();
+
+        if($result['status']['status'] != 1){
+            Session::flash('error', trans('auth.codeProblem'));
+            return redirect()->back()->withInput();
+        }
+
+        $clientRequestObj = new ClientsRequests();
+        $clientRequestObj->phone = $input['phone'];
+        $clientRequestObj->code = $code;
+        $clientRequestObj->ip_address = $request->ip();
+        $clientRequestObj->created_at = DATE_TIME;
+        $clientRequestObj->save();
+        return view('Central.Auth.Views.V5.checkCode')->with('data',(object) $dataArr);
     }
 
     public function checkAvailabilityCode(){
@@ -403,8 +589,8 @@ class CentralAuthControllers extends Controller {
             'company' => 'required',
             'password' => 'required|min:6|confirmed',
             'password_confirmation' => 'required',
-            'email' => 'required',
-            'domain' => 'required|regex:/^([a-zA-Z0-9][a-zA-Z0-9-_]*\.)*[a-zA-Z0-9]*[a-zA-Z0-9-_]*[[a-zA-Z0-9]$/',
+            'email' => 'required|email',
+            'domain' => 'required|regex:/^([a-zA-Z0-9][a-zA-Z0-9-_])*[a-zA-Z0-9]*[a-zA-Z0-9-_]*[[a-zA-Z0-9]$/',
         ];
 
         $message = [
@@ -416,6 +602,7 @@ class CentralAuthControllers extends Controller {
             'password.confirmed' => trans('auth.passwordValidation2'),
             'password_confirmation.required' => trans('auth.passwordValidation3'),
             'email.required' => trans('main.emailValidate'),
+            'email.email' => trans('main.emailValidate'),
             'domain.required' => trans('main.domainValidate'),
             'domain.regex' => trans('main.domain2Validate'),
         ];
@@ -544,6 +731,30 @@ class CentralAuthControllers extends Controller {
         if($isOld){
             $token = tenancy()->impersonate($tenant,$user->id,'/sync');
         }
+
+        $notificationTemplateObj = NotificationTemplate::getOne(2,'newClient');
+        $allData = [
+            'name' => $input['name'],
+            'subject' => $notificationTemplateObj->title_ar,
+            'content' => $notificationTemplateObj->content_ar,
+            'email' => $input['email'],
+            'template' => 'tenant.emailUsers.default',
+            'url' => 'https://'.$input['domain'].'.wloop.net/login',
+            'extras' => [
+                'company' => $input['company'],
+                'url' => 'https://'.$input['domain'].'.wloop.net/login',
+            ],
+        ];
+        \MailHelper::prepareEmail($allData);
+        $salesData = $allData;
+        $salesData['email'] = 'sales@whatsloop.net';
+        \MailHelper::prepareEmail($salesData);
+
+
+        $notificationTemplateObj = NotificationTemplate::getOne(1,'newClient');
+        $allData['phone'] = $input['phone'];
+        \MailHelper::prepareEmail($allData,1);
+
         
         Session::put('check_user_id',$user->id);
         return redirect(tenant_route($tenant->domains()->first()->domain  . '.' . request()->getHttpHost(), 'impersonate',[

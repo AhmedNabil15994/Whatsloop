@@ -161,12 +161,14 @@ class UserStorageControllers extends Controller {
         } 
         \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/'.$type.'/'.$id);
         $data['status'] = \TraitsFunc::SuccessResponse(trans('main.deleteSuccess'));
+        $data['url'] = \URL::to('/storage/'.$type == 'user' ? '' : $type);
         return response()->json($data);
     }
 
     public function removeChatFile($id){
         \ImagesHelper::deleteDirectory(public_path('/').'uploads/'.TENANT_ID.'/chats/'.$id);
         $data['status'] = \TraitsFunc::SuccessResponse(trans('main.deleteSuccess'));
+        $data['url'] = \URL::to('/storage/chats');
         return response()->json($data);
     }
 

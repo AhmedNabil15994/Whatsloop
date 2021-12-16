@@ -6,6 +6,8 @@ use App\Models\Variable;
 use App\Models\UserChannels;
 use App\Models\UserAddon;
 use App\Models\CentralUser;
+use App\Models\Domain;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -249,5 +251,71 @@ class AuthControllers extends Controller {
             }
             return Redirect::back();
         }
+    }
+
+
+    public function changeData() {
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            return redirect()->to('/login');
+        }
+        return view('Tenancy.Auth.Views.V5.changeData');
+    }
+
+    public function completeChangeData() {
+        $input = \Request::all();
+        $rules = [
+            'domain' => 'required|regex:/^([a-zA-Z0-9][a-zA-Z0-9-_]*\.)*[a-zA-Z0-9]*[a-zA-Z0-9-_]*[[a-zA-Z0-9]$/',
+            'password' => 'required|confirmed',
+            'password_confirmation' => 'required'
+        ];
+
+        $message = [
+            'domain.required' => trans('main.domainValidate'),
+            'domain.regex' => trans('main.domain2Validate'),
+            'password.required' => trans('auth.passwordValidation'),
+            'password.confirmed' => trans('auth.passwordValidation2'),
+            'password_confirmation.required' => trans('auth.passwordValidation3'),
+        ];
+
+        $validate = Validator::make($input, $rules, $message);
+        if($validate->fails()){
+            Session::flash('error', $validate->messages()->first());
+            return back()->withInput();
+        }
+
+        $domainObj = Domain::getOneByDomain($input['domain']);
+        if($domainObj){
+            Session::flash('error', trans('main.domainValidate2'));
+            return redirect()->back()->withInput();
+        }
+
+        $userObj = User::first();
+        $oldDomain = $userObj->domain;
+        $domainObj = Domain::getOneByDomain($userObj->domain);
+        if($domainObj){
+            $domainObj->domain = $input['domain'];
+            $domainObj->save();
+        }
+
+        $password = $input['password'];
+        if($userObj == null){
+            Session::flash('error', trans('auth.invalidUser'));
+            return back()->withInput();
+        }
+
+        $userObj->password = Hash::make($password);
+        $userObj->save();
+
+        User::NotDeleted()->update(['domain'=>$input['domain']]);
+        $tenant = Tenant::where('phone',$userObj->phone)->first();
+        $token = tenancy()->impersonate($tenant,$userObj->id,'/dashboard');
+        
+        Session::put('check_user_id',$userObj->id);
+        // dd(request()->getHttpHost());
+        // dd(str_replace($oldDomain,$input['domain'],request()->getHttpHost()));
+        return redirect(tenant_route(str_replace($oldDomain,$input['domain'],request()->getHttpHost()) , 'impersonate',[
+            'token' => $token
+        ]));
     }
 }

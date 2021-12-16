@@ -12,6 +12,9 @@ use App\Models\CentralChannel;
 use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Variable;
+use App\Models\NotificationTemplate;
+
 
 class SetInvoices extends Command
 {
@@ -52,7 +55,7 @@ class SetInvoices extends Command
         foreach ($channels as $value) {
             if($value->leftDays <= 7){
                 $userObj = CentralUser::where('global_id',$value->global_user_id)->first();
-                if($userObj->membership_id != null){
+                if(isset($userObj->membership_id) && $userObj->membership_id != null){
                     $membershipObj = $userObj->Membership; 
                     $invoiceItems['id'] = $membershipObj->id;
                     $invoiceItems['title_ar'] = $membershipObj->title_ar;
@@ -75,6 +78,7 @@ class SetInvoices extends Command
                             'data' => [
                                 'total' => $total,
                                 'leftDays' => $value->leftDays,
+                                'tenant_id' => $value->tenant_id,
                                 'main' => 1,
                                 'items' => [[
                                     'type' => 'membership',
@@ -226,6 +230,10 @@ class SetInvoices extends Command
 
             foreach($invoices as $invoiceKey  =>  $invoice){
                 foreach ($invoice as $invoiceDate => $oneItem) {
+                    $emailData = [
+                        'name' => $userObj->name,
+                        'email' => $userObj->email,
+                    ];
 
                     $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('items',serialize($oneItem['data']['items']))->where('due_date',$invoiceDate)->first();
 
@@ -238,7 +246,19 @@ class SetInvoices extends Command
                         $invoiceObj = new Invoice;
                         $invoiceObj->client_id = $invoiceKey;
                         $invoiceObj->due_date = $invoiceDate;
-                        $invoiceObj->total = $oneItem['data']['total'];
+                        $bundle_price = 0;
+                        if($oneItem['data']['main'] == 1){
+                            $tenant = Tenant::find($oneItem['data']['tenant_id']);
+                            if($tenant){
+                                tenancy()->initialize($tenant);
+                            }
+                            $bundle_price = Variable::getVar('bundle_price');
+
+                            if($tenant){
+                                tenancy()->end($tenant);
+                            }
+                        }
+                        $invoiceObj->total =  $bundle_price > 0 ?  $bundle_price : $oneItem['data']['total'] ;
                         $invoiceObj->items = serialize($oneItem['data']['items']);
                         $invoiceObj->main = $oneItem['data']['main'];
                         $invoiceObj->status = $status;
@@ -254,34 +274,81 @@ class SetInvoices extends Command
                         $invoiceObj->save();
                     }
 
-                    $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
-                    $data['phone'] = str_replace('+','',$invoiceObj->Client->phone);
+                    $tenant = Tenant::find($oneItem['data']['tenant_id']);
+                    if($tenant){
+                        tenancy()->initialize($tenant);
+                    }
+                    $userObj = User::first();
+
+                    if($tenant){
+                        tenancy()->end($tenant);
+                    }
                     
                     if($oneItem['data']['leftDays'] == 7 && (int) date('H') == 12){
-                        // Invoice Created;
-                        $data['body'] = 'Invoice #'.$invoiceObj->id. ' For '.date('M').' has been created';
-                        $test = $whatsLoopObj->sendMessage($data);
-
-                        $extraData = [
-                            'subject' => 'تم انشاء فاتورة رقم #'.$invoiceObj->id,
-                            'content' => 'تم انشاء فاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                        $notificationTemplateObj = NotificationTemplate::getOne(2,'newInvoice');
+                        $allData = [
+                            'name' => $userObj->name,
+                            'subject' => $notificationTemplateObj->title_ar,
+                            'content' => $notificationTemplateObj->content_ar,
+                            'email' => $userObj->email,
+                            'template' => 'tenant.emailUsers.default',
+                            'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
+                            'extras' => [
+                                'invoiceObj' => Invoice::getData($invoiceObj),
+                                'company' => $userObj->company,
+                                'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
+                            ],
                         ];
+                        \MailHelper::prepareEmail($allData);
+
+                        $notificationTemplateObj = NotificationTemplate::getOne(1,'newInvoice');
+                        $phoneData = $allData;
+                        $phoneData['phone'] = $userObj->phone;
+                        \MailHelper::prepareEmail($phoneData,1);
                     }else if($oneItem['data']['leftDays'] == 3 && (int) date('H') == 12){
                         // First Reminder
-                        $data['body'] = 'First Reminder for Invoice #'.$invoiceObj->id;
-                        $test = $whatsLoopObj->sendMessage($data);
-                        $extraData = [
-                            'subject' => 'التذكير الاول لفاتورة رقم #'.$invoiceObj->id,
-                            'content' => 'التذكير الاول لفاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                        $notificationTemplateObj = NotificationTemplate::getOne(2,'firstReminder');
+                        $allData = [
+                            'name' => $userObj->name,
+                            'subject' => $notificationTemplateObj->title_ar,
+                            'content' => $notificationTemplateObj->content_ar,
+                            'email' => $userObj->email,
+                            'template' => 'tenant.emailUsers.default',
+                            'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
+                            'extras' => [
+                                'invoiceObj' => Invoice::getData($invoiceObj),
+                                'company' => $userObj->company,
+                                'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
+                            ],
                         ];
+                        \MailHelper::prepareEmail($allData);
+
+                        $notificationTemplateObj = NotificationTemplate::getOne(1,'firstReminder');
+                        $phoneData = $allData;
+                        $phoneData['phone'] = $userObj->phone;
+                        \MailHelper::prepareEmail($phoneData,1);
                     }else if($oneItem['data']['leftDays'] == 1 && (int) date('H') == 12){
                         // Second Reminder // تذكير بسداد الفاتورة
-                        $data['body'] = 'Second Reminder for Invoice #'.$invoiceObj->id;
-                        $test = $whatsLoopObj->sendMessage($data);
-                        $extraData = [
-                            'subject' => 'التذكير الثاني لفاتورة رقم #'.$invoiceObj->id,
-                            'content' => 'التذكير الثاني لفاتورة رقم #:' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                        $notificationTemplateObj = NotificationTemplate::getOne(2,'secondReminder');
+                        $allData = [
+                            'name' => $userObj->name,
+                            'subject' => $notificationTemplateObj->title_ar,
+                            'content' => $notificationTemplateObj->content_ar,
+                            'email' => $userObj->email,
+                            'template' => 'tenant.emailUsers.default',
+                            'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
+                            'extras' => [
+                                'invoiceObj' => Invoice::getData($invoiceObj),
+                                'company' => $userObj->company,
+                                'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
+                            ],
                         ];
+                        \MailHelper::prepareEmail($allData);
+
+                        $notificationTemplateObj = NotificationTemplate::getOne(1,'secondReminder');
+                        $phoneData = $allData;
+                        $phoneData['phone'] = $userObj->phone;
+                        \MailHelper::prepareEmail($phoneData,1);
                     }else if($oneItem['data']['leftDays'] < 0){
                         // Suspend 
                         if($invoiceObj->status == 2  && (int) date('H') == 9 ){
@@ -336,24 +403,31 @@ class SetInvoices extends Command
 
 
                             }
-                            $subscriptions = substr($subscriptions, 0, -1). ' )';
-                            $data['body'] = 'Subscription of '.$subscriptions. ' For '.date('M').' has been ended due to unpaid invoice #'.$invoiceObj->id;
-                            $test = $whatsLoopObj->sendMessage($data);
-
-                            $extraData = [
-                                'subject' => 'تم تعطيل الحساب',
-                                'content' => 'نأسف لابلاغكم انه تم تعطيل حسابك بسبب عدم دفع فاتورة رقم #' . $invoiceObj->id . ' لشهر : '. date('M')  . ' والاجمالي هو : '. $invoiceObj->total,
+                            $notificationTemplateObj = NotificationTemplate::getOne(2,'accountSuspended');
+                            $allData = [
+                                'name' => $userObj->name,
+                                'subject' => $notificationTemplateObj->title_ar,
+                                'content' => $notificationTemplateObj->content_ar,
+                                'email' => $userObj->email,
+                                'template' => 'tenant.emailUsers.default',
+                                'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                                'extras' => [
+                                    'invoiceObj' => Invoice::getData($invoiceObj),
+                                    'company' => $userObj->company,
+                                    'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                                ],
                             ];
+                            \MailHelper::prepareEmail($allData);
+
+                            $notificationTemplateObj = NotificationTemplate::getOne(1,'accountSuspended');
+                            $phoneData = $allData;
+                            $phoneData['phone'] = $userObj->phone;
+                            \MailHelper::prepareEmail($phoneData,1);
                         }   
                     }
 
-                    $emailData = [
-                        'name' => $userObj->name,
-                        'email' => $userObj->email,
-                    ];
-                    $allData = array_merge($emailData,$extraData);
-                    \MailHelper::prepareEmail($emailData);
-
+                    
+                    
                 }
             }
         }

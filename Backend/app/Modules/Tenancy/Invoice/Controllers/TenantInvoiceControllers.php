@@ -268,7 +268,7 @@ class TenantInvoiceControllers extends Controller {
             $tax,
             $total,
         ];
-        $data['countries'] = countries();
+        $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
@@ -412,8 +412,8 @@ class TenantInvoiceControllers extends Controller {
         }
 
         $cartObj = unserialize($invoiceObj->items);
-        
-        dispatch(new NewClient($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'));
+        $type = \Session::has('invoice_id') ? 'renew' : 'payInvoice';
+        dispatch(new NewClient($cartObj,$type,$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'));
         // $paymentObj = new \SubscriptionHelper(); 
         // $resultData = $paymentObj->newSubscription($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old');   
         // if($resultData[0] == 0){

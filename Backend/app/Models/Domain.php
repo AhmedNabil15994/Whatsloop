@@ -7,6 +7,7 @@ class Domain extends Model{
     use \TraitsFunc;
 
     protected $table = 'domains';
+    protected $connection = 'main';
     protected $primaryKey = 'id';
     public $timestamps = false;
 

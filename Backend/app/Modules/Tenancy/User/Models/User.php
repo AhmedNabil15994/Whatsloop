@@ -302,17 +302,19 @@ class User extends Authenticatable implements Syncable
         session(['channel' => !empty($channels) ? isset($channels[0]) ? $channels[0] : null : null]);
         session(['channelCode' => !empty($channels) ? $channelObj != null ? $channelObj->instanceId : '' : null ]);
         session(['membership' => $userObj->membership_id]);
-        if($isAdmin){
+        if(User::first()->id == $userObj->id){
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
-            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons),$userObj->id) : [];
+            $userAddons = $userObj->addons !=  null ? UserAddon::dataList(unserialize($userObj->addons) != null ? unserialize($userObj->addons) : ' ' ,$userObj->id) : [];
             $invoiceObj = Invoice::getDisabled($userObj->id);
             $rootId = $userObj->id;
+            session(['membership' => $userObj->membership_id]);
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons),$userObj->id) : [];
+            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons) != null ? unserialize($mainUser->addons) : ' ' ,$userObj->id) : [];
             $invoiceObj = Invoice::getDisabled($mainUser->id);
             $rootId = $mainUser->id;
+            session(['membership' => $mainUser->membership_id]);
         }
         session(['addons' => !empty($userAddons) ? $userAddons[0] : [] ]);
         session(['deactivatedAddons' => !empty($userAddons) ? $userAddons[1] : [] ]);
@@ -325,8 +327,9 @@ class User extends Authenticatable implements Syncable
         session(['invoice_id' => $invoiceObj == null ? 0 : $invoiceObj->id]);
 
         // Get Membership and Extra Quotas Features
-        if(!empty($userObj->membership_id)){
+        if(!empty($userObj->membership_id) || !empty($mainUser->membership_id)){
             $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',Session::get('membership'))->first()->features;
+            // dd($membershipFeatures);
             $featuresId = unserialize($membershipFeatures);
             $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
             $dailyMessageCount = (int) $features[0];

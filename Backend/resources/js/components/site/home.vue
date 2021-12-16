@@ -1,5 +1,13 @@
 <template>
-    <div  class="layout-wrapper d-lg-flex clearfix">
+    <div  class="layout-wrapper d-lg-flex clearfix" :class="subscription === false ? 'paddingTop' : ''">
+
+        <transition name="fade" >
+            <div class="alertSub" v-if="subscription === false">
+                <i class="fa fa-exclamation-triangle"></i>
+                {{this.errorMsg !== null ? this.errorMsg : 'يرجي التواصل مع الدعم الفني'}}   
+            </div>
+        </transition>
+
         <!-- Start left sidebar-menu -->
         <div class="side-menu flex-lg-column">
             <!-- LOGO -->
@@ -50,6 +58,7 @@
             :searchTo="searchTo"
             :searchDiv="searchDiv"
             v-on:loadMor="loadMore()"
+            v-on:totalCountTrue="totalCountTrue()"
             v-on:searchMethod="search()"
             :distance="distance"
             :DialogID="DialogID"
@@ -65,6 +74,7 @@
         <chat-component
             v-on:openCht="openCht()" 
             v-on:opencontct="opencontct()"
+            v-on:checkSubscription="checkSubscription()"
             :contact="getContact" 
             v-if="getContact !== [] && chatId !== 0"
             :openChat="openChat" 
@@ -113,7 +123,10 @@ export default {
             options:[],
             supervisors:[],
             moderatorsContact:[],
-            reference:false
+            reference:false,
+            lastPage:0,
+            subscription:true,
+            errorMsg:null
         }
     },
     created() {
@@ -189,6 +202,17 @@ export default {
         }
     },
     methods: {
+        checkSubscription(err) {
+            this.errorMsg = err;
+            this.subscription = false;
+            setTimeout(() => {
+                this.subscription = true;
+                this.errorMsg = null;
+            },4000)
+        },
+        totalCountTrue() {
+            this.totalCount = true;
+        },
         testBroadCastingSentMessage (domain) {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewSentMessage')
@@ -468,43 +492,50 @@ export default {
           window.location.href = '/livechat/liveChatLogout';
         },
         getChats(page) {
-            this.$http.get(this.urlApi+`dialogs?limit=30&page=${page}`)
-            .then((res) => {
-                if(res.data.data != "disabled") {
-                    this.reference = true;
-                    if( res.data.pagination.last_page >=  page) {
-                            var dataRes = res.data.data;
-                        /* for (var i in dataRes) {
-                                if(this.DialogID.includes(dataRes[i].id)) {
-                                    dataRes.splice(i, 1);
+
+            if(this.lastPage === 0 || this.lastPage >= page) {
+                this.$http.get(this.urlApi+`dialogs?limit=30&page=${page}`)
+                .then((res) => {
+
+                    this.lastPage = res.data.pagination.last_page
+
+                    if(res.data.data != "disabled") {
+                        this.reference = true;
+                        if( res.data.pagination.last_page >=  page) {
+                                var dataRes = res.data.data;
+                            /* for (var i in dataRes) {
+                                    if(this.DialogID.includes(dataRes[i].id)) {
+                                        dataRes.splice(i, 1);
+                                    } 
+                                } */
+                                for (var p in res.data.pinnedConvs) {
+                                    if(!this.DialogsBin.includes(res.data.pinnedConvs[p].id)) {
+                                        this.chatsPin.push(res.data.pinnedConvs[p]);
+                                        this.DialogsBin.push(res.data.pinnedConvs[p].id);
+                                    }
                                 } 
-                            } */
-                            for (var p in res.data.pinnedConvs) {
-                                if(!this.DialogsBin.includes(res.data.pinnedConvs[p].id)) {
-                                    this.chatsPin.push(res.data.pinnedConvs[p]);
-                                    this.DialogsBin.push(res.data.pinnedConvs[p].id);
-                                }
-                            } 
 
-                            
+                                
 
-                            this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
-                        //  this.UserData = res.data.UserData;
-                        // this.InstanceNumber = res.data.InstanceNumber;
-                            this.loading = false;
-                        }
-                        else {
-                            this.totalCount = true
-                        }
-                
-                }  else {
-                    this.reference = false;
-                    this.openMain();
-                }
-                
-                
-                    });
-                
+                                this.chats.Dialogs = this.chats.Dialogs ? this.chats.Dialogs.concat(dataRes) : dataRes;
+                            //  this.UserData = res.data.UserData;
+                            // this.InstanceNumber = res.data.InstanceNumber;
+                                this.loading = false;
+                            }
+                            else {
+                                this.totalCount = true
+                            }
+                    
+                    }  else {
+                        this.reference = false;
+                        this.openMain();
+                    }
+                    
+                    
+                });
+            } else {
+                this.totalCount = true
+            }
 
              
         },

@@ -36,7 +36,7 @@
                         </transition>
                         
                         
-                        <vuescroll>
+                        <vuescroll @handle-scroll="handleScroll" ref="vs2">
                         <!-- Start chat-message-list -->
                             <div class="paddingLeft">
                             <!--  -->
@@ -46,105 +46,37 @@
                                         </center>
                                         <div>
                                             
-                                            <ul v-if="!searchTo" class="list-unstyled chat-list  chat-user-list">
-                                                <li v-for="(chatPin,indexPin) in chatsPin" 
-                                                :class="chatId == chatPin.id ?  'active' : ''"
-                                                :key="indexPin" @click="openCht()">
-                                                    <div v-if="chatsPin.length > 0">
-                                                    
-                                                        <dialogscomb :chat="chatPin" v-if="chatPin.is_pinned == 1"></dialogscomb>
-                                                    </div>
-
-
-                                                </li>
-                                            </ul>
-
-                                            <ul v-if="!searchTo" class="list-unstyled chat-list  chat-user-list">
-                                                <li v-for="(NewMsg,indexNew) in newMsg" 
-                                                :class="chatId == NewMsg.id ?  'active' : ''"
-                                                :key="indexNew" @click="openCht()">
-                                                    <template v-if="newMsg">
-                                                    
-                                                        <dialogscomb :chat="NewMsg" v-if="NewMsg.is_pinned == 0"></dialogscomb>
+                                        <ul v-if="!searchTo" class="list-unstyled chat-list  chat-user-list">
+                                            <li v-for="(chatPin,indexPin) in chatsPin" 
+                                            :class="chatId == chatPin.id ?  'active' : ''"
+                                            :key="indexPin" @click="openCht()">
+                                                <div v-if="chatsPin.length > 0">
                                                 
-                                                    </template>
-                                                </li>
-                                            </ul>
-                                            <ul v-if="!searchTo" class="list-unstyled chat-list  chat-user-list">
-                                                <li v-for="(chat,indexC) in chats.Dialogs" 
-                                                :class="chatId == chat.id ?  'active' : ''"
-                                                :key="indexC" @click="openCht()">
-                                                    <div v-if="chat.last_time !== '1970-01-01'">
-                                                    
-                                                        <a v-if="!chat.lastMessage">
-                                                            <div class="media">
-                                        
-                                                                <div class="chat-user-img online align-self-center ml-3">
-                                                                    <img 
-                                                                    src="https://whatsloop.net/resources/Gallery/UserDefault.png"
-                                                                    class="rounded-circle avatar-xs" alt="test" />
-                                                                </div>
-                                        
-                                                                <div class="media-body overflow-hidden">
-                                                                    <h5 class="text-truncate DialogTitle font-size-16">
-                                                                        <h5 class="text-truncate DialogTitle font-size-16">
-                                                                            <span>{{chat.name}}</span>
-                                                                        </h5>
-                                                                    </h5>
-                                                                    <div>
-                                                                        <span>رسالة محذوفة او غير مدعمة <i class="fa fa-ban"></i></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                        <div v-else>
-                                                            <dialogscomb :chat="chat" v-if="chat.is_pinned == 0"></dialogscomb>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <scroll-loader v-if="totalCount === false && chats.Dialogs !== null && openMainMsgs === false"  :loader-method="loadMore"></scroll-loader>
-                                            </ul>
-                                                
-                                            <ul v-if="searchTo" class="list-unstyled chat-list  chat-user-list">
-                                                <li v-for="(chatSrch,indexSearch) in searchDiv" 
-                                                :class="chatId == chatSrch.id ?  'active' : ''"
-                                                :key="indexSearch" @click="openCht()">
-                                                    <div v-if="chatSrch.last_time !== '1970-01-01'">
-                                                        <a v-if="!chatSrch.lastMessage">
-                                                            <div class="media">
-                                        
-                                                                <div class="chat-user-img online align-self-center ml-3">
-                                                                    <img 
-                                                                    src="https://whatsloop.net/resources/Gallery/UserDefault.png"
-                                                                    class="rounded-circle avatar-xs" alt="test" />
-                                                                </div>
-                                        
-                                                                <div class="media-body overflow-hidden">
-                                                                    <h5 class="text-truncate DialogTitle font-size-16">
-                                                                        <h5 class="text-truncate DialogTitle font-size-16">
-                                                                            <span>{{chatSrch.name}}</span>
-                                                                        </h5>
-                                                                    </h5>
-                                                                    <div>
-                                                                        <span>رسالة محذوفة او غير مدعمة <i class="fa fa-ban"></i></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </div>
+                                                    <dialogscomb :chat="chatPin" v-if="chatPin.is_pinned == 1"></dialogscomb>
+                                                </div>
 
-                                                    <div v-else>
-                                                        <dialogscomb :chat="chatSrch"></dialogscomb>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <div class="errSearch" v-if="searchTo !== '' && searchDiv.length === 0 && loading === false">عفوا لا يوجد نتائج بحث</div>
-                                            <!--
-                                            <ul v-if="!searchTo && openMainMsgs === true" class="list-unstyled chat-list  chat-user-list">
-                                                <li v-for="(chatMain,indexM) in chats.Dialogs" 
-                                                :class="chatId == chatMain.id ?  'active' : ''"
-                                                :key="indexM" @click="openCht()">
-                                                    <a v-if="!chatMain.lastMessage">
+
+                                            </li>
+                                        </ul>
+
+                                        <ul v-if="!searchTo" class="list-unstyled chat-list  chat-user-list">
+                                            <li v-for="(NewMsg,indexNew) in newMsg" 
+                                            :class="chatId == NewMsg.id ?  'active' : ''"
+                                            :key="indexNew" @click="openCht()">
+                                                <template v-if="newMsg">
+                                                
+                                                    <dialogscomb :chat="NewMsg" v-if="NewMsg.is_pinned == 0"></dialogscomb>
+                                            
+                                                </template>
+                                            </li>
+                                        </ul>
+                                        <ul v-if="!searchTo" class="list-unstyled chat-list  chat-user-list">
+                                            <li v-for="(chat,indexC) in chats.Dialogs" :id="chat.id" 
+                                            :class="chatId == chat.id ?  'active' : ''"
+                                            :key="indexC" @click="openCht()">
+                                                <div v-if="chat.last_time !== '1970-01-01'">
+                                                
+                                                    <a v-if="!chat.lastMessage">
                                                         <div class="media">
                                     
                                                             <div class="chat-user-img online align-self-center ml-3">
@@ -156,7 +88,7 @@
                                                             <div class="media-body overflow-hidden">
                                                                 <h5 class="text-truncate DialogTitle font-size-16">
                                                                     <h5 class="text-truncate DialogTitle font-size-16">
-                                                                        <span>{{chatMain.name}}</span>
+                                                                        <span>{{chat.name}}</span>
                                                                     </h5>
                                                                 </h5>
                                                                 <div>
@@ -166,10 +98,83 @@
                                                         </div>
                                                     </a>
                                                     <div v-else>
-                                                        <dialogscomb :chat="chatMain" v-if="chatMain.is_pinned == 0"></dialogscomb>
+                                                        <dialogscomb :chat="chat" v-if="chat.is_pinned == 0"></dialogscomb>
                                                     </div>
-                                                </li>                                     
-                                            </ul>-->
+                                                </div>
+                                            </li>
+                                            <div v-if="chats.Dialogs">
+                                                <center v-if="totalCount === false && chats.Dialogs.length > 29">
+                                                    <div class="lds-roller" style='margin-top:15px;margin-bottom:15px'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                                                </center>
+                                            </div>
+                                           <!-- <scroll-loader :loaderEnable="false" v-if="totalCount === false && chats.Dialogs !== null && openMainMsgs === false"  :loader-method="loadMore"></scroll-loader> -->
+                                        </ul>
+                                            
+                                        <ul v-if="searchTo" class="list-unstyled chat-list  chat-user-list">
+                                            <li v-for="(chatSrch,indexSearch) in searchDiv" 
+                                            :class="chatId == chatSrch.id ?  'active' : ''"
+                                            :key="indexSearch" @click="openCht()">
+                                                <div v-if="chatSrch.last_time === '1970-01-01'">
+                                                    <a v-if="!chatSrch.lastMessage">
+                                                        <div class="media">
+                                    
+                                                            <div class="chat-user-img online align-self-center ml-3">
+                                                                <img 
+                                                                src="https://whatsloop.net/resources/Gallery/UserDefault.png"
+                                                                class="rounded-circle avatar-xs" alt="test" />
+                                                            </div>
+                                    
+                                                            <div class="media-body overflow-hidden">
+                                                                <h5 class="text-truncate DialogTitle font-size-16">
+                                                                    <h5 class="text-truncate DialogTitle font-size-16">
+                                                                        <span>{{chatSrch.name}}</span>
+                                                                    </h5>
+                                                                </h5>
+                                                                <div>
+                                                                    <span>رسالة محذوفة او غير مدعمة <i class="fa fa-ban" style="float:right;margin-top: 3px;margin-left:5px;"></i></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+
+                                                <div v-else>
+                                                    <dialogscomb :chat="chatSrch"></dialogscomb>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <div class="errSearch" v-if="searchTo !== '' && searchDiv.length === 0 && loading === false">عفوا لا يوجد نتائج بحث</div>
+                                        <!--
+                                        <ul v-if="!searchTo && openMainMsgs === true" class="list-unstyled chat-list  chat-user-list">
+                                            <li v-for="(chatMain,indexM) in chats.Dialogs" 
+                                            :class="chatId == chatMain.id ?  'active' : ''"
+                                            :key="indexM" @click="openCht()">
+                                                <a v-if="!chatMain.lastMessage">
+                                                    <div class="media">
+                                
+                                                        <div class="chat-user-img online align-self-center ml-3">
+                                                            <img 
+                                                            src="https://whatsloop.net/resources/Gallery/UserDefault.png"
+                                                            class="rounded-circle avatar-xs" alt="test" />
+                                                        </div>
+                                
+                                                        <div class="media-body overflow-hidden">
+                                                            <h5 class="text-truncate DialogTitle font-size-16">
+                                                                <h5 class="text-truncate DialogTitle font-size-16">
+                                                                    <span>{{chatMain.name}}</span>
+                                                                </h5>
+                                                            </h5>
+                                                            <div>
+                                                                <span>رسالة محذوفة او غير مدعمة <i class="fa fa-ban"></i></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                <div v-else>
+                                                    <dialogscomb :chat="chatMain" v-if="chatMain.is_pinned == 0"></dialogscomb>
+                                                </div>
+                                            </li>                                     
+                                        </ul>-->
 
                                         </div>
                                         <!--
@@ -204,11 +209,19 @@ import newmsg from './newMsg';
 
 
 export default {
-    props:["totalCount","openMainMsgs","chats","chatsPin","AllCounts",
+    props:["totalCount","openMainMsgs","chats","chatsPin","AllCounts","totalCountTrue",
     "loading","searchDiv","searchTo",
     "loadMor","distance","DialogID",
     "newMsg","UserData","searchMethod","InstanceNumber"],
     name:"listChats",
+    mounted () {
+
+           const { scrollTop } = this.$refs["vs2"].getPosition();
+            if(scrollTop === 0) {
+                this.$emit("totalCountTrue");
+            }
+
+    },
     data()
          {
         return {
@@ -236,7 +249,18 @@ export default {
         },
         updateValue(val) {
             this.$emit("input",val);
+        },
+        handleScroll() {
+            var lastMsg = this.chats.Dialogs[this.chats.Dialogs.length - 1].id;
+            var positionLst = document.getElementById(lastMsg).offsetTop - 481;
+           const { scrollTop } = this.$refs["vs2"].getPosition();
+           // console.log(scrollTop + " - " + positionLst)
+            if(scrollTop >= positionLst) {
+                this.loadMore();
+            }
+
         }
+        
 
     },
     computed:{

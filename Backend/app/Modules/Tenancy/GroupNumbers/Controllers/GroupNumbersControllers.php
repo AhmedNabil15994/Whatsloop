@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
+use App\Jobs\CheckWhatsappJob;
 use DataTables;
 use Storage;
+
 
 class GroupNumbersControllers extends Controller {
 
@@ -244,7 +246,7 @@ class GroupNumbersControllers extends Controller {
         $id = (int) $id;
         $dataObj = GroupNumber::getOne($id);
         if($dataObj == null || $id == 1) {
-            return Redirect('404');
+            return \TraitsFunc::ErrorMessage(trans('main.notDeleted'));
         }
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
         return \Helper::globalDelete($dataObj);
@@ -315,6 +317,7 @@ class GroupNumbersControllers extends Controller {
 
         // dd($userInputs);
         $storeData = [];
+        $consForQueue = [];
         foreach ($userInputs as $key=> $userInput) {
             if(!in_array(strtolower($key), $modelProps)){
                 Session::flash('error', trans('main.invalidColumn').' '.$key);
@@ -350,9 +353,22 @@ class GroupNumbersControllers extends Controller {
                     $value['name'] = $phone;
                 }
                 $value['phone'] = trim(str_replace('\r', '', $phone));
+                $value['status'] = 1;
                 $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
-                Contact::insert($value);
+
+                $contactObj = new Contact;
+                foreach($value as $attr => $val){
+                    $contactObj->$attr = $val;
+                }
+                $contactObj->save();
             }
+            $consForQueue[] = $contactObj;
+        }
+
+        $chunks = 400;
+        $contacts = array_chunk($consForQueue,$chunks);
+        foreach ($contacts as $contact) {
+            dispatch(new CheckWhatsappJob($contact));
         }
 
         WebActions::newType(1,'Contact');

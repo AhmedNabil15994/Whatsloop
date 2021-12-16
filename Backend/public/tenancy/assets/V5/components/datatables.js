@@ -81,6 +81,7 @@ $(function(){
 		var detailsText = 'التفاصيل';
 	}
 
+	var iCounter = 1;
 	$.each(tableData,function(index,item){
 		if(index != 'actions'){
 			columnsDef.push(index);
@@ -93,7 +94,10 @@ $(function(){
 				columnDefsVar.push({
 					'targets': 0,
 					'title' : item['label'],
-					'orderable':false,
+					// 'orderable':false,
+					render: function(data, index) {
+						return iCounter++;
+					}
 				});
 			}else{
 				columnDefsVar.push({
@@ -288,6 +292,7 @@ $(function(){
 			url: '/'+designElems.mainData.url,
 			type: 'GET',
 			data:function(dtParms){
+				iCounter =1;
 				$.each($('.m-form--fit select'),function(index,item){
 			       	dtParms[$(item).attr('name')] = $(item).val();
 				});

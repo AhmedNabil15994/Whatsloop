@@ -19,7 +19,9 @@
 	@endphp
 	<body class="bodyCpanel overflowH {{ $mode && $mode->theme == 1 ? 'dark-mode' : '' }}">
 		<!-- Begin page -->
+		@if(Request::segment(1) != 'profile')
 		<input type="hidden" name="countriesCode" value="{{ Helper::getCountryCode() ? Helper::getCountryCode()->countryCode : 'sa' }}">
+		@endif
 		@include('tenant.Layouts.V5.sidebar')
 
 		<div class="cpanelStyle activeMenu">

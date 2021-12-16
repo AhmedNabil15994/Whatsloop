@@ -88,7 +88,8 @@ import ScrollLoader from 'vue-scroll-loader'
 
 Vue.use(ScrollLoader);
 
- 
+import VueRecord from '@codekraft-studio/vue-record'
+Vue.use(VueRecord)
 
 Vue.config.productionTip = false
 

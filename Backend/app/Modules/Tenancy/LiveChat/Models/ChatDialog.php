@@ -77,8 +77,8 @@ class ChatDialog extends Model{
                 parse_url($path, PHP_URL_PATH), 
                 PATHINFO_EXTENSION
             );
-            $data = file_get_contents($path);
-            $dataObj->image = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            $data = @file_get_contents($path);
+            $dataObj->image = $data != null ?  'data:image/' . $type . ';base64,' . base64_encode($data) : "";
         }
         $dataObj->metadata = isset($source->metadata) ? serialize($source->metadata) : '';
         $dataObj->last_time = isset($source->last_time) ? $source->last_time : '';
@@ -97,8 +97,8 @@ class ChatDialog extends Model{
         if($source){
             $source = (object) $source;
             $dataObj->id = $source->id;
-            $dataObj->name = isset($source->name) ? $source->name : '';
-            $dataObj->chatName = isset($source->name) ? self::reformChatId($source->name) : '';
+            $dataObj->name = $source->name != '' ? $source->name : self::reformChatId($source->id,'name');
+            $dataObj->chatName = self::reformChatId($source->id,null,$source->name);
             $dataObj->image = isset($source->image) ? mb_convert_encoding($source->image, 'UTF-8', 'UTF-8') : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
             $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
@@ -114,6 +114,9 @@ class ChatDialog extends Model{
                 $dataObj->moderators = !empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
                 $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
                 $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('messageNumber','DESC')->first());
+                if(isset($dataObj->lastMessage)){
+                    $dataObj->last_time =  self::reformDate($dataObj->lastMessage->time); 
+                }
                 if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){
                     $dataObj->label = Category::dataList($dataObj->metadata['labels'])['data'];
                 }
@@ -132,9 +135,25 @@ class ChatDialog extends Model{
         return $newName;
     }
 
-    static function reformChatId($chatId){
+    static function reformChatId($chatId,$type=null,$name=null){
         $chatId = str_replace('@c.us','',$chatId);
         $chatId = str_replace('@g.us','',$chatId);
+        if($name != null && $name != ''){
+            $name = str_replace('@c.us','',$name);
+            $name = str_replace('@g.us','',$name);
+            if($chatId != $name){
+                return $name;
+            }else{
+                $chatId = '+'.$chatId;
+                $parts=sscanf($chatId,'%4c%2c%3c%3c');
+                return $parts[0].' '.$parts[1].' '.$parts[2].' '.$parts[3];
+            }
+        }
+        if($type != null){
+            $chatId = '+'.$chatId;
+            $parts=sscanf($chatId,'%4c%2c%3c%3c');
+            return $parts[0].' '.$parts[1].' '.$parts[2].' '.$parts[3];
+        }
         return $chatId;
     }
 

@@ -57,14 +57,14 @@ class ExternalServices {
 
     function formatSallaResponse($result){
         $modelData = [];
-        if($result->status == 200){
+        if($result && isset($result->status) && $result->status == 200){
             if(isset($result->pagination)){
                 $pagesCount = $result->pagination['totalPages'];
                 if($pagesCount > 1){
                     for ($i = 1; $i <= $pagesCount ; $i++) {
                         $params =  ['page' => $i];
                         $newResult = $this->callURL($this->data['storeToken'],$this->data['dataURL'],$this->data['myHeaders'],$params);
-                        $modelData = array_merge($modelData,$newResult->data);
+                        $modelData = array_merge($modelData,isset($newResult->data) ? $newResult->data : []);
                         // $modelData[] = $newResult->data;
                     }
                 }elseif ($pagesCount == 1) {
@@ -168,6 +168,11 @@ class ExternalServices {
                     if(isset($value['id'])){
                         $checkObj = DB::table($tableName)->where('id',$value['id'])->first();
                         if(!$checkObj){
+                            if($tableName == 'salla_products'){
+                                unset($value['consisted_products']);
+                                unset($value['digital_download_limit']);
+                                unset($value['digital_download_expiry']);
+                            }
                             DB::table($tableName)->insert($value);
                         }   
                     }

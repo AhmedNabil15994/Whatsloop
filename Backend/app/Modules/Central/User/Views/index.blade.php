@@ -62,7 +62,7 @@
                                         </a>
                                     </div> 
                                 </div>  --}}
-                                @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']) && $data->designElems['mainData']['url'] != 'invoices')
+                                @if(\Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']) && !in_array($data->designElems['mainData']['url'] , ['invoices','notificationTemplates']))
                                 <a class="btn btn-primary btn-icon" data-toggle="tooltip" data-original-title=" {{ $data->designElems['mainData']['url'] == 'groupMsgs' ? trans('main.send') : trans('main.add')  }}" href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/add') }}">
                                     @if($data->designElems['mainData']['url'] == 'groupMsgs')
                                     <i class="typcn typcn-location-arrow"></i>

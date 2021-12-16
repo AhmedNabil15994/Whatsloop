@@ -21,7 +21,7 @@
             <div class="apiGuide">
                 <h2 class="title">{{ trans('main.search') }}</h2>
                 <div class="details formSearch clearfix">
-                    <input type="text" name="name" placeholder="{{ trans('main.search') }}" />
+                    <input type="text" name="name" value="{{ Request::get('name') }}" placeholder="{{ trans('main.search') }}" />
                     <button type="submit">{{ trans('main.search') }}</button>
                 </div>
             </div>
@@ -30,7 +30,7 @@
             <div class="apiGuide">
                 <h2 class="title">{{ trans('main.price') }}</h2>
                 <div class="details priceForm formSearch clearfix">
-                    <input type="text" name="price" placeholder="{{ trans('main.price') }}" />
+                    <input type="text" name="price" value="{{ Request::get('price') }}" placeholder="{{ trans('main.price') }}" />
                 </div>
             </div>
         </div>

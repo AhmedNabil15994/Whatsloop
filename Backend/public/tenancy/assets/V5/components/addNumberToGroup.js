@@ -95,9 +95,11 @@ $(function(){
 
     $('select[name="group_id"]').on('change',function(){
         if($(this).val() == '@'){
+            $('.new').removeClass('hidden');
             $('.new').slideDown(250);
         }else{
             $('.new').slideUp(250);
+            $('.new').addClass('hidden');
         }
     });
 

@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\ChatDialog;
 use App\Models\Contact;
+use App\Models\Variable;
 
 class SyncDialogsJob implements ShouldQueue
 {
@@ -33,11 +34,16 @@ class SyncDialogsJob implements ShouldQueue
      */
     public function handle()
     {
+        Variable::insert([
+            'var_key' => 'SYNCING',
+            'var_value' => 1,
+        ]);
         if(!empty($this->dialogs)){
             foreach ($this->dialogs as $dialog) {
                 ChatDialog::newDialog($dialog);
                 Contact::newPhone($dialog['id'],$dialog['name']);
             }
         }
+        Variable::where('var_key','SYNCING')->delete();
     }
 }

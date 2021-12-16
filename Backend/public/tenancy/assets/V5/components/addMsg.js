@@ -79,7 +79,7 @@ $(function(){
 
 	$('#datetimepicker').datetimepicker({
 		format: 'YYYY-MM-DD HH:mm',
-		// minuteStep: 1,
+		stepping: 5,
 	});
 
 

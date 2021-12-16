@@ -6,6 +6,9 @@
     .form .btnsTabs li{
         width: 200px;
     }
+    .form{
+        overflow: unset;
+    }
     .form textarea{
         height: 250px;
     }
@@ -72,7 +75,7 @@
                                                         <label class="titleLabel">{{ trans('main.phone') }} :</label>
                                                     </div>
                                                     <div class="col-md-9">
-                                                        <input class="teles" dir="ltr" type="tel" value="{{ $data->data->phone }}" name="phone" placeholder="{{ trans('main.phone') }}">
+                                                        <input class="teles" dir="ltr" type="tel" value="{{ '+'.$data->data->phone }}" name="phone" placeholder="{{ trans('main.phone') }}">
                                                     </div>
                                                 </div> 
                                                 <div class="row">
@@ -156,7 +159,7 @@
                                                     <div class="col-xs-12 text-right actions">
                                                         <div class="nextPrev clearfix ">
                                                             <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                                            <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                                            <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.save') }}</button>
                                                         </div>
                                                     </div>
                                                     <div class="clearfix"></div>
@@ -197,7 +200,7 @@
                                                         <div class="col-xs-12 text-right actions">
                                                             <div class="nextPrev clearfix ">
                                                                 <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                                                <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                                                <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.save') }}</button>
                                                             </div>
                                                         </div>
                                                         <div class="clearfix"></div>
@@ -220,6 +223,30 @@
                                                     @csrf
                                                     <div class="row">
                                                         <div class="col-md-3">
+                                                            <label class="titleLabel">{{ trans('main.country') }} :</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input value="{{ $data->paymentInfo ? $data->paymentInfo->country : '' }}" name="country" placeholder="{{ trans('main.country') }}">
+                                                        </div>
+                                                    </div> 
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label class="titleLabel">{{ trans('main.region') }} :</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input name="region" value="{{ $data->paymentInfo ? $data->paymentInfo->region : '' }}" placeholder="{{ trans('main.region') }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <label class="titleLabel">{{ trans('main.city') }} :</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <input name="city" value="{{ $data->paymentInfo ? $data->paymentInfo->city : '' }}" placeholder="{{ trans('main.city') }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
                                                             <label class="titleLabel">{{ trans('main.address') }} :</label>
                                                         </div>
                                                         <div class="col-md-9">
@@ -236,34 +263,10 @@
                                                     </div> 
                                                     <div class="row">
                                                         <div class="col-md-3">
-                                                            <label class="titleLabel">{{ trans('main.city') }} :</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input name="city" value="{{ $data->paymentInfo ? $data->paymentInfo->city : '' }}" placeholder="{{ trans('main.city') }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <label class="titleLabel">{{ trans('main.region') }} :</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input name="region" value="{{ $data->paymentInfo ? $data->paymentInfo->region : '' }}" placeholder="{{ trans('main.region') }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-3">
                                                             <label class="titleLabel">{{ trans('main.postal_code') }} :</label>
                                                         </div>
                                                         <div class="col-md-9">
                                                             <input name="postal_code" value="{{ $data->paymentInfo ? $data->paymentInfo->postal_code : '' }}" placeholder="{{ trans('main.postal_code') }}">
-                                                        </div>
-                                                    </div> 
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <label class="titleLabel">{{ trans('main.country') }} :</label>
-                                                        </div>
-                                                        <div class="col-md-9">
-                                                            <input value="{{ $data->paymentInfo ? $data->paymentInfo->country : '' }}" name="country" placeholder="{{ trans('main.country') }}">
                                                         </div>
                                                     </div> 
                                                     <div class="row">
@@ -308,7 +311,7 @@
                                                         <div class="col-xs-12 text-right actions">
                                                             <div class="nextPrev clearfix ">
                                                                 <a href="{{ URL::to('/dashboard') }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                                                <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                                                <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.save') }}</button>
                                                             </div>
                                                         </div>
                                                         <div class="clearfix"></div>
@@ -336,8 +339,8 @@
 
 
 @section('scripts')
-<script src="{{ asset('components/phone.js') }}"></script>
-<script src="{{ asset('/js/photoswipe.min.js') }}"></script>
-<script src="{{ asset('/js/photoswipe-ui-default.min.js') }}"></script>
-<script src="{{ asset('/components/myPhotoSwipe.js') }}"></script>      
+<script src="{{ asset('V5/components/phone.js') }}"></script>
+<script src="{{ asset('V5/js/photoswipe.min.js') }}"></script>
+<script src="{{ asset('V5/js/photoswipe-ui-default.min.js') }}"></script>
+<script src="{{ asset('V5/components/myPhotoSwipe.js') }}"></script>      
 @endsection

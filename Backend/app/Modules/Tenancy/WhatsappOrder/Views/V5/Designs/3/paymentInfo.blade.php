@@ -126,14 +126,12 @@ $counter = 0;
                		<h2 class="title">تحديد الدولة </h2>
                		<ul class="selectList">
                			@foreach($data->countries as $key => $country)
-               			@if($key != 'il')
-               			<li data-area="{{ $key }}">
+               			<li data-area="{{ $country->id }}">
                             <label class="checkStyle">
                                 <i></i>
-                                <span class="text">{{ $country['native_official_name'] }}</span>
+                                <span class="text">{{ $country->{'Name_'.LANGUAGE_PREF} }}</span>
                             </label>
                			</li>
-               			@endif
                			@endforeach
                		</ul>
                		<span class="save" data-dismiss="modal">حفظ</span>

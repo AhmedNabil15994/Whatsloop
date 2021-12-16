@@ -83,7 +83,7 @@ class ChatMessage extends Model{
         $dataObj->time = isset($source->time) ? $addHours ? strtotime($source->time)+10817 : $source->time  : $dataObj->time;
         $dataObj->chatId = isset($source->chatId) ? $source->chatId : '';
         $dataObj->messageNumber = isset($source->messageNumber) ? $source->messageNumber : '';
-        if(isset($source->status)){
+        if(isset($source->status) && !$dataObj->status){
             $dataObj->status = $source->status;
         }
         if(isset($source->type)){
@@ -106,6 +106,9 @@ class ChatMessage extends Model{
         $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
         $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
         if( isset($source->metadata) && $oldProd == ''){
+            $dataObj->metadata = json_encode($source->metadata) ;
+        }
+        if(isset($source->metadata) && isset($source->status) && $source->status == "BOT PLUS"){
             $dataObj->metadata = json_encode($source->metadata) ;
         }
         $dataObj->save();

@@ -14,13 +14,20 @@ use App\Models\CentralChannel;
 use App\Models\Tenant;
 use App\Models\ModTemplate;
 use App\Models\Template;
+use App\Models\NotificationTemplate;
 
 class SubscriptionHelper {
 
     public function newSubscription($cartObj,$type,$transaction_id,$paymentGateaway,$start_date=null,$invoiceObj=null,$transferObj=null,$arrType=null,$myEndDate=null){
         $tenant = null;
+        $bundle = 0;
         if($transferObj){
             $tenant = Tenant::find($transferObj->tenant_id);
+        }
+
+        $upgraded = 0;
+        if($type == 'new' && $start_date != null && $myEndDate != null && $invoiceObj == null && $transferObj == null && $arrType == null){
+            $upgraded = 1;
         }
 
         if($tenant){
@@ -42,6 +49,7 @@ class SubscriptionHelper {
         }
 
         $userCreditsObj = Variable::getVar('userCredits');
+        $bundle = Variable::getVar('bundle');
         
         if($tenant){
             tenancy()->end($tenant);
@@ -238,13 +246,15 @@ class SubscriptionHelper {
                 'addons' =>  serialize($newData),
             ]);
         }
+        
+        
 
         if($type == 'new'){
             $invoiceObj = new Invoice;
             $invoiceObj->client_id = $userObj->id;
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
-            $invoiceObj->total = $total - $userCredits ;
+            $invoiceObj->total = $bundle && $bundle != null ? $bundle : ($total - $userCredits) ;
             $invoiceObj->due_date = $myEndDate != null ?  date('Y-m-d') : $start_date;
             $invoiceObj->paid_date = DATE_TIME;
             $invoiceObj->items = serialize($items);
@@ -254,34 +264,18 @@ class SubscriptionHelper {
             $invoiceObj->created_at = DATE_TIME;
             $invoiceObj->created_by = $userObj->id;
             $invoiceObj->save();
-
-            $emailData = [
-                'name' => $userObj->name,
-                'subject' => 'حساب جديد',
-                'content' => 'تم التسجيل في واتس لووب بنجاح وهذا رابط النطاق الخاص بك:' . 'https://'.$userObj->domain.'.wloop.net',
-                'email' => $userObj->email,
-            ];
-            \MailHelper::prepareEmail($emailData);
-        }elseif($type == 'payInvoice'){
+        }elseif($type == 'payInvoice' || $type == 'renew'){
             $invoiceObj->status = 1;
             $invoiceObj->paid_date = DATE_TIME;
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
             $invoiceObj->save();
-
-            $emailData = [
-                'name' => $userObj->name,
-                'subject' => 'دفع فاتورة رقم #'.$invoiceObj->id,
-                'content' => 'تم دفع فاتورة رقم #:' . $invoiceObj->id . ' والاجمالي هو : '. $invoiceObj->total,
-                'email' => $userObj->email,
-            ];
-            \MailHelper::prepareEmail($emailData);
         }elseif($type == 'transferRequest'){
             $invoiceObj = new Invoice;
             $invoiceObj->client_id = $userObj->id;
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
-            $invoiceObj->total = $total - $userCredits ;
+            $invoiceObj->total = $transferObj->total;//$total - $userCredits ;
             $invoiceObj->due_date = $myEndDate != null ?  date('Y-m-d') : $start_date;;
             $invoiceObj->paid_date = DATE_TIME;
             $invoiceObj->items = serialize($items);
@@ -291,6 +285,105 @@ class SubscriptionHelper {
             $invoiceObj->created_at = DATE_TIME;
             $invoiceObj->created_by = $userObj->id;
             $invoiceObj->save();
+        }
+
+
+        // First Email
+        $notificationTemplateObj = NotificationTemplate::getOne(2,'paymentSuccess');
+        $allData = [
+            'name' => $userObj->name,
+            'subject' => $notificationTemplateObj->title_ar,
+            'content' => $notificationTemplateObj->content_ar,
+            'email' => $userObj->email,
+            'template' => 'tenant.emailUsers.default',
+            'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+            'extras' => [
+                'invoiceObj' => Invoice::getData($invoiceObj),
+                'company' => $userObj->company,
+                'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+            ],
+        ];
+        \MailHelper::prepareEmail($allData);
+
+        $salesData = $allData;
+        $salesData['email'] = 'sales@whatsloop.net';
+        \MailHelper::prepareEmail($salesData);
+
+        $notificationTemplateObj = NotificationTemplate::getOne(1,'paymentSuccess');
+        $phoneData = $allData;
+        $phoneData['phone'] = $userObj->phone;
+        \MailHelper::prepareEmail($phoneData,1);
+
+        if($myEndDate == null && $type == 'new'){
+            // Second Email
+            $notificationTemplateObj = NotificationTemplate::getOne(2,'activateAccount');
+            $allData = [
+                'name' => $userObj->name,
+                'subject' => $notificationTemplateObj->title_ar,
+                'content' => $notificationTemplateObj->content_ar,
+                'email' => $userObj->email,
+                'template' => 'tenant.emailUsers.default',
+                'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                'extras' => [
+                    'invoiceObj' => Invoice::getData($invoiceObj),
+                    'company' => $userObj->company,
+                    'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                ],
+            ];
+            \MailHelper::prepareEmail($allData);
+
+            $notificationTemplateObj = NotificationTemplate::getOne(1,'activateAccount');
+            $phoneData = $allData;
+            $phoneData['phone'] = $userObj->phone;
+            \MailHelper::prepareEmail($phoneData,1);
+        }
+
+        if($type == 'renew'){
+            // Second Email
+            $notificationTemplateObj = NotificationTemplate::getOne(2,'renewAccount');
+            $allData = [
+                'name' => $userObj->name,
+                'subject' => $notificationTemplateObj->title_ar,
+                'content' => $notificationTemplateObj->content_ar,
+                'email' => $userObj->email,
+                'template' => 'tenant.emailUsers.default',
+                'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                'extras' => [
+                    'invoiceObj' => Invoice::getData($invoiceObj),
+                    'company' => $userObj->company,
+                    'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                ],
+            ];
+            \MailHelper::prepareEmail($allData);
+
+            $notificationTemplateObj = NotificationTemplate::getOne(1,'renewAccount');
+            $phoneData = $allData;
+            $phoneData['phone'] = $userObj->phone;
+            \MailHelper::prepareEmail($phoneData,1);
+        }
+
+        if($upgraded){
+            // Third Email
+            $notificationTemplateObj = NotificationTemplate::getOne(2,'upgradeSuccess');
+            $allData = [
+                'name' => $userObj->name,
+                'subject' => $notificationTemplateObj->title_ar,
+                'content' => $notificationTemplateObj->content_ar,
+                'email' => $userObj->email,
+                'template' => 'tenant.emailUsers.default',
+                'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                'extras' => [
+                    'invoiceObj' => Invoice::getData($invoiceObj),
+                    'company' => $userObj->company,
+                    'url' => 'https://'.$userObj->domain.'.wloop.net/login',
+                ],
+            ];
+            \MailHelper::prepareEmail($allData);
+
+            $notificationTemplateObj = NotificationTemplate::getOne(1,'upgradeSuccess');
+            $phoneData = $allData;
+            $phoneData['phone'] = $userObj->phone;
+            \MailHelper::prepareEmail($phoneData,1);
         }
 
         $disableTransfer = 0;
@@ -427,6 +520,10 @@ class SubscriptionHelper {
             'channels' => serialize([$channel['id']]),
         ]);
         Variable::whereIn('var_key',['userCredits','start_date','cartObj','endDate'])->delete();
+        $bundsObj = Variable::where('var_key','bundle')->first();
+        if($bundsObj){
+            $bundsObj->update(['var_key','bundle_price']);
+        }
         if($tenant){
             tenancy()->end($tenant);
         }

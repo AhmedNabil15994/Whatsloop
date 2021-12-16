@@ -68,9 +68,9 @@
                     <div class="bg"></div>
                             <vuescroll @handle-scroll="handleScroll" ref="vs">
                                 <div class="loading" v-if="!loading">
-                                <svg class="spinner-container" viewBox="0 0 44 44">
-                                    <circle class="path" cx="22" cy="22" r="20" fill="none" stroke-width="4"></circle>
-                                </svg>
+                                    <svg class="spinner-container" viewBox="0 0 44 44">
+                                        <circle class="path" cx="22" cy="22" r="20" fill="none" stroke-width="4"></circle>
+                                    </svg>
                                 </div>
                                 <ul id="listChat" class="list-unstyled clearfix mb-0" v-if="chat !== []" >
                                    <!-- <li>
@@ -114,9 +114,20 @@
                                                                 {{ message.quotedMsgObj.chatName }}
                                                                 </template>
                                                             </span>
-                                                            <span  class="msg" v-if="message.quotedMsgObj.whatsAppMessageType === 'chat' || message.quotedMsgObj.whatsAppMessageType === 'link'"> 
+                                                            <span  class="msg" v-if="message.quotedMsgObj.whatsAppMessageType === 'chat' && message.quotedMsgObj.status !== 'BOT PLUS' || message.quotedMsgObj.whatsAppMessageType === 'link' &&  message.quotedMsgObj.status !== 'BOT PLUS' || message.quotedMsgObj.whatsAppMessageType === 'buttons_response' &&  message.quotedMsgObj.status !== 'BOT PLUS'"> 
                                                             {{ message.quotedMsgObj.body }}
                                                             </span>
+
+                                                             <span class="text-truncate msg" v-else-if="message.quotedMsgObj.status === 'BOT PLUS'">
+                                                                <div class="optionsBotStyle" :dir="isUnicode(message.body) ? 'rtl' : 'ltr'"> 
+                                                                        <div class="head">
+                                                                            <h2 class="boldTitle">{{message.quotedMsgObj.body}}</h2>
+                                                                            <h3 class="title">{{message.quotedMsgObj.metadata.title}}</h3>
+                                                                            <span class="footerMsg">{{message.quotedMsgObj.metadata.footer}}</span>
+                                                                        </div>
+                                                                </div>
+                                                            </span>
+
                                                             <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'image'">
                                                                 صورة 
                                                                 <i class="fa fa-camera"></i> 
@@ -127,6 +138,7 @@
                                                                 فيديو
                                                                 <i class="fa fa-image"></i> 
                                                             </span>
+                                                        
 
                                                              <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'document'">
                                                                 ملف 
@@ -157,7 +169,7 @@
 
                                                             </span>
 
-                                                            <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'ptt'">
+                                                            <span class="text-truncate msg" v-else-if="message.quotedMsgObj.whatsAppMessageType === 'ptt' || message.quotedMsgObj.whatsAppMessageType === 'ppt'">
                                                                 مقطع صوتي
                                                                 <i class="fa fa-microphone"></i> 
                                                             </span>
@@ -169,7 +181,7 @@
                                                             </span>
                                                         </div>
                                                         
-                                                        <p v-if="message.whatsAppMessageType === 'chat' || message.whatsAppMessageType === 'link'" class="m-1"  :dir="isUnicode(message.body) ? 'rtl' : 'ltr'">
+                                                        <p v-if="message.whatsAppMessageType === 'chat' && message.status !== 'BOT PLUS' || message.whatsAppMessageType === 'link'  && message.status !== 'BOT PLUS' || message.whatsAppMessageType === 'buttons_response'  && message.status !== 'BOT PLUS' " class="m-1"  :dir="isUnicode(message.body) ? 'rtl' : 'ltr'">
                                                             <template v-if="message.body.includes('*') || message.body.includes('https://whatsloop.net/resources/Gallery/') || !message.body.includes('iframe')">
                                                                 <p :inner-html.prop="message.body | removeAst | readLinks">
                                                                 </p>
@@ -184,6 +196,14 @@
                                                                 <p>{{ message.body }}</p>
                                                             </template>
                                                         </p>
+
+                                                        <div v-else-if="message.whatsAppMessageType === 'chat' && message.status === 'BOT PLUS' " class="optionsBotStyle" :dir="isUnicode(message.body) ? 'rtl' : 'ltr'"> 
+                                                                <div class="head">
+                                                                    <h2 class="boldTitle">{{message.body}}</h2>
+                                                                    <h3 class="title">{{message.metadata.title}}</h3>
+                                                                    <span class="footerMsg">{{message.metadata.footer}}</span>
+                                                                </div>
+                                                        </div>
                                                         
                                                         <p v-else-if="message.whatsAppMessageType === 'image'" :dir="isUnicode(message.caption) ? 'rtl' : 'ltr'">
                                                             <transition name="fade">
@@ -276,8 +296,7 @@
                                                                     </div>
                                                                     <div class="media-body">
                                                                         <div class="text-left">
-                                                                            <h5 class="font-size-14 mb-1 text-truncate">{{ message.file_name }}</h5>
-                                                                            <p class="text-muted font-size-13 mb-0" v-if="message.file_size"> {{message.file_size}} </p>
+                                                                            <h5 class="font-size-14 mb-1 text-truncate" >File.{{message.file_name.split(".")[1]}}</h5>
                                                                         </div>
                                                                     </div>
 
@@ -294,6 +313,7 @@
                                                             </div>
                                                             <!-- end card -->
                                                        </div>
+
 
                                                         <span v-else-if="message.whatsAppMessageType === 'vcard' || message.whatsAppMessageType === 'contact'" class="contactSend"> 
                                                                 <i class="UserIcon fa fa-user"></i>
@@ -339,10 +359,10 @@
                                                                 
                                                         </span>
 
-                                                        <span v-else-if="message.whatsAppMessageType === 'ptt'"> 
-                                                            <audioplayer :url="message.body" 
-                                                            v-on:pauseall="funcPause('audio-player'+message.time)"
-                                                            :playerid="'audio-player'+message.time" ref="component" ></audioplayer>                                                                       
+                                                        <span v-else-if="message.whatsAppMessageType === 'ptt' || message.quotedMsgObj.whatsAppMessageType === 'ppt'"> 
+                                                            <audioplayer :timesec="message.timeSec ? message.timeSec : false" :url="message.body" 
+                                                            v-on:pauseall="funcPause('audio-player'+ message.time )"
+                                                            :playerid="'audio-player'+message.time" ref="component" ></audioplayer>                                                                 
                                                         </span>
 
                                                         <span v-else-if="message.whatsAppMessageType === 'call_log'"> 
@@ -354,13 +374,7 @@
                                                             </template>
                                                             
                                                         </span>
-                                                        <!--
-                                                        <span class="optionsStyle"> 
-                                                                <div class="head">
-                                                                    
-                                                                </div>
-                                                        </span>-->
-
+                         
                                                         <p v-else>
                                                          <i class="fa fa-ban"></i> 
                                                         رسالة محذوفة أو غير مدعومة
@@ -425,10 +439,15 @@
                                                         </p>
                                                     </div>
                                                 </div>
+                                                
+                                                <ul class="listBotBtns" v-if="message.metadata !== 'null' && message.metadata.replyButtons">
+                                                    <li v-for="(replyBtns, index) in message.metadata.replyButtons" :key="index" @click="sendReplyBtns(replyBtns.displayText)"> {{ replyBtns.displayText }}</li>
+                                                </ul>
                                                 <div class="conversation-name" v-if="message.fromMe === 1">{{ message.status }}</div>
+
+
                                             </div>
                                         </div>
-
                                     </li>
                                 </ul>
                             </vuescroll>
@@ -450,7 +469,7 @@
                             {{ replyArry.chatName }}
                             </template>
                         </span>
-                        <p class="text-truncate msg m-1" v-if="replyArry.whatsAppMessageType === 'chat' " :dir="isUnicode(replyArry.body) ? 'rtl' : 'ltr'">
+                        <p class="text-truncate msg m-1" v-if="replyArry.whatsAppMessageType === 'chat' && replyArry.status !== 'BOT PLUS' || replyArry.whatsAppMessageType === 'buttons_response' && replyArry.status !== 'BOT PLUS'" :dir="isUnicode(replyArry.body) ? 'rtl' : 'ltr'">
                             <template v-if="replyArry.body.includes('*') || replyArry.body.includes('https://whatsloop.net/resources/Gallery/') || !replyArry.body.includes('iframe')">
                                 <p :inner-html.prop="replyArry.body | removeAst">
                                 </p>
@@ -460,6 +479,18 @@
                                 <p>{{ replyArry.body }}</p>
                             </template>
                         </p>
+
+
+                        <span class="text-truncate msg" v-else-if="replyArry.status === 'BOT PLUS'">
+                            <div class="optionsBotStyle" :dir="isUnicode(replyArry.body) ? 'rtl' : 'ltr'"> 
+                                    <div class="head">
+                                        <h2 class="boldTitle">{{replyArry.body}}</h2>
+                                        <h3 class="title">{{replyArry.metadata.title}}</h3>
+                                    </div>
+                            </div>
+                        </span>
+
+
                         <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'image'">
                             صورة 
                             <i class="fa fa-camera"></i> 
@@ -502,7 +533,7 @@
 
 
 
-                        <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'ptt'">
+                        <span class="text-truncate msg" v-else-if="replyArry.whatsAppMessageType === 'ptt' || message.quotedMsgObj.whatsAppMessageType === 'ppt'">
                             مقطع صوتي
                             <i class="fa fa-microphone"></i> 
                         </span>
@@ -590,20 +621,32 @@
                             @keydown="sendMsg"
                             tabindex="-1"
                             contenteditable="true"
-                        type="text"
+                            type="text"
                         ></div>
                     </vuescroll>
                     </div>
-                    <button class="btnSend" @click="sendFunc()" :disabled="messageSend === '' && checkFile == false">
+                    <button class="btnSend" @click="sendFunc()" v-if="messageSend !== '' || checkFile == true" :disabled="messageSend === '' && checkFile === false">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"></path></svg>
                     </button>
+
+                  
+                    <vue-record-audio :closerec="closeRec" :mode="recordMode.video" @stream="onStreamRecord"  @result="onResultRecord" :class="messageSend === '' && checkFile === false ? 'block' : ''"/>
+                   
+                    <div class="counterRec" v-if="messageSend === '' && checkFile === false" :class="messageSend === '' ? 'block' : ''">
+                        <label id="minutes"><span v-if="this.countRec.seconds < 10">0</span>{{this.countRec.seconds}}</label>
+                        :
+                        <label id="seconds"><span v-if="this.countRec.minutes < 10">0</span>{{this.countRec.minutes}}</label>
+                    </div>
+                    
+                    <button @click="closeRecorder()" v-if="messageSend === '' && checkFile === false" :class="messageSend === '' ? 'block' : ''" class="closeRecord fa fa-close"></button>
+                    
                 </form>
                 <vue-dropzone
                     class="dropDiv"
                     ref="myVueDropzone"
                     @vdropzone-removed-file="checkFile = false"
                     @vdropzone-file-added="checkFile = true"
-                    acceptedFileTypes=".png,.jpg,jpeg,.gif,.bmp,.txt,.pdf,.xlsx"
+                    acceptedFileTypes=".png,.jpg,.jpeg,.gif,.bmp,.txt,.pdf,.xlsx"
                     id="dropzone"
                     :useCustomSlot="true"
                     :options="dropzoneOptions"
@@ -633,7 +676,7 @@ import EmojiGroups from '@kevinfaguiar/vue-twemoji-picker/emoji-data/emoji-group
 
 export default {
     name:"chatComponent",
-    props:['chatId','openChat','opencontct',"contact"],
+    props:['chatId','openChat','opencontct',"contact","checkSubscription"],
     data() {
         return {
             chat: [],
@@ -645,6 +688,17 @@ export default {
             distance: 500,
             imageViewerFlag: false,
             image:[],
+            recordMode: {
+                audio: 'hold',
+                video: 'press'
+            },
+            closeRec:false,
+            cancleRec:false,
+            countRec:{
+                minutes:0,
+                seconds:0,
+                totalSec:0
+            },
             dropzoneOptions: {
                 url: "https://httpbin.org/post",
                 thumbnailWidth: 40,
@@ -686,6 +740,9 @@ export default {
            deep: true,
            handler() {
                this.openQuick = false;
+               if(this.messageSend !== '') {
+                   this.closeRecorder();
+               }
                if(this.messageSend == "\n" || this.messageSend == "\n\n\n" || this.messageSend == "\n\n" || this.messageSend === " ") {
                     const inputId = document.getElementById("inputId");
                     inputId.textContent = '';
@@ -697,6 +754,8 @@ export default {
                else if(this.messageSend === "/") {
                    this.openQuick = true;
                }
+
+               
             }
        },
        emoj:{
@@ -708,6 +767,19 @@ export default {
                 this.messageSend += this.emoj;
                 textarea.textContent = '';
                 this.emoj = '';
+            }
+       },
+       checkFile:{
+           deep: true,
+           handler() {
+            this.cancleRec = true;
+            this.closeRec = true;
+                for (var i = 1; i < 99999; i++) {
+                    window.clearInterval(i);
+                }
+                this.countRec.minutes = 0;
+                this.countRec.seconds = 0;
+                this.countRec.totalSec = 0;
             }
        }
 
@@ -945,6 +1017,7 @@ export default {
         },
         getChatContent() {
             if(this.chatIdC !== 0) {
+                    
                 this.chat = [];
                 this.loading = false;
                 this.openQuick = false;
@@ -952,6 +1025,7 @@ export default {
                 this.messageSend = "\n";
                 this.closeEmoji = true;
                 this.messageDates = [];
+                this.closeRecorder();
                 this.$http
                     .get(this.urlApi+`messages?limit=30&chatId=${this.chatIdC}&page=${this.load}`)
                     .then((res) => {
@@ -1050,10 +1124,11 @@ export default {
             if (this.messageSend !== "" || this.$refs.myVueDropzone.dropzone.files.length !== 0) {
 
                 if (this.$refs.myVueDropzone.dropzone.files.length >= 1 && this.$refs.myVueDropzone.dropzone.files.length <= 29) {
-                
+                    
                     var x = 0;
                     for (var i in this.$refs.myVueDropzone.dropzone.files) {
                         var data = new FormData();
+                       // console.log(this.$refs.myVueDropzone.dropzone.files[i].type)
                         data.append("chatId", this.chatIdC);
                         var type;
                         if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("image")) {
@@ -1105,6 +1180,7 @@ export default {
                             isForwarded:0,
                             sending_status:0,
                             testMsg:true,
+                            metadata:'null',
                             whatsAppMessageType:type
                         }
                         
@@ -1131,12 +1207,15 @@ export default {
                                     element.sending_status= res.data.data.sending_status;
                                     element.testMsg = res.data.data.testMsg;
                                     element.status = res.data.data.status;
+                                    element.metadata = res.data.data.metadata;
                                     element.whatsAppMessageType = res.data.data.whatsAppMessageType;
                                 }
                             }
                             });
                         
 
+                        }).catch((err) => {
+                            this.$emit("checkSubscription",err.response.statusText);
                         });
 
                         
@@ -1171,6 +1250,7 @@ export default {
                         isForwarded:0,
                         sending_status:0,
                         testMsg:true,
+                        metadata:'null',
                         whatsAppMessageType:"chat"
                     }
                     
@@ -1203,6 +1283,8 @@ export default {
                         });
                        }
                         
+                    }).catch((err) => {
+                        this.$emit("checkSubscription",err.response.statusText);
                     });
                 }
                 this.messageSend = "";
@@ -1213,6 +1295,108 @@ export default {
             if(this.$refs.myVueDropzone) {
                 this.$refs.myVueDropzone.removeAllFiles(true);
             }
+        },
+        onResultRecord (file) {
+            if(this.cancleRec === false) {
+          
+                
+                var data = new FormData();
+                data.append("chatId", this.chatIdC);
+                data.append("type", 4);
+                if(this.replyArry !== null ) {
+                    data.append("replyOn", this.replyArry.id);
+                }
+
+                var today = new Date();
+                var hours = today.getHours();
+                var seconds = today.getSeconds();
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+                var time = today.getHours() + ":" + today.getMinutes() + " " + ampm;
+                var idRandom = "id_"+ Math.floor(Math.random() * 99999) + 1 + Math.floor(Math.random() * 9999) + seconds;
+                data.append("frontId", idRandom);
+                //this.messageSend
+                var objMsg = {
+                    author:this.chatIdC,
+                    body:window.URL.createObjectURL(file),
+                    file_name:"",
+                    created_at_time:time,
+                    fromMe:1,
+                    id:"",
+                    timeSec:{
+                        mins:this.countRec.minutes,
+                        secs:this.countRec.seconds
+                    },
+                    quotedMsgObj:this.replyArry,
+                    frontId:idRandom,
+                    isForwarded:0,
+                    sending_status:0,
+                    testMsg:true,
+                    metadata:'null',
+                    whatsAppMessageType:"ptt"
+                }
+                
+                this.chat.push(objMsg);
+                    this.$refs["vs"].scrollTo(
+                    {
+                        y: "110%"
+                    },1);
+                data.append("size", file.size);
+                data.append("file", file);
+              
+                this.$http
+                .post(this.urlApi+`sendMessage`, data).then((res) => {
+                    this.chat.forEach((element) => {
+                    if (element.frontId !== '' && res.data.data.frontId !== '') {
+                        if (element.frontId.search(res.data.data.frontId) !== -1) {
+                            element.author = res.data.data.author;
+                            element.body = res.data.data.body;
+                            element.file_name = res.data.data.file_name;
+                            element.created_at_time = res.data.data.created_at_time;
+                            element.fromMe = res.data.data.fromMe;
+                            element.id = res.data.data.id;
+                            element.quotedMsgObj = res.data.data.quotedMsgObj;
+                            element.frontId = res.data.data.frontId;
+                            element.file_size = res.data.data.file_size;
+                            element.isForwarded = res.data.data.isForwarded;
+                            element.sending_status= res.data.data.sending_status;
+                            element.testMsg = res.data.data.testMsg;
+                            element.status = res.data.data.status;
+                            element.metadata = res.data.data.metadata;
+                        }
+                    }
+                    });
+                
+
+                }).catch((err) => {
+                    this.$emit("checkSubscription",err.response.statusText);
+                });
+
+                
+            
+                this.replyArry = null;
+            }
+            for (var i = 1; i < 99999; i++) {
+                window.clearInterval(i);
+            }
+            this.countRec.minutes = 0;
+            this.countRec.seconds = 0;
+            this.countRec.totalSec = 0;
+        },
+        onStreamRecord (){
+            this.cancleRec = false;
+            this.closeRec = false;
+            setInterval(() => {
+                this.countRec.seconds = ++this.countRec.totalSec % 60
+                this.countRec.minutes = parseInt(this.countRec.totalSec / 60, 10) % 60
+            }, 1000);
+
+        },
+        closeRecorder() {
+            this.cancleRec = true;
+            setTimeout(() => {
+                this.closeRec = true;
+            },50)
+            
         },
         goDown(num) {
             if(this.$refs["vs"]) {
@@ -1242,7 +1426,14 @@ export default {
             }
             this.openQuick = false;
             this.messageSend = msg;
+            //this.sendFunc();
+            $("#inputId").text(msg);
+            this.focusInput();
+        },
+        sendReplyBtns(msg) {
+            this.messageSend = msg;
             this.sendFunc();
+            this.focusInput();
         },
         funcPause(playerId) {
             for (var i in this.$refs.component) {
@@ -1388,6 +1579,56 @@ export default {
     font-size:16px;
     text-align:right!important;
     cursor:pointer
+}
+
+.optionsBotStyle
+{
+    min-width:150px;
+}
+
+.optionsBotStyle .boldTitle
+{
+    font-size:15px;
+    color:#000;
+    font-family: "Tajawal-Bold";
+    margin-bottom:3px;
+}
+
+.optionsBotStyle .title
+{
+    font-size:14px;
+    color:#000;
+    font-family: "Tajawal-Regular";
+    font-weight:normal;
+    margin-bottom:3px;
+}
+
+.optionsBotStyle .footerMsg
+{
+    color:rgba(0,0,0,0.45);
+}
+
+.listBotBtns
+{
+    padding:0;
+    margin-top:-5px;
+}
+
+.listBotBtns li
+{
+    padding:5px 15px;
+    text-align:center!important;
+    border-radius:5px;
+    display:block;
+    background-color:#fff;
+    color:#000;
+    cursor:pointer;
+    margin-bottom:5px;
+}
+
+.right .listBotBtns li
+{
+    background-color:#dcf8c6
 }
 
 .listOptions li:hover
@@ -1616,8 +1857,6 @@ export default {
 .chat-conversation .right .conversation-list
 {
     float:left;
-    width:300px;
-    max-width:100%;
 }
 
 
@@ -1964,6 +2203,159 @@ transition:all 0.3s;
     color:#1bc5bd;
 }
 
+.vue-audio-recorder.block
+{
+    display:block;
+}
+
+.vue-audio-recorder
+{
+    background: none;
+    padding: 0;
+    border: none;
+    height:37px;
+    width:37px;
+    display:none;
+    line-height:48px;
+    padding-left:5px;
+    flex: none;
+    color:#919191;
+    margin-right:0;
+    margin-left: -31px;
+    border-radius:50%;
+    text-align:left;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.vue-audio-recorder:after
+{
+    content:"\f130";
+    font: normal normal normal 14px/1 FontAwesome;
+    border:none;
+    font-size:25px;
+    display:inline-block;
+    color:#919191;
+    position: static;
+    background:none;
+    width:auto;
+    height:auto;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.vue-audio-recorder.active:after
+{
+    border:none;
+    color:#fff;
+    background:none;
+}
+
+.vue-audio-recorder:hover
+{
+    background:none;
+}
+
+.vue-audio-recorder.active,
+.vue-audio-recorder.active:hover
+{
+    margin-right:15px;
+    line-height:44px;
+    margin-left:0;
+    padding-left:0;
+    text-align:center;
+    background-color: #ef5350;
+    -webkit-animation: pulse 1.25s cubic-bezier(.66,0,0,1) infinite;
+    animation: pulse 1.25s cubic-bezier(.66,0,0,1) infinite;
+}
+
+.vue-audio-recorder.active:after
+{
+    font-size:20px
+}
+
+@keyframes pulse{
+    to{   
+        -webkit-box-shadow:0 0 0 10px rgba(239,83,80,.1);
+        box-shadow:0 0 0 10px rgba(239,83,80,.1);background-color:#e53935;
+        -webkit-transform:scale(.9);transform:scale(.9)
+    }
+}
+
+
+.closeRecord.block
+{
+    display:block;
+}
+
+.closeRecord
+{
+    border:2px solid #ef5350;
+    min-height:30px;
+    display:none;
+    min-width:36px;
+    text-align:center;
+    line-height:24px;
+    color:#ef5350;
+    background:none;
+    border-radius:50px;
+    top:50px;
+    position:relative;
+    opacity:0;
+    overflow:hidden;
+    padding:0;
+    transform:scale(0);
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.vue-audio-recorder.active ~ .closeRecord
+{
+    top:-3px;
+    opacity:1;
+    min-width:30px;
+    margin-right:15px;
+    transform:scale(1);
+}
+
+.counterRec
+{
+    min-width: 60px;
+    text-align: center;
+    height: 37px;
+    line-height: 43px;
+    display:none;
+    margin-left:-63px;
+    margin-right:0;
+    opacity:0;
+    visibility:hidden;
+    position:relative;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.vue-audio-recorder.active ~ .counterRec
+{
+    opacity:1;
+    margin-left:0;
+    visibility:visible;
+    margin-right:15px;
+}
+
+
+.counterRec.block
+{
+    display:block
+}
+
 .sendMessage .btnSend {
   font-size: 25px;
   text-align: center;
@@ -1976,6 +2368,7 @@ transition:all 0.3s;
   transform: scaleX(-1);
   color: #1bc5bd;
 }
+
 
 .sendMessage .btnSend:disabled {
   color: #919191;

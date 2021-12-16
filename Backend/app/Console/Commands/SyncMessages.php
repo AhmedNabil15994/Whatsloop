@@ -53,7 +53,6 @@ class SyncMessages extends Command
         if(isset($updateResult['data']) && !empty($updateResult['data'])){
             $result = $updateResult->json();
             dispatch(new SyncMessagesJob($result['data']['messages']));
-        }
-        
+        }        
     }
 }

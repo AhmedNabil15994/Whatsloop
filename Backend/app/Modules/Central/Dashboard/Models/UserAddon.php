@@ -60,7 +60,7 @@ class UserAddon extends Model{
 
     static function dataList($addons=null,$user_id=null,$end_date=null,$statusArr=null) {
         $input = \Request::all();
-        if($addons != null){
+        if($addons != null || $addons == ' '){
             $data = [];
             $allData = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[1,2,3])->pluck('addon_id');
             $disabled = self::NotDeleted()->where('user_id',$user_id)->whereIn('status',[3])->pluck('addon_id');
@@ -141,7 +141,7 @@ class UserAddon extends Model{
         $dataObj->days = (strtotime($source->end_date) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->usedDays = (strtotime(date('Y-m-d')) - strtotime($source->start_date)) / (60 * 60 * 24);
         $dataObj->leftDays = $dataObj->days - $dataObj->usedDays;
-        $dataObj->rate = ($dataObj->leftDays / $dataObj->days) * 100;
+        $dataObj->rate = $dataObj->days ? ($dataObj->leftDays / $dataObj->days) * 100 : 0;
         return $dataObj;
     }
 

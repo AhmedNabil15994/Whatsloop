@@ -8,6 +8,9 @@
     .icon{
         float: unset;
     }
+    .abCart .list li span{
+        float: unset;
+    }
 </style>
 @endsection
 
@@ -66,7 +69,7 @@
                 <li><i class="flaticon-map"></i> <span>{{ $order->customer['country'] }}</span></li>
             </ul>
             <div class="details">
-                <a href="{{ isset($order->order_url) ? $order->order_url : 'https://s.salla.sa/login' }}" class="btnStyle">{{ trans('main.info') }}</a>
+                <a href="{{ isset($order->order_url) ? $order->order_url : 'https://web.zid.sa/login' }}" class="btnStyle">{{ trans('main.info') }}</a>
             </div>
         </div>
     </div>

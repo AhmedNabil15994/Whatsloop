@@ -184,7 +184,7 @@ class SubscriptionControllers extends Controller {
         }
         $membershipObj = Membership::getData($bundleObj->Membership);
         $addons = [];
-        if($bundleObj->addons != null){
+        if($bundleObj->addons != null && !empty(unserialize($bundleObj->addons))){
             $addons = Addons::dataList(1,unserialize($bundleObj->addons))['data'];
         }
 
@@ -224,9 +224,9 @@ class SubscriptionControllers extends Controller {
             $tax,
             $total,
         ];
-
+        \Session::put('BUNDLE',$total);
         $data['user'] = User::getOne(USER_ID);
-        $data['countries'] = countries();
+        $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
@@ -267,21 +267,18 @@ class SubscriptionControllers extends Controller {
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         $data['user'] = User::getOne(USER_ID);
-        $data['countries'] = countries();
+        $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         if(!empty($data['payment']) && $data['payment']->country){
-            $egypt = country($data['payment']->country); 
-            $data['regions'] = $egypt->getDivisions(); 
+            $data['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$data['payment']->country)->get();
         }
-        
+
         return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
     }
 
     public function getCities(){
         $input = \Request::all();
-        $egypt = country($input['id']); 
-
-        $statusObj['regions'] = $egypt->getDivisions();
+        $statusObj['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$input['id'])->get();
         $statusObj['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $statusObj);
     }
@@ -407,6 +404,12 @@ class SubscriptionControllers extends Controller {
 
         // }
         $url = \URL::to('/pushInvoice');
+        if(\Session::has('BUNDLE')){
+            Variable::where('var_key','bundle')->firstOrCreate([
+                'var_key' => 'bundle',
+                'var_value' => \Session::get('BUNDLE'), 
+            ]);
+        }
         if(isset($input['dataType']) && $input['dataType'] > 1){
             $url = \URL::to('/pushInvoice2');
             if($input['dataType'] == 2){
@@ -785,11 +788,10 @@ class SubscriptionControllers extends Controller {
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['user'] = User::first();
-        $data['countries'] = countries();
+        $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         if(!empty($data['payment']) && $data['payment']->country){
-            $egypt = country($data['payment']->country); 
-            $data['regions'] = $egypt->getDivisions(); 
+            $data['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$data['payment']->country)->get();
         }
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
         return view('Tenancy.Profile.Views.V5.checkout')->with('data',(object) $data);

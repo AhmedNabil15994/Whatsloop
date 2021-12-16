@@ -21,6 +21,11 @@
         <link rel="stylesheet" href="{{ asset('tenancy/assets/V5/css/responisve.css') }}" />
         <link rel="stylesheet" href="{{ asset('tenancy/assets/V5/css/dark.css') }}" />
         <link href="{{ asset('tenancy/assets/V5/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+        <style>
+            .mb-3{
+                margin-bottom: 25px;
+            }
+        </style>
        <!--[if lt IE 9]>
            <script src="js/html5shiv.min.js"></script>
            <script src="js/respond.min.js"></script>
@@ -67,6 +72,9 @@
                     <form class="formLogin">
                         @csrf
                         <h2 class="title">{{ trans('auth.reset') }}</h2>
+                        @if(Request::has('type') && Request::get('type') == 'old')
+                        <p class="mb-3">{{ trans('main.resetOld') }}</p>
+                        @endif
                         <div class="inputStyle telStyle">
                             <input type="hidden" name="phone">
                             <input class="phone" type="tel"  id="telephone" placeholder="{{ trans('auth.phonePlaceHolder') }}" />

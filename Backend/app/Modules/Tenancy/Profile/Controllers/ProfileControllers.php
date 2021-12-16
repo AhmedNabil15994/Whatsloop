@@ -14,6 +14,7 @@ use App\Models\Variable;
 use App\Models\UserChannels;
 use App\Models\ChatMessage;
 use App\Models\ChatDialog;
+use App\Models\Category;
 use App\Models\PaymentInfo;
 use App\Models\CentralChannel;
 use App\Models\ContactLabel;
@@ -22,12 +23,16 @@ use App\Models\UserStatus;
 use App\Models\ExtraQuota;
 use App\Models\Membership;
 use App\Models\UserExtraQuota;
+use App\Models\UserData;
 use App\Models\CentralUser;
 use App\Models\BankAccount;
+use App\Models\Product;
+use App\Models\Order;
 use Storage;
 use DataTables;
 use Validator;
 use App\Jobs\SyncMessagesJob;
+use App\Jobs\SyncDialogsJob;
 use App\Jobs\ReadChatsJob;
 
 
@@ -95,6 +100,21 @@ class ProfileControllers extends Controller {
         }
 
         if(isset($input['domain']) && !empty($input['domain'])){
+
+            $rules = [
+                'domain' => 'regex:/^([a-zA-Z0-9][a-zA-Z0-9-_])*[a-zA-Z0-9]*[a-zA-Z0-9-_]*[[a-zA-Z0-9]$/',
+            ];
+
+            $message = [
+                'domain.regex' => trans('main.domain2Validate'),
+            ];
+
+            $validate = \Validator::make($input, $rules, $message);
+            if($validate->fails()){
+                Session::flash('error', $validate->messages()->first());
+                return redirect()->back()->withInput();
+            }
+            
             $checkDomainObj = \DB::connection('main')->table('domains')->where('domain',$input['domain'])->first();
             if($checkDomainObj && $checkDomainObj->domain != $dataObj->domain){
                 Session::flash('error', trans('main.domainValidate2'));
@@ -105,7 +125,29 @@ class ProfileControllers extends Controller {
             \DB::connection('main')->table('domains')->where('tenant_id',$domainObj->tenant_id)->limit(1)->update([
                 'domain' => $input['domain'],
             ]);
-
+            // // Update User With Settings For Whatsapp Based On His Domain
+            $myData = [
+                'sendDelay' => '0',
+                'webhookUrl' => str_replace('://', '://'.$input['domain'].'.', config('app.BASE_URL')).'/whatsloop/webhooks/messages-webhook',
+                'instanceStatuses' => 1,
+                'webhookStatuses' => 1,
+                'statusNotificationsOn' => 1,
+                'ackNotificationsOn' => 1,
+                'chatUpdateOn' => 1,
+                'ignoreOldMessages' => 1,
+                'videoUploadOn' => 1,
+                'guaranteedHooks' => 1,
+                'parallelHooks' => 1,
+            ];
+            $channelObj = UserChannels::first();
+            if($channelObj){
+                $channelObj = CentralChannel::where('id',$channelObj->id)->first();
+                if($channelObj && $channelObj->instanceId != null){
+                    $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->instanceToken);
+                    $updateResult = $mainWhatsLoopObj->postSettings($myData);
+                    $result = $updateResult->json();
+                }
+            }
         }
 
         if(isset($input['company']) && !empty($input['company'])){
@@ -137,6 +179,15 @@ class ProfileControllers extends Controller {
 
         if($input['domain'] != $oldDomainValue){
             return redirect()->to(config('tenancy.protocol').$input['domain'].'.'.config('tenancy.central_domains')[0].'/login');
+        }
+
+        $itemObj = UserData::where('phone',$mainUserObj->phone)->first();
+        if($itemObj){
+            $itemObj->update([
+                'email'=> $input['email'],
+                'phone'=> $input['phone'],
+                'domain'=> $input['domain'],
+            ]);
         }
 
         Session::forget('photos');
@@ -173,6 +224,12 @@ class ProfileControllers extends Controller {
 
         $userObj->password = Hash::make($password);
         $userObj->save();
+
+      
+        $itemObj = UserData::where('phone',$userObj->phone)->first();
+        if($itemObj){
+            $itemObj->update(['password'=>Hash::make($password)]);
+        }
         
         WebActions::newType(2,'User');
         Session::flash('success', trans('auth.passwordChanged'));
@@ -462,7 +519,7 @@ class ProfileControllers extends Controller {
         ];
 
         $data['user'] = User::getOne(USER_ID);
-        $data['countries'] = countries();
+        $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
@@ -589,7 +646,7 @@ class ProfileControllers extends Controller {
 
         $userObj = User::first();
         User::setSessions($userObj);
-        return redirect()->to('/paymentError');
+        return redirect()->to('/dashboard');
     }
 
 
@@ -818,14 +875,20 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
 
-        dispatch(new SyncMessagesJob($result['data']['messages']));
+        if($result['data'] && $result['data']['messages']){
+            dispatch(new SyncMessagesJob($result['data']['messages']));
+            Session::flash('success',trans('main.syncInProgress'));
+        }
         
-        Session::flash('success',trans('main.syncInProgress'));
         return redirect()->back();
     }
 
     public function syncAll(){
-        $lastMessageObj = ChatMessage::where('id','!=',null)->delete();
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            $lastMessageObj = ChatMessage::where('id','!=',null)->delete();
+        }
+
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
         $updateResult = $mainWhatsLoopObj->messages($data);
@@ -836,11 +899,110 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
 
-        dispatch(new SyncMessagesJob($result['data']['messages']));
-        
-        Session::flash('success',trans('main.syncInProgress'));
+        if($result['data'] && $result['data']['messages']){
+            dispatch(new SyncMessagesJob($result['data']['messages']));
+            Session::flash('success',trans('main.syncInProgress'));
+        }
+
         return redirect()->back();
     }
+
+    public function syncDialogs(){
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            ChatDialog::where('id','!=',null)->delete();
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->dialogs($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        if($result['data'] && $result['data']['dialogs']){
+            dispatch(new SyncDialogsJob($result['data']['dialogs']));            
+            Session::flash('success',trans('main.inPrgo'));
+        }
+
+        return redirect()->back();
+    }
+
+    public function syncLabels(){
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            ChatDialog::where('id','!=',null)->delete();
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->labelsList($data);
+        $updateResult = $updateResult->json();
+
+        if(isset($updateResult['data']) && !empty($updateResult['data'])){
+            $labels = $updateResult['data']['labels'];
+            $value = 1;
+            if(empty($labels)){
+                $value = 0;
+            }
+
+            $varObj = Variable::where('var_key','BUSINESS')->first();
+            if(!$varObj){
+                $varObj = new Variable;
+                $varObj->var_key = 'BUSINESS';
+            }
+            $varObj->var_value = $value;
+            $varObj->save();
+
+            $channelObj = CentralChannel::where('global_user_id',$userObj->global_id)->first();
+            foreach($labels as $label){
+                $labelObj = Category::NotDeleted()->where('labelId',$label['id'])->first();
+                if(!$labelObj){
+                    $labelObj = new Category;
+                    $labelObj->channel = $channelObj->instanceId;
+                    $labelObj->sort = Category::newSortIndex();
+                }
+                $labelObj->labelId = $label['id'];
+                $labelObj->name_ar = $label['name'];
+                $labelObj->name_en = $label['name'];
+                $labelObj->color_id = Category::getColorData($label['hexColor'])[0];
+                $labelObj->status = 1;
+                $labelObj->save();
+            }
+        }
+
+        Session::flash('success',trans('main.inPrgo'));
+        return redirect()->back();
+    }
+
+    public function syncOrdersProducts(){
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            Order::truncate();
+            Product::truncate();
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->messages($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        if($result['data'] && $result['data']['messages']){
+            dispatch(new SyncMessagesJob($result['data']['messages']));
+            Session::flash('success',trans('main.syncInProgress'));
+        }
+
+        return redirect()->back();
+    }
+
 
     public function restoreAccountSettings(){
 
@@ -880,12 +1042,15 @@ class ProfileControllers extends Controller {
             'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
         ])->update(['var_value'=>0]);   
 
-        Contact::where('id','!=',null)->delete();
-        ChatMessage::where('id','!=',null)->delete();
-        ChatDialog::where('id','!=',null)->delete();
-        ContactLabel::where('id','!=',null)->delete();
-        ContactReport::where('id','!=',null)->delete();
-        UserStatus::where('id','!=',null)->delete();
+        if($userObj->is_old != 1){
+            Contact::where('id','!=',null)->delete();
+            Category::where('id','!=',null)->delete();
+            ChatMessage::where('id','!=',null)->delete();
+            ChatDialog::where('id','!=',null)->delete();
+            ContactLabel::where('id','!=',null)->delete();
+            ContactReport::where('id','!=',null)->delete();
+            UserStatus::where('id','!=',null)->delete();
+        }
      
         Session::flash('success',trans('main.logoutDone'));
         return redirect()->back();

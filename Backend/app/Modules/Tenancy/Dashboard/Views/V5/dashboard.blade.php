@@ -5,12 +5,45 @@
     .timer .nextPrev .btnNext{
         padding: 10px;
     }
+    .timer.times{
+        margin:30px auto;
+        border-radius: 10px;
+        background-color: #00bfb5;
+        text-align: center;
+        overflow: hidden;
+        max-width:360px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 60px;
+        color: #fff;
+        margin-top: 0;
+    }
+    .timer.times i{
+        margin-left:5px;
+        position: relative;
+        top: 1px;
+    }
+    .timer.times .titleTimer{
+        margin-bottom: 30px;
+        width: 100%;
+        color: #ffffff;
+    }
 </style>
 @endsection
 
 {{-- Content --}}
 @section('content')
 <div class="stats">
+    @if(App\Models\Variable::getVar('SYNCING') == 1 || App\Models\Variable::getVar('QRSYNCING') == 1)
+    <div class="col-xs-12" style="padding: 0;">
+        <div class="timer times" style="max-width: 100%;">
+            <h2 class="titleTimer"><i class="fa fa-refresh fa-spin"></i> {{ trans('main.syncInProgress') }}</h2>
+            <div class="desc"></div>
+        </div>
+    </div>
+    @endif
+
     @if(Session::has('hasJob') && Session::get('hasJob') == 1)
     <div class="row">
         <div class="col-md-3"></div>
@@ -76,8 +109,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="itemStats color1">
-                        <h2 class="title">{{ trans('main.messages') }}</h2>
-                        <span class="numb">{{ $data->allMessages }}</span>
+                        <h2 class="title">{{ trans('main.dialogs') }}</h2>
+                        <span class="numb">{{ $data->allDialogs }}</span>
                         <i class="icon flaticon-email-1"></i>
                     </div>
                 </div>
@@ -142,7 +175,7 @@
                     <tr>
                         <td><a href="#" class="numbStyle"><i class="flaticon-phone-call"></i> {{ $message->chatId2 }}</a></td>
                         <td style="white-space: pre-line;">
-                            @if(strpos(' https',ltrim($message->body)) !== false || filter_var(trim($message->body), FILTER_VALIDATE_URL))
+                            @if($message->body != null && (strpos(' https',ltrim($message->body)) !== false || filter_var(trim($message->body), FILTER_VALIDATE_URL)))
                             📷
                             @else
                             {{ $message->body }}

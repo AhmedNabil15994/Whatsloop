@@ -6,6 +6,9 @@ html,body,
 .toast{
   border-radius: 0 !important;
 }
+.dtr-data{
+  white-space: pre-line;
+}
 .toast-title{
   padding-top: 6px;
 }

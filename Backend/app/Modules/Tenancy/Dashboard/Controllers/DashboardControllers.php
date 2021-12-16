@@ -31,6 +31,7 @@ use App\Models\Contact;
 use App\Models\ChatMessage;
 use App\Models\Bundle;
 use App\Models\ChatEmpLog;
+use App\Models\ChatDialog;
 
 class DashboardControllers extends Controller {
 
@@ -52,11 +53,11 @@ class DashboardControllers extends Controller {
 
         $messages = (object) ChatMessage::lastMessages();
         
-        $data['allMessages'] = ChatMessage::count();
+        $data['allDialogs'] = ChatDialog::count();
         $data['data'] = $messages->data;
         $data['pagination'] = $messages->pagination;
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
-        $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
+        $data['incomingMessages'] = ChatMessage::count() - $data['sentMessages'];
         $data['contactsCount'] = Contact::NotDeleted()->count();
         $data['sendStatus'] = $sendStatus;
         $data['serverStatus'] = 100;

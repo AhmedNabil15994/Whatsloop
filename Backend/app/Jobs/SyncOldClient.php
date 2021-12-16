@@ -18,6 +18,7 @@ use App\Models\GroupNumber;
 use App\Models\Category;
 use App\Models\Contact;
 use App\Models\ChatDialog;
+use App\Models\Template;
 use App\Models\ChatMessage;
 use App\Models\ContactLabel;
 use App\Models\Reply;
@@ -67,6 +68,7 @@ class SyncOldClient implements ShouldQueue
     public $instanceId;
     public $membership_id;
     public $tenant_id;
+    public $groupId;
 
     public function __construct($userObj,$requiredSync)
     {
@@ -80,6 +82,7 @@ class SyncOldClient implements ShouldQueue
         $this->addons = [];
         $this->channel = 50000;
         $this->baseUrl = 'https://whatsloop.net/api/v1/';
+        $this->groupId = 0;
     }
 
     /**
@@ -141,7 +144,7 @@ class SyncOldClient implements ShouldQueue
                     'token' => $instanceData['instanceToken'],
                     'name' => $instanceData['WhatsAppName'],
                     'start_date' => date('Y-m-d',$instanceData['StartDate']),
-                    'end_date' => date('Y-m-d',$instanceData['EndDate']),
+                    'end_date' => $instanceData['EndDate'] != '' ? date('Y-m-d',$instanceData['EndDate']) : date('Y-m-d',$instanceData['StartDate']),
                 ];
 
                 $central = CentralChannel::generateNewKey($channel['token']);
@@ -155,18 +158,20 @@ class SyncOldClient implements ShouldQueue
 
                 $extraChannelData = array_merge($channel,$extraData);
 
-                $centralChannel = CentralChannel::where('id',$instanceData['instanceId'])->first();
-                if(!$centralChannel){
-                    CentralChannel::create($extraChannelData);                    
-                }else{
-                    $centralChannel->update($channel);
-                }
+                if($instanceData['instanceId'] != ''){
+                    $centralChannel = CentralChannel::where('id',$instanceData['instanceId'])->first();
+                    if(!$centralChannel){
+                        CentralChannel::create($extraChannelData);                    
+                    }else{
+                        $centralChannel->update($channel);
+                    }
 
-                $tenantChannel = UserChannels::where('id',$channel['id'])->first();
-                if(!$tenantChannel){
-                    UserChannels::create($channel);                    
-                }else{
-                    $tenantChannel->update($channel);                    
+                    $tenantChannel = UserChannels::where('id',$channel['id'])->first();
+                    if(!$tenantChannel){
+                        UserChannels::create($channel);                    
+                    }else{
+                        $tenantChannel->update($channel);                    
+                    }
                 }
 
                 $this->channel = $instanceData['instanceId'];
@@ -184,7 +189,7 @@ class SyncOldClient implements ShouldQueue
         $addons = [];
         $membershipObj = (object) $membershipObj;
         $start_date = $instanceData['StartDate'];
-        $end_date = $instanceData['EndDate'];
+        $end_date = $instanceData['EndDate'] != '' ? $instanceData['EndDate'] : $instanceData['StartDate'];
 
         if($membershipObj->Title_ar == 'المنصة التفاعلية'){
             $addons[] = 2;
@@ -271,14 +276,15 @@ class SyncOldClient implements ShouldQueue
                         $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
                     }
 
+                    $tableName = $service.'_'.$modelName;
                     if($modelName == 'abandoned-carts'){
                         $params = [
                             'page' => 1,
                             'page_size' => 100,
                         ];
+                        $tableName = $service.'_abandonedCarts';
                     }
 
-                    $tableName = $service.'_'.$modelName;
 
                     $myHeaders = [
                         "X-MANAGER-TOKEN" => $managerToken,
@@ -419,7 +425,7 @@ class SyncOldClient implements ShouldQueue
                     $addResult = $mainWhatsLoopObj->createLabel($data);
                     $result = $addResult->json();
                     if($result['status']['status'] == 1){
-                        $labelId = $result['data']['label']['id'];
+                        $labelId = isset($result['data']['label']) && !empty($result['data']['label']) ? $result['data']['label']['id'] : null;
                     }
                     $item['labelId'] = $labelId;
 
@@ -428,6 +434,41 @@ class SyncOldClient implements ShouldQueue
                         $dataObj->update($item);
                     }else{
                         Category::create($item);
+                    }
+                }
+            }
+        }
+    }
+
+    public function pullBasicTemplates()
+    {
+        $userObj = $this->userObj;
+        // Get User Group Numbers
+        $mainURL = $this->baseUrl.'migration/whats-msgs-temp';
+        $result =  Http::withToken($this->token)->get($mainURL);
+        if($result->ok() && $result->json()){
+            $data = $result->json();
+            if($data['status'] == true){
+                $loopData = @$data['WhatsMsgsTemp'];
+                foreach($loopData as $oneItemData){
+                    if( $oneItemData['id'] != 1){
+                        $item = [
+                            'id' => $oneItemData['id'],
+                            'channel' => $this->instanceId,
+                            'name_ar' => $oneItemData['Title_ar'],
+                            'name_en' => $oneItemData['Title_en'],
+                            'description_ar' => $oneItemData['Content_ar'],
+                            'description_en' => $oneItemData['Content_en'],
+                            'status' => 1,
+                            'created_by' => $userObj->id,
+                            'created_at' => date('Y-m-d H:i:s',$oneItemData['Date']),
+                        ];
+                        $dataObj = Template::find($oneItemData['id']);
+                        if($dataObj){
+                            $dataObj->update($item);
+                        }else{
+                            Template::create($item);
+                        }
                     }
                 }
             }
@@ -634,23 +675,27 @@ class SyncOldClient implements ShouldQueue
             $data = $result->json();
             if($data['status'] == true){
                 $loopData = @$data['ModeratorsGroups'];
-                Group::where('name_en','Mods')->delete();
+                Group::truncate();
                 foreach($loopData as $oneItemData){
-                    $item = [
-                        'id' => $oneItemData['id'],
-                        'name_ar' => $oneItemData['Title_ar'],
-                        'name_en' => $oneItemData['Title_en'],
-                        'status' => 1,
-                        'rules' => $this->getRules($oneItemData['Mod_Sections']),
-                        'created_by' => $userObj->id,
-                        'created_at' => date('Y-m-d H:i:s',$oneItemData['Date']),
-                    ];
+                    if($oneItemData['Title_ar'] != 'مدير'){
+                        $item = [
+                            'id' => $oneItemData['id'],
+                            'name_ar' => $oneItemData['Title_ar'],
+                            'name_en' => $oneItemData['Title_en'],
+                            'status' => 1,
+                            'rules' => $this->getRules($oneItemData['Mod_Sections']),
+                            'created_by' => $userObj->id,
+                            'created_at' => date('Y-m-d H:i:s',$oneItemData['Date']),
+                        ];
 
-                    $dataObj = Group::find($oneItemData['id']);
-                    if($dataObj){
-                        $dataObj->update($item);
+                        $dataObj = Group::find($oneItemData['id']);
+                        if($dataObj){
+                            $dataObj->update($item);
+                        }else{
+                            Group::create($item);
+                        }
                     }else{
-                        Group::create($item);
+                        $this->groupId = $oneItemData['id'];
                     }
                 }
             }
@@ -672,7 +717,7 @@ class SyncOldClient implements ShouldQueue
                 foreach($loopData as $oneItemData){
                     $item = [
                         'name' => $oneItemData['Username'],
-                        'group_id' => $oneItemData['AdminsGroups'],
+                        'group_id' => $oneItemData['AdminsGroups'] == $this->groupId ? 1 : $oneItemData['AdminsGroups'],
                         'email' => $oneItemData['Email'],
                         'channels' => $channel_id,
                         'two_auth' => 0,
@@ -1158,7 +1203,9 @@ class SyncOldClient implements ShouldQueue
 
         $this->pullGroupNumbers();   
 
-        $this->pullLabels();   
+        $this->pullLabels();  
+
+        $this->pullBasicTemplates();   
 
         $this->pullContacts();  
 
@@ -1191,7 +1238,7 @@ class SyncOldClient implements ShouldQueue
 
     public function finalizeMigration(){
         $userObj = $this->userObj;
-        if(count(unserialize($this->userObj->channels)) > 0){
+        if(count($this->userObj->channels) > 0){
             if(in_array(3,$this->addons)){
                 \Artisan::call('tenants:run groupMsg:send --tenants='.$this->tenant_id);
             }

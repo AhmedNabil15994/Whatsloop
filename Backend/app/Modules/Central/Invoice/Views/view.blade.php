@@ -42,7 +42,7 @@
                                 }
                             @endphp
                             <h1 class="invoice-title font-weight-bold text-uppercase mb-1">
-                                {{ trans('main.invoice') }} #{{ $data->data->id }}
+                                {{ trans('main.invoice') }} #{{ $data->data->id + 10000 }}
                                 <span class="badge badge-md badge-{{ $className }}" style="padding: 6px;">
                                     {{ trans('main.invoice_status_'.$data->data->status) }}
                                 </span>
@@ -118,6 +118,11 @@
                                     <tr>
                                         <td colspan="5"></td>
                                         <td class="text-left">
+                                            <p class="mb-2">
+                                                <span class="tx-bold">{{ trans('main.discount') }} :</span>
+                                                <span class="float-right">{{ $mainPrices - $data->data->total }} {{ trans('main.sar') }}</span>
+                                                <div class="clearfix"></div>
+                                            </p>
                                             <p>
                                                 @php 
                                                     $tax = Helper::calcTax($data->data->total);

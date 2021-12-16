@@ -44,6 +44,15 @@ return [
     'BundleControllers@sort' => 'sort-bundle',
     'BundleControllers@charts' => 'charts-bundle',
 
+    'NotificationTemplateControllers@index' => 'list-notificationTemplates',
+    'NotificationTemplateControllers@index@edit' => 'edit-notificationTemplate',
+    'NotificationTemplateControllers@update' => 'edit-notificationTemplate',
+    'NotificationTemplateControllers@fastEdit' => 'edit-notificationTemplate',
+    'NotificationTemplateControllers@delete' => 'delete-notificationTemplate',
+    'NotificationTemplateControllers@arrange' => 'sort-notificationTemplate',
+    'NotificationTemplateControllers@sort' => 'sort-notificationTemplate',
+    'NotificationTemplateControllers@charts' => 'charts-notificationTemplate',
+
     'MembershipControllers@index' => 'list-memberships',
     'MembershipControllers@edit' => 'edit-membership',
     'MembershipControllers@update' => 'edit-membership',

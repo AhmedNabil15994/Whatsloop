@@ -10,14 +10,14 @@
         "production": "mix --production"
     },
     "devDependencies": {
-        "@vue/cli-plugin-babel": "~4.5.0",
-        "@vue/cli-plugin-eslint": "~4.5.0",
-        "@vue/cli-service": "^3.12.1",
+        "@vue/cli-plugin-babel": "^3.3.0",
+        "@vue/cli-plugin-eslint": "^3.1.1",
+        "@vue/cli-service": "^4.5.15",
         "axios": "^0.21",
         "babel-eslint": "^10.1.0",
         "bootstrap": "^4.0.0",
-        "eslint": "^6.7.2",
-        "eslint-plugin-vue": "^6.2.2",
+        "eslint": "^8.4.1",
+        "eslint-plugin-vue": "^8.2.0",
         "jquery": "^3.2",
         "laravel-mix": "^6.0.19",
         "lodash": "^4.17.19",
@@ -27,10 +27,11 @@
         "sass": "^1.20.1",
         "sass-loader": "^8.0.0",
         "vue": "^2.6.12",
-        "vue-loader": "^15.9.2",
+        "vue-loader": "^15.9.8",
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "@codekraft-studio/vue-record": "^0.0.3",
         "@kevinfaguiar/vue-twemoji-picker": "^5.7.4",
         "axios": "^0.21.0",
         "bootstrap-vue": "^2.21.2",
