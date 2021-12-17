@@ -206,11 +206,15 @@ class CategoryControllers extends Controller {
             $colorUpdateFlag = 1;
         }
 
+        $varObj = Variable::getVar('BUSINESS');
+        $disable = 0;
+        if(!$varObj){$disable = 1;}
+
         // Perform Whatsapp Integration
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['labelId'] = $dataObj->labelId;
 
-        if($nameUpdateFlag == 1){
+        if($nameUpdateFlag == 1 && !$disable){
             $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
             $updateResult = $mainWhatsLoopObj->updateLabel($data);
             $result = $updateResult->json();
@@ -221,7 +225,7 @@ class CategoryControllers extends Controller {
             }
         }
 
-        if($colorUpdateFlag == 1){
+        if($colorUpdateFlag == 1 && !$disable){
             $data['color'] = Category::getColorData($input['color_id'])[2];
             $updateResult = $mainWhatsLoopObj->updateLabel($data);
             $result = $updateResult->json();
@@ -267,17 +271,20 @@ class CategoryControllers extends Controller {
         if(!$varObj){$disable = 1;}
         // Perform Whatsapp Integration
         $labelId = '';
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
-        $addResult = $mainWhatsLoopObj->createLabel($data);
-        $result = $addResult->json();
-        // dd($result);
-        if($result['status']['status'] != 1){
-            Session::flash('error', $result['status']['message']);
-            return \Redirect::back()->withInput();
+        if(!$disable){
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
+            $addResult = $mainWhatsLoopObj->createLabel($data);
+            $result = $addResult->json();
+            // dd($result);
+            if($result['status']['status'] != 1){
+                Session::flash('error', $result['status']['message']);
+                return \Redirect::back()->withInput();
+            }
+            $labelId = $result['data']['label']['id'];
         }
+        
 
-        $labelId = $result['data']['label']['id'];
 
         $dataObj = new Category;
         $dataObj->channel = Session::get('channelCode');
@@ -293,13 +300,15 @@ class CategoryControllers extends Controller {
 
         if(isset($input['color_id']) && !empty($input['color_id'])){
             $updateDate['color'] = Category::getColorData($input['color_id'])[2];
-            $updateDate['labelId'] = $dataObj->labelId;
-            $updateResult = $mainWhatsLoopObj->updateLabel($updateDate);
-            $result = $updateResult->json();
+            if(!$disable){
+                $updateDate['labelId'] = $dataObj->labelId;
+                $updateResult = $mainWhatsLoopObj->updateLabel($updateDate);
+                $result = $updateResult->json();
 
-            if($result['status']['status'] != 1){
-                Session::flash('error', $result['status']['message']);
-                return \Redirect::back()->withInput();
+                if($result['status']['status'] != 1){
+                    Session::flash('error', $result['status']['message']);
+                    return \Redirect::back()->withInput();
+                }
             }
 
             $dataObj->color_id = $input['color_id'];
@@ -330,20 +339,30 @@ class CategoryControllers extends Controller {
         $id = (int) $id;
         $dataObj = Category::getOne($id);
         WebActions::newType(3,$this->getData()['mainData']['modelName']);
-        // Perform Whatsapp Integration
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['labelId'] = $dataObj->labelId;
-        $updateResult = $mainWhatsLoopObj->removeLabel($data);
+        $varObj = Variable::getVar('BUSINESS');
+        $disable = 0;
+        if(!$varObj){$disable = 1;}
+        if(!$disable){
+            // Perform Whatsapp Integration
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $data['labelId'] = $dataObj->labelId;
+            $updateResult = $mainWhatsLoopObj->removeLabel($data);
+        }
+        
         return \Helper::globalDelete($dataObj);
     }
 
     public function fastEdit() {
         $input = \Request::all();
+        $varObj = Variable::getVar('BUSINESS');
+        $disable = 0;
+        if(!$varObj){$disable = 1;}
+        
         foreach ($input['data'] as $item) {
             $col = $item[1];
             $dataObj = Category::find($item[0]);
 
-            if($col == 'color_id'){
+            if($col == 'color_id' && !$disable){
                 $mainWhatsLoopObj = new \MainWhatsLoop();
                 $data['labelId'] = $dataObj->labelId;
                 $data['color'] = Category::getColor($item[2])[3];

@@ -212,6 +212,7 @@
                                                                     :imgUrlList="message.body.split()"
                                                                     :closable="true"
                                                                     :cyclical="true"
+                                                                    :title="''"
                                                                 >
                                                                 </image-viewer-vue>
                                                             </transition>

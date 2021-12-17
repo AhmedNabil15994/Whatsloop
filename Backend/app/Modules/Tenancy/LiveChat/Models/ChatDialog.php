@@ -97,8 +97,8 @@ class ChatDialog extends Model{
         if($source){
             $source = (object) $source;
             $dataObj->id = $source->id;
-            $dataObj->name = $source->name != '' ? $source->name : self::reformChatId($source->id,'name');
-            $dataObj->chatName = self::reformChatId($source->id,null,$source->name);
+            $dataObj->name = $source->name;
+            $dataObj->chatName = self::reformChatId($source->id,$source->name);
             $dataObj->image = isset($source->image) ? mb_convert_encoding($source->image, 'UTF-8', 'UTF-8') : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
             $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
@@ -135,26 +135,17 @@ class ChatDialog extends Model{
         return $newName;
     }
 
-    static function reformChatId($chatId,$type=null,$name=null){
+    static function reformChatId($chatId,$name){
         $chatId = str_replace('@c.us','',$chatId);
         $chatId = str_replace('@g.us','',$chatId);
+        $name = str_replace('@c.us','',$name);
+        $name = str_replace('@g.us','',$name);
         if($name != null && $name != ''){
-            $name = str_replace('@c.us','',$name);
-            $name = str_replace('@g.us','',$name);
-            if($chatId != $name){
-                return $name;
-            }else{
-                $chatId = '+'.$chatId;
-                $parts=sscanf($chatId,'%4c%2c%3c%3c');
-                return $parts[0].' '.$parts[1].' '.$parts[2].' '.$parts[3];
-            }
+            return $name;
         }
-        if($type != null){
-            $chatId = '+'.$chatId;
-            $parts=sscanf($chatId,'%4c%2c%3c%3c');
-            return $parts[0].' '.$parts[1].' '.$parts[2].' '.$parts[3];
-        }
-        return $chatId;
+        $chatId = '+'.$chatId;
+        $parts=sscanf($chatId,'%4c%2c%3c%3c');
+        return $parts[0].' '.$parts[1].' '.$parts[2].' '.$parts[3];
     }
 
     static function reformDate($time){

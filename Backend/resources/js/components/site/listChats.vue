@@ -102,11 +102,6 @@
                                                     </div>
                                                 </div>
                                             </li>
-                                            <div v-if="chats.Dialogs">
-                                                <center v-if="totalCount === false && chats.Dialogs.length > 29">
-                                                    <div class="lds-roller" style='margin-top:15px;margin-bottom:15px'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                                                </center>
-                                            </div>
                                            <!-- <scroll-loader :loaderEnable="false" v-if="totalCount === false && chats.Dialogs !== null && openMainMsgs === false"  :loader-method="loadMore"></scroll-loader> -->
                                         </ul>
                                             
@@ -181,9 +176,13 @@
                                         <div class="chat-message-list notFound" v-if="chats.Dialogs.length === 0 || chats.Dialogs === undefined">
                                              لا يوجد محادثات
                                         </div>-->
-
+                                        <div v-if="chats.Dialogs">
+                                            <div v-observe-visibility="{callback: visibilityChanged}" v-if="totalCount === false && chats.Dialogs.length > 25" class="newLoader" style="text-align:center">
+                                                <div class="lds-roller" style="margin:15px 0"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                                            </div>
+                                        </div>
                                 </div>
-        
+                                
                             </div>
                         <!-- End chat-message-list -->
                         </vuescroll>
@@ -216,10 +215,10 @@ export default {
     name:"listChats",
     mounted () {
 
-           const { scrollTop } = this.$refs["vs2"].getPosition();
+         /*  const { scrollTop } = this.$refs["vs2"].getPosition();
             if(scrollTop === 0) {
                 this.$emit("totalCountTrue");
-            }
+            }*/
 
     },
     data()
@@ -249,16 +248,30 @@ export default {
         },
         updateValue(val) {
             this.$emit("input",val);
-        },
+        },/*
         handleScroll() {
-            var lastMsg = this.chats.Dialogs[this.chats.Dialogs.length - 1].id;
-            var positionLst = document.getElementById(lastMsg).offsetTop - 481;
-           const { scrollTop } = this.$refs["vs2"].getPosition();
-           // console.log(scrollTop + " - " + positionLst)
-            if(scrollTop >= positionLst) {
-                this.loadMore();
+           // var positionLst = document.getElementById(this.chats.Dialogs[this.chats.Dialogs.length - 1].id).getBoundingClientRect().top;
+          // const { scrollTop } = this.$refs["vs2"].getPosition();
+
+           // var firstItem = Math.trunc(Math.abs(positionLst.top));
+
+            //var lastItem = document.getElementById(this.chats.Dialogs[this.chats.Dialogs.length - 1].id).getBoundingClientRect();
+
+           // var scrolTop = Math.trunc(scrollTop);
+            
+          //  console.log(Math.trunc(positionLst))
+          //  console.log(lastItem);
+        
+            if(Math.trunc(Math.abs(positionLst.top)) > Math.trunc(Math.abs(lastItem))) {
+                console.log('test')
+               // this.loadMore();
             }
 
+        },*/
+        visibilityChanged: function (isVisible) {
+            if(isVisible === true) {
+                this.loadMore();
+            }
         }
         
 

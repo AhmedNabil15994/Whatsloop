@@ -23,6 +23,13 @@
     li:not([titlehover="link4"]) i:not(.flaticon-left-arrow){
         margin-top: 15px;
     }
+    .nextPrev{
+        margin-left: 30px;
+        margin-right: 30px;
+    }
+    .footer .top.active svg{
+        margin-top: 10px;
+    }
 </style>
 @section('content')
 <!-- Start Content-->

@@ -206,11 +206,11 @@
         <li titlehover="link18">
 			<a href="#" class="subToggle {{ Active(URL::to('/users*')) }} {{ Active(URL::to('/groups*')) }}"><i class="flaticon-group"></i> {{ trans('main.users') }} <i class="arrowLeft flaticon-left-arrow"></i></a>
 			<ul class="subMenu">
-				@if(\Helper::checkRules('list-users'))
-				<li><a href="{{ URL::to('/users') }}" class="{{ Active(URL::to('/users*')) }}">{{ trans('main.users') }}</a></li>
-				@endif
 				@if(\Helper::checkRules('list-groups'))
 				<li><a href="{{ URL::to('/groups') }}" class="{{ Active(URL::to('/groups*')) }}">{{ trans('main.groups') }}</a></li>
+				@endif
+				@if(\Helper::checkRules('list-users'))
+				<li><a href="{{ URL::to('/users') }}" class="{{ Active(URL::to('/users*')) }}">{{ trans('main.users') }}</a></li>
 				@endif
 			</ul>
 		</li>

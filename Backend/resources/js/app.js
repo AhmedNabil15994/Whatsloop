@@ -91,6 +91,9 @@ Vue.use(ScrollLoader);
 import VueRecord from '@codekraft-studio/vue-record'
 Vue.use(VueRecord)
 
+import VueObserveVisibility from 'vue-observe-visibility'
+Vue.use(VueObserveVisibility)
+
 Vue.config.productionTip = false
 
 new Vue({
