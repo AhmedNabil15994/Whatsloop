@@ -21,9 +21,9 @@
     <input type="hidden" name="modelProps" value="{{ json_encode($data->modelProps) }}">
     <div class="row">
         <form class="form" method="post" action="{{ URL::to('/addGroupNumbers/create') }}">
-            <div class="col-md-6">
-                <div class="form" method="post" action="{{ URL::to('/addGroupNumbers/create') }}">
-                    @csrf
+            @csrf
+            <div class="col-md-12">
+                <div class="form">
                     <input type="hidden" name="status">
                     <h2 class="title">{{ $data->designElems['mainData']['title'] }}</h2>
                     <div class="content">
@@ -84,9 +84,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <form class="form">
                     <h2 class="title">{{ trans('main.fileContent') }}</h2>
+                    <input type="hidden" name="files" value="">
                     <div class="row">
                         <div class="sortable-list tasklist list-unstyled col">
                             <div class="" id="colData">

@@ -46,98 +46,105 @@ class PushAddonSetting extends Command
     public function handle()
     {   
 
-        $userAddons = UserAddon::NotDeleted()->whereIn('addon_id',[4,5])->where('status',1)->get();
+        $userAddons = UserAddon::NotDeleted()->whereIn('addon_id',[4,5])->where('setting_pushed',0)->where('status',1)->get();
         foreach($userAddons as $userAddon){
-            $domain = CentralUser::getDomain($userAddon->Client);
-            $domainObj = Domain::where('domain',$domain)->first();
-            $tenant = Tenant::find($domainObj->tenant_id);
-            
-            if($userAddon->addon_id == 4){
-                // Zid Webhooks
-                $webhookUrl = str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/zid-webhook';
-                $actions = ['order.create','order.status.update','product.create','product.update','product.publish','product.delete'];
+            if($userAddon->Client){
+                $domain = CentralUser::getDomain($userAddon->Client);
+                $domainObj = Domain::where('domain',$domain)->first();
+                $tenant = Tenant::find($domainObj->tenant_id);
+                $centralUserObj = CentralUser::getData($userAddon->Client);
                 
-                tenancy()->initialize($tenant);
-                $url = CentralVariable::getVar('ZidURL').'/managers/webhooks';
-                $storeId = Variable::getVar('ZidStoreID');
-                $managerToken = Variable::getVar('ZidStoreToken');
-                $merchantToken = CentralVariable::getVar('ZidMerchantToken');
-                tenancy()->end($tenant);
-                
-                foreach($actions as $key => $action){
-                    $urlData = [
-                        'event' => $action,
-                        'target_url' => $webhookUrl,
-                        'original_id' => 610 + $key,
-                        'subscriber' => ucwords(str_replace('.',' ',$action)).' Notify',
-                        'conditions' => "{}",
-                    ];
-                    $payload = json_encode($urlData);
-
-
-                    if($storeId && $managerToken){
-
-                        $ch = curl_init($url);
-
-                        curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
-                        curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
-                            'Content-Type: application/json', 
-                            'X-MANAGER-TOKEN: '.$managerToken,
-                            'STORE-ID: '.$storeId,
-                            'ROLE: Manager',
-                            'User-Agent: whatsloop/1.00.00 (web)',
-                            'Accept-Language: en',
-                            'Authorization: Bearer '.$merchantToken,
-                        )); 
-                        curl_setopt($ch, CURLOPT_POST,           1 );
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-                        $result=curl_exec ($ch);                        
+                if($userAddon->addon_id == 4){
+                    // Zid Webhooks
+                    $webhookUrl = str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/zid-webhook';
+                    $actions = ['order.create','order.status.update','product.create','product.update','product.publish','product.delete'];
+                    
+                    tenancy()->initialize($tenant);
+                    $url = CentralVariable::getVar('ZidURL').'/managers/webhooks';
+                    $storeId = Variable::getVar('ZidStoreID');
+                    $managerToken = Variable::getVar('ZidStoreToken');
+                    $merchantToken = CentralVariable::getVar('ZidMerchantToken');
+                    tenancy()->end($tenant);
+                    
+                    foreach($actions as $key => $action){
+                        $urlData = [
+                            'event' => $action,
+                            'target_url' => $webhookUrl,
+                            'original_id' => 610 + $key,
+                            'subscriber' => ucwords(str_replace('.',' ',$action)).' Notify',
+                            'conditions' => "{}",
+                        ];
+                        $payload = json_encode($urlData);
+    
+    
+                        if($storeId && $managerToken){
+    
+                            $ch = curl_init($url);
+    
+                            curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
+                            curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
+                                'Content-Type: application/json', 
+                                'X-MANAGER-TOKEN: '.$managerToken,
+                                'STORE-ID: '.$storeId,
+                                'ROLE: Manager',
+                                'User-Agent: whatsloop/1.00.00 (web)',
+                                'Accept-Language: en',
+                                'Authorization: Bearer '.$merchantToken,
+                            )); 
+                            curl_setopt($ch, CURLOPT_POST,           1 );
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+                            $result=curl_exec ($ch);   
+                            $userAddon->setting_pushed = 1;
+                            $userAddon->save();   
+                        }
                     }
-                }
-
-            }elseif($userAddon->addon_id == 5){
-                // Salla Webhooks
-                $webhookUrl = str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/salla-webhook';
-                $actions = ['order.created','order.updated','product.created','product.updated','customer.created','customer.updated'];
-
-                tenancy()->initialize($tenant);
-                $url = CentralVariable::getVar('SallaURL').'/webhooks/subscribe';
-                $managerToken = Variable::getVar('SallaStoreToken');
-                tenancy()->end($tenant);
-
-                foreach($actions as $key => $action){
-                    $urlData = [
-                        'name' => ucwords(str_replace('.',' ',$action)).' Notify',
-                        'event' => $action,
-                        'url' => $webhookUrl,
-                        'headers' => [
-                            [
-                                'key' => 'Authorization',
-                                'value' => $managerToken,
+    
+                }elseif($userAddon->addon_id == 5){
+                    // Salla Webhooks
+                    $webhookUrl = str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/salla-webhook';
+                    $actions = ['order.created','order.updated','product.created','product.updated','customer.created','customer.updated'];
+    
+                    tenancy()->initialize($tenant);
+                    $url = CentralVariable::getVar('SallaURL').'/webhooks/subscribe';
+                    $managerToken = Variable::getVar('SallaStoreToken');
+                    tenancy()->end($tenant);
+    
+                    foreach($actions as $key => $action){
+                        $urlData = [
+                            'name' => ucwords(str_replace('.',' ',$action)).' Notify',
+                            'event' => $action,
+                            'url' => $webhookUrl,
+                            'headers' => [
+                                [
+                                    'key' => 'Authorization',
+                                    'value' => $managerToken,
+                                ],
+                                [
+                                    'key' => 'Accept-Language',
+                                    'value' => "AR",
+                                ]
                             ],
-                            [
-                                'key' => 'Accept-Language',
-                                'value' => "AR",
-                            ]
-                        ],
-                    ];
-
-                    $payload = json_encode($urlData);
-
-                    if($managerToken){
-
-                        $ch = curl_init($url);
-
-                        curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
-                        curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
-                            'Content-Type: application/json', 
-                            'Authorization: Bearer '.$managerToken,
-                        )); 
-                        curl_setopt($ch, CURLOPT_POST,           1 );
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-                        $result=curl_exec ($ch);            
+                        ];
+    
+                        $payload = json_encode($urlData);
+    
+                        if($managerToken){
+    
+                            $ch = curl_init($url);
+    
+                            curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
+                            curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
+                                'Content-Type: application/json', 
+                                'Authorization: Bearer '.$managerToken,
+                            )); 
+                            curl_setopt($ch, CURLOPT_POST,           1 );
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+                            $result=curl_exec ($ch);  
+                            $userAddon->setting_pushed = 1;
+                            $userAddon->save();   
+                        }
                     }
-                }
+                }   
             }
         }
     }

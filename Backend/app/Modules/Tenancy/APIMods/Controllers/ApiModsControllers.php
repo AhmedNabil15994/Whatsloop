@@ -10,6 +10,7 @@ use App\Models\Contact;
 use App\Models\ContactReport;
 use App\Models\UserStatus;
 use App\Models\User;
+use App\Models\ChatMessage;
 
 class ApiModsControllers extends Controller {
 
@@ -174,8 +175,8 @@ class ApiModsControllers extends Controller {
 
     public function msgsArchive(Request $request){
         if($request->ajax()){
-            $data = ContactReport::dataList();
-            return Datatables::of($data['data'])->rawColumns(['status'])->make(true);
+            $data = ChatMessage::dataList();
+            return Datatables::of($data['data'])->rawColumns(['icon'])->make(true);
         }
 
         $userObj = User::find(USER_ID);
@@ -185,15 +186,6 @@ class ApiModsControllers extends Controller {
         $channelObj->title = unserialize($userObj->channels)[0];
         $channels[] = $channelObj;
 
-        $message_types = [
-            ['id'=>1,'title'=>trans('main.text')],
-            ['id'=>2,'title'=>trans('main.photoOrFile')],
-            ['id'=>4,'title'=>trans('main.sound')],
-            ['id'=>5,'title'=>trans('main.link')],
-            ['id'=>6,'title'=>trans('main.whatsappNos')],
-            ['id'=>7,'title'=>trans('main.mapLocation')],
-        ];
-
         $data['designElems']['mainData'] = [
             'title' => trans('main.msgsArchive'),
             'url' => 'msgsArchive',
@@ -202,55 +194,7 @@ class ApiModsControllers extends Controller {
             'modelName' => 'msgsArchive',
             'icon' => 'mdi mdi-archive-outline',
         ];
-        $data['designElems']['searchData'] = [
-            'id' => [
-                'type' => 'text',
-                'class' => 'form-control m-input',
-                'index' => '0',
-                'label' => trans('main.id'),
-            ],
-            'channel' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'index' => '',
-                'options' => $channels,
-                'label' => trans('main.channel'),
-            ],
-            'contact' => [
-                'type' => 'text',
-                'class' => 'form-control m-input',
-                'index' => '3',
-                'label' => trans('main.receiver'),
-            ],
-            'message_type' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'index' => '',
-                'options' => $message_types,
-                'label' => trans('main.message_type'),
-            ],
-            'status' => [
-                'type' => 'select',
-                'class' => 'form-control',
-                'index' => '',
-                'options' => [['id'=>1,'title'=>trans('main.sent')],['id'=>2,'title'=> trans('main.received')],['id'=>3,'title'=> trans('main.seen')]],
-                'label' => trans('main.status'),
-            ],
-            'from' => [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'index' => '',
-                'id' => 'datepicker1',
-                'label' => trans('main.dateFrom'),
-            ],
-            'to' => [
-                'type' => 'text',
-                'class' => 'form-control m-input datepicker',
-                'index' => '',
-                'id' => 'datepicker2',
-                'label' => trans('main.dateTo'),
-            ],
-        ];
+        $data['designElems']['searchData'] = [];
         $data['designElems']['tableData'] = [
             'id' => [
                 'label' => trans('main.id'),
@@ -259,46 +203,39 @@ class ApiModsControllers extends Controller {
                 'data-col' => '',
                 'anchor-class' => '',
             ],
-            'sender' => [
-                'label' => trans('main.sender'),
+            'chatId3' => [
+                'label' => trans('main.dialog'),
                 'type' => '',
-                'className' => '',
-                'data-col' => 'sender',
-                'anchor-class' => '',
+                'className' => 'phone',
+                'data-col' => 'chatId3',
+                'anchor-class' => 'phone',
             ],
-            'phone2' => [
-                'label' => trans('main.receiver'),
+            'messageContent' => [
+                'label' => trans('main.messageContent'),
                 'type' => '',
-                'className' => '',
-                'data-col' => 'receiver',
-                'anchor-class' => '',
+                'className' => 'pre',
+                'data-col' => 'messageContent',
+                'anchor-class' => 'pre',
             ],
-            'message_type' => [
-                'label' => trans('main.message_type'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'message_type',
-                'anchor-class' => '',
-            ],
-            'message_content' => [
-                'label' => trans('main.message_content'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'message_content',
-                'anchor-class' => '',
-            ],
-            'status' => [
+            'sending_status_text' => [
                 'label' => trans('main.status'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'status',
+                'data-col' => 'sending_status_text',
                 'anchor-class' => '',
             ],
-            'created_at' => [
-                'label' => trans('main.sentDate'),
+            'icon' => [
+                'label' => trans('main.extra_type'),
                 'type' => '',
                 'className' => '',
-                'data-col' => '',
+                'data-col' => 'icon',
+                'anchor-class' => '',
+            ],
+            'date_time' => [
+                'label' => trans('main.sentDate'),
+                'type' => '',
+                'className' => 'date',
+                'data-col' => 'date_time',
                 'anchor-class' => '',
             ],
         ];

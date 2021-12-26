@@ -788,8 +788,24 @@ class ProfileControllers extends Controller {
         // Fetch Subscription Data
         $membershipObj = Session::get('membership') != null ?  Membership::getData(Membership::getOne(Session::get('membership'))) : [];
         $channelObj = Session::get('channel') != null ?  CentralChannel::getData(CentralChannel::getOne(Session::get('channel'))) : null;
+        $channelSettings = [];
+        $myData = [
+            'sendDelay' => '0',
+            'webhookUrl' => str_replace('://', '://'.$userObj->domain.'.', \URL::to('/')).'/whatsloop/webhooks/messages-webhook',
+            'instanceStatuses' => 1,
+            'webhookStatuses' => 1,
+            'statusNotificationsOn' => 1,
+            'ackNotificationsOn' => 1,
+            'chatUpdateOn' => 1,
+            'ignoreOldMessages' => 1,
+            'videoUploadOn' => 1,
+            'guaranteedHooks' => 1,
+            'parallelHooks' => 1,
+        ];
         if($channelObj){
             $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
+            $channelSettings = $mainWhatsLoopObj->settings([]);
+            $channelSettings = isset($channelSettings->json()['data']) ? $channelSettings->json()['data'] : $myData;
         }
 
         $data['subscription'] = (object) [
@@ -817,8 +833,25 @@ class ProfileControllers extends Controller {
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
         $data['channel'] = $channelObj ? CentralChannel::getData(CentralChannel::getOne(Session::get('channel'))) : null;
         $data['contactsCount'] = Contact::NotDeleted()->count();
+
+        $data['channelSettings'] = $channelSettings;
         return view('Tenancy.Profile.Views.V5.subscription')->with('data', (object) $data);
     }
+
+    public function updateChannelSettings(){
+        $input = \Request::all();
+        $myArr = [$input['key']=>$input['value']];
+      
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $settings = $mainWhatsLoopObj->postSettings($myArr);       
+        $result = $settings->json();
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+        $dataList['status'] = \TraitsFunc::SuccessMessage($result['status']['message']);
+        return \Response::json((object) $dataList);     
+    }
+    
 
     public function screenshot(){
         // Perform Whatsapp Integration
@@ -885,9 +918,9 @@ class ProfileControllers extends Controller {
 
     public function syncAll(){
         $userObj = User::first();
-        if($userObj->is_old != 1){
-            $lastMessageObj = ChatMessage::where('id','!=',null)->delete();
-        }
+        // if($userObj->is_old != 1){
+        //     $lastMessageObj = ChatMessage::where('id','!=',null)->delete();
+        // }
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;
@@ -909,9 +942,9 @@ class ProfileControllers extends Controller {
 
     public function syncDialogs(){
         $userObj = User::first();
-        if($userObj->is_old != 1){
-            ChatDialog::where('id','!=',null)->delete();
-        }
+        // if($userObj->is_old != 1){
+        //     ChatDialog::where('id','!=',null)->delete();
+        // }
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['limit'] = 0;

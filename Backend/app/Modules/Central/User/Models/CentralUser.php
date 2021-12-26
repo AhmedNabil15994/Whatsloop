@@ -165,7 +165,7 @@ class CentralUser extends Model implements SyncMaster
     {
         $domain = '';
         $tenant = $source->tenants()->first();
-        if($tenant != null){
+        if($tenant != null && $tenant->domains()->first() != null){
             $domain = $tenant->domains()->first()->domain;
         }
         return $domain;

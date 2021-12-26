@@ -64,7 +64,7 @@
                                 <label class="titleLabel">{{ trans('main.status') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input disabled name="name_ar" value="{{ $data->data->sent_type }}">
+                                <input disabled name="name_ar" value="{{ $data->data->sent_msgs > 0 ? trans('main.sent') : $data->data->sent_type }}">
                             </div>
                         </div> 
                         <div class="row">

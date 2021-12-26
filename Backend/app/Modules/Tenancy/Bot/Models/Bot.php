@@ -30,7 +30,7 @@ class Bot extends Model{
     }
 
     static function findBotMessage($langPref,$senderMessage){
-        $botObj = self::NotDeleted()->where('status',1)->where('lang',$langPref)->where('message_type',1)->search($senderMessage)->first();
+        $botObj = self::NotDeleted()->where('status',1)->where('lang',$langPref)->where('message_type',1)->where('message',$senderMessage)->first();
         if(!$botObj){
             $botObj = self::NotDeleted()->where('status',1)->where('lang',$langPref)->where('message_type',2)->search($senderMessage, null, true)->first();
         }

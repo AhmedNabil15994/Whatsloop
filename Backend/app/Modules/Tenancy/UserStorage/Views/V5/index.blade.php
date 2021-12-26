@@ -22,7 +22,7 @@
                 <div class="details">
                     <h2 class="titleSize">{{ trans('main.storages') }}</h2>
                     @php 
-                        $result = (int) $data->totalStorage > 0 ? (int) $data->totalSize / (int) $data->totalStorage : 0;
+                        $result = round( ((int) $data->totalStorage > 0 ? (int) $data->totalSize / (int) $data->totalStorage : 0) ,2);
                     @endphp
                     <div class="progressSize">
                         <span class="line" style="width:{{ $result }}%"></span>
@@ -81,11 +81,11 @@
                                     @endforeach
                                 @else
                                     @if($data->type == 'chats')
-                                    @foreach($data->data as $oneItem)
+                                    @foreach($data->data as $key => $oneItem)
                                     @php
                                         $fileType = \ImagesHelper::checkExtensionType(array_reverse(explode('.' , $oneItem->file_name))[0],'getData')[0];
                                     @endphp
-                                    <tr class="tr{{ $oneItem->id }} {{ $oneItem->file_name != null ? 'hasImage' : '' }}">
+                                    <tr class="tr{{ $key }} {{ $oneItem->file_name != null ? 'hasImage' : '' }}">
                                         <td>
                                             <a href="{{ $oneItem->file }}" target="_blank" class="text-reset">
                                                 @if($fileType == 'photo')

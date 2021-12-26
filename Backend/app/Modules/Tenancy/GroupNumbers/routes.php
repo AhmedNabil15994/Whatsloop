@@ -20,4 +20,5 @@ Route::group(['prefix' => '/groupNumbers'] , function () use ($controller) {
 Route::group(['prefix' => '/addGroupNumbers'] ,function() use ($controller){
     Route::get('/', [$controller,'addGroupNumbers']);
     Route::post('/create', [$controller,'postAddGroupNumbers']);
+    Route::post('/checkFile', [$controller,'checkFile']);
 });

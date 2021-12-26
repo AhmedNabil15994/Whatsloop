@@ -5,6 +5,29 @@
     textarea{
         min-height: 200px;
     }
+    
+    textarea.form-control
+    {
+        padding:20px;
+        resize:none;
+        background: #f7f7f7!important;
+        border: 1px solid #eee!important;
+    }
+    
+    .textLeft{
+        text-align:left;
+    }
+    
+    hr
+    {
+        margin:40px 0;
+    }
+    
+    .boldText
+    {
+        font-family: 'Tajawal-Bold';
+    }
+    
 </style>
 @endsection
 
@@ -101,14 +124,14 @@
         <div class="settings">
             <h2 class="titleSettings">{{ trans('main.templatesSettings') }}</h2>
             @foreach($data->templates as $template)
-            <div class="row d-block">
-                <div class="form-group row mb-3">
-                    <label class="col-md-1 col-form-label">{{ trans('main.status') }} :</label>
-                    <div class="col-md-10">
-                        <label class="col-form-label">{{ $template->statusText }}</label>
+            <div class="d-block">
+                <div class="form-group row mb-0" >
+                    <label class="col-md-1 col-xs-3 col-form-label boldText" style="padding-left:0">{{ trans('main.status') }} :</label>
+                    <div class="col-md-10 col-xs-7" style="padding-right:0">
+                        <label class="col-form-label boldText" style="color:#00bfb5">{{ $template->statusText }}</label>
                     </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
+                    <div class="col-md-1 col-xs-2">
+                        <div class="form-group textLeft">
                             <label class="custom-switch pl-0">
                                 <input type="checkbox" name="custom-switch-checkbox{{ $template->id }}" class="custom-switch-input" {{ $template->status == 1 ? 'checked' : '' }} data-area="{{ $template->id }}">
                                 <span class="custom-switch-indicator"></span>
@@ -117,9 +140,9 @@
                     </div>
                 </div> 
             </div>
-            <div class="row d-block">
-                <div class="form-group row mb-3">
-                    <label class="col-3 col-form-label">{{ trans('main.content_'.LANGUAGE_PREF) }} :</label>
+            <div class="d-block">
+                <div class="form-group mb-3">
+                    <label class="col-3 col-form-label mb-2">{{ trans('main.content_'.LANGUAGE_PREF) }} :</label>
                     <div class="col-9">
                         <textarea class="form-control" name="title_{{ LANGUAGE_PREF }}" placeholder="{{ trans('main.content_'.LANGUAGE_PREF) }}" disabled>{{ $template->content }}</textarea>
                     </div>

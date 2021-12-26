@@ -133,6 +133,7 @@ class SetInvoices extends Command
                                     'total' => $total,
                                     'leftDays' => $value->leftDays,
                                     'main' => 0,
+                                    'tenant_id' => $value->tenant_id,
                                     'items' => [[
                                         'type' => 'addon',
                                         'data' => $oneObj,
@@ -145,6 +146,7 @@ class SetInvoices extends Command
                                     'total' => $oneObj['price_after_vat'],
                                     'leftDays' => $value->leftDays,
                                     'main' => 0,
+                                    'tenant_id' => $value->tenant_id,
                                     'items' => [[
                                         'type' => 'addon',
                                         'data' => $oneObj,
@@ -202,6 +204,7 @@ class SetInvoices extends Command
                                     'total' => $total,
                                     'leftDays' => $value->leftDays,
                                     'main' => 0,
+                                    'tenant_id' => $value->tenant_id,
                                     'items' => [[
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,
@@ -214,6 +217,7 @@ class SetInvoices extends Command
                                     'total' => $oneObj['price_after_vat'],
                                     'leftDays' => $value->leftDays,
                                     'main' => 0,
+                                    'tenant_id' => $value->tenant_id,
                                     'items' => [[
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,

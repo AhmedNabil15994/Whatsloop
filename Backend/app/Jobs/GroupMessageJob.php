@@ -62,7 +62,6 @@ class GroupMessageJob implements ShouldQueue
         if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
             $status = 1;
         }
-
         if($status){
             if($messageObj['message_type'] == 1){
                 $sendData['body'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
@@ -103,7 +102,7 @@ class GroupMessageJob implements ShouldQueue
             ChatMessage::newMessage($lastMessage);
         }
 
-        ContactReport::newStatus('+'.$contact,$messageObj['group_id'],$messageObj['id'],$status,$messageId);
+        ContactReport::newStatus('+'.str_replace('@c.us','',$sendData['chatId']),$messageObj['group_id'],$messageObj['id'],$status,$messageId);
         return $status;
     }
 

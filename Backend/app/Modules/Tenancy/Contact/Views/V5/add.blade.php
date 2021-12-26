@@ -37,7 +37,6 @@
                         <li id="tab1" class="active" data-contact="1">{{ trans('main.mainSettings') }}</li>
                         <li id="tab2" data-contact="2">{{ trans('main.manual') }}</li>
                         <li id="tab3" data-contact="3">{{ trans('main.whatsappNos') }}</li>
-                        <li id="tab4" data-contact="4">{{ trans('main.excelFile') }}</li>
                     </ul>
                     <div class="tabs tabs1">
                         <div class="tab tab1">
@@ -172,35 +171,6 @@
                                         </div>
                                     </div> <!-- end col -->
                                 </div> <!-- end row -->
-                            </div>
-                        </div>
-                        <div class="tab tab4">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="titleLabel">{{ trans('main.attachExcel') }} :</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <label class="titleLabel hidden-lg hidden-md">{{ trans('main.attachExcel') }}</label>
-                                                <label class="upload">
-                                                    <input type="file" name="file" accept=".xlsx,.csv" />
-                                                    <i class="flaticon-upload"></i>
-                                                    {{ trans('main.dropzoneP') }}
-                                                </label>
-                                                <div class="uploadFile">{{ trans('main.excelExample') }} (<a target="_blank" href="{{ URL::to('/').'/uploads/ImportGroupNumbers.xlsx' }}">{{ trans('main.download') }}</a> )</div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row mb-3">
-                                            <div class="sortable-list tasklist list-unstyled col">
-                                                <div class="row" id="colData">
-                                                    {{-- <p>{{ trans('main.noDataFound') }}</p> --}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>   
                             </div>
                         </div>
                     </div>

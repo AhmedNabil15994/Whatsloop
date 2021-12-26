@@ -39,11 +39,9 @@ class MessagesWebhook extends ProcessWebhookJob{
         $dis2 = 0;
         if(in_array(1,$disabled)){
             $dis = 1;
-            return $dis;
         }
         if(in_array(10,$disabled)){
             $dis2 = 1;
-            return $dis2;
         }
 
 		$startDay = strtotime(date('Y-m-d 00:00:00'));
@@ -68,30 +66,32 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		$senderMessage = $message['body'];
 	    		// Fire Incoming Message Event For Web Application
 				$this->handleMessages($userObj->domain,$message,$tenantObj->tenant_id);
-	    		Logger($message);
 	    		if($message['fromMe'] == false){			
 
 	    			if($message['type'] == 'buttons_response' && !$dis2){
 	    				$msgText= $message['quotedMsgBody'];
 	    				$botObjs = BotPlus::getMsg($msgText);
-	    				foreach($botObjs->buttonsData as $buttonData){
-	    					if($buttonData['text'] == $message['body']){
-	    						$replyData = $buttonData;
-	    					}
-	    				}
 
-	    				if($replyData['reply_type'] == 1){
-		    				$sendData['body'] = json_decode($replyData['msg']);
-		    				$sendData['chatId'] = $sender;
-	    					$result = $mainWhatsLoopObj->sendMessage($sendData);
-        					$this->handleRequest($message,$userObj->domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage');
-	    				}else if($replyData['reply_type'] == 2){
-	    					if($replyData['msg_type'] == 2){
-	    						$botObj = BotPlus::getData(BotPlus::getOne(json_decode($replyData['msg'])->id));
-		    					$this->handleBotPlus($message,$botObj,$userObj->domain,$sender);
-	    					}elseif($replyData['msg_type'] == 1){
-	    						$botObj = Bot::getData(Bot::getOne(json_decode($replyData['msg'])->id),$tenantObj->tenant_id);
-	    						$this->handleBasicBot($botObj,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+	    				if(isset($botObjs->buttonsData)){
+	    					foreach($botObjs->buttonsData as $buttonData){
+		    					if($buttonData['text'] == $message['body']){
+		    						$replyData = $buttonData;
+		    					}
+		    				}
+
+		    				if($replyData && isset($replyData['reply_type']) && $replyData['reply_type'] == 1){
+			    				$sendData['body'] = json_decode($replyData['msg']);
+			    				$sendData['chatId'] = $sender;
+		    					$result = $mainWhatsLoopObj->sendMessage($sendData);
+	        					$this->handleRequest($message,$userObj->domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage');
+		    				}else if($replyData && isset($replyData['reply_type']) && $replyData['reply_type'] == 2){
+		    					if($replyData['msg_type'] == 2){
+		    						$botObj = BotPlus::getData(BotPlus::getOne(json_decode($replyData['msg'])->id));
+			    					$this->handleBotPlus($message,$botObj,$userObj->domain,$sender);
+		    					}elseif($replyData['msg_type'] == 1){
+		    						$botObj = Bot::getData(Bot::getOne(json_decode($replyData['msg'])->id),$tenantObj->tenant_id);
+		    						$this->handleBasicBot($botObj,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+		    					}
 	    					}
 	    				}
 	    			}else{
@@ -169,7 +169,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$botObj = Bot::getData($botObj,$tenantId);
 		$botObj->file = str_replace('localhost',$domain.'.wloop.net',$botObj->file);
 		$botObj->photo = str_replace('localhost',$domain.'.wloop.net',$botObj->photo);
-		$reply = $botObj->reply;
+		$reply = $botObj->reply2;
 		$myMessage = $reply;
 		$message_type = '';
 		$whats_message_type = '';
@@ -185,7 +185,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 			$sendData['filename'] = $botObj->file_name;
 			$sendData['body'] = $botObj->file;
 			if($message_type == 'photo'){
-				$sendData['caption'] = $botObj->reply;
+				$sendData['caption'] = $botObj->reply2;
 			}
 			$result = $mainWhatsLoopObj->sendFile($sendData);
 		}elseif($botObj->reply_type == 3){
@@ -207,15 +207,18 @@ class MessagesWebhook extends ProcessWebhookJob{
 			$sendData['title'] = $botObj->url_title;
 			$sendData['description'] = $botObj->url_desc;
 			if($botObj->photo){
-				$sendData['previewBase64'] = substr(base64_encode(@file_get_contents($botObj->photo)),20000)[0];
+				$dets = substr(base64_encode(@file_get_contents($botObj->photo)),20000);
+				if(is_array($dets)){
+					$sendData['previewBase64'] = $dets[0];
+				}
 			}
 			$result = $mainWhatsLoopObj->sendLink($sendData);
 		}elseif($botObj->reply_type == 6){
 			$message_type = 'contact';
 			$whats_message_type = 'contact';
-			$sendData['body'] = str_replace('+','',$botObj->whatsapp_no);
-			$result = $mainWhatsLoopObj->sendContact($sendData);
 			$sendData['contactId'] = str_replace('+','',$botObj->whatsapp_no);
+			$result = $mainWhatsLoopObj->sendContact($sendData);
+			$sendData['body'] = str_replace('+','',$botObj->whatsapp_no);
 		}elseif($botObj->reply_type == 7){
 			$message_type = 'location';
 			$whats_message_type = 'location';
@@ -238,7 +241,9 @@ class MessagesWebhook extends ProcessWebhookJob{
 			];
 			$this->fireWebhook($webhookData, $botObj->webhook_url);
 		}
-        $this->handleRequest($message,$domain,$result,$sendData,'BOT',$message_type,$whats_message_type,'BotMessage',$botObj);
+		if($message_type != 'webhook'){
+		    $this->handleRequest($message,$domain,$result,$sendData,'BOT',$message_type,$whats_message_type,'BotMessage',$botObj);
+		}
 	}
 
 	public function handleBotPlus($message,$botObj,$domain,$sender){
@@ -339,9 +344,7 @@ class MessagesWebhook extends ProcessWebhookJob{
         $checkMessageObj = ChatMessage::where('chatId',$message['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->first();
         $message['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
         $message['status'] = $message['fromMe'] == 1 ? (isset($message['metadata']) && isset($message['metadata']['replyButtons']) ? 'BOT PLUS' : 'APP') : '';
-        Logger($message);
         $messageObj = ChatMessage::newMessage($message);
-        Logger((array) $messageObj);
         $dialog = ChatDialog::getOne($message['chatId']);
         if(!$dialog){
             $dialogObj = new ChatDialog;
@@ -436,6 +439,13 @@ class MessagesWebhook extends ProcessWebhookJob{
             $lastMessage['sending_status'] = 1;
             $lastMessage['type'] = $whats_message_type;
             $lastMessage['metadata'] = json_encode($message['metadata']);
+            if($whats_message_type == 'vcard'){
+                $lastMessage['body'] = $message['body'];
+            }
+            if($whats_message_type == 'location'){
+                $lastMessage['body'] = $message['body'];
+                $lastMessage['caption'] = $message['caption'];
+            }
             $messageObj = ChatMessage::newMessage($lastMessage);
             $dialog = ChatDialog::getOne($sendData['chatId']);
             $dialog->last_time = $lastMessage['time'];

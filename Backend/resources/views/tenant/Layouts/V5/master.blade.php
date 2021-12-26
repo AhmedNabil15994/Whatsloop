@@ -28,7 +28,7 @@
 
 		@include('tenant.Layouts.V5.breadcrumb')
 		{{-- @include('tenant.Layouts.V5.userStatus') --}}
-		@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob')  && (Request::segment(1) != 'invoices' && Request::segment(4) != 'checkout')  && (Request::segment(1) != 'profile' && Request::segment(3) != 'transferPayment'))
+		@if(!in_array(Request::segment(1),['QR','checkout','packages','updateSubscription','postBundle','sync']) && Request::segment(3) != 'transferPayment' && !Session::has('hasJob')  && (Request::segment(1) != 'invoices' && Request::segment(4) != 'checkout')  && (Request::segment(1) != 'profile' && Request::segment(3) != 'transferPayment') && IS_ADMIN)
 		@livewire('check-reconnection',[
 			'requestSemgent' => Request::segment(1),
 			'addons' => Session::get('addons'),

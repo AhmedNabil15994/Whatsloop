@@ -93,9 +93,9 @@ class BotPlus extends Model{
         $data->message_type = $source->message_type;
         $data->message_type_text = self::getMessageType($source->message_type);
         $data->message = $source->message;
-        $data->title = $source->title;
-        $data->body = $source->body;
-        $data->footer = $source->footer;
+        $data->title = self::formatReply($source->title);
+        $data->body = self::formatReply($source->body);
+        $data->footer = self::formatReply($source->footer);
         $data->buttons = $source->buttons;
         $data->buttonsData = unserialize($source->buttonsData);
         $data->status = $source->status;
@@ -103,6 +103,13 @@ class BotPlus extends Model{
         $data->created_at = \Helper::formatDate($source->created_at);
         return $data;
     }  
+
+    static function formatReply($reply){
+        if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $reply)){
+            $reply = preg_replace("/\*([^*]+)\*/", "*$1*", $reply );
+            return $reply;
+        }
+    }
 
     static function getMessageType($type){
         $text = '';

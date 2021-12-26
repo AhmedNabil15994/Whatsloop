@@ -266,10 +266,10 @@
 
 
                                                         <div v-else-if="message.whatsAppMessageType === 'location'" class="m-1 mapIframe">
-                                                            <a target="_blank" :href="'https://www.google.com/maps/search/' + message.MapAddress + '/@' + message.MapLatitude + ',' + message.MapLongitude +',17z?hl=ar'"  ></a>
-                                                            <iframe :src="'https://www.google.com/maps/embed/v1/place?q=' + message.MapLatitude + ',' + message.MapLongitude + '&key=AIzaSyCai_Ru6iTKHQjlKrihzsRh_-kz5nRNxGw'"
+                                                            <a target="_blank" :href="'https://www.google.com/maps/search/' + message.caption + '/@' + message.body.replace(';',',') +',17z?hl=ar'"  ></a>
+                                                            <iframe :src="'https://www.google.com/maps/embed/v1/place?q=' + message.body.replace(';',',') + '&key=AIzaSyCai_Ru6iTKHQjlKrihzsRh_-kz5nRNxGw'"
                                                             width='260' height='200' frameborder='0' style='border:0;' allowfullscreen='' aria-hidden='false' tabindex='0'></iframe>
-                                                            <span class="mapMessage text-truncate">{{ message.MapAddress }}</span>
+                                                            <span class="mapMessage text-truncate">{{ message.caption }}</span>
                                                         </div>
                                                         
                                                         <div v-else-if="message.whatsAppMessageType === 'document'">
@@ -360,7 +360,7 @@
                                                                 
                                                         </span>
 
-                                                        <span v-else-if="message.whatsAppMessageType === 'ptt' || message.quotedMsgObj.whatsAppMessageType === 'ppt'"> 
+                                                        <span v-else-if="message.whatsAppMessageType === 'ptt' || message.whatsAppMessageType === 'ppt'">
                                                             <audioplayer :timesec="message.timeSec ? message.timeSec : false" :url="message.body" 
                                                             v-on:pauseall="funcPause('audio-player'+ message.time )"
                                                             :playerid="'audio-player'+message.time" ref="component" ></audioplayer>                                                                 

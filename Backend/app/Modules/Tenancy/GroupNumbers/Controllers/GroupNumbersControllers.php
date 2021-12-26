@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
+use App\Models\UserExtraQuota;
+use App\Models\Variable;
 use App\Jobs\CheckWhatsappJob;
+use App\Exports\ContactImport;
 use DataTables;
 use Storage;
+use Excel;
 
 
 class GroupNumbersControllers extends Controller {
@@ -296,6 +300,15 @@ class GroupNumbersControllers extends Controller {
         return view('Tenancy.GroupNumbers.Views.V5.add')->with('data', (object) $data);
     }
 
+    public function checkFile(Request $request){
+        if ($request->hasFile('file')) {
+            $rows = Excel::toArray(new ContactImport, $request->file('file'));
+            $headers = $rows[0][0];
+            $data = array_slice($rows[0], 1, 10);
+            return response()->json(["headers"=>$headers,'data'=>$data,'files'=>json_encode($rows)]);
+        }
+    }
+
     public function postAddGroupNumbers(){
         $input = \Request::all();
         if(!isset($input['group_id']) && empty($input['group_id'])){
@@ -308,40 +321,50 @@ class GroupNumbersControllers extends Controller {
             return Redirect('404');
         }
 
+        $rows = json_decode($input['files']);
+        $mainData = $rows[0];
+        // dd($rows);
+
         $modelProps = ['name','email','country','city','phone'];
         $userInputs = $input;
         unset($userInputs['status']);
         unset($userInputs['group_id']);
         unset($userInputs['_token']);
         unset($userInputs['file']);
+        unset($userInputs['files']);
 
-        // dd($userInputs);
         $storeData = [];
         $consForQueue = [];
+        $myData = [];
         foreach ($userInputs as $key=> $userInput) {
-            if(!in_array(strtolower($key), $modelProps)){
-                Session::flash('error', trans('main.invalidColumn').' '.$key);
-                return redirect()->back();
+            if(in_array(strtolower($key), $modelProps)){
+                $myData[strtolower($key)] = $userInputs[$key];
             }
-            $userInputs[strtolower($key)] = $userInputs[$key];
-            unset($userInputs[$key]);            
+            // unset($userInputs[$key]);    
         }
         
-        foreach ($userInputs as $key=> $userInput) {
-            for ($i = 0; $i < count($userInputs['phone']); $i++) {
-                if(!isset($storeData[$i])){
-                    $storeData[$i] = [];
+        
+        $rows =  array_slice($rows[0], 1);
+        for ($i = 1; $i < count($mainData); $i++) {
+            $header = $mainData[0];
+            for ($x = 0; $x < count($header); $x++) {
+                foreach ($myData as $key=> $userInput) {
+                    if(!isset($storeData[$i])){
+                        $storeData[$i] = [];
+                    }
+                    if(!isset($storeData[$i][$key])){
+                        $storeData[$i][$key] = '';
+                    }
+                    if($key == strtolower($header[$x])){
+                        $storeData[$i][$key] = $mainData[$i][$x];
+                    }
                 }
-                if(!isset($storeData[$i][$key])){
-                    $storeData[$i][$key] = '';
-                }
-                $storeData[$i][$key] = $userInput[$i];
-                $storeData[$i]['status'] = $input['status'];
-                $storeData[$i]['group_id'] = $input['group_id'];
-                $storeData[$i]['created_at'] = DATE_TIME;
-                $storeData[$i]['created_by'] = USER_ID;
-                $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
             }
+            $storeData[$i]['status'] = $input['status'];
+            $storeData[$i]['group_id'] = $input['group_id'];
+            $storeData[$i]['created_at'] = DATE_TIME;
+            $storeData[$i]['created_by'] = USER_ID;
+            $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
         }
 
         foreach ($storeData as $value) {
@@ -352,9 +375,17 @@ class GroupNumbersControllers extends Controller {
                 if(!isset($value['name']) || empty($value['name'])){
                     $value['name'] = $phone;
                 }
+                if(isset($value['email']) && empty($value['email'])){
+                    $value['email'] = $input['email'];
+                }
+                if(isset($value['country']) && empty($value['country'])){
+                    $value['country'] = $input['country'];
+                }
+                if(isset($value['city']) && empty($value['city'])){
+                    $value['city'] = $input['city'];
+                }
                 $value['phone'] = trim(str_replace('\r', '', $phone));
                 $value['status'] = 1;
-                $value['country'] = \Helper::getCountryNameByPhone($value['phone']);
 
                 $contactObj = new Contact;
                 foreach($value as $attr => $val){
@@ -372,6 +403,7 @@ class GroupNumbersControllers extends Controller {
         }
 
         WebActions::newType(1,'Contact');
+        \Session::forget('rows');
         Session::flash('success', trans('main.addSuccess'));
         return redirect()->to($this->getData()['mainData']['url'].'/');
     }

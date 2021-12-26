@@ -355,36 +355,63 @@ class LiveChatControllers extends Controller {
             }
         }elseif($input['type'] == 4){
 
-            $file_size = $input['size'];
-            $file_size = $file_size/(1024 * 1024);
-            $file_size = number_format($file_size,2);
-            $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
-            $totalStorage = Session::get('storageSize');
-            $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
-            if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
-                return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+            if ($request->hasFile('file')) {
+                $image = $request->file('file');
+                if(isset($input['size']) && !empty($input['size'])){
+                    $file_size = $input['size'];
+                    $file_size = $file_size/(1024 * 1024);
+                    $file_size = number_format($file_size,2);
+                    $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                    $totalStorage = Session::get('storageSize');
+                    $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                    if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                        return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                    }
+                    if($input['file'] == false){
+                        return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
+                    }          
+                    
+                    $fileName = 'record'.time();
+                    $destinationPath = public_path().'/uploads/'.TENANT_ID.'/chats/' . $fileName.'.ogg';
+                    
+                    $filelocationtmp = $_FILES['file']['tmp_name'];
+
+                    // call ffmpeg script to convert file
+                    shell_exec("/home/wloop/public_html/vendor/ffmpeg -y -i ".$filelocationtmp." -c:a libopus -vn -b:a 48k ".$filelocationtmp.".ogg");
+
+                    // rename oga file to original file (overrides original)
+                    shell_exec("mv ".$filelocationtmp.".ogg ".$destinationPath);
+
+                    $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/' . $fileName.'.ogg';
+                    $message_type = "sound";
+                    $whats_message_type = 'ppt';
+                    $sendData['audio'] = $bodyData;
+                    $result = $mainWhatsLoopObj->sendPTT($sendData);
+
+                }else{
+                    $file_size = $image->getSize();
+                    $file_size = $file_size/(1024 * 1024);
+                    $file_size = number_format($file_size,2);
+                    $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+                    $totalStorage = Session::get('storageSize');
+                    $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+                    if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                        return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+                    }
+
+                    $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
+                    if($image == false || $fileName == false){
+                        return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
+                    }            
+                    $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
+                    $message_type = "sound";
+                    $whats_message_type = 'ppt';
+                    $sendData['audio'] = $bodyData;
+                    $result = $mainWhatsLoopObj->sendPTT($sendData);
+                }
+               
             }
-            if($input['file'] == false){
-                return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
-            }          
 
-            $fileName = 'record'.time();
-            $destinationPath = public_path().'/uploads/'.TENANT_ID.'/chats/' . $fileName.'.ogg';
-            
-            $filelocationtmp = $_FILES['file']['tmp_name'];
-
-            // call ffmpeg script to convert file
-            shell_exec("ffmpeg -y -i ".$filelocationtmp." -c:a libopus -vn -b:a 48k ".$filelocationtmp.".ogg");
-
-            // rename oga file to original file (overrides original)
-            shell_exec("mv ".$filelocationtmp.".ogg ".$destinationPath);
-
-            $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/' . $fileName.'.ogg';
-            // dd($bodyData);
-            $message_type = "sound";
-            $whats_message_type = 'ppt';
-            $sendData['audio'] = $bodyData;
-            $result = $mainWhatsLoopObj->sendPTT($sendData);
         }elseif($input['type'] == 5){
             if(!isset($input['contact']) || empty($input['contact']) ){
                 return \TraitsFunc::ErrorMessage("Contact Field Is Required");
@@ -413,7 +440,8 @@ class LiveChatControllers extends Controller {
             $sendData['lat'] = $input['lat'];
             $sendData['lng'] = $input['lng'];
             $sendData['address'] = $input['address'];
-            $bodyData = $input['address'];
+            $bodyData = $sendData['lat'].':'.$sendData['lng'];
+            $caption = $input['address'];
             $result = $mainWhatsLoopObj->sendLocation($sendData);
         }elseif($input['type'] == 7){
             if(!isset($input['link']) || empty($input['link']) ){

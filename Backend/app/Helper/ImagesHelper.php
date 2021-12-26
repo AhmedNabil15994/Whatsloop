@@ -485,12 +485,9 @@ class ImagesHelper {
     // \ImagesHelper::deleteDirectory(public_path('/').'/uploads/users/15');
     // \ImagesHelper::deleteDirectory(public_path('/').'/uploads/users/15/filename.png');
     static function deleteDirectory($dir) {
-        // system('rm -r ' . escapeshellarg($dir), $retval);
-        // // \File::deleteDirectory($dir);
-        // return $retval == 0; // UNIX commands return zero on success
-        // 
-        unlink($dir);
-        return 0; // UNIX commands return zero on success
+        system('rm -r ' . escapeshellarg($dir), $retval);
+        // \File::deleteDirectory($dir);
+        return $retval == 0; // UNIX commands return zero on success
     }
 
 }

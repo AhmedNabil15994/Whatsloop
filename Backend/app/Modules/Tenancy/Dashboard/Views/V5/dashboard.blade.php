@@ -178,7 +178,12 @@
                             @if($message->body != null && (strpos(' https',ltrim($message->body)) !== false || filter_var(trim($message->body), FILTER_VALIDATE_URL)))
                             📷
                             @else
-                            {{ $message->body }}
+                            @if($message->whatsAppMessageType == 'vcard')
+                            <p>{{ $message->contact_name }}</p>
+                            <p>{{ $message->contact_number }}</p>
+                            @else
+                            {{$message->body}}
+                            @endif
                             @endif
                         </td>
                         <td>{{ $message->sending_status_text }}</td>
@@ -195,7 +200,6 @@
                 </tbody>
             </table>
         </div>
-        @include('tenant.Partials.pagination')
     </div>
     <div class="lastNumbers">
         <h2 class="title">{{ trans('main.activityLog') }}</h2>

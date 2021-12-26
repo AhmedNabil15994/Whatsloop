@@ -416,7 +416,6 @@ class GroupMsgsControllers extends Controller {
             $chunks = 400;
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
                 dispatch(new GroupMessageJob($data,$dataObj));
-                dispatch(new CheckWhatsappJob($data));
             });
         }else{
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->get();
@@ -442,14 +441,7 @@ class GroupMsgsControllers extends Controller {
         if($groupMsgObj == null) {
             return Redirect('404');
         }
-        $data['data'] = GroupMsg::getData($groupMsgObj);
-
-        $dataObj = GroupMsg::getData($groupMsgObj);
-        $chunks = 400;
-        $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
-            dispatch(new GroupMessageJob($data,$dataObj));
-            dispatch(new CheckWhatsappJob($data));
-        });
+        $data['data'] = GroupMsg::getData($groupMsgObj);        
         $data['contacts'] = Contact::getFullContactsInfo($groupMsgObj->group_id,$groupMsgObj->id)['data'];
         $data['designElems']['mainData'] = $this->getData()['mainData'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;

@@ -23,6 +23,14 @@
     .modal-header .close{
         margin-top: -25px;
     }
+    .form-group.MeasuresText{
+        margin: auto;
+        width: 100%;
+    }
+    .form-group.MeasuresText label,
+    .form-group{
+        margin-bottom: 0;
+    }
 </style>
 @endsection
 
@@ -46,6 +54,32 @@
             @if(\Helper::checkRules('whatsapp-orders,whatsapp-products'))
             <a href="{{ URL::to('/profile/subscription/syncOrdersProducts') }}" class="MeasuresText color2">{{ trans('main.syncOrdersProducts') }}</a>
             @endif
+        </div>
+    </div>
+
+    <div class="ticketContent Measures text-center">
+        <h2 class="title">{{ trans('main.channel_settings') }}</h2>
+        <div class="desc">
+            <div class="row">
+                @php $i = 0; @endphp
+                @foreach($data->channelSettings as $key => $oneSetting)
+                @if(in_array($key,['instanceStatuses','webhookStatuses','statusNotificationsOn','ackNotificationsOn','chatUpdateOn','videoUploadOn','guaranteedHooks','ignoreOldMessages','processArchive','disableGroupsArchive','disableDialogsArchive','parallelHooks','topics']))
+                <div class="col-xs-3">
+                    <div class="form-group row mb-0 MeasuresText color{{$i++%9}}" >
+                        <label class="col-md-6 col-xs-6 col-form-label boldText" style="padding-left:0">{{ $key }} :</label>
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group textLeft">
+                                <label class="custom-switch pl-0">
+                                    <input type="checkbox" name="custom-switch-checkbox{{ $key }}" class="custom-switch-input" {{ $oneSetting == true ? 'checked' : '' }} data-area="{{ $key }}">
+                                    <span class="custom-switch-indicator"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                @endif
+                @endforeach
+            </div>
         </div>
     </div>
     

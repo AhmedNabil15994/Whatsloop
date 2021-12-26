@@ -159,9 +159,11 @@ class HomeControllers extends Controller {
                     $directory = public_path().$folder;
                     $image = $directory.'/chatFile.'.$extension;
                     // dd($extension);
-                    if(!file_exists($directory)){
+                    if(!file_exists($image)){
                         @$content = file_get_contents($url);                    
-                        mkdir($directory, 0777, true);
+                        if(!file_exists($directory)){
+                            @mkdir($directory, 0777, true);
+                        }
                         $succ = file_put_contents($image, $content);   
                     }
                     $message['body'] = asset('/').'public'.$folder.'/chatFile.'.$extension; 

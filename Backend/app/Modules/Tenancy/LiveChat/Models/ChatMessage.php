@@ -42,7 +42,7 @@ class ChatMessage extends Model{
     static function lastMessages() {
         $source = self::NotDeleted();
         $source->orderBy('time','DESC');
-        return self::generateObj($source,30);
+        return self::generateObj($source,10);
     }
 
     static function generateObj($source,$limit=null){
@@ -76,7 +76,7 @@ class ChatMessage extends Model{
         }
         
         $dataObj->id = $source->id;
-        $dataObj->body = isset($source->body) && empty($oldBody) ? $source->body : $oldBody;
+        $dataObj->body = (isset($source->body) && empty($oldBody)) || isset($source->type) && in_array($source->type,['vcard','location']) ? $source->body : $oldBody;
         $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
         $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
         $dataObj->author = isset($source->author) ? $source->author : '';
@@ -105,10 +105,10 @@ class ChatMessage extends Model{
         $dataObj->quotedMsgBody = isset($source->quotedMsgBody) ? $source->quotedMsgBody : '' ;
         $dataObj->quotedMsgId = isset($source->quotedMsgId) ? $source->quotedMsgId : '' ;
         $dataObj->quotedMsgType = isset($source->quotedMsgType) ? $source->quotedMsgType : '' ;
-        if( isset($source->metadata) && $oldProd == ''){
+        if( isset($source->metadata) && $source->metadata != 'null' && $oldProd == ''){
             $dataObj->metadata = json_encode($source->metadata) ;
         }
-        if(isset($source->metadata) && isset($source->status) && $source->status == "BOT PLUS"){
+        if(isset($source->metadata) && $source->metadata != 'null' && isset($source->status) && $source->status == "BOT PLUS"){
             $dataObj->metadata = json_encode($source->metadata) ;
         }
         $dataObj->save();
@@ -154,8 +154,18 @@ class ChatMessage extends Model{
                 $dataObj->file_name = self::getFileName($dataObj->body);
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard'){
-                $dataObj->contact_name = str_replace('\n','',explode('TEL',explode('FN:',$dataObj->body)[1])[0]);
-                $dataObj->contact_number = explode(':+',explode(';waid=',$dataObj->body)[1])[0];
+                if(strpos($dataObj->body, 'FN:') !== false){
+                    $dataObj->contact_name = str_replace('\n','',explode('TEL',explode('FN:',$dataObj->body)[1])[0]);
+                    $dataObj->contact_number = explode(':+',explode(';waid=',$dataObj->body)[1])[0];
+                    $dataObj->contact_number = str_replace('END:VCARD','',$dataObj->contact_number);
+                    $arr = explode(':',$dataObj->contact_number) ; 
+                    if(isset($arr[1]) && !empty($arr[1])){
+                        $dataObj->contact_number = $arr[1];
+                    }
+                }else{
+                    $dataObj->contact_name = $source->body;
+                    $dataObj->contact_number = $source->caption;
+                }
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'order'){
                 $dataObj->orderDetails = new \stdClass();
@@ -170,6 +180,10 @@ class ChatMessage extends Model{
             if(isset($dataObj->whatsAppMessageType) && $dataObj->metadata != '' && $dataObj->whatsAppMessageType == 'product'){
                 $dataObj->productDetails = Product::getData(Product::getOne($dataObj->metadata->productId));
             }
+            $dataObj->messageContent = $source->body != null && (strpos(' https',ltrim($source->body)) !== false || strpos(' http',ltrim($source->body)) !== false ) ? 📷 : $source->body;
+            $dataObj->icon = $source->fromMe ? ' <i class="type flaticon-share"></i>' : ' <i class="type color1 flaticon-share"></i>';
+            $dataObj->date_time = $dataObj->created_at_day . ' ' . $dataObj->created_at_time;
+            $dataObj->chatId3 = str_replace('+','',$dataObj->chatId2);
             return $dataObj;
         }
     }  

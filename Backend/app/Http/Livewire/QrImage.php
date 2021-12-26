@@ -59,6 +59,16 @@ class QrImage extends Component
                     'var_value' => 1,
                 ]);
 
+                // // Update User With Settings For Whatsapp Based On His Domain
+                $domain = User::first()->domain;
+                $myData = [
+                    'sendDelay' => '0',
+                    'webhookUrl' => str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/messages-webhook',
+                    'ignoreOldMessages' => 1,
+                ];
+                $updateResult = $mainWhatsLoopObj->postSettings($myData);
+                $result = $updateResult->json();
+
                 $sendData['limit'] = 0;
                 
                 $diags = $mainWhatsLoopObj->dialogs($sendData);
@@ -108,8 +118,11 @@ class QrImage extends Component
                 }
 
                 if(User::first()->setting_pushed == 1){
-                    $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
-                    if($lastMessageObj != null && $lastMessageObj->time != null){
+                    $meResult = $mainWhatsLoopObj->me();
+                    $meResult = $meResult->json();
+                    $author = $meResult['data']['id'];
+                    $lastMessageObj = ChatMessage::where('fromMe',1)->orderBy('time','DESC')->first();
+                    if($lastMessageObj != null && $lastMessageObj->time != null && $lastMessageObj->author == $author){
                         $sendData['min_time'] = $lastMessageObj->time - 7200;
                     }
                 }
@@ -118,7 +131,6 @@ class QrImage extends Component
                     $result = $updateResult->json();
                     dispatch(new SyncMessagesJob($result['data']['messages']));
                 }
-
 
                 $this->emit('statusChanged'); 
             }

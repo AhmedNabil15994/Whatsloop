@@ -209,8 +209,8 @@ class User extends Authenticatable implements Syncable
         $data->group = $source->Group != null ? $langPref == null ? $source->Group->{'name_'.LANGUAGE_PREF} : $source->Group->{'name_'.$langPref} : '';
         $data->duration_type = $source->duration_type;
         $data->group_id = $source->group_id;
-        $data->email = $source->email;
-        $data->company = $source->company;
+        $data->email = $source->email != null ? $source->email : '';
+        $data->company = $source->company != null ? $source->company : '';
         $data->name = $source->name != null ? $source->name : '';
         $data->phone = $source->phone != null ? str_replace('+', '', $source->phone) : '';
         $data->status = $source->status;
@@ -252,23 +252,20 @@ class User extends Authenticatable implements Syncable
     }
 
     static function checkUserBy($type,$value, $notId = false){
-        $dataObj = self::NotDeleted()
-            ->where($type,$value)->where('status',1);
-
         if ($notId != false) {
-            $dataObj->whereNotIn('id', [$notId]);
+            $dataObj = self::NotDeleted()->where($type,$value)->where('status',1)->whereNotIn('id', [$notId])->first();
         }
+        $dataObj = self::NotDeleted()->where($type,$value)->where('status',1)->first();
 
-        return $dataObj->first();
+        return $dataObj;
     }
-
+    
     static function checkUserPermissions($userObj) {
         if($userObj->group_id == 1){
             return array_values(\Helper::getAllPerms());
         }
         $endPermissionUser = [];
         $endPermissionGroup = [];
-
         $groupObj = $userObj->Group;
         $groupPermissions = $groupObj != null ? $groupObj->rules : null;
 
@@ -311,7 +308,7 @@ class User extends Authenticatable implements Syncable
         }else{
             $mainUser = User::first();
             $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$mainUser->global_id)->first();
-            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons) != null ? unserialize($mainUser->addons) : ' ' ,$userObj->id) : [];
+            $userAddons = $mainUser->addons !=  null ? UserAddon::dataList(unserialize($mainUser->addons) != null ? unserialize($mainUser->addons) : ' ' ,$mainUser->id) : [];
             $invoiceObj = Invoice::getDisabled($mainUser->id);
             $rootId = $mainUser->id;
             session(['membership' => $mainUser->membership_id]);

@@ -178,11 +178,11 @@
 		</li>
 		@endif
 
-		{{-- @if(\Helper::checkRules('list-messages-archive'))
+		@if(\Helper::checkRules('list-messages-archive'))
 		<li titlehover="link14">
-			<a href="{{ URL::to('/msgsArchive') }}" class="{{ Active( URL::to('/msgsArchive*') ) }}"><i class="flaticon-inbox"></i> {{ trans('main.groupMsgsArc') }}</a>
+			<a href="{{ URL::to('/msgsArchive') }}" class="{{ Active( URL::to('/msgsArchive*') ) }}"><i class="flaticon-inbox"></i> {{ trans('main.msgsArchive') }}</a>
 		</li>
-		@endif --}}
+		@endif
 
 		@if(\Helper::checkRules('list-tickets'))
 		<li titlehover="link15">

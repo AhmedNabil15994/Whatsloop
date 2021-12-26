@@ -54,7 +54,7 @@ Route::group(['prefix' => '/profile'] , function () {
     Route::get('/subscription/read/{status}', [$controller,'read']);
     Route::get('/subscription/transferPayment',[$controller,'transferPayment']);
     Route::post('/subscription/renewToFirst',[$controller,'renewToFirst']);
-
+    Route::post('/subscription/updateChannelSettings',[$controller,'updateChannelSettings']);
 
     Route::get('/apiSetting', [$controller,'apiSetting']);
     

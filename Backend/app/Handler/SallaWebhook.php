@@ -14,7 +14,7 @@ use App\Models\ModNotificationReport;
 class SallaWebhook extends ProcessWebhookJob{
 	public function handle(){
 	    $data = json_decode($this->webhookCall, true);
-	    $mainData = $data['payload'];
+	    $allData = $data['payload'];
 		
 		$tenantUser = User::first();
 		$tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$tenantUser->global_id)->first();
@@ -42,9 +42,10 @@ class SallaWebhook extends ProcessWebhookJob{
 	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    // If New Webhook
-	    if(!empty($mainData) && !$dis){
+	    if(!empty($allData) && !$dis){
+	    	$mainData = $allData['data'];
 	  		// IF Customer Data
-	    	if(isset($mainData['gender']) && isset($mainData['urls'])){
+	    	if($allData['event'] == 'customer.updated' || $allData['event'] == 'customer.created'){
 	    		// Customer (Create / Update)
 	    		$customerObj = \DB::table('salla_customers')->where('id',$mainData['id'])->first();
 	    		$dataObj = \ExternalServices::reformatModelData([$mainData]);
@@ -89,7 +90,7 @@ class SallaWebhook extends ProcessWebhookJob{
 	    	}
 
 	    	// IF Product Data
-	    	if(isset($mainData['promotion']) && isset($mainData['type']) && $mainData['type'] == 'product'){
+	    	if($allData['event'] == 'product.updated' || $allData['event'] == 'product.created'){
 	    		// Product (Create / Update)
 	    		$productObj = \DB::table('salla_products')->where('id',$mainData['id'])->first();
 	    		$dataObj = \ExternalServices::reformatModelData([$mainData]);
@@ -101,7 +102,7 @@ class SallaWebhook extends ProcessWebhookJob{
 	    	}
 
 	    	// IF Order Data
-	    	if(isset($mainData['reference_id']) && isset($mainData['payment_method'])){
+	    	if($allData['event'] == 'order.updated' || $allData['event'] == 'order.created'){
 	    		// Order Update
 	    		$status = $mainData['status']['name'];
 

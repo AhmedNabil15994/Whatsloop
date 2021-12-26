@@ -1361,26 +1361,38 @@ input[type="number"] {
 	text-align: center
 }
 
-.stats .msgArchive table tbody tr td .type
+table tbody tr td .type
 {
 	display:inline-block;
 	font-size:16px;
 	color:#30C881
 }
 
-.stats .msgArchive table tbody tr td .type.color1
+table tbody tr td .type.color1
 {
 	color:#f00;
 	transform:rotateY(180deg)
 }
 
-.stats .msgArchive table tbody tr .date
+table tbody tr .date
 {
 	/*direction: ltr;*/
 	text-align: right
 }
 
-.stats .msgArchive table tbody tr .date i
+
+table tbody tr .phone,
+table tbody tr .date{
+    width:200px;
+    display:block;
+}
+
+.pre{
+    white-space:pre-line;
+}
+
+
+table tbody tr .date i
 {
 	float:right;
 	margin-top:2px;

@@ -412,7 +412,7 @@ class UsersControllers extends Controller {
                 }
             }
         }
-
+        User::where('phone',$input['phone'])->where('deleted_at','!=',null)->delete();
         $mainUser = User::first();
 
         $dataObj = new User;

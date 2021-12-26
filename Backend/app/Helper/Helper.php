@@ -230,6 +230,21 @@ class Helper
                         'BotControllers@charts' => 'charts-bot',
                         'BotControllers@uploadImage' => 'uploadImage-bot',
                         'BotControllers@deleteImage' => 'deleteImage-bot',
+                        
+                        'GroupNumbersControllers@index' => 'list-group-numbers',
+                        'GroupNumbersControllers@edit' => 'edit-group-number',
+                        'GroupNumbersControllers@update' => 'edit-group-number',
+                        'GroupNumbersControllers@fastEdit' => 'edit-group-number',
+                        'GroupNumbersControllers@add' => 'add-group-number',
+                        'GroupNumbersControllers@create' => 'add-group-number',
+                        'GroupNumbersControllers@delete' => 'delete-group-number',
+                        'GroupNumbersControllers@sort' => 'sort-group-number',
+                        'GroupNumbersControllers@arrange' => 'sort-group-number',
+                        'GroupNumbersControllers@charts' => 'charts-group-number',
+                        'GroupNumbersControllers@addGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@postAddGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@checkFile' =>'add-number-to-group',
+                        'ApiModsControllers@report'  =>  'list-groupNumberReports',
                     ];
                 }elseif($addon == 2){
                     $externalPermissions = [
@@ -251,6 +266,21 @@ class Helper
                         'LiveChatControllers@assignMod' => 'assign-moderator',
                         'LiveChatControllers@removeMod' => 'remove-moderator',
                         'LiveChatControllers@liveChatLogout' => 'list-livechat',
+                        
+                        'GroupNumbersControllers@index' => 'list-group-numbers',
+                        'GroupNumbersControllers@edit' => 'edit-group-number',
+                        'GroupNumbersControllers@update' => 'edit-group-number',
+                        'GroupNumbersControllers@fastEdit' => 'edit-group-number',
+                        'GroupNumbersControllers@add' => 'add-group-number',
+                        'GroupNumbersControllers@create' => 'add-group-number',
+                        'GroupNumbersControllers@delete' => 'delete-group-number',
+                        'GroupNumbersControllers@sort' => 'sort-group-number',
+                        'GroupNumbersControllers@arrange' => 'sort-group-number',
+                        'GroupNumbersControllers@charts' => 'charts-group-number',
+                        'GroupNumbersControllers@addGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@postAddGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@checkFile' =>'add-number-to-group',
+                        'ApiModsControllers@report'  =>  'list-groupNumberReports',
                     ];
                 }elseif($addon == 3){
                     $externalPermissions = [
@@ -260,6 +290,21 @@ class Helper
                         'GroupMsgsControllers@view' => 'view-group-message',
                         'GroupMsgsControllers@charts' => 'charts-group-message',
                         'GroupMsgsControllers@uploadImage' => 'uploadImage-group-message',
+                        
+                        'GroupNumbersControllers@index' => 'list-group-numbers',
+                        'GroupNumbersControllers@edit' => 'edit-group-number',
+                        'GroupNumbersControllers@update' => 'edit-group-number',
+                        'GroupNumbersControllers@fastEdit' => 'edit-group-number',
+                        'GroupNumbersControllers@add' => 'add-group-number',
+                        'GroupNumbersControllers@create' => 'add-group-number',
+                        'GroupNumbersControllers@delete' => 'delete-group-number',
+                        'GroupNumbersControllers@sort' => 'sort-group-number',
+                        'GroupNumbersControllers@arrange' => 'sort-group-number',
+                        'GroupNumbersControllers@charts' => 'charts-group-number',
+                        'GroupNumbersControllers@addGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@postAddGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@checkFile' =>'add-number-to-group',
+                        'ApiModsControllers@report'  =>  'list-groupNumberReports',
                     ];
                 }elseif($addon == 4){
                     $externalPermissions = [
@@ -334,6 +379,21 @@ class Helper
                         'BotPlusControllers@sort' => 'sort-bot-plus',
                         'BotPlusControllers@arrange' => 'sort-bot-plus',
                         'BotPlusControllers@charts' => 'charts-bot-plus',
+                        
+                        'GroupNumbersControllers@index' => 'list-group-numbers',
+                        'GroupNumbersControllers@edit' => 'edit-group-number',
+                        'GroupNumbersControllers@update' => 'edit-group-number',
+                        'GroupNumbersControllers@fastEdit' => 'edit-group-number',
+                        'GroupNumbersControllers@add' => 'add-group-number',
+                        'GroupNumbersControllers@create' => 'add-group-number',
+                        'GroupNumbersControllers@delete' => 'delete-group-number',
+                        'GroupNumbersControllers@sort' => 'sort-group-number',
+                        'GroupNumbersControllers@arrange' => 'sort-group-number',
+                        'GroupNumbersControllers@charts' => 'charts-group-number',
+                        'GroupNumbersControllers@addGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@postAddGroupNumbers' =>'add-number-to-group',
+                        'GroupNumbersControllers@checkFile' =>'add-number-to-group',
+                        'ApiModsControllers@report'  =>  'list-groupNumberReports',
                     ];
                 }
             }

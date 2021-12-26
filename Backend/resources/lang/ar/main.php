@@ -791,5 +791,8 @@ return [
 	'emailMessage' => 'بريد الالكتروني',
 	'contentArValidate' => 'يرجي ادخال المحتوي عربي',
 	'templateTypeValidate' => 'يرجي اختيار نوع التنبيه',
-
+	
+	'botPlusNote' => 'ملاحظة: تظهر 3 أزرار فقط في تطبيق اندرويد الواتساب.',
+	'apiMods' => 'اضافات ال API',
+	'whatsAppCoupon' => 'كوبونات الخصم لطلبات واتساب',
 ];

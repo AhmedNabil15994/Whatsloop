@@ -149,6 +149,12 @@ class ZidControllers extends Controller {
             'params' => [],
         ];
 
+        $dataURL = $baseUrl.'/managers/webhooks/'; 
+
+        $result = \Http::withToken($dataArr['storeToken'])->withHeaders($dataArr['myHeaders'])->get($dataURL,[]);    
+        $result = $result->json();
+        dd($result);
+
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
         if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {

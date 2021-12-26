@@ -10,6 +10,12 @@
     .mb-1{
         margin-bottom: 5px;
     }
+    p.label-darks{
+        padding: 20px !important;
+        display: block;
+        background: #F6CD02;
+        color: #000;
+    }
 </style>
 @endsection
 @section('content')
@@ -30,6 +36,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <h4 class="title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
+                            <p class="label label-darks text-left">{{ trans('main.botPlusNote') }}</p>
                         </div>
                     </div>
                     <form class="formPayment" method="POST" action="{{ URL::to('/botPlus/create') }}">
@@ -124,9 +131,7 @@
                                                     <option value="{{ $bot->id }}" data-type="1">{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>
                                                     @endforeach
                                                     @foreach($data->botPlus as $plusBot)
-                                                    @if($plusBot->id != $data->data->id)
                                                     <option value="{{ $plusBot->id }}" data-type="2">{{ trans('main.clientMessage') . ' ( ' .$plusBot->message . ' ) ==== ' . trans('main.botPlus') }}</option>
-                                                    @endif
                                                     @endforeach
                                                 </select>
                                                 <input type='hidden' name='btn_msg_type_1' value=''>

@@ -796,4 +796,10 @@ return [
 	'emailMessage' => 'Email',
 	'contentArValidate' => 'Content Arabic Field is required',
 	'templateTypeValidate' => 'Type Field is required',
+
+	'botPlusNote' => 'Note: Only 3 Buttons appear in WhatsApp Android Application. ',
+	'apiMods' => 'API Modules',
+	'whatsAppCoupon' => 'WhatsApp Orders Coupons ',
+
+
 ];

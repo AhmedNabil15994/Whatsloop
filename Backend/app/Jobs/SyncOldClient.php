@@ -204,8 +204,10 @@ class SyncOldClient implements ShouldQueue
             $addons[] = 5; // Salla
         }elseif($membershipObj->Title_ar == 'باقه زد'){
             $addons[] = 4;
+            $addons[] = 1;
         }elseif($membershipObj->Title_ar == 'باقة سلة'){
             $addons[] = 5;
+            $addons[] = 1;
         }
 
         $datediff = $end_date - $start_date;
@@ -737,6 +739,21 @@ class SyncOldClient implements ShouldQueue
                         }
                     }else{
                         User::create($item);
+                    }
+                    $oneSignalPlayerId = $oneItemData['OneSignalPlayerID'];
+                    $oneSignalPlayerIdAndroid = $oneItemData['OneSignalPlayerIDAndroid'];
+                    if($oneSignalPlayerId != ''){
+                         Variable::where('var_key','ONESIGNALPLAYERID_'.$oneItemData['Mobile'])->firstOrCreate([
+                            'var_key' => 'ONESIGNALPLAYERID_'.$oneItemData['Mobile'],
+                            'var_value' => $oneSignalPlayerId,
+                        ]);
+                    }
+
+                    if($oneSignalPlayerIdAndroid != ''){
+                         Variable::where('var_key','ONESIGNALPLAYERIDANDROID_'.$oneItemData['Mobile'])->firstOrCreate([
+                            'var_key' => 'ONESIGNALPLAYERIDANDROID_'.$oneItemData['Mobile'],
+                            'var_value' => $oneSignalPlayerIdAndroid,
+                        ]);
                     }
                 }
             }

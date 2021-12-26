@@ -305,7 +305,7 @@ class ContactsControllers extends Controller {
                 $dataObj->email = $input['email'];
                 $dataObj->country = $input['country'];
                 $dataObj->group_id = $input['group_id'];
-                $dataObj->lang = $input['lang'];
+                $dataObj->lang = isset($input['lang']) && !empty($input['lang']) ? $input['lang'] : 0;
                 $dataObj->notes = $input['notes'];
                 $dataObj->status = $input['status'];
                 $dataObj->sort = Contact::newSortIndex();

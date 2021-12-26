@@ -83,7 +83,7 @@
                                                             @endif   
                                                             <div class="col-md-2">
                                                                 <label class="ckbox prem">
-                                                                    <input type="checkbox" name="permission{{ $onePerm['perm_name'] }}">
+                                                                    <input type="checkbox" name="permission{{ $onePerm['perm_name'] }}" {{ old('permission'.$onePerm['perm_name'])  == 'on' ? 'checked' : '' }}>
                                                                     <span> {{ $onePerm['perm_title'] }}</span>
                                                                 </label>
                                                             </div>

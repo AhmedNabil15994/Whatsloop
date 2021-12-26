@@ -12,13 +12,11 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Tenant;
 use App\Models\CentralUser;
 use App\Models\User;
-use App\Models\Variable;
-use App\Models\Template;
-use App\Models\Group;
 use App\Models\ChatMessage;
 use App\Models\ChatDialog;
 use App\Models\UserChannels;
 use App\Models\Contact;
+use App\Models\Variable;
 use App\Models\Domain;
 use App\Models\UserData;
 use Illuminate\Support\Str;
@@ -54,6 +52,8 @@ class SyncHugeOld implements ShouldQueue
     }
 
     public function registerTenantData($phone,$key){
+        $found = 1;
+        $key = $key*10000;
         $tenant = Tenant::where('phone','+'.$phone)->first();
         if(!$tenant){
             $tenant = Tenant::create([
@@ -184,7 +184,6 @@ class SyncHugeOld implements ShouldQueue
                         }
                     }
                     // WEBHOOK_ON
-                    // WEBHOOK_URL
                     // dd($modules);
                     foreach($modules as $key){
                         if($key == 'NumbersGroups'){
@@ -212,23 +211,90 @@ class SyncHugeOld implements ShouldQueue
                         }
                     }
 
+                    if(!$found){
+                        CentralUser::where('phone','+'.$phone)->update(['email'=>$email,'name'=>$name,'company'=>$name,'password'=>\Hash::make($domainName)]);
+                    }else{
+                        CentralUser::where('phone','+'.$phone)->update(['email'=>$email,'name'=>$name,'company'=>$name,]);
+                    }
                     
+                    // Get User Moderators
+                    $modsURL = $baseUrl.'migration/user-moderators';
+                    $result =  \Http::withToken($token)->get($modsURL);
+                    if($result->ok() && $result->json()){
+                        $data = $result->json();
+                        if($data['status'] == true){
+                            $loopData = @$data['Moderatos'];
+                            tenancy()->initialize($tenant);
+                            $mainUser = User::first();
+                            tenancy()->end();
+                            $channel_id = $mainUser->channels;
+                            foreach($loopData as $oneItemData){
+                                if($oneItemData['AdminsGroups'] != 1 && $mainUser->domain != null){
+                                    $item = [
+                                        'domain' => $mainUser->domain,
+                                        'email' => $oneItemData['Email'],
+                                        'phone' => '+'.$oneItemData['Mobile'],
+                                        'password' => \Hash::make('whatsloop'),
+                                    ];
+                                    $dataObj = UserData::where('phone',$item['phone'])->first();
+                                    if($dataObj){
+                                        $dataObj->update($item);
+                                    }else{
+                                        UserData::create($item);
+                                    }
+                                }
+                                $oneSignalPlayerId = $oneItemData['OneSignalPlayerID'];
+                                $oneSignalPlayerIdAndroid = $oneItemData['OneSignalPlayerIDAndroid'];
+                                if($oneSignalPlayerId != ''){
+                                    tenancy()->initialize($tenant);
+                                     Variable::where('var_key','ONESIGNALPLAYERID_'.$oneItemData['Mobile'])->firstOrCreate([
+                                        'var_key' => 'ONESIGNALPLAYERID_'.$oneItemData['Mobile'],
+                                        'var_value' => $oneSignalPlayerId,
+                                    ]);
+                                    tenancy()->end();
+                                }
+            
+                                if($oneSignalPlayerIdAndroid != ''){
+                                    tenancy()->initialize($tenant);
+                                     Variable::where('var_key','ONESIGNALPLAYERIDANDROID_'.$oneItemData['Mobile'])->firstOrCreate([
+                                        'var_key' => 'ONESIGNALPLAYERIDANDROID_'.$oneItemData['Mobile'],
+                                        'var_value' => $oneSignalPlayerIdAndroid,
+                                    ]);
+                                    tenancy()->end();
+                                }
+                                
+                            }
+                        }
+                    }
+                    if($domainName != ''){
+                        $tenant->update(['title'=>$name]);
+                        if($domainObj){
+                            $domainObj->domain = $domainName;
+                            $domainObj->save();
+                        }
+                    }
+
                     if($doSync && $modules){
                         tenancy()->initialize($tenant);
-                        if($webhookStatus != ''){
-                            Variable::create(['var_key' => 'WEBHOOK_ON','var_value' => $webhookStatus]);    
+                        if($email != ''){
+                            if(!$found){
+                                User::where('phone','+'.$phone)->update(['email'=>$email,'domain'=>$domainName,'name'=>$name,'company'=>$name,'password'=>\Hash::make($domainName)]);
+                            }else{
+                                User::where('phone','+'.$phone)->update(['email'=>$email,'domain'=>$domainName,'name'=>$name,'company'=>$name,]);
+                            }
                         }
-
-                        if($webhookURL != ''){
-                            Variable::create(['var_key' => 'WEBHOOK_URL','var_value' => $webhookURL]);    
-                        }
-
                         $userObj = User::getData(User::first(),'ar');
-                        Group::where('id','!=',1)->delete();
-                        User::where('group_id','!=',1)->delete();
-                        Template::truncate();
-                        if($modules){
-                            dispatch(new SyncOldClient($userObj,$modules));
+                        if(!$found){
+                            if($modules){
+                                dispatch(new SyncOldClient($userObj,$modules));
+                            }
+                        }else{
+                            $userChannelObj = UserChannels::first();
+                            if($userChannelObj && $userChannelObj->end_date != $newEndData){
+                                if($modules){
+                                    dispatch(new SyncOldClient($userObj,$modules));
+                                }
+                            }
                         }
                         tenancy()->end();
                     }

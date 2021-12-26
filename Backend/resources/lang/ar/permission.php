@@ -153,8 +153,8 @@ return [
 	'update-contact-details' => 'تعديل تفاصيل جهة الاتصال',
 	'list-quickReplies' => 'عرض الردود السريعة',
 	'list-moderators' => 'عرض المشرفين',
-	'assign-moderators' => 'تعيين المشرفين',
-	'remove-moderators' => 'حذف المشرفين',
+	'assign-moderator' => 'تعيين المشرفين',
+	'remove-moderator' => 'حذف المشرفين',
 	'zid-abandoned-carts' => 'السلات المتروكة',
 	'add-zid-template' => 'اضافة قالب التنبيه',
 	'delete-zid-template' => 'حذف قالب التنبيه',
@@ -181,11 +181,11 @@ return [
 	'charts-coupon' => 'احصائيات كوبونات الخصم',
 
 	'list-bots-plus' => 'عرض بوت بلس', 
-	'edit-bots-plus' => 'تعديل بوت بلس', 
-	'add-bots-plus' => 'اضافة بوت بلس', 
-	'delete-bots-plus' => 'حذف بوت بلس', 
-	'copy-bots-plus' => 'تكرار بوت بلس', 
-	'sort-bots-plus' => 'ترتيب بوت بلس', 
-	'charts-bots-plus' => 'احصائيات بوت بلس', 
+	'edit-bot-plus' => 'تعديل بوت بلس', 
+	'add-bot-plus' => 'اضافة بوت بلس', 
+	'delete-bot-plus' => 'حذف بوت بلس', 
+	'copy-bot-plus' => 'تكرار بوت بلس', 
+	'sort-bot-plus' => 'ترتيب بوت بلس', 
+	'charts-bot-plus' => 'احصائيات بوت بلس', 
 
 ];

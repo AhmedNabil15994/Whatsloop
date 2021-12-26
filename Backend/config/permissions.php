@@ -85,6 +85,8 @@ return [
     'ProfileControllers@read' => 'subscription',
     'ProfileControllers@transferPayment' => 'subscription',
     'ProfileControllers@renewToFirst' => 'subscription',
+    'ProfileControllers@updateChannelSettings' => 'subscription',
+    
 
     'ProfileControllers@apiSetting' => 'apiSetting',
     'ProfileControllers@apiGuide' => 'apiGuide',
@@ -93,7 +95,6 @@ return [
 
 
     'ApiModsControllers@msgsArchive'  => 'list-messages-archive',
-    'ApiModsControllers@report'  =>  'list-groupNumberReports',
     'ApiModsControllers@index'  =>  'list-statuses',
 
     'ContactsControllers@index' => 'list-contacts',
@@ -107,19 +108,6 @@ return [
     'ContactsControllers@arrange' => 'sort-contact',
     'ContactsControllers@charts' => 'charts-contact',
     'ContactsControllers@downloadContacts' => 'export-contacts',
-
-    'GroupNumbersControllers@index' => 'list-group-numbers',
-    'GroupNumbersControllers@edit' => 'edit-group-number',
-    'GroupNumbersControllers@update' => 'edit-group-number',
-    'GroupNumbersControllers@fastEdit' => 'edit-group-number',
-    'GroupNumbersControllers@add' => 'add-group-number',
-    'GroupNumbersControllers@create' => 'add-group-number',
-    'GroupNumbersControllers@delete' => 'delete-group-number',
-    'GroupNumbersControllers@sort' => 'sort-group-number',
-    'GroupNumbersControllers@arrange' => 'sort-group-number',
-    'GroupNumbersControllers@charts' => 'charts-group-number',
-    'GroupNumbersControllers@addGroupNumbers' =>'add-number-to-group',
-    'GroupNumbersControllers@postAddGroupNumbers' =>'add-number-to-group',
 
     'CategoryControllers@index' => 'list-categories',
     'CategoryControllers@edit' => 'edit-category',
