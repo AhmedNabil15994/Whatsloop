@@ -140,6 +140,7 @@ export default {
 
      
         var domain =  window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+        
       this.testBroadCastingSentMessage(domain);
       this.testBroadCastingIncomingMessage(domain);
       this.testBroadCastingBotMessage(domain);

@@ -281,7 +281,7 @@ class CategoryControllers extends Controller {
                 Session::flash('error', $result['status']['message']);
                 return \Redirect::back()->withInput();
             }
-            $labelId = $result['data']['label']['id'];
+            $labelId = isset($result['data']['label']) && !empty($result['data']['label']) ? $result['data']['label']['id'] : '';
         }
         
 

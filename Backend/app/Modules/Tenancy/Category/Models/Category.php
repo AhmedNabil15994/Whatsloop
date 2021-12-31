@@ -46,7 +46,7 @@ class Category extends Model{
         }
 
         if($labelIds != null){
-            $source->whereIn('labelId',$labelIds);
+            $source->where('labelId','!=','')->whereIn('labelId',$labelIds);
         }
 
         $source->orderBy('sort','ASC');

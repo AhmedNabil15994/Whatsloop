@@ -164,6 +164,10 @@ class SyncOldClient implements ShouldQueue
                         CentralChannel::create($extraChannelData);                    
                     }else{
                         $centralChannel->update($channel);
+                        $centralChannel->update([
+                            'tenant_id' => $this->tenant_id,
+                            'global_user_id' => $userObj->global_id,
+                        ]);
                     }
 
                     $tenantChannel = UserChannels::where('id',$channel['id'])->first();
@@ -193,10 +197,11 @@ class SyncOldClient implements ShouldQueue
 
         if($membershipObj->Title_ar == 'المنصة التفاعلية'){
             $addons[] = 2;
+            $addons[] = 3;
         }elseif($membershipObj->Title_ar == 'باقه البوت'){
             $addons[] = 1;
         }elseif($membershipObj->Title_ar == 'باقه API'){
-        }elseif($membershipObj->Title_ar == 'باقه شاملة'){
+        }elseif($membershipObj->Title_ar == 'باقه شاملة' || $membershipObj->Title_ar == 'باقة خدمة عملاء واتس لوب'){
             $addons[] = 1; // Bot
             $addons[] = 2; // LiveChat
             $addons[] = 3; // Group Message
@@ -209,6 +214,11 @@ class SyncOldClient implements ShouldQueue
             $addons[] = 5;
             $addons[] = 1;
         }
+
+        \DB::connection('main')->table('old_memberships')->insert([
+            'membership' => $membershipObj->Title_ar,
+            'user_id' => $userObj->id,
+        ]);
 
         $datediff = $end_date - $start_date;
         $daysLeft = (int) round($datediff / (60 * 60 * 24));
@@ -735,6 +745,9 @@ class SyncOldClient implements ShouldQueue
                         if($dataObj->id == $mainUser->id){
                             unset($item['group_id']);
                             unset($item['password']);
+                            if($item['email'] == ''){
+                                unset($item['email']);
+                            }
                             $dataObj->update($item);
                         }
                     }else{
@@ -1256,21 +1269,21 @@ class SyncOldClient implements ShouldQueue
     public function finalizeMigration(){
         $userObj = $this->userObj;
         if(count($this->userObj->channels) > 0){
-            if(in_array(3,$this->addons)){
-                \Artisan::call('tenants:run groupMsg:send --tenants='.$this->tenant_id);
-            }
+            // if(in_array(3,$this->addons)){
+            //     \Artisan::call('tenants:run groupMsg:send --tenants='.$this->tenant_id);
+            // }
 
-            \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
+            // \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
 
-            if(in_array(2,$this->addons)){
-                \Artisan::call('tenants:run sync:messages --tenants='.$this->tenant_id);
-                \Artisan::call('tenants:run sync:dialogs --tenants='.$this->tenant_id);
-            }
+            // if(in_array(2,$this->addons)){
+            //     \Artisan::call('tenants:run sync:messages --tenants='.$this->tenant_id);
+            //     \Artisan::call('tenants:run sync:dialogs --tenants='.$this->tenant_id);
+            // }
 
-            \Artisan::call('push:channelSetting');
-            if(in_array(4,$this->addons) || in_array(5,$this->addons)){
-                \Artisan::call('push:addonSetting');
-            }
+            // \Artisan::call('push:channelSetting');
+            // if(in_array(4,$this->addons) || in_array(5,$this->addons)){
+            //     \Artisan::call('push:addonSetting');
+            // }
 
             User::where('id',$userObj->id)->update([
                 'is_synced' =>  1,

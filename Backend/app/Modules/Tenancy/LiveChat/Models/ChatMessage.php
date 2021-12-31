@@ -118,6 +118,14 @@ class ChatMessage extends Model{
 
     static function getData($source){
         $dataObj = new \stdClass();
+        $mainUser = User::first();
+        $domain = $mainUser->domain;
+        $disabled = UserAddon::getDeactivated($mainUser->id);
+        $dis = 0;
+        if(in_array(9,$disabled)){
+            $dis = 1;
+        }
+
         if($source){
             $quotedMsgObj = null;
             $dates = self::reformDate($source->time);
@@ -156,7 +164,7 @@ class ChatMessage extends Model{
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard'){
                 if(strpos($dataObj->body, 'FN:') !== false){
                     $dataObj->contact_name = str_replace('\n','',explode('TEL',explode('FN:',$dataObj->body)[1])[0]);
-                    $dataObj->contact_number = explode(':+',explode(';waid=',$dataObj->body)[1])[0];
+                    $dataObj->contact_number = @explode(':+',explode(';waid=',$dataObj->body)[1])[0];
                     $dataObj->contact_number = str_replace('END:VCARD','',$dataObj->contact_number);
                     $arr = explode(':',$dataObj->contact_number) ; 
                     if(isset($arr[1]) && !empty($arr[1])){
@@ -169,18 +177,17 @@ class ChatMessage extends Model{
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'order'){
                 $dataObj->orderDetails = new \stdClass();
-                $domain = User::first()->domain;
-                $dataObj->orderDetails->name = $source->Order != null ? trans('main.order') . ' '.  $source->Order->order_id : '';
+                $dataObj->orderDetails->name = $source->Order != null ? (!$dis ? trans('main.order') . ' '.  $source->Order->order_id : $source->caption) : '';
                 $dataObj->orderDetails->image = '';
                 $dataObj->orderDetails->price = $source->Order != null ? $source->Order->total . ' ' . unserialize($source->Order->products)[0]['currency'] : '';
                 $dataObj->orderDetails->quantity = $source->Order !=  null ? $source->Order->products_count : '';
                 $dataObj->orderDetails->url = $source->Order != null ? \URL::to('/orders/'.$source->Order->order_id.'/view') : \URL::to('/whatsappOrders/orders');
-                $dataObj->orderDetails->url = str_replace('localhost',$domain.'.wloop.net',$dataObj->orderDetails->url);
+                $dataObj->orderDetails->url = !$dis ? str_replace('wloop.net',$domain.'.wloop.net',$dataObj->orderDetails->url) : \URL::to('/livechat');
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->metadata != '' && $dataObj->whatsAppMessageType == 'product'){
                 $dataObj->productDetails = Product::getData(Product::getOne($dataObj->metadata->productId));
             }
-            $dataObj->messageContent = $source->body != null && (strpos(' https',ltrim($source->body)) !== false || strpos(' http',ltrim($source->body)) !== false ) ? 📷 : $source->body;
+            $dataObj->messageContent = $source->body != null && (strpos(' https',ltrim($source->body)) !== false || strpos(' http',ltrim($source->body)) !== false ) ? '📷' : $source->body;
             $dataObj->icon = $source->fromMe ? ' <i class="type flaticon-share"></i>' : ' <i class="type color1 flaticon-share"></i>';
             $dataObj->date_time = $dataObj->created_at_day . ' ' . $dataObj->created_at_time;
             $dataObj->chatId3 = str_replace('+','',$dataObj->chatId2);

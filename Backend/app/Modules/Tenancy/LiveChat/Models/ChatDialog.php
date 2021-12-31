@@ -31,7 +31,10 @@ class ChatDialog extends Model{
             $source->where('modsArr','LIKE','%'.USER_ID.'%');
         }
 
-        $source->orderBy('last_time','DESC');
+        $source->where([
+            ['image' , '!=' , null],
+            ['last_time' , ' != ' , 0],
+        ])->orderBy('last_time','DESC');
         return self::generateObj($source,$limit);
     }
 
@@ -108,9 +111,9 @@ class ChatDialog extends Model{
             if($metaData == false){
                 $cats = ContactLabel::where('contact',str_replace('@c.us', '', $source->id))->pluck('category_id');
                 $cats = reset($cats);
-                $cats = empty($cats) ? [0] : $cats;
+                $cats = empty($cats) || $cats[0] == 0 ? [0] : $cats;
                 $dataObj->labels = Category::dataList(null,$cats)['data'];
-                $dataObj->labelsArr = $cats;
+                $dataObj->labelsArr = $cats ;
                 $dataObj->moderators = !empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
                 $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
                 $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('messageNumber','DESC')->first());

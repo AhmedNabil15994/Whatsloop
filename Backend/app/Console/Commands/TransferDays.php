@@ -80,10 +80,10 @@ class TransferDays extends Command
                 $later = new \DateTime(date('Y-m-d',$channel['paidTill'] / 1000));
                 $earlier = new \DateTime(date('Y-m-d'));
                 $duration = abs($later->diff($earlier)->format("%a"));
-                if(in_array($channel['id'],$activeChannels) && $duration <= 2){
+                if(in_array($channel['id'],$activeChannels) && $duration <= 1){
                     $transferDaysData = [
                         'receiver' => $channel['id'],
-                        'days' => 3,
+                        'days' => 1,
                         'source' => $channelObj->id,
                     ];
     

@@ -190,6 +190,8 @@ return [
 	'groupNumbers' => 'مجموعات الارقام',
 	'addGroupNumbers' => 'اضافة إلى مجموعات الارقام',
 	'attachExcel' => 'يمكنك رفع ملفات اكسيل',
+	'pleaseAttachExcel' => 'من فضلك قم بارفاق ملف اكسيل يحتوي علي جهات الاتصال',
+
 	'fileContent' => 'محتوى الملف المرفق',
 	'noDataFound' => 'لا يوجد بيانات',
 	'invalidColumn' => 'عمود غير موجود',
@@ -616,7 +618,7 @@ return [
 	'transferImage' => 'صورة التحويل',
 	'attachTransferImage' => 'ارفاق إيصال التحويل البنكي',
 	'payViaPayTabs' => 'الدفع من خلال PayTabs',
-	'payViaNoon' => 'الدفع من خلال نون',
+	'payViaNoon' => 'دفع الكتروني',
 	'singlePayment' => 'اشتراك شهري',
 	'subscription1' => 'اشتراك سنوي دفع شهري',
 	'subscription2' => 'اشتراك سنوي دفع سنوي',

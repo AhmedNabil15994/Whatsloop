@@ -395,6 +395,13 @@ class Helper
                         'GroupNumbersControllers@checkFile' =>'add-number-to-group',
                         'ApiModsControllers@report'  =>  'list-groupNumberReports',
                     ];
+                }elseif($addon == 11){
+                    $externalPermissions = [
+                        'ProfileControllers@apiSetting' => 'apiSetting',
+                        'ProfileControllers@apiGuide' => 'apiGuide',
+                        'ProfileControllers@webhookSetting' => 'webhookSetting',
+                        'ProfileControllers@postWebhookSetting' => 'webhookSetting',
+                    ];
                 }
             }
 

@@ -30,6 +30,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    $mainData = $data['payload'];
 	    $messages = @$mainData['messages'];
 	    $actions = @$mainData['ack'];
+	    $old = @$mainData['old'];
 		$tenantUser = User::first();
 		$tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$tenantUser->global_id)->first();
 		$userObj = \DB::connection('main')->table('domains')->where('tenant_id',$tenantObj->tenant_id)->first();
@@ -44,17 +45,19 @@ class MessagesWebhook extends ProcessWebhookJob{
             $dis2 = 1;
         }
 
-		$startDay = strtotime(date('Y-m-d 00:00:00'));
-        $endDay = strtotime(date('Y-m-d 23:59:59'));
-        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
-        $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',$tenantUser->membership_id)->first()->features;
-        $featuresId = unserialize($membershipFeatures);
-        $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
-        $dailyCount = @(int) $features[0];
-        $extraQuotas = UserExtraQuota::getOneForUserByType($tenantUser->global_id,1);
-        if($dailyCount + $extraQuotas <= $messagesCount){
-            return 1;
-        }
+		if(!$old){
+			$startDay = strtotime(date('Y-m-d 00:00:00'));
+	        $endDay = strtotime(date('Y-m-d 23:59:59'));
+	        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+	        $membershipFeatures = \DB::connection('main')->table('memberships')->where('id',$tenantUser->membership_id)->first()->features;
+	        $featuresId = unserialize($membershipFeatures);
+	        $features = \DB::connection('main')->table('membership_features')->whereIn('id',$featuresId)->pluck('title_en');
+	        $dailyCount = @(int) $features[0];
+	        $extraQuotas = UserExtraQuota::getOneForUserByType($tenantUser->global_id,1);
+	        if($dailyCount + $extraQuotas <= $messagesCount){
+	            return 1;
+	        }
+		}
 
     	$mainWhatsLoopObj = new \MainWhatsLoop();
 
@@ -123,9 +126,10 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 		    			// Find Out Bot Object Based on incoming message
 		    			$botObj = Bot::findBotMessage($langPref,$senderMessage);
-
 		    			if($botObj && !$dis && $message['type'] != 'buttons_response'){
-		    				$this->handleBasicBot($botObj,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+		    				if(!$old){
+			    				$this->handleBasicBot($botObj,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+		    				}
 		    			}
 
 		    			if(!$botObj){
@@ -137,7 +141,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 			    			}
 		    			}
 		    			
-		    			// else{
+		    			// if(!$botObj && !$botObjs){
 		    			// 	if($langPref == 0){
 		    			// 		$notFoundMessage = 'اسف لم استطع فهمك ! :(';
 		    			// 	}else{
@@ -145,6 +149,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    			// 	}
 		    			// 	$myMessage = $notFoundMessage;
 		    			// 	$sendData['body'] = $myMessage;
+		    			// 	$sendData['chatId'] = $sender;
 			    		// 	$result = $mainWhatsLoopObj->sendMessage($sendData);
 		    			// }
 	    			}
@@ -169,7 +174,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		$botObj = Bot::getData($botObj,$tenantId);
 		$botObj->file = str_replace('localhost',$domain.'.wloop.net',$botObj->file);
 		$botObj->photo = str_replace('localhost',$domain.'.wloop.net',$botObj->photo);
-		$reply = $botObj->reply2;
+		$reply = $botObj->reply;
 		$myMessage = $reply;
 		$message_type = '';
 		$whats_message_type = '';
@@ -185,7 +190,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 			$sendData['filename'] = $botObj->file_name;
 			$sendData['body'] = $botObj->file;
 			if($message_type == 'photo'){
-				$sendData['caption'] = $botObj->reply2;
+				$sendData['caption'] = $botObj->reply;
 			}
 			$result = $mainWhatsLoopObj->sendFile($sendData);
 		}elseif($botObj->reply_type == 3){
@@ -300,6 +305,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		}else{
 			$message['message_type'] = in_array($message['type'],['product','order']) ? $message['type'] : 'text';
 			if($message['message_type'] == 'order' && $message['metadata']){
+
 				$orderDetails = $message['metadata'];
 				$orderDetails['sellerJid'] = str_replace('@s.whatsapp.net','',$orderDetails['sellerJid']);
 				unset($orderDetails['currency']);

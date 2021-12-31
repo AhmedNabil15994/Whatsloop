@@ -189,6 +189,7 @@ return [
 	'groupNumbers' => 'Numbers Groups',
 	'addGroupNumbers' => 'Add To Numbers Groups',
 	'attachExcel' => 'Attach Excel File',
+	'pleaseAttachExcel' => 'Please Attach Excel File contains contacts data',
 	'fileContent' => 'Uploaded File Content',
 	'noDataFound' => 'No Data Found',
 	'invalidColumn' => 'Invalid Column',

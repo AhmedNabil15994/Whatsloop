@@ -740,7 +740,12 @@ class SubscriptionControllers extends Controller {
             $data['userCredits'] = 0;
             $data['start_date'] = date('Y-m-d');
             $addons = UserAddon::NotDeleted()->where('user_id',USER_ID)->whereIn('status',[1,3])->where('end_date','>=',date('Y-m-d'))->pluck('addon_id');
-            $data['addons'] = Addons::dataList(1,null,reset($addons))['data'];
+            $addons = reset($addons);
+            if(in_array(4,$addons) || in_array(5,$addons)){
+                $addons[] = 1;
+            }
+            $addons = array_unique($addons);
+            $data['addons'] = Addons::dataList(1,null,$addons)['data'];
         }
         else if($input['type'] == 'extra_quota'){
             $data['userCredits'] = 0;

@@ -97,7 +97,7 @@ class TenantInvoiceControllers extends Controller {
                 'data-col' => 'due_date',
                 'anchor-class' => '',
             ],
-            'total' => [
+            'roTtotal' => [
                 'label' => trans('main.total'),
                 'type' => '',
                 'className' => '',
@@ -230,8 +230,10 @@ class TenantInvoiceControllers extends Controller {
         if($invoiceObj == null || $invoiceObj->client_id != $userObj->id) {
             return Redirect('404');
         } 
-
+        
         $myData   = unserialize($invoiceObj->items);
+        $invoiceObj = Invoice::getData($invoiceObj);
+        $discount = $invoiceObj->discount;
         $testData = [];
         $total = 0;
         $start_date = $invoiceObj->due_date;
@@ -258,15 +260,15 @@ class TenantInvoiceControllers extends Controller {
             ];
             $total+= $testData[$key][6] * (int)$one['data']['quantity'];
         }
-        
+
         $data['data'] = $testData;
         $data['user'] = User::getOne(USER_ID);
-        $tax = \Helper::calcTax($total);
+        $tax = \Helper::calcTax($total - $discount);
         $data['totals'] = [
-            $total-$tax,
-            0,
+            $total-$tax-$discount,
+            $discount,
             $tax,
-            $total,
+            $total - $discount,
         ];
         $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];

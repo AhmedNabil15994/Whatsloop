@@ -15,6 +15,10 @@ class Invoice extends Model{
         return $this->belongsTo('App\Models\CentralUser','client_id');
     }
 
+    public function OldMembership(){
+        return $this->hasOne('App\Models\OldMembership','user_id','client_id');
+    }
+
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)
@@ -24,7 +28,7 @@ class Invoice extends Model{
     static function dataList($status=null,$client_id=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted()->where(function ($query) use ($input,$status,$client_id) { 
+        $source = self::with('OldMembership')->NotDeleted()->where(function ($query) use ($input,$status,$client_id) { 
                     if (isset($input['id']) && !empty($input['id'])) {
                         $query->where('id',  $input['id']);
                     } 
@@ -74,11 +78,14 @@ class Invoice extends Model{
         $data->paid_date = $source->paid_date != null ? $source->paid_date : '';
         $data->payment_method = $source->payment_method;
         $data->notes = $source->notes;
-        $data->total = $source->total;
         $data->payment_gateaway = $source->payment_gateaway;
         $data->items = $source->items != null ? unserialize($source->items) : [];
         $data->sort = $source->sort;
         $data->main = $source->main;
+        $data->oldPrice = $source->OldMembership != null && $source->main ? OldMembership::calcOldPrice($source->OldMembership,$data->items[0]['data']['duration_type']) : 0 ;
+        $data->discount = $data->oldPrice == 0 ? 0 : abs($source->total - $data->oldPrice);
+        $data->total = $source->total;
+        $data->roTtotal = $source->total - $data->discount;
         $data->status = $source->status;
         $data->statusText = trans('main.invoice_status_'.$source->status);
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);

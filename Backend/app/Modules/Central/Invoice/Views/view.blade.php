@@ -100,7 +100,10 @@
                                 <tbody>
                                     @php $mainPrices = 0; @endphp
                                     @foreach($data->data->items as $key => $item)
-                                    @php $mainPrices+=$item['data']['price'] * $item['data']['quantity'] @endphp
+                                    @php 
+                                        $mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
+                                        $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
+                                    @endphp
                                     <tr class="mainRow">
                                         <td>{{ $key+1 }}</td>
                                         <td>
@@ -120,16 +123,16 @@
                                         <td class="text-left">
                                             <p class="mb-2">
                                                 <span class="tx-bold">{{ trans('main.discount') }} :</span>
-                                                <span class="float-right">{{ $mainPrices - $data->data->total }} {{ trans('main.sar') }}</span>
+                                                <span class="float-right">{{ $oldDiscount }} {{ trans('main.sar') }}</span>
                                                 <div class="clearfix"></div>
                                             </p>
                                             <p>
                                                 @php 
-                                                    $tax = Helper::calcTax($data->data->total);
+                                                    $tax = Helper::calcTax($data->data->total - $oldDiscount);
                                                 @endphp
 
                                                 <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
-                                                <span>{{ $data->data->total - $tax }} {{ trans('main.sar') }}</span>
+                                                <span>{{ $data->data->total - $oldDiscount - $tax }} {{ trans('main.sar') }}</span>
                                             </p>
                                             <p>
                                                 <span class="tx-bold">{{ trans('main.estimatedTax') }} :</span>
@@ -137,7 +140,7 @@
                                             </p>
                                             <p>
                                                 <span class="tx-bold">{{ trans('main.total') }} :</span>
-                                                <span>{{ $data->data->total }}  {{ trans('main.sar') }}</span>
+                                                <span>{{ $data->data->total - $oldDiscount }}  {{ trans('main.sar') }}</span>
                                             </p>
                                         </td>
                                     </tr>

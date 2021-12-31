@@ -36,7 +36,7 @@
                         </transition>
                         
                         
-                        <vuescroll @handle-scroll="handleScroll" ref="vs2">
+                        <vuescroll ref="vs2">
                         <!-- Start chat-message-list -->
                             <div class="paddingLeft">
                             <!--  -->
@@ -176,7 +176,7 @@
                                         <div class="chat-message-list notFound" v-if="chats.Dialogs.length === 0 || chats.Dialogs === undefined">
                                              لا يوجد محادثات
                                         </div>-->
-                                        <div v-if="chats.Dialogs">
+                                        <div v-if="chats.Dialogs && !searchTo">
                                             <div v-observe-visibility="{callback: visibilityChanged}" v-if="totalCount === false && chats.Dialogs.length > 25" class="newLoader" style="text-align:center">
                                                 <div class="lds-roller" style="margin:15px 0"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                                             </div>

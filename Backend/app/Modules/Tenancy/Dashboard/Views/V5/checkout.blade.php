@@ -61,6 +61,7 @@
                                 ['color' => '#0E6177','image' => 'logo-design.png'],
                                 ['color' => '#5CCAD2','image' => 'layers.png'],
                                 ['color' => '#373FBC','image' => 'Page-1.png'],
+                                ['color' => '#373FBC','image' => 'api.png'],
                             ];
                             $extraQuotasArr = [
                                 ['color' => '#449DE6','image' => 'text-message.png'],
@@ -97,8 +98,8 @@
         </div>
 
         <ul class="listTotal">
+            <li class="clearfix">{{ trans('main.discount') }} <span><b class="discount">{{ number_format((float)$data->totals[1], 2, '.', '') }}</b> {{ trans('main.sar') }}</span></li>
             <li class="clearfix">{{ trans('main.subTotal') }} <span><b class="grandTotal">{{ $data->totals[0] }}</b> {{ trans('main.sar') }}</span></li>
-            <li class="clearfix d-hidden">{{ trans('main.discount') }} <span><b class="discount">{{ number_format((float)$data->totals[1], 2, '.', '') }}</b> {{ trans('main.sar') }}</span></li>
             <li class="clearfix">{{ trans('main.estimatedTax') }} <span><b class="estimatedTax">{{ $data->totals[2] }}</b> {{ trans('main.sar') }}</span></li>
         </ul>
 

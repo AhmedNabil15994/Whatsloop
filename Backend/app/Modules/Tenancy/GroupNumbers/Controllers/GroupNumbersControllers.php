@@ -321,6 +321,10 @@ class GroupNumbersControllers extends Controller {
             return Redirect('404');
         }
 
+        if(!isset($input['files']) && empty($input['files'])){
+            Session::flash('error', trans('main.pleaseAttachExcel'));
+            return redirect()->back();
+        }
         $rows = json_decode($input['files']);
         $mainData = $rows[0];
         // dd($rows);
@@ -368,32 +372,38 @@ class GroupNumbersControllers extends Controller {
         }
 
         foreach ($storeData as $value) {
-            $phone = "+".$value['phone'];
-            $phone = str_replace('\r', '', $phone);
-            $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',$phone)->first();
-            if(!$contactObj){
-                if(!isset($value['name']) || empty($value['name'])){
-                    $value['name'] = $phone;
-                }
-                if(isset($value['email']) && empty($value['email'])){
-                    $value['email'] = $input['email'];
-                }
-                if(isset($value['country']) && empty($value['country'])){
-                    $value['country'] = $input['country'];
-                }
-                if(isset($value['city']) && empty($value['city'])){
-                    $value['city'] = $input['city'];
-                }
-                $value['phone'] = trim(str_replace('\r', '', $phone));
-                $value['status'] = 1;
-
-                $contactObj = new Contact;
-                foreach($value as $attr => $val){
-                    $contactObj->$attr = $val;
-                }
-                $contactObj->save();
+            if(!isset($value['phone'])){
+                Session::flash('error', trans('main.pleaseAttachExcel'));
+                return redirect()->back();
             }
-            $consForQueue[] = $contactObj;
+            if($value['phone'] != null){
+                $phone = "+".$value['phone'];
+                $phone = str_replace('\r', '', $phone);
+                $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',$phone)->first();
+                if(!$contactObj){
+                    if(!isset($value['name']) || empty($value['name'])){
+                        $value['name'] = $phone;
+                    }
+                    if(isset($value['email']) && empty($value['email'])){
+                        $value['email'] = $input['email'];
+                    }
+                    if(isset($value['country']) && empty($value['country'])){
+                        $value['country'] = $input['country'];
+                    }
+                    if(isset($value['city']) && empty($value['city'])){
+                        $value['city'] = $input['city'];
+                    }
+                    $value['phone'] = trim(str_replace('\r', '', $phone));
+                    $value['status'] = 1;
+
+                    $contactObj = new Contact;
+                    foreach($value as $attr => $val){
+                        $contactObj->$attr = $val;
+                    }
+                    $contactObj->save();
+                }
+                $consForQueue[] = $contactObj;
+            }
         }
 
         $chunks = 400;

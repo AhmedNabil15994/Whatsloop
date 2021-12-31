@@ -647,7 +647,7 @@
                     ref="myVueDropzone"
                     @vdropzone-removed-file="checkFile = false"
                     @vdropzone-file-added="checkFile = true"
-                    acceptedFileTypes=".png,.jpg,.jpeg,.gif,.bmp,.txt,.pdf,.xlsx"
+                    acceptedFileTypes=".png,.jpg,.jpeg,.gif,.bmp,.txt,.pdf,.xlsx,'wav','.mp3','.mp4','.m3u','.aac','.vorbis','.flac','.alac','.aiff','.dsd','.ogg','.oga','.ppt','.ptt'"
                     id="dropzone"
                     :useCustomSlot="true"
                     :options="dropzoneOptions"
@@ -807,6 +807,7 @@ export default {
             this.getQuick();
            
             var domain = window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+            
             this.testBroadCastingSentMessage2(domain)
             this.testBroadCastingIncomingMessage2(domain);
             //this.testBroadCastingBotMessage2(domain);
@@ -903,7 +904,7 @@ export default {
         // Start socket.io listener
           window.Echo.channel(domain+'-NewBotMessage')
             .listen('BotMessage', (data) => {
-                 console.log(data)
+                // console.log(data)
                     if(data.message.lastMessage.bot_details.reply_type == 2){
                         if(data.message.lastMessage.whatsAppMessageType == 'image'){
                             data.message.lastMessage.caption = data.message.lastMessage.bot_details.message;
@@ -1171,7 +1172,7 @@ export default {
                         //this.messageSend
                         var objMsg1 = {
                             author:this.chatIdC,
-                            body:this.$refs.myVueDropzone.dropzone.files[i].dataURL,
+                            body:URL.createObjectURL(this.$refs.myVueDropzone.dropzone.files[i]),
                             file_name:textMsg,
                             created_at_time:time1,
                             fromMe:1,

@@ -86,12 +86,7 @@ return [
     'ProfileControllers@transferPayment' => 'subscription',
     'ProfileControllers@renewToFirst' => 'subscription',
     'ProfileControllers@updateChannelSettings' => 'subscription',
-    
 
-    'ProfileControllers@apiSetting' => 'apiSetting',
-    'ProfileControllers@apiGuide' => 'apiGuide',
-    'ProfileControllers@webhookSetting' => 'webhookSetting',
-    'ProfileControllers@postWebhookSetting' => 'webhookSetting',
 
 
     'ApiModsControllers@msgsArchive'  => 'list-messages-archive',

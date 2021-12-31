@@ -580,13 +580,17 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = $input['chatId'];
         $data['labelId'] = $input['labelId'];
         
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $result = $mainWhatsLoopObj->labelChat($data);
-        $result = $result->json();
+        $varObj = Variable::getVar('BUSINESS');
+        if($varObj){
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $result = $mainWhatsLoopObj->labelChat($data);
+            $result = $result->json();
 
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
+            if($result['status']['status'] != 1){
+                return \TraitsFunc::ErrorMessage($result['status']['message']);
+            }    
         }
+        
         // dd($input);
         $contactLabelObj = ContactLabel::newRecord(str_replace('@c.us', '', $input['chatId']),$input['labelId']);
        
@@ -619,14 +623,17 @@ class LiveChatControllers extends Controller {
 
         $data['liveChatId'] = $input['chatId'];
         $data['labelId'] = $input['labelId'];
-        
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $result = $mainWhatsLoopObj->unlabelChat($data);
-        $result = $result->json();
-
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
+       
+        $varObj = Variable::getVar('BUSINESS'); 
+        if($varObj){
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $result = $mainWhatsLoopObj->unlabelChat($data);
+            $result = $result->json();
+            if($result['status']['status'] != 1){
+                return \TraitsFunc::ErrorMessage($result['status']['message']);
+            }
         }
+
 
         ContactLabel::where('contact',str_replace('@c.us', '', $input['chatId']))->where('category_id',$input['labelId'])->delete();
         $domain = explode('.', $request->getHost())[0];

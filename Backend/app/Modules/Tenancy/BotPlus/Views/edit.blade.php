@@ -30,7 +30,7 @@
             <div class="form">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-xs-6">
+                        <div class="col-xs-12">
                             <h4 class="title"><i class="{{ $data->designElems['mainData']['icon'] }}"></i> {{ $data->designElems['mainData']['title'] }}</h4>
                         </div>
                     </div>
