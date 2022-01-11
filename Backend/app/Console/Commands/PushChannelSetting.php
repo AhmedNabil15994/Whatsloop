@@ -43,7 +43,7 @@ class PushChannelSetting extends Command
     public function handle()
     {   
 
-        $users = CentralUser::NotDeleted()->where('group_id',0)->where('setting_pushed',0)->where('status',1)->get();
+        $users = CentralUser::NotDeleted()->where('group_id',0)->where('status',1)->get();
         foreach($users as $user){
             $domain = CentralUser::getDomain($user);
             $channelObj = CentralChannel::where('global_user_id',$user->global_id)->first();

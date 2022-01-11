@@ -43,7 +43,7 @@ class GroupNumber extends Model{
         if($id != null){
             $source->whereNotIn('id',$id);
         }
-        $source->orderBy('sort','ASC');
+        $source->orderBy('sort','DESC');
         return self::generateObj($source);
     }
 

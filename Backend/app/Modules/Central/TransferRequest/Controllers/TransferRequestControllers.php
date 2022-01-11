@@ -153,10 +153,20 @@ class TransferRequestControllers extends Controller {
 
             // $paymentObj = new \SubscriptionHelper(); 
             if($endDate != null){
-                dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate));
+                try {
+                    dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
+        
                 // $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate);   
             }else{
-                dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj));
+                try {
+                    dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
+                
                 // $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj);   
             }
             // if($resultData[0] == 0){

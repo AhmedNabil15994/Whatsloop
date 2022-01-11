@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use App\Models\CentralUser;
 use App\Models\User;
+use App\Models\Domain;
 
 class ImagesHelper {
 
@@ -195,15 +196,19 @@ class ImagesHelper {
             return false;
         }
 
-        
-        $rand = rand() . date("YmdhisA");
-        $fileName = 'whatsloop' . '-' . $rand;
-        $directory = '';
-
         $tenant = '';
+        $file = 'whatsloop';
         if(!\Session::has('central')){
             $tenant = TENANT_ID;
+            $domain = Domain::where('tenant_id',$tenant)->first();
+            if($domain){
+                $file = $domain->domain;
+            }
         }
+
+        $rand = rand() . date("YmdhisA");
+        $fileName = $file . '-' . $rand;
+        $directory = '';
 
         if($strAction == 'users'){
             $userObj = CentralUser::getOne($id);
@@ -310,15 +315,19 @@ class ImagesHelper {
             return false;
         }
 
-
-        $rand = rand() . date("YmdhisA");
-        $fileName = 'whatsloop' . '-' . $rand;
-        $directory = '';
-
         $tenant = '';
+        $file = 'whatsloop';
         if(!\Session::has('central')){
             $tenant = TENANT_ID;
+            $domain = Domain::where('tenant_id',$tenant)->first();
+            if($domain){
+                $file = $domain->domain;
+            }
         }
+
+        $rand = rand() . date("YmdhisA");
+        $fileName = $file . '-' . $rand;
+        $directory = '';
 
         if($strAction == 'users'){
             $userObj = CentralUser::getOne($id);
@@ -430,16 +439,22 @@ class ImagesHelper {
         if (!in_array($extension, $appliedExtensions)) {
             return false;
         }
-        
-        $rand = rand() . date("YmdhisA");
-        $fileName = 'whatsloop' . '-' . $rand;
-        $directory = '';
 
+        $tenant = '';
+        $file = 'whatsloop';
         $path = public_path() . '/uploads/';
         if(!\Session::has('central')){
             $tenant = TENANT_ID;
             $path = public_path() . '/uploads/'.$tenant.'/';
+            $domain = Domain::where('tenant_id',$tenant)->first();
+            if($domain){
+                $file = $domain->domain;
+            }
         }
+
+        $rand = rand() . date("YmdhisA");
+        $fileName = $file . '-' . $rand;
+        $directory = '';
 
         if ($strAction == 'chats') {
             $directory = $path . 'chats/';

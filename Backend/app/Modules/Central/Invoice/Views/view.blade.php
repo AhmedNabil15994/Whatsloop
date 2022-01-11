@@ -98,11 +98,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php $mainPrices = 0; @endphp
+                                    @php 
+                                        $mainPrices = 0; 
+                                        $isOld = App\Models\CentralUser::find($data->data->client_id)->is_old;
+                                    @endphp
                                     @foreach($data->data->items as $key => $item)
                                     @php 
                                         $mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
                                         $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
+                                        $tax = Helper::calcTax($isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
+                                        $grandTotal = $isOld ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+                                        $total = $isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
                                     @endphp
                                     <tr class="mainRow">
                                         <td>{{ $key+1 }}</td>
@@ -127,12 +133,8 @@
                                                 <div class="clearfix"></div>
                                             </p>
                                             <p>
-                                                @php 
-                                                    $tax = Helper::calcTax($data->data->total - $oldDiscount);
-                                                @endphp
-
                                                 <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
-                                                <span>{{ $data->data->total - $oldDiscount - $tax }} {{ trans('main.sar') }}</span>
+                                                <span>{{ $grandTotal }} {{ trans('main.sar') }}</span>
                                             </p>
                                             <p>
                                                 <span class="tx-bold">{{ trans('main.estimatedTax') }} :</span>
@@ -140,7 +142,7 @@
                                             </p>
                                             <p>
                                                 <span class="tx-bold">{{ trans('main.total') }} :</span>
-                                                <span>{{ $data->data->total - $oldDiscount }}  {{ trans('main.sar') }}</span>
+                                                <span>{{ $total }}  {{ trans('main.sar') }}</span>
                                             </p>
                                         </td>
                                     </tr>

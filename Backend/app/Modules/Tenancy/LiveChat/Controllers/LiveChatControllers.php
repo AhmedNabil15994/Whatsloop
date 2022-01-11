@@ -12,6 +12,7 @@ use App\Models\Reply;
 use App\Models\UserAddon;
 use App\Models\User;
 use App\Models\UserExtraQuota;
+use App\Models\Variable;
 use App\Models\ChatEmpLog;
 use App\Models\UserChannels;
 use App\Events\SentMessage;
@@ -40,24 +41,24 @@ class LiveChatControllers extends Controller {
 
     public function dialogs(Request $request) {
         $input = \Request::all();
-
-        if((!isset($input['mine']) || empty($input['mine'])) && !\Helper::checkRules('list-dialogs')){
+        
+        if((!isset($input['mine']) || empty($input['mine'])) && !\Helper::checkRules('list-livechat')){
             $dataList['data'] = 'disabled';
             $dataList['status'] = \TraitsFunc::SuccessMessage();
-            return \Response::json((object) $dataList);
+            return \Response::json((object) $dataList);        
         }
-
+        
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
         $data['name'] = isset($input['name']) && !empty($input['name']) ? $input['name'] : null;
 
         $dialogs = ChatDialog::dataList($data['limit'],$data['name']);
-
+ 
         $dataList = $dialogs;
         if($data['name'] == null){
             $dataList['pinnedConvs'] = ChatDialog::getPinned()['data'];
         }
         $dataList['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $dataList);
+        return \Response::json((object) $dataList);        
     }
 
     public function pinChat(Request $request) {
@@ -101,17 +102,29 @@ class LiveChatControllers extends Controller {
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
+
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->unpinChat($data);
         $result = $result->json();
 
         if($result['status']['status'] != 1){
+            if($result['status']['message'] == "chat isn`t pinned"){
+                $dialogObj->is_pinned = 0;
+                $dialogObj->save();
+                $dataList['data'] =  (object)[
+                    'result' => "success", 
+                    'chatId' => $input['chatId'],
+                ];
+                $dataList['status'] = \TraitsFunc::SuccessMessage();
+                return \Response::json((object) $dataList);
+            }
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
 
         $domain = explode('.', $request->getHost())[0];
-        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
         $dialogObj->is_pinned = 0;
         $dialogObj->save();
 
@@ -177,7 +190,7 @@ class LiveChatControllers extends Controller {
         $dialogObj->is_read = 1;
         $dialogObj->save();
 
-        ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 3]);
+        ChatMessage::where('chatId',$input['chatId'])->update(['sending_status' => 3]);
         broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
         
         $dataList['data'] = isset($result['data']) ? $result['data'] : '';
@@ -209,7 +222,7 @@ class LiveChatControllers extends Controller {
         $dialogObj->is_read = 0;
         $dialogObj->save();
 
-        ChatMessage::where('author',$input['chatId'])->update(['sending_status' => 2]);
+        ChatMessage::where('chatId',$input['chatId'])->update(['sending_status' => 2]);
         broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
 
         $dataList['data'] = isset($result['data']) ? $result['data'] : '';
@@ -244,10 +257,11 @@ class LiveChatControllers extends Controller {
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $domain = explode('.', $request->getHost())[0];
 
-        $senderStatus = trans('main.channel'). ' #'.Session::get('channelCode');
-        if(!IS_ADMIN){
-            $senderStatus = FULL_NAME;
-        }
+        // $senderStatus = ;//trans('main.channel'). ' #'.Session::get('channelCode');
+        // if(!IS_ADMIN){
+        //     $senderStatus = FULL_NAME;
+        // }
+        $senderStatus = ucwords(FULL_NAME);
 
         if(isset($input['messageType']) && $input['messageType'] == 'new'){
             $chats = explode(',', $input['chatId']);
@@ -267,7 +281,11 @@ class LiveChatControllers extends Controller {
                 if(!$status){   
                     return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
                 }
-                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus));
+                try {
+                    dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
             }
             $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
             return \Response::json((object) $dataList);       
@@ -513,7 +531,8 @@ class LiveChatControllers extends Controller {
             $dialog->last_time = $lastMessage['time'];
             $dialogObj = ChatDialog::getData($dialog);
             broadcast(new SentMessage($domain , $dialogObj ));
-        
+            ChatMessage::where('chatId',$sendData['chatId'])->where('fromMe',0)->update(['sending_status' => 3]);
+            
             $is_admin = IS_ADMIN;
             $user_id = USER_ID; 
             if(!$is_admin){
@@ -655,16 +674,20 @@ class LiveChatControllers extends Controller {
         }
 
         $contactObj = Contact::NotDeleted()->where('phone',str_replace('@c.us', '', $input['chatId']))->first();
-        $contact_details = [];
-        if($contactObj != null){
-            $contact_details = Contact::getData($contactObj,null,null,true);
+        if($contactObj == null){
+            $contactObj = new Contact;
+            $contactObj->group_id = 1;
+            $contactObj->status = 1;
+            $contactObj->phone = str_replace('@c.us', '', $input['chatId']);
+            $contactObj->save();
         }        
 
-        $dataObj = ChatDialog::getData($chatObj,true);
+        $contact_details = Contact::getData($contactObj,null,null,true);
+        $dataObj = ChatDialog::getData($chatObj,false);
         $dataObj->contact_details = $contact_details;
         $dataList['data'] = $dataObj;
-        $dataList['data']->moderators = !empty($dataList['data']->modsArr)  ? User::dataList(null,$dataList['data']->modsArr,'ar')['data'] : [];
-        $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList($dataList['data']->metadata['labels'],null)['data'] : [];
+        // $dataList['data']->moderators = !empty($dataList['data']->modsArr)  ? User::dataList(null,$dataList['data']->modsArr,'ar')['data'] : [];
+        // $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList($dataList['data']->metadata['labels'],null)['data'] : [];
         $dataList['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $dataList);      
     }

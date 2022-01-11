@@ -100,7 +100,8 @@
                                     <div class="col-md-8">{{ trans('main.phone') }}</div>      
                                     <div class="col-md-4">{{ trans('main.status') }}</div>      
                                 </div>
-                                @foreach($data->contacts as $contact)
+                                @foreach($data->contacts as $key => $contact)
+                                @if($key <= 9)
                                 <div class="card mb-1">
                                     <div class="card-body cont-card">
                                         <div class="row">
@@ -109,9 +110,22 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                                 @endforeach
                             </div>
                         </div> 
+                        <hr class="mt-5">
+                        <div class="row">
+                            <div class="col-xs-12 text-right">
+                                <div class="nextPrev clearfix ">
+                                    <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
+                                    @if(\Helper::checkRules('add-group-message'))
+                                    <a href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/resend/'.$data->data->id) }}" class="btn btnNext">{{ trans('main.resend') }}</a>
+                                    @endif
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
                     </div>
                 </div> <!-- end card body-->
             </div> <!-- end card -->

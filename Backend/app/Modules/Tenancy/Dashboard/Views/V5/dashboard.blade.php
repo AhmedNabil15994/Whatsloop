@@ -80,7 +80,7 @@
                     <center>
                         <div class="nextPrev clearfix">
                             <a href="{{ URL::to('/invoices/view/'.Session::get('invoice_id')) }}" class="btnNext">{{ trans('main.resubscribe_b1') }}</a>
-                            <a href="{{ URL::to('/profile/subscription') }}" class="btnNext">{{ trans('main.resubscribe_b2') }}</a>
+                            <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="btnNext">{{ trans('main.resubscribe_b2') }}</a>
                         </div>
                     </center>
                 </div>
@@ -201,6 +201,11 @@
             </table>
         </div>
     </div>
+
+    @php
+        $disabled = \App\Models\UserAddon::getDeactivated(\App\Models\User::first()->id);
+    @endphp
+    @if(in_array(2, $disabled))
     <div class="lastNumbers">
         <h2 class="title">{{ trans('main.activityLog') }}</h2>
         <ul class="listNumbers">
@@ -222,6 +227,8 @@
             @endforeach
         </ul>
     </div>
+    @endif
+
     @endif            
 </div>
 @endsection

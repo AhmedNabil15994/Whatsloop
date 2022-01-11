@@ -50,7 +50,11 @@ class SyncDialogs extends Command
         if(isset($updateResult['data']) && !empty($updateResult['data'])){
             $count = count($updateResult['data']['dialogs']);
             if($count > ChatDialog::count()){
-                dispatch(new SyncDialogsJob($updateResult['data']['dialogs']));
+                try {
+                    dispatch(new SyncDialogsJob($updateResult['data']['dialogs']))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
             }
         }
         

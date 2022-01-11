@@ -21,6 +21,7 @@ Route::group(['prefix' => '/services/salla'] , function (){
 	Route::get('/products',[$controller,'products']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/abandonedCarts',[$controller,'abandonedCarts']);
+	Route::post('/abandonedCarts/sendAbandoned',[$controller,'sendAbandoned']);
 	Route::get('/reports', [$controller,'reports']);
 	Route::get('/templates', [$controller,'templates']);
 	Route::get('/templates/add', [$controller,'templatesAdd']);
@@ -36,6 +37,7 @@ Route::group(['prefix' => '/services/zid'] , function (){
 	Route::get('/products',[$controller,'products']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/abandonedCarts',[$controller,'abandonedCarts']);
+	Route::post('/abandonedCarts/sendAbandoned',[$controller,'sendAbandoned']);
 	Route::get('/reports', [$controller,'reports']);
 	Route::get('/templates', [$controller,'templates']);
 	Route::get('/templates/add', [$controller,'templatesAdd']);

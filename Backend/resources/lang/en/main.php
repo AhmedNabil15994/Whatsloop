@@ -801,6 +801,13 @@ return [
 	'botPlusNote' => 'Note: Only 3 Buttons appear in WhatsApp Android Application. ',
 	'apiMods' => 'API Modules',
 	'whatsAppCoupon' => 'WhatsApp Orders Coupons ',
+	'resend' => 'Resend',
 
-
+	'channelSettings_disableGroupsArchive' => 'Disable Groups Archive',
+	'channelSettings_disableDialogsArchive' => 'Disable Dialogs Archive',
+	'daily' => 'Daily',
+	'clientsValidate' => 'Please Select at least one client',
+	'sentBefore' => 'Had been sent before' ,
 ];
+
+

@@ -56,6 +56,8 @@ $(function(){
 		var exportText = 'Export Contacts';
 		var actionsVar = 'Actions';
 		var detailsText = 'Details';
+		var enableText = 'Enable';
+		var disableText = 'Disable';
 	}else{
 		var showCols = " عرض الأعمدة <i class='fa fas fa-angle-down'></i>";
 		var direction = 'rtl';
@@ -79,6 +81,8 @@ $(function(){
 		var exportText = 'استيراد جهات الارسال';
 		var actionsVar = 'الاجراءات';
 		var detailsText = 'التفاصيل';
+		var enableText = 'تفعيل';
+		var disableText = 'تعطيل';
 	}
 
 	var iCounter = 1;
@@ -162,6 +166,7 @@ $(function(){
 
 					if($('input[name="data-tabs"]').length && $('input[name="data-tabs"]').val() == 1){
 						copyButton = '<a href="/'+designElems.mainData.url+'/copy/'+data+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-layers"></i> '+copyText+'</a>';
+						showButton = '<a href="/'+designElems.mainData.url+'/changeStatus/'+data+'" class="action-icon btn btn-block btn-outline-warning"> <i class="si si-note"></i> '+(full.status == 1 ? disableText : enableText)+'</a>';
 					}
 
 					if(designElems.mainData.url == 'groupNumbers'){

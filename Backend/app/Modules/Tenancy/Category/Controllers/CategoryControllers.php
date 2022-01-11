@@ -300,7 +300,7 @@ class CategoryControllers extends Controller {
 
         if(isset($input['color_id']) && !empty($input['color_id'])){
             $updateDate['color'] = Category::getColorData($input['color_id'])[2];
-            if(!$disable){
+            if(!$disable && $labelId != ''){
                 $updateDate['labelId'] = $dataObj->labelId;
                 $updateResult = $mainWhatsLoopObj->updateLabel($updateDate);
                 $result = $updateResult->json();
@@ -327,7 +327,11 @@ class CategoryControllers extends Controller {
         }
 
         $labels = Category::dataList()['data'];
-        dispatch(new SyncLabelsJob($labels));
+        try {
+            dispatch(new SyncLabelsJob($labels))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
         
         $varObj->var_value = 1;
         $varObj->save();

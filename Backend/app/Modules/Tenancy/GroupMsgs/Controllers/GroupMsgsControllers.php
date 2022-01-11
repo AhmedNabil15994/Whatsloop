@@ -410,23 +410,41 @@ class GroupMsgsControllers extends Controller {
             }
         }
 
+        $dataObj = GroupMsg::getData($dataObj);
+        $chunks = 400;
         if($flag == 0){
             // Fire Job Queue
-            $dataObj = GroupMsg::getData($dataObj);
-            $chunks = 400;
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
-                dispatch(new GroupMessageJob($data,$dataObj));
+                try {
+                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
             });
         }else{
-            $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->get();
-            foreach ($contacts as $contact) {
-                $reportObj = new ContactReport;
-                $reportObj->contact = $contact->phone;
-                $reportObj->group_id = $groupObj->id;
-                $reportObj->group_message_id = $dataObj->id;
-                $reportObj->status = 0;
-                $reportObj->save();
-            }
+
+
+            $now = \Carbon\Carbon::now();
+            $sendDate = \Carbon\Carbon::parse($date);
+            $diff =  $sendDate->diffInSeconds($now);
+            $on = \Carbon\Carbon::now()->addSeconds($diff);   
+
+            $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+                try {
+                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs')->delay($on);
+                } catch (Exception $e) {
+                    
+                }
+            });
+            // $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->get();
+            // foreach ($contacts as $contact) {
+            //     $reportObj = new ContactReport;
+            //     $reportObj->contact = $contact->phone;
+            //     $reportObj->group_id = $groupObj->id;
+            //     $reportObj->group_message_id = $dataObj->id;
+            //     $reportObj->status = 0;
+            //     $reportObj->save();
+            // }
         }
 
         Session::forget('msgFile');
@@ -447,6 +465,27 @@ class GroupMsgsControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
         return view('Tenancy.GroupMsgs.Views.V5.view')->with('data', (object) $data);
+    }
+
+    public function resend($id){
+        $id = (int) $id;
+        $groupMsgObj = GroupMsg::NotDeleted()->find($id);
+        if($groupMsgObj == null) {
+            return Redirect('404');
+        }
+
+        $dataObj = GroupMsg::getData($groupMsgObj);
+        $chunks = 400;
+        $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+            try {
+                dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
+        });
+
+        Session::flash('success', trans('main.addSuccess'));
+        return redirect()->to($this->getData()['mainData']['url'].'/view/'.$groupMsgObj->id);
     }
 
     public function charts() {

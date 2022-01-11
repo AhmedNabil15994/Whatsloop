@@ -109,6 +109,9 @@ class ExternalServices {
         foreach ($data as $value) {
             $newObj = $value;
             foreach ($value as $key => $dataObj) {
+                if(in_array($key, ['hide_quantity','sort','consisted_products','digital_download_limit','digital_download_expiry','hide_quantity','country_code'])){
+                    unset($newObj[$key]);
+                }
                 if(strpos($key, 'ed_at') !== false || $key == 'date'){
                     $newUpdate = $dataObj;
                     if(is_array($value[$key])){
@@ -172,6 +175,10 @@ class ExternalServices {
                                 unset($value['consisted_products']);
                                 unset($value['digital_download_limit']);
                                 unset($value['digital_download_expiry']);
+                                unset($value['hide_quantity']);
+                            }
+                            if($tableName == 'salla_customers'){
+                                unset($value['country_code']);
                             }
                             DB::table($tableName)->insert($value);
                         }   

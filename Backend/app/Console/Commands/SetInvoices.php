@@ -121,38 +121,40 @@ class SetInvoices extends Command
                         $oneObj['duration_type'] = $value->duration_type;
                         $oneObj['quantity'] = 1;
 
-                        if(isset($invoices[$userObj->id])){
-                            if(isset($invoices[$userObj->id][date('Y-m-d',$dueDate)])){
-                                $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] =  $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] + $total;
-                                $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['items'][] = [
-                                    'type' => 'addon',
-                                    'data' => $oneObj,
-                                ]; 
-                            }else{
-                                $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
-                                    'total' => $total,
-                                    'leftDays' => $value->leftDays,
-                                    'main' => 0,
-                                    'tenant_id' => $value->tenant_id,
-                                    'items' => [[
+                        if($userObj){
+                            if(isset($invoices[$userObj->id])){
+                                if(isset($invoices[$userObj->id][date('Y-m-d',$dueDate)])){
+                                    $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] =  $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] + $total;
+                                    $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['items'][] = [
                                         'type' => 'addon',
                                         'data' => $oneObj,
-                                    ]],
+                                    ]; 
+                                }else{
+                                    $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
+                                        'total' => $total,
+                                        'leftDays' => $value->leftDays,
+                                        'main' => 0,
+                                        'tenant_id' => $value->tenant_id,
+                                        'items' => [[
+                                            'type' => 'addon',
+                                            'data' => $oneObj,
+                                        ]],
+                                    ];
+                                }
+                            }else{
+                                $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
+                                    'data' => [
+                                        'total' => $oneObj['price_after_vat'],
+                                        'leftDays' => $value->leftDays,
+                                        'main' => 0,
+                                        'tenant_id' => $value->tenant_id,
+                                        'items' => [[
+                                            'type' => 'addon',
+                                            'data' => $oneObj,
+                                        ]],
+                                    ]
                                 ];
                             }
-                        }else{
-                            $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
-                                'data' => [
-                                    'total' => $oneObj['price_after_vat'],
-                                    'leftDays' => $value->leftDays,
-                                    'main' => 0,
-                                    'tenant_id' => $value->tenant_id,
-                                    'items' => [[
-                                        'type' => 'addon',
-                                        'data' => $oneObj,
-                                    ]],
-                                ]
-                            ];
                         }
                     }    
                 }
@@ -192,38 +194,40 @@ class SetInvoices extends Command
                         $oneObj['duration_type'] = $value->duration_type;
                         $oneObj['quantity'] = $found[$membershipObj->id];
 
-                        if(isset($invoices[$userObj->id])){
-                            if(isset($invoices[$userObj->id][date('Y-m-d',$dueDate)])){
-                                $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] =  $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] + $total;
-                                $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['items'][] = [
-                                    'type' => 'extra_quota',
-                                    'data' => $oneObj,
-                                ]; 
-                            }else{
-                                $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
-                                    'total' => $total,
-                                    'leftDays' => $value->leftDays,
-                                    'main' => 0,
-                                    'tenant_id' => $value->tenant_id,
-                                    'items' => [[
+                        if($userObj){
+                            if(isset($invoices[$userObj->id])){
+                                if(isset($invoices[$userObj->id][date('Y-m-d',$dueDate)])){
+                                    $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] =  $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['total'] + $total;
+                                    $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data']['items'][] = [
                                         'type' => 'extra_quota',
                                         'data' => $oneObj,
-                                    ]],
+                                    ]; 
+                                }else{
+                                    $invoices[$userObj->id][date('Y-m-d',$dueDate)]['data'] = [
+                                        'total' => $total,
+                                        'leftDays' => $value->leftDays,
+                                        'main' => 0,
+                                        'tenant_id' => $value->tenant_id,
+                                        'items' => [[
+                                            'type' => 'extra_quota',
+                                            'data' => $oneObj,
+                                        ]],
+                                    ];
+                                }
+                            }else{
+                                $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
+                                    'data' => [
+                                        'total' => $oneObj['price_after_vat'],
+                                        'leftDays' => $value->leftDays,
+                                        'main' => 0,
+                                        'tenant_id' => $value->tenant_id,
+                                        'items' => [[
+                                            'type' => 'extra_quota',
+                                            'data' => $oneObj,
+                                        ]],
+                                    ]
                                 ];
                             }
-                        }else{
-                            $invoices[$userObj->id][date('Y-m-d',$dueDate)] = [
-                                'data' => [
-                                    'total' => $oneObj['price_after_vat'],
-                                    'leftDays' => $value->leftDays,
-                                    'main' => 0,
-                                    'tenant_id' => $value->tenant_id,
-                                    'items' => [[
-                                        'type' => 'extra_quota',
-                                        'data' => $oneObj,
-                                    ]],
-                                ]
-                            ];
                         }
                     }    
                 }
@@ -353,7 +357,7 @@ class SetInvoices extends Command
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
                         \MailHelper::prepareEmail($phoneData,1);
-                    }else if($oneItem['data']['leftDays'] < 0){
+                    }else if($oneItem['data']['leftDays'] == 0){
                         // Suspend 
                         if($invoiceObj->status == 2  && (int) date('H') == 9 ){
                             $subscriptions = '( ';
@@ -428,9 +432,28 @@ class SetInvoices extends Command
                             $phoneData['phone'] = $userObj->phone;
                             \MailHelper::prepareEmail($phoneData,1);
                         }   
-                    }
+                    }else if($oneItem['data']['leftDays'] == -1){
+                        // Whatsloop Customer Service
+                        $notificationTemplateObj = NotificationTemplate::getOne(2,'leadContact');
+                        $allData = [
+                            'name' => $userObj->name,
+                            'subject' => $notificationTemplateObj->title_ar,
+                            'content' => $notificationTemplateObj->content_ar,
+                            'email' => $userObj->email,
+                            'template' => 'tenant.emailUsers.default',
+                            'url' => 'https://'.$userObj->domain.'.wloop.net/',
+                            'extras' => [
+                                'company' => $userObj->company,
+                                'url' => 'https://'.$userObj->domain.'.wloop.net/',
+                            ],
+                        ];
+                        \MailHelper::prepareEmail($allData);
 
-                    
+                        $notificationTemplateObj = NotificationTemplate::getOne(1,'leadContact');
+                        $phoneData = $allData;
+                        $phoneData['phone'] = $userObj->phone;
+                        \MailHelper::prepareEmail($phoneData,1,'service');
+                    }
                     
                 }
             }

@@ -10,6 +10,7 @@ Route::group(['prefix' => '/groupMsgs'] , function () {
     Route::get('/charts', [$controller,'charts']);
 	Route::post('/create', [$controller,'create']);
     Route::get('/view/{id}', [$controller,'view']);
+    Route::get('/resend/{id}', [$controller,'resend']);
 
     /*----------------------------------------------------------
     Images

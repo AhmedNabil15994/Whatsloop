@@ -31,6 +31,7 @@ class CreateMessagesTable extends Migration
             $table->text('metadata')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
+            $table->index('chatId');
         });
     }
 

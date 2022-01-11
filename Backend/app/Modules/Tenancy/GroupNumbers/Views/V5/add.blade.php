@@ -51,7 +51,7 @@
                                             <label for="inputEmail3" class="titleLabel">{{ trans('main.titleAr') }} :</label>
                                         </div>
                                         <div class="col-md-8">
-                                            <input type="text" class="name_ar" placeholder="{{ trans('main.titleAr') }}">
+                                            <input type="text" class="name_ar" name="name_ar" placeholder="{{ trans('main.titleAr') }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -59,12 +59,9 @@
                                             <label for="inputEmail4" class="titleLabel">{{ trans('main.titleEn') }} :</label>
                                         </div>
                                         <div class="col-md-8">
-                                            <input type="text" class="name_en" placeholder="{{ trans('main.titleEn') }}">
+                                            <input type="text" class="name_en" name="name_en" placeholder="{{ trans('main.titleEn') }}">
                                             <input type="hidden" name="status">
                                         </div>
-                                    </div>
-                                    <div class="nextPrev clearfix">
-                                        <button type="button" style="width: 150px" class="btnNext mb-2 addGR float-right">{{ trans('main.add').' '.trans('main.group') }}</button>
                                     </div>
                                 </div>
                                 

@@ -22,6 +22,13 @@ use App\Models\WebActions;
 use DataTables;
 use App\Jobs\NewClient;
 
+use Salla\ZATCA\GenerateQrCode;
+use Salla\ZATCA\Tags\InvoiceDate;
+use Salla\ZATCA\Tags\InvoiceTaxAmount;
+use Salla\ZATCA\Tags\InvoiceTotalAmount;
+use Salla\ZATCA\Tags\Seller;
+use Salla\ZATCA\Tags\TaxNumber;
+
 class TenantInvoiceControllers extends Controller {
 
     use \TraitsFunc;
@@ -191,6 +198,15 @@ class TenantInvoiceControllers extends Controller {
         $data['clients'] = $data['designElems']['clients'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.invoices') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
+        $tax = \Helper::calcTax($data['data']->roTtotal);
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['data']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($data['data']->roTtotal), // invoice total amount
+            new InvoiceTaxAmount($tax) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
         return view('Tenancy.Invoice.Views.V5.view')->with('data', (object) $data);      
     }
 
@@ -274,6 +290,7 @@ class TenantInvoiceControllers extends Controller {
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
+        $data['disDelete'] = true;
         return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
     }
 
@@ -415,7 +432,11 @@ class TenantInvoiceControllers extends Controller {
 
         $cartObj = unserialize($invoiceObj->items);
         $type = \Session::has('invoice_id') ? 'renew' : 'payInvoice';
-        dispatch(new NewClient($cartObj,$type,$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'));
+        try {
+          dispatch(new NewClient($cartObj,$type,$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
         // $paymentObj = new \SubscriptionHelper(); 
         // $resultData = $paymentObj->newSubscription($cartObj,'payInvoice',$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old');   
         // if($resultData[0] == 0){

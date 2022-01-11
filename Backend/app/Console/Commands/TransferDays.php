@@ -25,7 +25,7 @@ class TransferDays extends Command
      *
      * @var string
      */
-    protected $description = 'Transfer 3 Days for every Channel';
+    protected $description = 'Transfer  Days for every Channel';
 
     /**
      * Create a new command instance.
@@ -60,16 +60,17 @@ class TransferDays extends Command
         $channels = CentralChannel::dataList()['data'];
 
         // Normal Script
-        if($balanceDays < ( (3 * count($channels) )  + 2 ) ){
+        if($balanceDays < ( (1 * count($channels) )  + 2 ) ){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            $data['body'] = "You Have To recharge at least ". (  ( (3 * count($channels) )  + 2 ) - $balanceDays )  ." day To Complete Transfering Days for all channels";
+            $data['body'] = "You Have To recharge at least ". (  ( (1 * count($channels) )  + 2 ) - $balanceDays )  ." day To Complete Transfering Days for all channels";
             $data['phone'] = str_replace('+','',CentralUser::first()->phone);
             $mainWhatsLoopObj->sendMessage($data);
-            return 1;
+            // return 1;
         }
 
         $activeChannels = [];
         foreach ($channels as $key => $value) {
+            $centralUserObj = CentralUser::where('global_id',$value->global_user_id)->first();
             if($key > 0 && $value->leftDays > 0){
                 $activeChannels[] = $value->id; 
             }

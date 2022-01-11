@@ -134,6 +134,13 @@ class ClientControllers extends Controller {
                 'data-col' => 'channels',
                 'anchor-class' => 'editable',
             ],
+            'channelCodes' => [
+                'label' => trans('main.channel'),
+                'type' => '',
+                'className' => 'edits selects',
+                'data-col' => 'channels',
+                'anchor-class' => 'editable',
+            ],
             'actions' => [
                 'label' => trans('main.actions'),
                 'type' => '',
@@ -376,7 +383,13 @@ class ClientControllers extends Controller {
         //     \Session::flash('error', $result['status']['message']);
         //     return back()->withInput();
         // }
-        dispatch(new TransferDays($channel->id,$channel->token,$channelObj->id,$input['days']));
+        
+        try {
+          dispatch(new TransferDays($channel->id,$channel->token,$channelObj->id,$input['days']))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
+
 
         // $channelObj->update(['end_date'=> date('Y-m-d' ,strtotime("+".$input['days']. " days" ,strtotime($channelObj->end_date) ))]);
         // CentralChannel::where('id',$channelObj->id)->update(['end_date'=> $channelObj->end_date]);
@@ -630,7 +643,11 @@ class ClientControllers extends Controller {
 
         if($input['duration_type'] != $oldDuration){
             $firstChannelObj = CentralChannel::first();
-            dispatch(new TransferDays($firstChannelObj->id,$firstChannelObj->token,$channel['id'],1));
+            try {
+              dispatch(new TransferDays($firstChannelObj->id,$firstChannelObj->token,$channel['id'],1))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
             // $transferDaysData = [
             //     'receiver' => $channel['id'],
             //     'days' => 3,
@@ -832,7 +849,12 @@ class ClientControllers extends Controller {
             return $userObj;
         });
 
-        dispatch(new TransferDays($channelObj->id,$channelObj->token,$channel['id'],1));
+        try {
+          dispatch(new TransferDays($channelObj->id,$channelObj->token,$channel['id'],1))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
+        
         // $transferDaysData = [
         //     'receiver' => $channel['id'],
         //     'days' => 3,

@@ -49,7 +49,11 @@ class DelayedGroupMessages extends Command
                 $contacts = Contact::NotDeleted()->whereHas('Reports',function($whereQuery) use ($dataObj){
                     $whereQuery->where('status',0)->where('group_message_id',$dataObj['id']);
                 })->where('group_id',$message->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
-                    dispatch(new GroupMessageJob($data,(object)$dataObj));
+                    try {
+                        dispatch(new GroupMessageJob($data,(object)$dataObj))->onConnection('cjobs');
+                    } catch (Exception $e) {
+                        
+                    }
                 });
             }
             $message->later = 0;

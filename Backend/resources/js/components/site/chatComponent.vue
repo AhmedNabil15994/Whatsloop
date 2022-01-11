@@ -165,7 +165,7 @@
                                                                 {{message.quotedMsgObj.productDetails.name}}
                                                                 <svg width="24" height="24" viewBox="0 0 24 24" class="svgStore"><g fill="none" fill-rule="evenodd"><path d="M3.555 5.111h16.888V3H3.555v2.111zm0 1.057L2.5 11.447v2.111h1.055v6.332H14.11v-6.332h4.224v6.332h2.111v-6.332H21.5v-2.111l-1.055-5.28H3.555zM5.666 17.78h6.332v-4.223H5.666v4.223z" id="Page-1-Copy" fill="currentColor"></path></g></svg>
                                                                 <img onerror="this.onerror=null;this.src='https://whatsloop.net/resources/Gallery/UserDefault.png';" class="imgrelpy" 
-                                                                :src="message.quotedMsgObj.productDetails.mainImage" />
+                                                                :src="message.quotedMsgObj.productDetails.mainImage == '' ? 'https://whatsloop.net/resources/Gallery/UserDefault.png' : message.quotedMsgObj.productDetails.mainImage" />
 
                                                             </span>
 
@@ -578,14 +578,16 @@
                 </div>
                 <div class="quickMsgs mobile flex" v-if="openQuick">
                     
-                    <ul>
-                        <li class="chat-user-message text-truncate" v-for="rep in quickReplies" @click="sendQuick(rep.Content_ar)" :key="rep.id">
-                        <span class="title">{{ rep.Title_ar }} :</span>
-                            {{ rep.Content_ar }}
-                        </li>
-                        
-                    </ul>
-                    <a :href="'http://'+domain+'.wloop.net/replies'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
+                    <vuescroll>
+                        <ul>
+                            <li class="chat-user-message text-truncate" v-for="rep in quickReplies" @click="sendQuick(rep.description_ar)" :key="rep.id">
+                            <span class="title">{{ rep.name_ar }} :</span>
+                                {{ rep.description_ar }}
+                            </li>
+                            
+                        </ul>
+                        <a target="_blank" :href="'http://'+domain+'.wloop.net/replies'" class="addRep"><i class="ri-add-circle-fill"></i> أضافة رد سريع</a>
+                    </vuescroll>
                 </div>
                 <!-- start chat input section -->
                 <form @submit.prevent class="sendMessage">

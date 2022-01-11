@@ -175,7 +175,7 @@ class ApiModsControllers extends Controller {
 
     public function msgsArchive(Request $request){
         if($request->ajax()){
-            $data = ChatMessage::dataList();
+            $data = ChatMessage::dataList(null,null,'notNull');
             return Datatables::of($data['data'])->rawColumns(['icon'])->make(true);
         }
 

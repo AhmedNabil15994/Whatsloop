@@ -31,6 +31,9 @@
     .form-group{
         margin-bottom: 0;
     }
+    .AdditionsSub .title a.edit{
+        width: 120px;
+    }
 </style>
 @endsection
 
@@ -63,11 +66,11 @@
             <div class="row">
                 @php $i = 0; @endphp
                 @foreach($data->channelSettings as $key => $oneSetting)
-                @if(in_array($key,['instanceStatuses','webhookStatuses','statusNotificationsOn','ackNotificationsOn','chatUpdateOn','videoUploadOn','guaranteedHooks','ignoreOldMessages','processArchive','disableGroupsArchive','disableDialogsArchive','parallelHooks','topics']))
+                @if(in_array($key,['disableGroupsArchive','disableDialogsArchive']))
                 <div class="col-xs-3">
                     <div class="form-group row mb-0 MeasuresText color{{$i++%9}}" >
-                        <label class="col-md-6 col-xs-6 col-form-label boldText" style="padding-left:0">{{ $key }} :</label>
-                        <div class="col-md-6 col-xs-6">
+                        <label class="col-md-9 col-xs-6 col-form-label boldText" style="padding-left:0">{{ trans('main.channelSettings_'.$key) }} :</label>
+                        <div class="col-md-3 col-xs-6">
                             <div class="form-group textLeft">
                                 <label class="custom-switch pl-0">
                                     <input type="checkbox" name="custom-switch-checkbox{{ $key }}" class="custom-switch-input" {{ $oneSetting == true ? 'checked' : '' }} data-area="{{ $key }}">
@@ -172,9 +175,9 @@
                         </div>
                         <div class="days">
                             <span class="numbrs">{{ $data->subscription->leftDays }} {{ trans('main.leftDays') }}</span>
-                            @if(!in_array(date('d',strtotime($data->subscription->end_date)) , [1,28,29,30,31]) && IS_ADMIN)
+                            {{-- @if(!in_array(date('d',strtotime($data->subscription->end_date)) , [1,28,29,30,31]) && IS_ADMIN)
                             <a href="{{ URL::to('/profile/subscription/transferPayment') }}" class="nextMonth">{{ trans('main.transferPayment') }}</a>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
                 </div>
@@ -186,7 +189,7 @@
                     <h2 class="title">
                         {{ trans('main.addons') }} 
                         @if(IS_ADMIN && count($data->subscription->addons) < 10)
-                        <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="edit">{{ trans('main.edit') }}</a>
+                        <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="edit">{{ !Session::has('invoice_id') ? trans('main.edit') : trans('main.resubscribe_b2') }}</a>
                         @endif
                     </h2>
                     <div class="clearfix carts">

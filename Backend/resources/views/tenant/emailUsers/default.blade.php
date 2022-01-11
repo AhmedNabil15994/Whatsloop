@@ -173,7 +173,7 @@
                     <div class="o_col o_col-2" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
                       <div style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </div>
                       <div class="o_px-xs o_sans o_text o_left o_xs-center" data-size="Text Default" data-min="12" data-max="20" style="font-family: 'Tajawal', sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: left;padding-left: 8px;padding-right: 8px;">
-                        <p style="margin-top: 0px;margin-bottom: 0px;text-align: right"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: rgb(0, 197, 187);"><img src="{{URL::to('/images/whatsloop.svg')}}" width="136" height="36" alt="SimpleApp" style="max-width: 136px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
+                        <p style="margin-top: 0px;margin-bottom: 0px;text-align: right"><a class="o_text-primary" href="https://example.com/" data-color="Primary" style="text-decoration: none;outline: none;color: rgb(0, 197, 187);"><img src="{{URL::to('/images/logo.png')}}" width="136" height="36" alt="Whatsloop" style="max-width: 136px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;" data-crop="false"></a></p>
                       </div>
                     </div>
                     <!--[if mso]></td><td width="400" align="right" valign="top" style="padding:0px 8px;"><![endif]-->

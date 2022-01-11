@@ -797,4 +797,12 @@ return [
 	'botPlusNote' => 'ملاحظة: تظهر 3 أزرار فقط في تطبيق اندرويد الواتساب.',
 	'apiMods' => 'اضافات ال API',
 	'whatsAppCoupon' => 'كوبونات الخصم لطلبات واتساب',
+	'resend' => 'اعادة ارسال',
+
+	'channelSettings_disableGroupsArchive' => 'تعطيل أرشفة المجموعات',
+	'channelSettings_disableDialogsArchive' => 'تعطيل أرشفة المحادثات',
+	'daily' => 'يوميا',
+	'clientsValidate' => 'من فضلك اختر عميل واحد علي الاقل',
+	'sentBefore' => 'تم الارسال من قبل' ,
+
 ];

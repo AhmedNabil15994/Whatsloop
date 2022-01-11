@@ -206,29 +206,29 @@ class Contact extends Model{
 
         $list = [];
         $i = 1;
-        foreach ($source as $key => $value) {
-            $contacts = self::NotDeleted()->where('group_id',$value->group_id)->where('created_at',$value->created_at)->get();
-            $contacts = reset($contacts);
+        $myContacts = [];
+        $hasWhatsapp = 0;
+        $hasNoWhatsapp = 0;
 
-            $myContacts = [];
-            $hasWhatsapp = 0;
-            $hasNoWhatsapp = 0;
-            foreach ($contacts as $contact) {
-                $myContacts[] = str_replace('+', '', $contact->phone);
-                $hasWhatsapp+= $contact->has_whatsapp  == 1 ? 1 : 0; 
-                $hasNoWhatsapp+= $contact->has_whatsapp  == 0 ? 1 : 0; 
-            }
+        foreach ($source as $key => $contact) {
+            // $contacts = self::NotDeleted()->where('group_id',$value->group_id)->where('created_at',$value->created_at)->get();
+            // $contacts = reset($contacts);
+
+            $myContacts[] = str_replace('+', '', $contact->phone);
+            $hasWhatsapp+= $contact->has_whatsapp  == 1 ? 1 : 0; 
+            $hasNoWhatsapp+= $contact->has_whatsapp  == 0 ? 1 : 0; 
+            
             
             $list[$key] = new \stdClass();
             $list[$key]->id = $i;
-            $list[$key]->group_id = $value->group_id;
-            $list[$key]->group_name = $value->Group->{'name_'.LANGUAGE_PREF};
+            $list[$key]->group_id = $contact->group_id;
+            $list[$key]->group_name = $contact->Group->{'name_'.LANGUAGE_PREF};
             $list[$key]->status = trans('main.done');
-            $list[$key]->total = $value->total;
+            $list[$key]->total = $contact->total;
             $list[$key]->hasWhatsapp = $hasWhatsapp;
             $list[$key]->hasNoWhatsapp = $hasNoWhatsapp;
             $list[$key]->contacts = count($myContacts);
-            $list[$key]->created_at = $value->created_at;
+            $list[$key]->created_at = $contact->created_at;
             $i++;
         }
         return $list;
@@ -249,7 +249,7 @@ class Contact extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->group_id = $source->group_id;
-        $data->group = $source->Group != null ? $source->Group->{'name_'.LANGUAGE_PREF} : '';
+        $data->group = $source->Group != null ? $source->Group->{'name_'.(\Session::has('group_id') ? LANGUAGE_PREF : 'ar')} : '';
         $data->phone = $source->phone;
         $data->phone2 = str_replace('+', '', str_replace('@c.us','',$source->phone));
         $data->name = $source->name != null ? $source->name : $data->phone2;
@@ -312,7 +312,7 @@ class Contact extends Model{
         }else if($diff>0 && $diff<=1){
             return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){
-            return [$date->locale(LANGUAGE_PREF)->dayName,date('h:i A',$time)];
+            return [$date->locale((\Session::has('group_id') ? LANGUAGE_PREF : 'ar'))->dayName,date('h:i A',$time)];
         }else{
             return [date('Y-m-d',$time),date('h:i A',$time)];
         }

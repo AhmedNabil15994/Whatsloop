@@ -120,7 +120,7 @@ $(function(){
                                             '<li data-cols="'+index+'">'+
                                                 selectProps+
                                                 '<div class="checkbox checkbox-blue checkbox-single float-left">'+
-                                                    '<input type="checkbox" class="colsData" checked readonly value="'+index+'">'+
+                                                    '<input type="checkbox" class="colsData" checked  value="'+index+'">'+
                                                     '<label></label>'+
                                                 '</div>'+
                                                 '<p class="data">'+item+'</p>'+
@@ -205,9 +205,9 @@ $(function(){
 
     $(document).on('change','input.colsData',function(){
         if($(this).is(':checked')){
-            $(this).parents('.checkbox').siblings('.checkbox').find('input[type="checkbox"]').attr('checked',true);
+            $(this).parent('.checkbox').siblings('.checkbox.vars').find('input[type="checkbox"]').prop('checked',true);
         }else{
-            $(this).parents('.checkbox').siblings('.checkbox').find('input[type="checkbox"]').attr('checked',false);
+            $(this).parent('.checkbox').siblings('.checkbox.vars').find('input[type="checkbox"]').prop('checked',false);
         }
     });
 

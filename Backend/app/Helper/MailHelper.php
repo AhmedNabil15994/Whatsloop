@@ -3,7 +3,7 @@
 class MailHelper
 {
 
-    static function prepareEmail($data,$type=2){
+    static function prepareEmail($data,$type=2,$service=null){
         $emailData['firstName'] = $data['name'];
         $emailData['extras'] = isset($data['extras']) && !empty($data['extras']) ? $data['extras'] : [];
         $emailData['subject'] = self::exchangeVars($data['subject'],$data['name'],$emailData['extras']);
@@ -14,7 +14,7 @@ class MailHelper
             $emailData['url'] = $data['url'];
         }
         if($type == 1){
-            return self::SendWhatsAppMessage($emailData,$data['phone']);            
+            return self::SendWhatsAppMessage($emailData,$data['phone'],$service);            
         }
         return self::SendMail($emailData);
     }
@@ -29,7 +29,7 @@ class MailHelper
                 $data = str_replace('{DUE_DATE}', $extras['invoiceObj']->due_date, $data);
                 $data = str_replace('{INVOICE_URL}', '/invoices/view/'.$extras['invoiceObj']->id, $data);
                 $data = str_replace('{INVOICE_ID}', $extras['invoiceObj']->id+10000, $data);
-                $data = str_replace('{INVOICE_TOTAL}', $extras['invoiceObj']->total, $data);
+                $data = str_replace('{INVOICE_TOTAL}', $extras['invoiceObj']->roTtotal, $data);
                 $data = str_replace('{TRANSACTION_ID}', $extras['invoiceObj']->transaction_id, $data);
                 $data = str_replace('{PAYMENT_METHOD}', $extras['invoiceObj']->payment_gateaway, $data);
                 $data = str_replace('{INVOICE_STATUS}', $extras['invoiceObj']->statusText, $data);
@@ -75,10 +75,16 @@ class MailHelper
         });
     }
 
-    static function SendWhatsAppMessage($emailData,$phone){
-        $channelObj = \DB::connection('main')->table('channels')->first();
+    static function SendWhatsAppMessage($emailData,$phone,$service=null){
+        if($service != null){
+            $channelObj = \DB::connection('main')->table('channels')->where('id','218103')->first();
+        }else{
+            $channelObj = \DB::connection('main')->table('channels')->first();
+        }
+
         $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
-        $data['body'] = $emailData['content'];
+        $data['body'] = str_replace(' <br> ','\n',$emailData['content']);
+        $data['body'] = str_replace('<br>','\n',$data['body']);
         $data['phone'] = str_replace('+','',$phone);
         $test = $whatsLoopObj->sendMessage($data);
         $result = $test->json();

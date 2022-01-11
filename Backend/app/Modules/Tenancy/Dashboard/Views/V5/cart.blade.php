@@ -52,8 +52,8 @@
                                         ['color' => '#79B55B','image' => 'shopify-ecommerce-for-sale.png'],
                                         ['color' => '#0E6177','image' => 'logo-design.png'],
                                         ['color' => '#5CCAD2','image' => 'layers.png'],
-                                        ['color' => '#373FBC','image' => 'Page-1.png'],
-                                        ['color' => '#373FBC','image' => 'api.png'],
+                                        ['color' => '#373FBC','image' => 'botPlus.svg'],
+                                        ['color' => '#373FBC','image' => 'api.svg'],
                                     ];
                                     @endphp
                                     @foreach($data->addons as $key => $addon)
@@ -109,7 +109,7 @@
                                                 >
                                                 <li class="feature">
                                                     <img src="{{ asset('V5/images/leftCard.png') }}" alt="" class="bg" />
-                                                    {{ (int) $membership->featruesArr[0] }} <span>{{ trans('main.message') }}</span>
+                                                    {{ (int) $membership->featruesArr[0] }} <span>{{ trans('main.message') . ' / ' . trans('main.daily') }}</span>
                                                 </li>
                                                 <li class="feature emploe">
                                                     <img src="{{ asset('V5/images/rightCard.png') }}" alt="" class="bg" />

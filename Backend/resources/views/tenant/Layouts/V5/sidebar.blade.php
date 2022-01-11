@@ -163,7 +163,7 @@
 			<a href="#" class="subToggle {{ Active( URL::to('/groupMsgs*') ) }}"><i class="flaticon-edit"></i> {{ trans('main.groupMsgs') }} <i class="arrowLeft flaticon-left-arrow"></i></a>
 			<ul class="subMenu">
 				@if(\Helper::checkRules('list-group-messages'))
-				<li><a href="{{ URL::to('/groupMsgs') }}" class="{{ Active( URL::to('/groupMsgs') ) }}">{{ trans('main.groupMsgs') }}</a></li>
+				<li><a href="{{ URL::to('/groupMsgs') }}" class="{{ Active( URL::to('/groupMsgs') ) }}">{{ trans('main.groupMsgsArc') }}</a></li>
 				@endif
 				@if(\Helper::checkRules('add-group-message'))
 				<li><a href="{{ URL::to('/groupMsgs/add') }}" class="{{ Active( URL::to('/groupMsgs/add') ) }}">{{ trans('main.sendNewMessage') }}</a></li>

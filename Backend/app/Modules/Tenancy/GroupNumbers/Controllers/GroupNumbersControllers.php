@@ -243,7 +243,7 @@ class GroupNumbersControllers extends Controller {
             return \Response::json((object) GroupNumber::getData($dataObj));
         }
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to($this->getData()['mainData']['url'].'/');
+        return redirect()->to('/groupNumberReports');
     }
 
     public function delete($id) {
@@ -314,6 +314,21 @@ class GroupNumbersControllers extends Controller {
         if(!isset($input['group_id']) && empty($input['group_id'])){
             Session::flash('error', trans('main.groupValidate'));
             return redirect()->back();
+        }
+
+        if($input['group_id'] == '@'){
+            $dataObj = new GroupNumber;
+            $dataObj->channel = Session::get('channelCode');
+            $dataObj->name_ar = $input['name_ar'];
+            $dataObj->name_en = $input['name_en'];
+            $dataObj->description_ar = '';
+            $dataObj->description_en = '';
+            $dataObj->sort = GroupNumber::newSortIndex();
+            $dataObj->status = 1;
+            $dataObj->created_at = DATE_TIME;
+            $dataObj->created_by = USER_ID;
+            $dataObj->save();
+            $input['group_id'] = $dataObj->id;
         }
 
         $groupObj = GroupNumber::getOne($input['group_id']);
@@ -409,13 +424,17 @@ class GroupNumbersControllers extends Controller {
         $chunks = 400;
         $contacts = array_chunk($consForQueue,$chunks);
         foreach ($contacts as $contact) {
-            dispatch(new CheckWhatsappJob($contact));
+            try {
+                dispatch(new CheckWhatsappJob($contact))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
         }
 
         WebActions::newType(1,'Contact');
         \Session::forget('rows');
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to($this->getData()['mainData']['url'].'/');
+        return redirect()->to('/groupNumberReports');
     }
 
     public function charts() {

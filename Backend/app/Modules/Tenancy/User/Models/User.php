@@ -253,7 +253,7 @@ class User extends Authenticatable implements Syncable
 
     static function checkUserBy($type,$value, $notId = false){
         if ($notId != false) {
-            $dataObj = self::NotDeleted()->where($type,$value)->where('status',1)->whereNotIn('id', [$notId])->first();
+            return self::NotDeleted()->where($type,$value)->where('status',1)->whereNotIn('id', [$notId])->first();
         }
         $dataObj = self::NotDeleted()->where($type,$value)->where('status',1)->first();
 
@@ -333,7 +333,7 @@ class User extends Authenticatable implements Syncable
             $employessCount = (int) $features[1];
             $storageSize = (int) $features[2];
             session(['dailyMessageCount' => $dailyMessageCount]);
-            session(['employessCount' => $employessCount]);
+            session(['employessCount' => $userObj->is_old && $userObj->membership_id == 1 ? 30  : $employessCount ]);
             session(['storageSize' => $storageSize]);
         }
     }

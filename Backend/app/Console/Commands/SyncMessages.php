@@ -52,7 +52,11 @@ class SyncMessages extends Command
         $updateResult = $mainWhatsLoopObj->messages($data);
         if(isset($updateResult['data']) && !empty($updateResult['data'])){
             $result = $updateResult->json();
-            dispatch(new SyncMessagesJob($result['data']['messages']));
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
         }        
     }
 }

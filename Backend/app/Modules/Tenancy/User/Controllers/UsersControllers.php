@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\UserExtraQuota;
 use App\Models\WebActions;
 use App\Models\UserData;
+use App\Models\NotificationTemplate;
 use App\Models\CentralUser;
 use DataTables;
 use Storage;
@@ -336,7 +337,7 @@ class UsersControllers extends Controller {
 
         $editedData = [
             'email' => $dataObj->email,
-            'domain' => $dataObj->domain,
+            'domain' => User::first()->domain,
             'phone' => $dataObj->phone,
             'password' => $dataObj->password,
         ];
@@ -386,7 +387,6 @@ class UsersControllers extends Controller {
             return redirect()->back()->withInput();
         }
         
-
         if(isset($input['email']) && !empty($input['email'])){
             $userObj = User::checkUserBy('email',$input['email']);
             if($userObj){
@@ -463,6 +463,30 @@ class UsersControllers extends Controller {
         }else{
             UserData::create($item);
         }
+
+        $notificationTemplateObj = NotificationTemplate::getOne(2,'newEmployee');
+        $allData = [
+            'name' => $dataObj->name,
+            'subject' => $notificationTemplateObj->title_ar,
+            'content' => $notificationTemplateObj->content_ar,
+            'email' => $dataObj->email,
+            'template' => 'tenant.emailUsers.default',
+            'url' => 'https://'.$mainUser->domain.'.wloop.net/',
+            'extras' => [
+                'company' => $mainUser->company,
+                'url' => 'https://'.$mainUser->domain.'.wloop.net/',
+                'owner' => $mainUser->name,
+                'employee_name' => $dataObj->name,
+                'phone' => $dataObj->phone,
+                'password' => $input['password'],
+            ],
+        ];
+        \MailHelper::prepareEmail($allData);
+
+        $notificationTemplateObj = NotificationTemplate::getOne(1,'newEmployee');
+        $phoneData = $allData;
+        $phoneData['phone'] = $dataObj->phone;
+        \MailHelper::prepareEmail($phoneData,1);
 
         Session::forget('photos');
         WebActions::newType(1,$this->getData()['mainData']['modelName']);

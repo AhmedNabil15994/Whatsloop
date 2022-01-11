@@ -22,39 +22,48 @@ class ChatMessage extends Model{
         return self::where('id', $id)->first();
     }
 
-    static function dataList($chatId=null,$limit=null) {
+    static function dataList($chatId=null,$limit=null,$disDetails=null) {
         $input = \Request::all();
         $source = self::NotDeleted();
         if(isset($input['message']) && !empty($input['message'])){
             $source->where('body','LIKE','%'.$input['message'].'%')->orWhere('caption','LIKE','%'.$input['message'].'%');
         }
         if(isset($input['id']) && !empty($input['id'])){
-            $source->where('id',$input['id'])->orderBy('messageNumber','DESC');
+            $source->where('id',$input['id'])->orderBy('time','DESC');
         }
         if($chatId != null){
-            $source->where('chatId',$chatId)->orderBy('messageNumber','DESC');
+            $source->where('chatId',$chatId)->orderBy('time','DESC');
         }else{
             $source->orderBy('time','DESC');
         }
-        return self::generateObj($source,$limit);
+        return self::generateObj($source,$limit,$disDetails);
     }
 
     static function lastMessages() {
         $source = self::NotDeleted();
         $source->orderBy('time','DESC');
-        return self::generateObj($source,10);
+        return self::generateObj($source,10,'notNull');
     }
 
-    static function generateObj($source,$limit=null){
+    static function generateObj($source,$limit=null,$disDetails=null){
         if($limit != null){
             $sourceArr = $source->paginate($limit);
         }else{
             $sourceArr = $source->get();
         }
         $list = [];
+
+        $mainUser = User::first();
+        $domain = $mainUser->domain;
+        $disabled = UserAddon::getDeactivated($mainUser->id);
+        $dis = 0;
+        if(in_array(9,$disabled)){
+            $dis = 1;
+        }
+
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
-            $list[$key] = self::getData($value);
+            $list[$key] = self::getData($value,$dis,$domain,$disDetails);
         }
         $data['data'] = $list;
         if($limit != null){
@@ -116,16 +125,9 @@ class ChatMessage extends Model{
         return $dataObj;
     }
 
-    static function getData($source){
+    static function getData($source,$dis=1,$domain=null,$disDetails=null){
         $dataObj = new \stdClass();
-        $mainUser = User::first();
-        $domain = $mainUser->domain;
-        $disabled = UserAddon::getDeactivated($mainUser->id);
-        $dis = 0;
-        if(in_array(9,$disabled)){
-            $dis = 1;
-        }
-
+        
         if($source){
             $quotedMsgObj = null;
             $dates = self::reformDate($source->time);
@@ -157,11 +159,11 @@ class ChatMessage extends Model{
             if($dataObj->quotedMsgId != null){
                 $dataObj->quotedMsgObj = self::getData(self::getOne($source->quotedMsgId));
             }
-            if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image'])){
+            if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image']) && $disDetails == null){
                 $dataObj->file_size = self::getPhotoSize($dataObj->body);
                 $dataObj->file_name = self::getFileName($dataObj->body);
             }
-            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard'){
+            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard' && $disDetails == null){
                 if(strpos($dataObj->body, 'FN:') !== false){
                     $dataObj->contact_name = str_replace('\n','',explode('TEL',explode('FN:',$dataObj->body)[1])[0]);
                     $dataObj->contact_number = @explode(':+',explode(';waid=',$dataObj->body)[1])[0];
@@ -175,7 +177,7 @@ class ChatMessage extends Model{
                     $dataObj->contact_number = $source->caption;
                 }
             }
-            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'order'){
+            if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'order' && $disDetails == null){
                 $dataObj->orderDetails = new \stdClass();
                 $dataObj->orderDetails->name = $source->Order != null ? (!$dis ? trans('main.order') . ' '.  $source->Order->order_id : $source->caption) : '';
                 $dataObj->orderDetails->image = '';
@@ -184,10 +186,24 @@ class ChatMessage extends Model{
                 $dataObj->orderDetails->url = $source->Order != null ? \URL::to('/orders/'.$source->Order->order_id.'/view') : \URL::to('/whatsappOrders/orders');
                 $dataObj->orderDetails->url = !$dis ? str_replace('wloop.net',$domain.'.wloop.net',$dataObj->orderDetails->url) : \URL::to('/livechat');
             }
-            if(isset($dataObj->whatsAppMessageType) && $dataObj->metadata != '' && $dataObj->whatsAppMessageType == 'product'){
-                $dataObj->productDetails = Product::getData(Product::getOne($dataObj->metadata->productId));
+            if(isset($dataObj->whatsAppMessageType) && $dataObj->metadata != '' && $dataObj->whatsAppMessageType == 'product' && $disDetails == null){
+                $productObj = Product::getOne($dataObj->metadata->productId);
+                if(!$productObj){
+                    $productObj = new \stdClass();
+                    $productObj->id = 1;
+                    $productObj->images = [];
+                    $productObj->product_id = $dataObj->metadata->productId;
+                    $productObj->name = '';
+                    $productObj->currency = ' SAR';
+                    $productObj->category_id = 0;
+                    $productObj->price = $dataObj->metadata->priceAmount;
+                    $productObj->quantity = trans('main.unlimitted');
+                    $dataObj->mainImage = ''; 
+                }
+                $dataObj->productDetails = Product::getData($productObj);
+
             }
-            $dataObj->messageContent = $source->body != null && (strpos(' https',ltrim($source->body)) !== false || strpos(' http',ltrim($source->body)) !== false ) ? '📷' : $source->body;
+            $dataObj->messageContent = $source->body != null && (strpos(' https',ltrim($source->body)) !== false || strpos(' http',ltrim($source->body)) !== false ) ? 'ðŸ“·' : $source->body;
             $dataObj->icon = $source->fromMe ? ' <i class="type flaticon-share"></i>' : ' <i class="type color1 flaticon-share"></i>';
             $dataObj->date_time = $dataObj->created_at_day . ' ' . $dataObj->created_at_time;
             $dataObj->chatId3 = str_replace('+','',$dataObj->chatId2);
@@ -224,12 +240,12 @@ class ChatMessage extends Model{
         $chatId = str_replace('@g.us','',$chatId);
         return '+'.$chatId;
     }
-
+    
     static function reformDate($time){
         $diff = (time() - $time ) / (3600 * 24);
         $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
-        if(round($diff) == 0){
-            return [trans('main.today'),date('h:i A',$time)];
+        if(round($diff) == 0 && round($diff) < 1){
+            return ['',date('h:i A',$time)];
         }else if($diff>0 && $diff<=1){
             return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){

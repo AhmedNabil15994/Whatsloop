@@ -14,32 +14,43 @@ class ChatDialog extends Model{
         return self::where('id', $id)->first();
     }
 
-    public function Messages(){
-        return $this->hasMany('App\Models\ChatMessage','author','id');
+    public function LastMessage(){
+        return $this->hasOne(ChatMessage::class,'chatId','id')->ofMany([
+            'time' => 'max',
+        ], function ($query) {
+            $query->where('time', '!=', null);
+        });
     }
 
-    static function dataList($limit,$name=null) {
+    public function Messages(){
+        return $this->hasMany('App\Models\ChatMessage','chatId','id');
+    }
+
+    static function dataList($limit=null,$name=null) {
         $input = \Request::all();
         if($name != null){
             $limit = 0;
-            $source = self::with('Messages')->where('name','LIKE','%'.$name.'%')->orWhere('id','LIKE','%'.str_replace('+','',$name).'%');  
+            $source = self::whereHas('Messages')->with('Messages')->where('name','LIKE','%'.$name.'%')->orWhere('id','LIKE','%'.str_replace('+','',$name).'%');  
         }else{
-            $source = self::with('Messages');  
+            // $source = self::whereHas('Messages',function($whereHasQuery){
+            //     $whereHasQuery->orderBy('time','DESC')->limit(1);
+            // })->with(['Messages'=>function($withQuery){
+            //     $withQuery->orderBy('time','DESC')->first();
+            // }])->orderBy('last_time','DESC');  
+            // 
+            $source = self::whereHas('Messages')->with('LastMessage')->orderBy('last_time','DESC');
         }
 
         if((isset($input['mine']) && !empty($input['mine']))){
             $source->where('modsArr','LIKE','%'.USER_ID.'%');
         }
 
-        $source->where([
-            ['image' , '!=' , null],
-            ['last_time' , ' != ' , 0],
-        ])->orderBy('last_time','DESC');
+        $source->orderBy('last_time','DESC');
         return self::generateObj($source,$limit);
     }
-
+    
     static function getPinned(){
-        $source = self::where('is_pinned',1)->orderBy('last_time','DESC');  
+        $source = self::whereHas('Messages')->with('LastMessage')->where('is_pinned',1)->orderBy('last_time','DESC');  
         return self::generateObj($source);
     }
 
@@ -100,25 +111,27 @@ class ChatDialog extends Model{
         if($source){
             $source = (object) $source;
             $dataObj->id = $source->id;
-            $dataObj->name = $source->name;
+            $dataObj->name = $source->name != "" ? $source->name : self::reformChatId($source->id,"");
             $dataObj->chatName = self::reformChatId($source->id,$source->name);
             $dataObj->image = isset($source->image) ? mb_convert_encoding($source->image, 'UTF-8', 'UTF-8') : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
-            $dataObj->last_time = isset($source->last_time) ? self::reformDate($source->last_time) : ''; 
+            $dataObj->last_time = isset($source->LastMessage) && !empty($source->LastMessage)  ? self::reformDate($source->LastMessage->time) : self::reformDate($source->last_time); 
             $dataObj->is_pinned = $source->is_pinned;
             $dataObj->is_read = $source->is_read;
             $dataObj->modsArr = $source->modsArr != null ? unserialize($source->modsArr) : [];
             if($metaData == false){
                 $cats = ContactLabel::where('contact',str_replace('@c.us', '', $source->id))->pluck('category_id');
                 $cats = reset($cats);
-                $cats = empty($cats) || $cats[0] == 0 ? [0] : $cats;
+                $cats = empty($cats) ? [0] : $cats;
                 $dataObj->labels = Category::dataList(null,$cats)['data'];
-                $dataObj->labelsArr = $cats ;
-                $dataObj->moderators = !empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
-                $dataObj->unreadCount = $source->Messages()->where('sending_status','!=',3)->count();
-                $dataObj->lastMessage = ChatMessage::getData(ChatMessage::where('chatId',$source->id)->orderBy('messageNumber','DESC')->first());
-                if(isset($dataObj->lastMessage)){
-                    $dataObj->last_time =  self::reformDate($dataObj->lastMessage->time); 
+                $dataObj->labelsArr = $cats;
+                $dataObj->moderators =!empty($dataObj->modsArr)  ? User::dataList(null,$dataObj->modsArr,'ar')['data'] : [];
+                $dataObj->unreadCount = $source->Messages()->where('fromMe',0)->where('sending_status','!=',3)->count();
+                $last = isset($source->LastMessage) && !empty($source->LastMessage) ? $source->LastMessage : ''; 
+                if($last != ''){
+                    $lastMessage = ChatMessage::getData($last,null,null,'notNull');   
+                    $dataObj->lastMessage = $lastMessage;
+                    $dataObj->last_time =  self::reformDate($source->LastMessage->time);
                 }
                 if(isset($source->metadata) && isset($dataObj->metadata['labels']) && isset($dataObj->metadata['labels'][0])){
                     $dataObj->label = Category::dataList($dataObj->metadata['labels'])['data'];
@@ -147,15 +160,15 @@ class ChatDialog extends Model{
             return $name;
         }
         $chatId = '+'.$chatId;
-        $parts=sscanf($chatId,'%4c%2c%3c%3c');
+        $parts=sscanf($chatId,'%4c%2c%3c%4c');
         return $parts[0].' '.$parts[1].' '.$parts[2].' '.$parts[3];
     }
 
     static function reformDate($time){
         $diff = (time() - $time ) / (3600 * 24);
         $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
-        if(round($diff) == 0){
-            return date('h:i A',$time);;
+        if(round($diff) == 0 && round($diff) < 1){
+            return date('h:i A',$time);
         }else if($diff>0 && $diff<=1){
             return trans('main.yesterday');
         }else if($diff > 1 && $diff < 7){

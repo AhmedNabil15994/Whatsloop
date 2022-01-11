@@ -267,6 +267,7 @@ class SubscriptionHelper {
         }elseif($type == 'payInvoice' || $type == 'renew'){
             $invoiceObj->status = 1;
             $invoiceObj->paid_date = DATE_TIME;
+            $invoiceObj->items = serialize($items);
             $invoiceObj->transaction_id = $transaction_id;
             $invoiceObj->payment_gateaway = $paymentGateaway;  
             $invoiceObj->save();

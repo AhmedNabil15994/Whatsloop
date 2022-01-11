@@ -21,6 +21,22 @@
         <link rel="stylesheet" href="{{ asset('tenancy/assets/V5/css/responisve.css') }}" />
         <link rel="stylesheet" href="{{ asset('tenancy/assets/V5/css/dark.css') }}" />
         <link href="{{ asset('tenancy/assets/V5/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+        <style>
+            a[data-toggle="modal"]{
+                color: #000;
+            }
+            .checkbox{
+                width: 20px;
+                height: 20px;
+                margin-right: 20px;
+                display: inline-block;
+            }
+            input[name="terms"]{
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+        </style>
        <!--[if lt IE 9]>
            <script src="js/html5shiv.min.js"></script>
            <script src="js/respond.min.js"></script>
@@ -94,7 +110,14 @@
                             <input type="password" name="password_confirmation" placeholder="{{ trans('auth.passwordPlaceHolder') }}"/>
                             <i class="flaticon-shopping-bag"></i>
                         </div>
-                        <button class="btnStyle loginBut">
+                        <div class="inputStyle">
+                            <div class="checkbox checkbox-blue checkbox-single float-left">
+                                <input type="checkbox" name="terms" class="">
+                                <label></label>
+                            </div>
+                            <a data-effect="effect-sign" data-toggle="modal" data-target="#termsModal" data-backdrop="static">{{ trans('main.conditions') }}</a>
+                        </div>
+                        <button class="btnStyle loginBut" disabled>
                             <svg xmlns="http://www.w3.org/2000/svg" width="17.121" height="17.414" viewBox="0 0 17.121 17.414">
                               <g id="Group_1283" data-name="Group 1283" transform="translate(1.414 0.707)">
                                 <path id="Path_891" data-name="Path 891" d="M1409,3149l-8,8,8,8" transform="translate(-1401 -3149)" fill="none" stroke="#fff" stroke-width="2"/>
@@ -150,6 +173,8 @@
                 </script>
             </div>
         </div>
+
+        @include('tenant.Partials.termsModal')
 
         <script src="{{ asset('tenancy/assets/V5/js/jquery-1.11.2.min.js') }}"></script>
         <script src="{{ asset('tenancy/assets/V5/js/jquery-ui.js') }}"></script>

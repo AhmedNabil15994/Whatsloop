@@ -420,7 +420,11 @@ class ContactsControllers extends Controller {
         $chunks = 400;
         $contacts = array_chunk($consForQueue,$chunks);
         foreach ($contacts as $contact) {
-            dispatch(new CheckWhatsappJob($contact));
+            try {
+                dispatch(new CheckWhatsappJob($contact))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
         }
 
         WebActions::newType(1,$this->getData()['mainData']['modelName']);

@@ -97,7 +97,7 @@ class BotPlus extends Model{
         $data->body = $source->body;
         $data->footer = $source->footer;
         $data->buttons = $source->buttons;
-        $data->buttonsData = unserialize($source->buttonsData);
+        $data->buttonsData = $source->buttonsData != null ? unserialize($source->buttonsData) : [];
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);

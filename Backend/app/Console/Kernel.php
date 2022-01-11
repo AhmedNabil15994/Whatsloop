@@ -43,6 +43,7 @@ class Kernel extends ConsoleKernel
                 $schedule->command('tenants:run sync:labels --tenants='.$channel->tenant_id)->everyMinute();
                 $schedule->command('tenants:run sync:messages --tenants='.$channel->tenant_id)->withoutOverlapping()->everyMinute();
                 $schedule->command('tenants:run sync:dialogs --tenants='.$channel->tenant_id)->withoutOverlapping()->everyMinute();
+                $schedule->command('tenants:run check:contacts --tenants='.$channel->tenant_id)->everyMinute()->withoutOverlapping();
             }
         }
         $schedule->command('set:invoices')->cron('0 9,12 * * *');

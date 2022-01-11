@@ -9,7 +9,9 @@ use Illuminate\Database\Schema\Blueprint;
 use App\Models\ModTemplate;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\Template;
 use App\Models\CentralVariable;
+use App\Jobs\AbandonedCart;
 use App\Models\UserAddon;
 use App\Models\ModNotificationReport;
 use DB;
@@ -138,7 +140,65 @@ class SallaControllers extends Controller {
         return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
+    public function sendAbandoned(){
+        $input = \Request::all();
+        if(!isset($input['message']) || empty($input['message'])){
+            return  \TraitsFunc::ErrorMessage(trans('main.messageValidate'));
+        }
+
+        if(!isset($input['clientsData']) || empty($input['clientsData'])){
+            return  \TraitsFunc::ErrorMessage(trans('main.clientsValidate'));
+        }
+
+        if($input['sendTime'] == 1){
+            try {
+                dispatch(new AbandonedCart(1,$input))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
+        }else{
+            $now = \Carbon\Carbon::now();
+            $sendDate = \Carbon\Carbon::parse($input['sendTime']);
+            $diff =  $sendDate->diffInSeconds($now);
+            $on = \Carbon\Carbon::now()->addSeconds($diff);   
+            try {
+                dispatch(new AbandonedCart(1,$input))->onConnection('cjobs')->delay($on);
+            } catch (Exception $e) {
+                
+            }
+        }
+        
+        return \TraitsFunc::SuccessResponse(trans('main.inPrgo'));
+    }
+
     public function abandonedCarts(Request $request){
+
+        Template::where('name_en','abandonedCarts')->firstOrCreate([
+            'channel' => \Session::get('channelCode'),
+            'name_ar' => 'abandonedCarts',
+            'name_en' => 'abandonedCarts',
+            'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+
+اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+
+( {ORDERURL} )
+
+مع تحيات فريق عمل واتس لوب ❤️',
+            'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+
+سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+
+اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+
+( {ORDERURL} )
+
+مع تحيات فريق عمل واتس لوب ❤️',
+            'status' => 1,
+        ]);
+
+
         $input = \Request::all();
         $modelName = 'abandonedCarts';
         $service = $this->service;
@@ -374,6 +434,7 @@ class SallaControllers extends Controller {
             ];
 
             $data['searchData'] = [];
+            $mainData['template'] = Template::where('name_en','abandonedCarts')->first();
         }
 
         $mainData['designElems'] = $data;
@@ -471,6 +532,7 @@ class SallaControllers extends Controller {
                 $dataObj->coupon = $value->coupon;
                 $dataObj->customer = $customer;
                 $dataObj->items = $itemsData;
+                $dataObj->sent_count = isset($price['sent_count']) ? $price['sent_count'] : 0;
                 $dataObj->created_at = date('Y-m-d H:i:s',strtotime($value->created_at));
                 $dataObj->updated_at = date('Y-m-d H:i:s',strtotime($value->updated_at));
             }

@@ -207,8 +207,9 @@ $(function(){
 		var oldEstimatedTax = $('span.estimatedTax').text();
 		var oldTotal = $('span.total').text();
 		var userCredits = $('input[name="background"]').val();
+	    var invoiceID = $('input[name="inv"]').val();
 
-		if(classType == 'membership'){
+		if(classType == 'membership' && !invoiceID){
 			if(operator == 'minus'){
 				oldGrandTotal = parseInt(itemPrice) - parseFloat(userCredits);
 				oldTotal = parseInt(itemAfterVat) - parseFloat(userCredits);
@@ -296,8 +297,15 @@ $(function(){
 	    // 	errorNotification(selectMemebership);
 	    // }
 
-	    if(totals.length && data.length){
-	    	$('.payments').submit();
+	    var invoiceID = $('input[name="inv"]').val();
+	    if(invoiceID){
+	    	if(totals.length && data.length && $('.card-body.membership').length){
+		    	$('.payments').submit();
+		    }
+	    }else{
+	    	if(totals.length && data.length){
+		    	$('.payments').submit();
+		    }
 	    }
 
 	});

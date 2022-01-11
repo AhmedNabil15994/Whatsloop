@@ -34,10 +34,17 @@ class CheckWhatsappJob implements ShouldQueue
     public function handle()
     {   
         foreach ($this->contacts as $contact) {
-            $result = $this->checkWhatsappAvailability(str_replace('+', '', $contact->phone));
-            $contact->has_whatsapp = $result;
-            $contact->save();
+            try {
+                if($contact->phone != null){
+                    $result = $this->checkWhatsappAvailability(str_replace('+', '', $contact->phone));
+                    $contact->has_whatsapp = $result;
+                    $contact->save();
+                }
+            } catch (Exception $e) {
+                // Logger('')   
+            }
         }
+        return 1;
     }
 
     public function checkWhatsappAvailability($contact){

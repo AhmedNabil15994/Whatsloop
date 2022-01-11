@@ -60,8 +60,8 @@
                                 ['color' => '#79B55B','image' => 'shopify-ecommerce-for-sale.png'],
                                 ['color' => '#0E6177','image' => 'logo-design.png'],
                                 ['color' => '#5CCAD2','image' => 'layers.png'],
-                                ['color' => '#373FBC','image' => 'Page-1.png'],
-                                ['color' => '#373FBC','image' => 'api.png'],
+                                ['color' => '#373FBC','image' => 'botPlus.svg'],
+                                ['color' => '#373FBC','image' => 'api.svg'],
                             ];
                             $extraQuotasArr = [
                                 ['color' => '#449DE6','image' => 'text-message.png'],
@@ -87,7 +87,7 @@
                         <td class="quantity">1</td>
                         <td class="prices"><span class="price">{{ $oneItem[1] == 'extra_quota' ?  number_format((float)$oneItem[6] * $oneItem[7], 2, '.', '') : number_format((float)$oneItem[6], 2, '.', '') }}</span> {{ trans('main.sar') }}</td>
                         <td>
-                            @if($oneItem[1] != 'membership')
+                            @if($oneItem[1] != 'membership' && isset($data->disDelete) && !$data->disDelete)
                             <a class="remove rmv"><i class="flaticon-trash"></i></a>
                             @endif
                         </td>

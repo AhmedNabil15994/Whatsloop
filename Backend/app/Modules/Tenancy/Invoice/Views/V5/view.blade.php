@@ -82,7 +82,7 @@
 	                        @endif
 						</td>
 						<td>
-							{!! \QrCode::size(100)->generate(URL::current()) !!}
+							<img src="{{$data->qrImage}}" width="100" height="100">
 						</td>
 					</tr>
 				</tbody>
@@ -102,11 +102,17 @@
 		                </tr>
 		            </thead>
 		            <tbody>
-						@php $mainPrices = 0; @endphp
+						@php 
+							$mainPrices = 0; 
+							$isOld = App\Models\CentralUser::find($data->data->client_id)->is_old;
+						@endphp
                         @foreach($data->data->items as $key => $item)
                         @php 
                         	$mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
                         	$oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
+                            $tax = Helper::calcTax($isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
+                            $grandTotal = $isOld ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+                            $total = $isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
                         @endphp
                         <tr class="mainRow">
                             <td>{{ $key+1 }}</td>
@@ -117,8 +123,16 @@
                                 </p>
                             </td>
                             <td>{{ $item['data']['quantity'] }}</td>
-                            <td>{{ $data->data->due_date }}</td>
-                            <td>{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date))) }}</td>
+                            <td>
+                            	@if($data->data->status == 1)
+                            	{{ $data->data->due_date }}
+                            	@endif
+                            </td>
+                            <td>
+                            	@if($data->data->status == 1)
+                            	{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date))) }}
+                            	@endif
+                            </td>
                             <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
                         </tr>
                         @endforeach
@@ -131,12 +145,8 @@
                                     <div class="clearfix"></div>
                                 </p>
                                 <p class="mb-2">
-                                    @php 
-                                        $tax = Helper::calcTax($data->data->total - $oldDiscount);
-                                    @endphp
-
                                     <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
-                                    <span class="float-right">{{ $data->data->total - $oldDiscount - $tax }} {{ trans('main.sar') }}</span>
+                                    <span class="float-right">{{ $grandTotal }} {{ trans('main.sar') }}</span>
                                     <div class="clearfix"></div>
                                 </p>
                                 <p class="mb-2">
@@ -146,7 +156,7 @@
                                 </p>
                                 <p class="mb-2">
                                     <span class="tx-bold">{{ trans('main.total') }} :</span>
-                                    <span class="float-right">{{ $data->data->total - $oldDiscount }}  {{ trans('main.sar') }}</span>
+                                    <span class="float-right">{{ $total }}  {{ trans('main.sar') }}</span>
                                     <div class="clearfix"></div>
                                 </p>
                             </td>

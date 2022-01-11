@@ -225,7 +225,7 @@ input[type="number"] {
 	z-index: 1
 }
 
-.loginPage .right .center .formLogin .inputStyle input
+.loginPage .right .center .formLogin .inputStyle input:not([type="checkbox"])
 {
 	width:100%;
 	border:1px solid #F1F1F1;
@@ -4493,7 +4493,14 @@ table tbody tr .date i
 	{
 		padding-bottom:0;
 	}
+
+	.stats .msgArchive table{
+		display: block;
+		min-width: unset;
+	}
 }
+
+
 
 .timer
 {

@@ -51,7 +51,7 @@ class SallaWebhook extends ProcessWebhookJob{
 	    		$dataObj = \ExternalServices::reformatModelData([$mainData]);
 	    		if(!$customerObj){
                 	\DB::table('salla_customers')->insert($dataObj);
-	    			$templateObj = ModTemplate::NotDeleted()->where('mod_id',1)->where('statusText','ترحيب بالعميل')->first();
+	    			$templateObj = ModTemplate::NotDeleted()->where('status',1)->where('mod_id',1)->where('statusText','ترحيب بالعميل')->first();
 		    		if($templateObj){
 		    			$content = $templateObj->content_ar;
 		    			$content = str_replace('{CUSTOMERNAME}', $mainData['first_name'].' '.$mainData['last_name'], $content);
@@ -106,12 +106,12 @@ class SallaWebhook extends ProcessWebhookJob{
 	    		// Order Update
 	    		$status = $mainData['status']['name'];
 
-	    		$templateObj = ModTemplate::NotDeleted()->where('mod_id',1)->where('statusText',$status)->first();
+	    		$templateObj = ModTemplate::NotDeleted()->where('status',1)->where('mod_id',1)->where('statusText',$status)->first();
 	    		if($templateObj){
 	    			$content = $templateObj->content_ar;
 	    			$content = str_replace('{CUSTOMERNAME}', $mainData['customer']['first_name'].' '.$mainData['customer']['last_name'], $content);
 	    			$content = str_replace('{STORENAME}', $tenantUser->company, $content);
-	    			$content = str_replace('{ORDERID}', $mainData['id'], $content);
+	    			$content = str_replace('{ORDERID}', $mainData['reference_id'], $content);
 	    			$content = str_replace('{ORDERSTATUS}', $status, $content);
 
 	    			$message_type = 'text';
@@ -137,7 +137,7 @@ class SallaWebhook extends ProcessWebhookJob{
 			            ModNotificationReport::create([
         					'mod_id' => 1,
         					'client' => $sendData['chatId'],
-        					'order_id' => $mainData['id'],
+        					'order_id' => $mainData['reference_id'],
         					'statusText' => $status,
         					'created_at' => date('Y-m-d H:i:s'),
         				]);

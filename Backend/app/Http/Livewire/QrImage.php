@@ -76,7 +76,11 @@ class QrImage extends Component
                 if(isset($diags['data']) && !empty($diags['data'])){
                     $count = count($diags['data']['dialogs']);
                     if($count > ChatDialog::count()){
-                        dispatch(new SyncDialogsJob($diags['data']['dialogs']));
+                        try {
+                            dispatch(new SyncDialogsJob($diags['data']['dialogs']))->onConnection('cjobs');
+                        } catch (Exception $e) {
+                            
+                        }
                     }
                 }
 
@@ -129,7 +133,11 @@ class QrImage extends Component
                 $updateResult = $mainWhatsLoopObj->messages($sendData);
                 if(isset($updateResult['data']) && !empty($updateResult['data'])){
                     $result = $updateResult->json();
-                    dispatch(new SyncMessagesJob($result['data']['messages']));
+                    try {
+                        dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+                    } catch (Exception $e) {
+                        
+                    }
                 }
 
                 $this->emit('statusChanged'); 

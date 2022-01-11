@@ -124,7 +124,7 @@
                                                 </select>
                                             </div>
                                             <div class='col-md-4 repy'>
-                                                <textarea class="" name='btn_reply_1' placeholder='{{ trans('main.messageContent') }}'></textarea>
+                                                <textarea class="" name='btn_reply_1' placeholder='{{ trans('main.messageContent') }}' maxlength="140"></textarea>
                                                 <select data-toggle="" class='dets hidden' name='btn_msg_1'>
                                                     <option value='' selected>{{ trans('main.choose') }}</optin>
                                                     @foreach($data->bots as $bot)

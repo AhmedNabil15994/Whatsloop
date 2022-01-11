@@ -207,6 +207,7 @@ class SyncOldClient implements ShouldQueue
             $addons[] = 3; // Group Message
             $addons[] = 4; // Zid
             $addons[] = 5; // Salla
+            $addons[] = 11; // API
         }elseif($membershipObj->Title_ar == 'باقه زد'){
             $addons[] = 4;
             $addons[] = 1;

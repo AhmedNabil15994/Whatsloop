@@ -22,6 +22,8 @@ use \Spatie\WebhookClient\ProcessWebhookJob;
 use \Spatie\WebhookServer\WebhookCall;
 use Http;
 use Session;
+use Throwable;
+
 
 class MessagesWebhook extends ProcessWebhookJob{
 	public function handle(){
@@ -298,7 +300,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 			$destination = public_path().'/uploads/'.$tenantId.'/chats/';
 			$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
 			if (!file_exists($destination)) {
-	            mkdir($destination, 0777, true);
+	            @mkdir($destination, 0777, true);
 	        }
 			$succ = @file_put_contents($destinationPath, @file_get_contents($message['body']));
 			$message['body'] = config('app.BASE_URL').'/public/uploads/'.$tenantId.'/chats/' . $fileName;
@@ -465,4 +467,14 @@ class MessagesWebhook extends ProcessWebhookJob{
             }
         }
 	}
+
+	public function failed(Throwable $exception)
+    {
+        $count = \DB::connection('main')->table('failed_jobs')->count();
+        if($count > 10){
+        	\DB::connection('main')->table('failed_jobs')->truncate();
+        }
+        system('/usr/local/bin/php /home/wloop/public_html/artisan queue:restart');
+        // system('/home/wloop/public_html/vendor/supervisorctl restart whatsloop:*');
+    }
 }

@@ -35,7 +35,7 @@ class ZidWebhook extends ProcessWebhookJob{
 
         $disabled = UserAddon::getDeactivated($tenantUser->id);
         $dis = 0;
-        if(in_array(5,$disabled)){
+        if(in_array(4,$disabled)){
             $dis = 1;
         }
 
@@ -44,6 +44,7 @@ class ZidWebhook extends ProcessWebhookJob{
 	    // If New Webhook
 	    if(!empty($mainData) && !$dis){
 	    	// Project (Delete)
+	    	Logger($mainData);
 	    	if(isset($mainData['product_id']) && isset($mainData['deleted_at'])){
 	    		return \DB::table('zid_products')->where('id',$mainData['product_id'])->delete();
 	    	}
@@ -68,8 +69,12 @@ class ZidWebhook extends ProcessWebhookJob{
 	    	if(isset($mainData['order_url']) && isset($mainData['order_status'])){
 	    		// Order Status Updated
 	    		$status = $mainData['order_status']['name'];
-
-	    		$templateObj = ModTemplate::NotDeleted()->where('mod_id',2)->where('statusText',$status)->first();
+	    		if($status == 'تجهيز'){
+	    			$status = 'جاري التجهيز';
+	    		}else if($status == 'توصيل'){
+	    			$status = 'جارى التوصيل';
+	    		}
+	    		$templateObj = ModTemplate::NotDeleted()->where('status',1)->where('mod_id',2)->where('statusText',$status)->first();
 	    		if($templateObj){
 	    			$content = $templateObj->content_ar;
 	    			$content = str_replace('{CUSTOMERNAME}', $mainData['customer']['name'], $content);

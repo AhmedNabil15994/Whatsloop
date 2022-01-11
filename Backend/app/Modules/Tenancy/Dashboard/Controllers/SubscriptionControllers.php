@@ -123,7 +123,11 @@ class SubscriptionControllers extends Controller {
         $userObj = User::getData(User::NotDeleted()->first());
         $requiredSync  = json_decode($input['data']);
         if($requiredSync){
-            dispatch(new SyncOldClient($userObj,$requiredSync));
+            try {
+              dispatch(new SyncOldClient($userObj,$requiredSync))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
         }
         Session::put('is_synced',1);
         Session::flash('success',trans('main.inPrgo'));
@@ -545,7 +549,11 @@ class SubscriptionControllers extends Controller {
         $cartObj = json_decode(json_decode($cartObj));
         // dd($cartObj);
 
-        dispatch(new NewClient($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d')));
+        try {
+          dispatch(new NewClient($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d')))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
         // $paymentObj = new \SubscriptionHelper(); 
         // $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d'));   
         // if($resultData[0] == 0){
@@ -708,7 +716,7 @@ class SubscriptionControllers extends Controller {
         }
 
         $dataObj = null;
-        $data['memberships'] = [];
+        $data['memberships'] = Session::has('invoice_id') ? Membership::dataList(1)['data'] : [];
         $data['addons'] = [];
         $data['extraQuotas'] = [];
 
@@ -746,6 +754,9 @@ class SubscriptionControllers extends Controller {
             }
             $addons = array_unique($addons);
             $data['addons'] = Addons::dataList(1,null,$addons)['data'];
+            if(Session::has('invoice_id')){
+                $data['membership'] = (object)['id'=>0]; //Membership::getData(Membership::getOne(Session::get('membership')));
+            }
         }
         else if($input['type'] == 'extra_quota'){
             $data['userCredits'] = 0;

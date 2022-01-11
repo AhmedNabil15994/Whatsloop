@@ -64,7 +64,7 @@ class ProfileControllers extends Controller {
         $dataObj = User::getData($mainUserObj);
         $domainObj = \DB::connection('main')->table('domains')->where('domain',$dataObj->domain)->first();
 
-        $oldDomainValue = $domainObj->domain;
+        $oldDomainValue = $mainUserObj->domain;
 
         if(isset($input['email']) && !empty($input['email'])){
             $userObj = User::checkUserBy('email',$input['email'],USER_ID);
@@ -909,7 +909,11 @@ class ProfileControllers extends Controller {
         }
 
         if($result['data'] && $result['data']['messages']){
-            dispatch(new SyncMessagesJob($result['data']['messages']));
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
             Session::flash('success',trans('main.syncInProgress'));
         }
         
@@ -933,7 +937,11 @@ class ProfileControllers extends Controller {
         }
 
         if($result['data'] && $result['data']['messages']){
-            dispatch(new SyncMessagesJob($result['data']['messages']));
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
             Session::flash('success',trans('main.syncInProgress'));
         }
 
@@ -957,7 +965,11 @@ class ProfileControllers extends Controller {
         }
 
         if($result['data'] && $result['data']['dialogs']){
-            dispatch(new SyncDialogsJob($result['data']['dialogs']));            
+            try {
+                dispatch(new SyncDialogsJob($result['data']['dialogs']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }            
             Session::flash('success',trans('main.inPrgo'));
         }
 
@@ -1029,7 +1041,11 @@ class ProfileControllers extends Controller {
         }
 
         if($result['data'] && $result['data']['messages']){
-            dispatch(new SyncMessagesJob($result['data']['messages']));
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
             Session::flash('success',trans('main.syncInProgress'));
         }
 
@@ -1102,7 +1118,11 @@ class ProfileControllers extends Controller {
 
         $messages = ChatMessage::where('fromMe',0)->groupBy('chatId')->pluck('chatId');
         ChatMessage::whereIn('chatId',reset($messages))->update(['sending_status' => $sending_status_text]);
-        dispatch(new ReadChatsJob(reset($messages),$status));
+        try {
+            dispatch(new ReadChatsJob(reset($messages),$status))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
 
         Session::flash('success',trans('main.inPrgo'));
         return redirect()->back();
