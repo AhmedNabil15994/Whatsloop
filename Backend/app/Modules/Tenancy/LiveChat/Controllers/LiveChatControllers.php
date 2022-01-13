@@ -41,6 +41,10 @@ class LiveChatControllers extends Controller {
 
     public function dialogs(Request $request) {
         $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
         
         if((!isset($input['mine']) || empty($input['mine'])) && !\Helper::checkRules('list-livechat')){
             $dataList['data'] = 'disabled';
@@ -75,21 +79,16 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->pinChat($data);
         $result = $result->json();
-        if($result['status']['status'] != 1){
-            if( $result['status']['message'] != 'chat already pinned'){
-                return \TraitsFunc::ErrorMessage($result['status']['message']);
-            }
-        }
-
+        
         $domain = explode('.', $request->getHost())[0];
         $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
         $dialogObj->is_pinned = 1;
-        $dialogObj->save();
+        $dialogObj->save();    
 
         broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
         $dataList['data'] = isset($result['data']) ? $result['data'] : '';
         $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);
+        return \Response::json((object) $dataList);        
     }
 
     public function unpinChat(Request $request) {
@@ -109,21 +108,7 @@ class LiveChatControllers extends Controller {
         $data['liveChatId'] = $input['chatId'];
         $result = $mainWhatsLoopObj->unpinChat($data);
         $result = $result->json();
-
-        if($result['status']['status'] != 1){
-            if($result['status']['message'] == "chat isn`t pinned"){
-                $dialogObj->is_pinned = 0;
-                $dialogObj->save();
-                $dataList['data'] =  (object)[
-                    'result' => "success", 
-                    'chatId' => $input['chatId'],
-                ];
-                $dataList['status'] = \TraitsFunc::SuccessMessage();
-                return \Response::json((object) $dataList);
-            }
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
-        }
-
+        
         $domain = explode('.', $request->getHost())[0];
         $dialogObj->is_pinned = 0;
         $dialogObj->save();
@@ -266,26 +251,27 @@ class LiveChatControllers extends Controller {
         if(isset($input['messageType']) && $input['messageType'] == 'new'){
             $chats = explode(',', $input['chatId']);
             unset($input['chatId']);
-            foreach ($chats as $chat) {
-                $checkData['phone'] = str_replace('@c.us', '', $chat);
-                $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
-                $checkNoResult = $checkResult->json();
+            // foreach ($chats as $chat) {
+            //     $checkData['phone'] = str_replace('@c.us', '', $chat);
+            //     $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
+            //     $checkNoResult = $checkResult->json();
 
-                if($checkNoResult['status']['status'] != 1){
-                    $status = 0;
-                }
+            //     if($checkNoResult['status']['status'] != 1){
+            //         $status = 0;
+            //     }
 
-                if(isset($checkNoResult['data'])){
-                    $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
-                }
-                if(!$status){   
-                    return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
-                }
-                try {
-                    dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus))->onConnection('cjobs');
-                } catch (Exception $e) {
-                    
-                }
+            //     if(isset($checkNoResult['data'])){
+            //         $status = $checkNoResult['data']['result'] == 'exists' ? 1 : 0;
+            //     }
+            //     if(!$status){   
+            //         return \TraitsFunc::ErrorMessage("Chat ID Is Invalid");
+            //     }
+                
+            // }
+            try {
+                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus));
+            } catch (Exception $e) {
+                
             }
             $dataList['status'] = \TraitsFunc::SuccessMessage("Message Sent Successfully !.");
             return \Response::json((object) $dataList);       

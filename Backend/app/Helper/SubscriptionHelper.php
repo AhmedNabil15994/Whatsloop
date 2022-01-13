@@ -14,6 +14,7 @@ use App\Models\CentralChannel;
 use App\Models\Tenant;
 use App\Models\ModTemplate;
 use App\Models\Template;
+use App\Models\OldMembership;
 use App\Models\NotificationTemplate;
 
 class SubscriptionHelper {
@@ -40,6 +41,7 @@ class SubscriptionHelper {
         }
         
         $centralUser = CentralUser::find($userObj->id);
+        $oldMembershipID = $centralUser->membership_id;
         
         $tenantObj = \DB::connection('main')->table('tenant_users')->where('global_user_id',$userObj->global_id)->first();
         $tenant_id = $tenantObj->tenant_id;
@@ -73,6 +75,10 @@ class SubscriptionHelper {
         $addonData = [];
         $extraQuotaData = [];
         $total = 0;
+
+        // if($type == 'renew' && date('Y-m-d') > date(('Y-m-d',strtotime($start_date))) ){
+        //     $start_date = date('Y-m-d');
+        // }
 
         $hasMembership = 0;
         if($arrType == 'old'){
@@ -231,6 +237,10 @@ class SubscriptionHelper {
             $oldData = unserialize($userObj->addons) != null ? unserialize($userObj->addons) : [];
             $newData = array_merge($oldData,$addon);
             $newData = array_unique($newData);
+
+            if(($oldData != $addon && $centralUser->is_old) || ($oldMembershipID != $centralUser->membership_id && $centralUser->is_old)){
+                OldMembership::where('user_id',$centralUser->id)->delete();
+            }
 
             if($tenant){
                 tenancy()->initialize($tenant);

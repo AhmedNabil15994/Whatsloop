@@ -150,6 +150,10 @@ class SallaControllers extends Controller {
             return  \TraitsFunc::ErrorMessage(trans('main.clientsValidate'));
         }
 
+        Template::where('name_en','abandonedCarts')->update([
+            'description_ar' => $input['message'],
+        ]);
+
         if($input['sendTime'] == 1){
             try {
                 dispatch(new AbandonedCart(1,$input))->onConnection('cjobs');
@@ -173,30 +177,33 @@ class SallaControllers extends Controller {
 
     public function abandonedCarts(Request $request){
 
-        Template::where('name_en','abandonedCarts')->firstOrCreate([
-            'channel' => \Session::get('channelCode'),
-            'name_ar' => 'abandonedCarts',
-            'name_en' => 'abandonedCarts',
-            'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+        $tempObj = Template::where('name_en','abandonedCarts')->first();
+        if(!$tempObj){
+            Template::create([
+                'channel' => \Session::get('channelCode'),
+                'name_ar' => 'abandonedCarts',
+                'name_en' => 'abandonedCarts',
+                'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
-سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
 
-اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
 
-( {ORDERURL} )
+    ( {ORDERURL} )
 
-مع تحيات فريق عمل واتس لوب ❤️',
-            'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+    مع تحيات فريق عمل واتس لوب ❤️',
+                'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
-سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
 
-اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
 
-( {ORDERURL} )
+    ( {ORDERURL} )
 
-مع تحيات فريق عمل واتس لوب ❤️',
-            'status' => 1,
-        ]);
+    مع تحيات فريق عمل واتس لوب ❤️',
+                'status' => 1,
+            ]);
+        } 
 
 
         $input = \Request::all();
@@ -316,7 +323,7 @@ class SallaControllers extends Controller {
                 $source->where('status','LIKE','%'.$input['status'].'%');
             }
 
-            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            $modelData = $source == [] ?  [] : $source->orderBy('date','DESC')->paginate($paginationNo);
             $formattedData = $this->formatData($modelData,$model);
             
             $data['mainData'] = [
@@ -423,7 +430,23 @@ class SallaControllers extends Controller {
             //     $source->where('first_name','LIKE','%'.$input['keyword'].'%')->orWhere('last_name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('country','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
             // }
 
-            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            $clients = [];
+            if(!empty($source)){
+                foreach($source->get() as $oneItem){
+                    $customer = unserialize($oneItem->customer);
+                    $price = unserialize($oneItem->total);
+
+                    $clients[] = [
+                        'name' => $customer['name'],
+                        'mobile' => $customer['mobile'],
+                        'order_id' => $oneItem->id,
+                        'total' => $price['amount'] . ' '.$price['currency'],
+                        'url' => $oneItem->checkout_url,
+                    ];
+                }
+            }
+
+            $modelData = $source == [] ?  [] : $source->orderBy('created_at','DESC')->paginate($paginationNo);
             $formattedData = $this->formatData($modelData,$model);
             
             $data['mainData'] = [
@@ -434,6 +457,7 @@ class SallaControllers extends Controller {
             ];
 
             $data['searchData'] = [];
+            $mainData['customers'] = $clients;
             $mainData['template'] = Template::where('name_en','abandonedCarts')->first();
         }
 

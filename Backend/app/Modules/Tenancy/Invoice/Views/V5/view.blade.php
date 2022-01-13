@@ -130,7 +130,7 @@
                             </td>
                             <td>
                             	@if($data->data->status == 1)
-                            	{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date))) }}
+                            	{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)- 86400))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date )- 86400)) }}
                             	@endif
                             </td>
                             <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
@@ -190,7 +190,7 @@
 	                        </td>
 	                        <td>{{ $data->data->payment_gateaway }}</td>
 	                        <td>{{ $data->data->transaction_id }}</td>
-	                        <td>{{ $data->data->total }} {{ trans('main.sar') }}</td>
+	                        <td>{{ $total }} {{ trans('main.sar') }}</td>
 	                    </tr>
 	                </tbody>
 		        </table>

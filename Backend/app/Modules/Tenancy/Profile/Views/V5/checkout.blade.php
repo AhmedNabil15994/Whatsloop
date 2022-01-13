@@ -62,6 +62,7 @@
                                 ['color' => '#5CCAD2','image' => 'layers.png'],
                                 ['color' => '#373FBC','image' => 'svg.png'],
                                 ['color' => '#373FBC','image' => 'api.svg'],
+                                ['color' => '#373FBC','image' => 'hosting.svg'],
                             ];
                             $extraQuotasArr = [
                                 ['color' => '#449DE6','image' => 'text-message.png'],

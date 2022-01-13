@@ -175,6 +175,10 @@ class ZidControllers extends Controller {
             return  \TraitsFunc::ErrorMessage(trans('main.clientsValidate'));
         }
 
+        Template::where('name_en','abandonedCarts')->update([
+            'description_ar' => $input['message'],
+        ]);
+        
         if($input['sendTime'] == 1){
             try {
                 dispatch(new AbandonedCart(2,$input))->onConnection('cjobs');
@@ -197,31 +201,34 @@ class ZidControllers extends Controller {
     }
 
     public function abandonedCarts(Request $request){
+        $tempObj = Template::where('name_en','abandonedCarts')->first();
+        if(!$tempObj){
+            Template::create([
+                'channel' => \Session::get('channelCode'),
+                'name_ar' => 'abandonedCarts',
+                'name_en' => 'abandonedCarts',
+                'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
-        Template::where('name_en','abandonedCarts')->firstOrCreate([
-            'channel' => \Session::get('channelCode'),
-            'name_ar' => 'abandonedCarts',
-            'name_en' => 'abandonedCarts',
-            'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
+    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
 
-سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
 
-اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+    ( {ORDERURL} )
 
-( {ORDERURL} )
+    مع تحيات فريق عمل واتس لوب ❤️',
+                'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
-مع تحيات فريق عمل واتس لوب ❤️',
-            'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
 
-سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
 
-اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+    ( {ORDERURL} )
 
-( {ORDERURL} )
-
-مع تحيات فريق عمل واتس لوب ❤️',
-            'status' => 1,
-        ]);
+    مع تحيات فريق عمل واتس لوب ❤️',
+                'status' => 1,
+            ]);
+        } 
+        
 
         $input = \Request::all();
         $modelName = 'abandonedCarts';
@@ -355,7 +362,7 @@ class ZidControllers extends Controller {
                 $source->where('order_status','LIKE','%'.$input['status'].'%');
             }
 
-            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            $modelData = $source == [] ?  [] : $source->orderBy('created_at','DESC')->paginate($paginationNo);
             $formattedData = $this->formatData($modelData,$model);
             
             $data['mainData'] = [
@@ -474,8 +481,21 @@ class ZidControllers extends Controller {
             // if(isset($input['keyword']) && !empty($input['keyword'])){
             //     $source->where('first_name','LIKE','%'.$input['keyword'].'%')->orWhere('last_name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('country','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
             // }
+            $clients = [];
+            
+            if(!empty($source)){
+                foreach($source->get() as $oneItem){
+                    $clients[] = [
+                        'name' => $oneItem->customer_name,
+                        'mobile' => $oneItem->customer_mobile,
+                        'order_id' => $oneItem->cart_id,
+                        'total' => $oneItem->cart_total_string,
+                        'url' => 'https://web.zid.sa/abandoned-cart/'.$oneItem->id,
+                    ];
+                }
+            }
 
-            $modelData = $source == [] ?  [] : $source->paginate($paginationNo);
+            $modelData = $source == [] ?  [] : $source->orderBy('created_at','DESC')->paginate($paginationNo);
             $formattedData = $this->formatData($modelData,$model);
             $data['mainData'] = [
                 'title' => trans('main.abandonedCarts'),
@@ -485,6 +505,7 @@ class ZidControllers extends Controller {
             ];
 
             $data['searchData'] = [];
+            $mainData['customers'] = $clients;
             $mainData['template'] = Template::where('name_en','abandonedCarts')->first();
         }
 
@@ -505,7 +526,7 @@ class ZidControllers extends Controller {
         return view('Tenancy.ExternalServices.Views.V5.'.$model)->with('data', (object) $mainData);
     }
 
-    public function formatData($data,$table){
+    public function formatData($data,$table,$extraData=null){
         $objs = [];
         foreach ($data as $key => $value) {
             $dataObj = new \stdClass();
@@ -525,8 +546,8 @@ class ZidControllers extends Controller {
                 $categories_ar = [];
                 $categories_en = [];
                 foreach ($categories as $category) {
-                    $categories_ar[]= isset($category['name']['ar']) && !empty($category['name']['ar']) ? $category['name']['ar'] : $category['name']['en'] ;
-                    $categories_en[]= isset($category['name']['en']) && !empty($category['name']['en']) ? $category['name']['en'] : $category['name']['ar'] ;
+                    $categories_ar[]= isset($category['name']['ar']) && !empty($category['name']['ar']) ? $category['name']['ar'] : '' ;
+                    $categories_en[]= isset($category['name']['en']) && !empty($category['name']['en']) ? $category['name']['en'] : '' ;
                 }
                 $dataObj->sku = $value->sku;
                 $dataObj->quantity = $value->quantity;
@@ -576,6 +597,7 @@ class ZidControllers extends Controller {
                 $dataObj->phase = $value->phase;
                 $dataObj->customer = $customer;
                 $dataObj->total = $value->cart_total_string;
+                $dataObj->order_url = 'https://web.zid.sa/abandoned-cart/'.$value->store_id;
                 $dataObj->reminders_count = $value->reminders_count;
                 $dataObj->sent_count = $value->reminders_count;
                 $dataObj->products_count = $value->products_count;

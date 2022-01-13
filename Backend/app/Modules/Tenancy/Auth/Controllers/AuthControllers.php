@@ -8,6 +8,7 @@ use App\Models\UserAddon;
 use App\Models\CentralUser;
 use App\Models\Domain;
 use App\Models\Tenant;
+use App\Models\UserData;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -233,6 +234,15 @@ class AuthControllers extends Controller {
 
         $userObj->password = Hash::make($password);
         $userObj->save();
+
+        if($userObj->group_id != 1){
+            $mainD = UserData::where('phone',$userObj->phone)->first();
+            if($mainD){
+                $mainD->password = Hash::make($password);
+                $mainD->save();
+            }
+        }
+
         Session::forget('check_user_id');
 
         User::setSessions($userObj);

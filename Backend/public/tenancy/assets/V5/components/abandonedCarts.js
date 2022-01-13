@@ -18,14 +18,20 @@ $(function(){
 	});
 
 
- 	
+ 	$(document).on('change','select[name="clients"]',function(){
+ 		var clientsVal = $(this).val();
+ 		if(clientsVal.indexOf("@") != -1){  
+		   $('select[name="clients"] option:not(.di)').prop('selected',true);
+		   $('select[name="clients"] option.di').prop('selected',false);
+		}
+ 	});
 
 	$(".resendCarts").click(function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		
 		var sendTime = 1;
-		var message = $('textarea[name="body"]').text();
+		var message = $('textarea[name="body"]').val();
 
 		if($('input#radio2').is(':checked')){
 			sendTime = $('input[name="date"]').val();
@@ -42,8 +48,7 @@ $(function(){
 			};
 			clientsData.push(client);
 		});
-		
-
+				
 		$.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
 	    $.ajax({
 	        type: 'POST',

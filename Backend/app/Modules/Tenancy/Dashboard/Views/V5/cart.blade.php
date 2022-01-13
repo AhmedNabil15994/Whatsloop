@@ -54,6 +54,7 @@
                                         ['color' => '#5CCAD2','image' => 'layers.png'],
                                         ['color' => '#373FBC','image' => 'botPlus.svg'],
                                         ['color' => '#373FBC','image' => 'api.svg'],
+                                        ['color' => '#373FBC','image' => 'hosting.svg'],
                                     ];
                                     @endphp
                                     @foreach($data->addons as $key => $addon)

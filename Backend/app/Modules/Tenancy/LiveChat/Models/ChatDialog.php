@@ -22,6 +22,14 @@ class ChatDialog extends Model{
         });
     }
 
+    public function SenderLastMessage(){
+        return $this->hasOne(ChatMessage::class,'chatId','id')->ofMany([
+            'time' => 'max',
+        ], function ($query) {
+            $query->where('fromMe',0)->where('time', '!=', null);
+        });
+    }
+
     public function Messages(){
         return $this->hasMany('App\Models\ChatMessage','chatId','id');
     }
@@ -30,7 +38,7 @@ class ChatDialog extends Model{
         $input = \Request::all();
         if($name != null){
             $limit = 0;
-            $source = self::whereHas('Messages')->with('Messages')->where('name','LIKE','%'.$name.'%')->orWhere('id','LIKE','%'.str_replace('+','',$name).'%');  
+            $source = self::whereHas('Messages')->with(['Messages','SenderLastMessage'])->where('name','LIKE','%'.$name.'%')->orWhere('id','LIKE','%'.str_replace('+','',$name).'%');  
         }else{
             // $source = self::whereHas('Messages',function($whereHasQuery){
             //     $whereHasQuery->orderBy('time','DESC')->limit(1);
@@ -38,7 +46,7 @@ class ChatDialog extends Model{
             //     $withQuery->orderBy('time','DESC')->first();
             // }])->orderBy('last_time','DESC');  
             // 
-            $source = self::whereHas('Messages')->with('LastMessage')->orderBy('last_time','DESC');
+            $source = self::whereHas('Messages')->with(['LastMessage','SenderLastMessage'])->orderBy('last_time','DESC');
         }
 
         if((isset($input['mine']) && !empty($input['mine']))){
@@ -50,7 +58,7 @@ class ChatDialog extends Model{
     }
     
     static function getPinned(){
-        $source = self::whereHas('Messages')->with('LastMessage')->where('is_pinned',1)->orderBy('last_time','DESC');  
+        $source = self::whereHas('Messages')->with(['LastMessage','SenderLastMessage'])->where('is_pinned',1)->orderBy('last_time','DESC');  
         return self::generateObj($source);
     }
 
@@ -111,8 +119,8 @@ class ChatDialog extends Model{
         if($source){
             $source = (object) $source;
             $dataObj->id = $source->id;
-            $dataObj->name = $source->name != "" ? $source->name : self::reformChatId($source->id,"");
-            $dataObj->chatName = self::reformChatId($source->id,$source->name);
+            $dataObj->name = $source->name != "" ? ( strpos($source->name, '@c.us') !== false && $source->SenderLastMessage != null ? $source->SenderLastMessage->senderName : $source->name ) : self::reformChatId($source->id,"");
+            $dataObj->chatName = self::reformChatId($source->id,$dataObj->name);
             $dataObj->image = isset($source->image) ? mb_convert_encoding($source->image, 'UTF-8', 'UTF-8') : '';
             $dataObj->metadata = isset($source->metadata) ? unserialize($source->metadata) : [];
             $dataObj->last_time = isset($source->LastMessage) && !empty($source->LastMessage)  ? self::reformDate($source->LastMessage->time) : self::reformDate($source->last_time); 

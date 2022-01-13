@@ -202,7 +202,7 @@ class Contact extends Model{
                 $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
-        $source = $source->select('*','phone as phones',\DB::raw('count(*) as total'))->groupBy('created_at','group_id')->orderBy('created_at','DESC')->get();
+        $source = $source->select('*','phone as phones',\DB::raw('count(*) as total'),\DB::raw('sum(has_whatsapp) as found'))->groupBy('created_at','group_id')->orderBy('created_at','DESC')->get();
 
         $list = [];
         $i = 1;
@@ -215,8 +215,8 @@ class Contact extends Model{
             // $contacts = reset($contacts);
 
             $myContacts[] = str_replace('+', '', $contact->phone);
-            $hasWhatsapp+= $contact->has_whatsapp  == 1 ? 1 : 0; 
-            $hasNoWhatsapp+= $contact->has_whatsapp  == 0 ? 1 : 0; 
+            $hasWhatsapp = $contact->found; 
+            $hasNoWhatsapp = $contact->total - $contact->found; 
             
             
             $list[$key] = new \stdClass();
@@ -227,7 +227,7 @@ class Contact extends Model{
             $list[$key]->total = $contact->total;
             $list[$key]->hasWhatsapp = $hasWhatsapp;
             $list[$key]->hasNoWhatsapp = $hasNoWhatsapp;
-            $list[$key]->contacts = count($myContacts);
+            $list[$key]->contacts = $contact->total;
             $list[$key]->created_at = $contact->created_at;
             $i++;
         }

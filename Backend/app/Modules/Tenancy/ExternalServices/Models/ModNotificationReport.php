@@ -58,7 +58,7 @@ class ModNotificationReport extends Model{
         $data = new  \stdClass();
         $data->id = $source->id;
         $data->client = $source->client;
-        $data->order_id = $source->order_id;
+        $data->order_id = $source->order_id == null ? str_replace('@c.us','',$source->client) : $source->order_id;
         $data->statusText = $source->statusText;
         $data->mod_id = $source->mod_id;
         $data->created_at = \Helper::formatDate($source->created_at);

@@ -42,7 +42,7 @@
 @endif
 
 <div class="row">
-    @foreach($data->data as $order)
+    @foreach($data->data as $orderKey => $order)
     <div class="col-md-4">
         <div class="abCart">
             <h2 class="titleCart clearfix">{{ trans('main.order').': ' }} <span>{{ $order->id }}</span></h2>
@@ -62,6 +62,9 @@
             </div>
         </div>
     </div>
+    @if($orderKey % 3 == 0 && $orderKey != 0)
+    </div><div class="row">
+    @endif
     @endforeach
 </div>       
 

@@ -42,6 +42,14 @@ return [
             'connection' => 'main',
         ],
 
+        'cjobs' => [
+            'driver' => 'database',
+            'table' => 'jobs',
+            'queue' => 'default',
+            'retry_after' => 3900,
+            'connection' => 'main',
+        ],
+
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => 'localhost',

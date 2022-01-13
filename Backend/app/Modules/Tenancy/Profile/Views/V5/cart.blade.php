@@ -55,12 +55,13 @@
                                         ['color' => '#5CCAD2','image' => 'layers.png'],
                                         ['color' => '#373FBC','image' => 'botPlus.svg'],
                                         ['color' => '#373FBC','image' => 'api.svg'],
+                                        ['color' => '#373FBC','image' => 'hosting.svg'],
                                     ];
                                     @endphp
                                     @foreach($data->addons as $key => $addon)
                                     <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3 item-parent">
                                         <div class="adding-card">
-                                            <div class="card-img" style="background-color: {{ $addonsArr[$addon->id - 1]['color'] }};">
+                                            <div class="card-img" style="background-color: {{ $addon->id - 1]['color'] }};">
                                                 <img src="{{ asset('V5/images/'.$addonsArr[$addon->id - 1]['image']) }}" alt="">
                                             </div>
                                             <div class="card-body">

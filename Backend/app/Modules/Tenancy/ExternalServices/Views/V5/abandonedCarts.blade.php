@@ -22,6 +22,9 @@
     .select2-container--default .select2-selection--multiple{
         height: 50px !important;
     }
+    .modal textarea{
+        min-height:  230px;
+    }
 </style>
 @endsection
 
@@ -55,9 +58,6 @@
 <a href="{{ URL::current().'?refresh=refresh' }}" class="updateBtn">{{ trans('main.refresh') }}</a>
 <a class="updateBtn" data-effect="effect-sign" data-toggle="modal" data-target="#resendModal" data-backdrop="static">{{ trans('main.resend') }}</a>
 @endif
-@php
-    $customers = [];
-@endphp
 <div class="row">
     @foreach($data->data as $key => $order)
     @if($key % 3 == 0)
@@ -65,7 +65,7 @@
     @endif
     <div class="col-md-4">
         <div class="abCart">
-            <h2 class="titleCart clearfix">{{ trans('main.cartno').': ' }} <span>{{ $order->id }}</span></h2>
+            <h2 class="titleCart clearfix">{{ trans('main.cartno').': ' }} <span>{{ $order->id .' | ' . $order->created_at}}</span></h2>
             <span class="orderTitle">{{ trans('main.orderItems') }}  {!! $order->sent_count > 0 ? '<span class="float-right label label-success">'.trans('main.sentBefore').'</span>' : '' !!} </span>
             <ul class="list">
                 @if(is_array($order->items))
@@ -82,15 +82,6 @@
                 <li><i class="flaticon-phone-call"></i> <span>{{ $order->customer['mobile'] }}</span></li>
                 <li><i class="flaticon-map"></i> <span>{{ $order->customer['country'] }}</span></li>
             </ul>
-            @php
-                $customers[]  = [
-                    'name' => $order->customer['name'],
-                    'mobile' => $order->customer['mobile'],
-                    'order_id' => $order->id,
-                    'total' => $order->total,
-                    'url' => isset($order->order_url) ? $order->order_url : 'https://web.zid.sa/login',
-                ];
-            @endphp
             <div class="details">
                 <a href="{{ isset($order->order_url) ? $order->order_url : 'https://web.zid.sa/login' }}" class="btnStyle">{{ trans('main.info') }}</a>
             </div>
@@ -117,8 +108,9 @@
                         <div class="col-md-9">
                             <div class="selectStyle">
                                 <select data-toggle="select2" data-style="btn-outline-myPR" name="clients" multiple>
-                                    <option value="">{{ trans('main.choose') }}</option>
-                                    @foreach($customers as $customer)
+                                    <option class="di" value="">{{ trans('main.choose') }}</option>
+                                    <option class="di" value="@">{{ trans('main.selectAll') }}</option>
+                                    @foreach($data->customers as $customer)
                                     <option value="{{ $customer['order_id'] }}" data-name="{{ $customer['name'] }}" data-mobile="{{ $customer['mobile'] }}" data-total="{{ $customer['total'] }}" data-url="{{ $customer['url'] }}">{{ $customer['order_id'] . ' - ' . $customer['name'] }}</option>
                                     @endforeach
                                 </select>

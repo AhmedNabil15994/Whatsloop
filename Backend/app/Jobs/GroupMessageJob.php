@@ -65,7 +65,6 @@ class GroupMessageJob implements ShouldQueue
         // if($status){
             
         // }
-
         $status = 0;
         if($messageObj['message_type'] == 1){
             $sendData['body'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
@@ -110,8 +109,8 @@ class GroupMessageJob implements ShouldQueue
     }
 
     public function reformMessage($text,$contactName,$contactPhone){
-        $text = str_replace("{CUSTOMER_NAME}",$contactName,$text);
-        $text = str_replace("{CUSTOMER_PHONE}",$contactPhone,$text);
-        return $text;
+        $newText = str_replace("{CUSTOMER_NAME}",$contactName,$text);
+        $newText = str_replace("{CUSTOMER_PHONE}",$contactPhone,$newText);
+        return $newText;
     }
 }

@@ -32,7 +32,7 @@ class ChatMessage extends Model{
             $source->where('id',$input['id'])->orderBy('time','DESC');
         }
         if($chatId != null){
-            $source->where('chatId',$chatId)->orderBy('time','DESC');
+            $source->where('chatId',$chatId)->orderBy('time','DESC')->orderBy('messageNumber','DESC');
         }else{
             $source->orderBy('time','DESC');
         }
@@ -42,7 +42,7 @@ class ChatMessage extends Model{
     static function lastMessages() {
         $source = self::NotDeleted();
         $source->orderBy('time','DESC');
-        return self::generateObj($source,10,'notNull');
+        return self::generateObj($source,10);
     }
 
     static function generateObj($source,$limit=null,$disDetails=null){
@@ -245,7 +245,7 @@ class ChatMessage extends Model{
         $diff = (time() - $time ) / (3600 * 24);
         $date = \Carbon\Carbon::parse(date('Y-m-d H:i:s'));
         if(round($diff) == 0 && round($diff) < 1){
-            return ['',date('h:i A',$time)];
+            return [trans('main.today'),date('h:i A',$time)];
         }else if($diff>0 && $diff<=1){
             return [trans('main.yesterday'), date('h:i A',$time)];
         }else if($diff > 1 && $diff < 7){

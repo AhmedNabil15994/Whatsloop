@@ -357,7 +357,7 @@ class SetInvoices extends Command
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
                         \MailHelper::prepareEmail($phoneData,1);
-                    }else if($oneItem['data']['leftDays'] == 0){
+                    }else if($oneItem['data']['leftDays'] == 0 && (int) date('H') == 12){
                         // Suspend 
                         if($invoiceObj->status == 2  && (int) date('H') == 9 ){
                             $subscriptions = '( ';
@@ -432,7 +432,7 @@ class SetInvoices extends Command
                             $phoneData['phone'] = $userObj->phone;
                             \MailHelper::prepareEmail($phoneData,1);
                         }   
-                    }else if($oneItem['data']['leftDays'] == -1){
+                    }else if($oneItem['data']['leftDays'] == -1 && (int) date('H') == 12){
                         // Whatsloop Customer Service
                         $notificationTemplateObj = NotificationTemplate::getOne(2,'leadContact');
                         $allData = [

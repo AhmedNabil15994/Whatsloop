@@ -40,7 +40,8 @@ class HasMembershipConstraints
             if( (in_array($request->segment(1),['updateSubscription','dashboard','logout','menu','completeOrder','pushInvoice','pushInvoice2'])) ||
                 ($request->segment(1) == 'profile' && $request->segment(2) == 'subscription') || 
                 ($request->segment(1) == 'invoices' && $request->segment(2) == 'view') || 
-                ($request->segment(1) == 'invoices' && $request->segment(3) == 'pushInvoice') ){
+                ($request->segment(1) == 'invoices' && $request->segment(3) == 'pushInvoice') ||
+                ($request->segment(1) == 'checkout' && $request->segment(2) == 'bankTransfer') ){
                 return $next($request);
             }else{
                 return Redirect('/dashboard');
