@@ -41,6 +41,16 @@ class Helper
     }
 
 
+    static function reformMessage($msg){
+        $dataObj = new \stdClass();
+        $dataObj->id = json_decode($msg['metadata'])->msgId;
+        $dataObj->body = $msg['body'];
+        $dataObj->type = $msg['type'];
+        $dataObj->chatId = \App\Models\ChatMessage::reformChatId($msg['chatId']);
+        $dataObj->last_try = \App\Models\ChatDialog::reformDate($msg['last_try']/1000);
+        return $dataObj;
+    }
+
     static function calcTax($mainPrice){
         $tax = 15/100;
         $estimatedTax = $mainPrice * (15/115);
@@ -213,6 +223,7 @@ class Helper
     static function getAllPerms(){
         $controllers = config('permissions');
         $addons = Session::has('addons') ? Session::get('addons') : [];//\DB::connection('main')->table('addons')->whereIn('id',)->get(['module','id']);
+        $externalPermissions = [];
         foreach ($addons as $addon) {
             if(!in_array($addon,Session::get('deactivatedAddons')) || !in_array($addon,Session::get('disabledAddons'))){
                 if($addon == 1){

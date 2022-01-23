@@ -90,10 +90,10 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>{{ trans('main.item') }}</th>
+                                        <th colspan="3">{{ trans('main.item') }}</th>
                                         <th>{{ trans('main.quantity') }}</th>
-                                        <th>{{ trans('main.start_date') }}</th>
-                                        <th>{{ trans('main.end_date') }}</th>
+                                        {{-- <th>{{ trans('main.start_date') }}</th> --}}
+                                        {{-- <th>{{ trans('main.end_date') }}</th> --}}
                                         <th class="text-center">{{ trans('main.total') }}</th>
                                     </tr>
                                 </thead>
@@ -106,21 +106,21 @@
                                     @php 
                                         $mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
                                         $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
-                                        $tax = Helper::calcTax($isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
-                                        $grandTotal = $isOld ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
-                                        $total = $isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
+                                        $tax = Helper::calcTax($isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount);
+                                        $grandTotal = $isOld ? $mainPrices - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+                                        $total = $isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount;
                                     @endphp
                                     <tr class="mainRow">
                                         <td>{{ $key+1 }}</td>
-                                        <td>
+                                        <td colspan="3">
                                             <p class="m-0 d-inline-block align-middle font-16">
                                                 <a href="#" class="text-reset font-family-secondary">{{ $item['data']['title_'.LANGUAGE_PREF] }}</a><br>
                                                 <small class="mr-2"><b>{{ trans('main.extra_type') }}:</b> {{ trans('main.'.$item['type']) }} </small>
                                             </p>
                                         </td>
                                         <td>{{ $item['data']['quantity'] }}</td>
-                                        <td>{{ $data->data->due_date }}</td>
-                                        <td>{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date))) }}</td>
+                                        {{-- <td>{{ $data->data->due_date }}</td> --}}
+                                        {{-- <td>{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)- 86400))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date)- 86400)) }}</td> --}}
                                         <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
                                     </tr>
                                     @endforeach
@@ -181,7 +181,7 @@
                                         </td>
                                         <td>{{ $data->data->payment_gateaway }}</td>
                                         <td>{{ $data->data->transaction_id }}</td>
-                                        <td>{{ $data->data->total }} {{ trans('main.sar') }}</td>
+                                        <td>{{ $total }} {{ trans('main.sar') }}</td>
                                     </tr>
                                 </tbody>
                             </table>

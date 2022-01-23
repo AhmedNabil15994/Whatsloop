@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Models\ChatMessage;
 
 class AbandonedCart implements ShouldQueue
 {
@@ -41,21 +42,24 @@ class AbandonedCart implements ShouldQueue
             if(isset($oneCart['name']) && !empty($oneCart['name'])){
                 $sendData['body'] = $this->reformMessage($message,$oneCart);
                 $sendData['chatId'] = str_replace('+', '', $oneCart['mobile']).'@c.us';
-                $result = $mainWhatsLoopObj->sendMessage($sendData);
-                $result = $result->json();
-                if(isset($result['data']) && isset($result['data']['id'])){
-                    if($this->module == 1){
-                        $dataObj = \DB::table('salla_abandonedCarts')->where('id',$oneCart['order_id'])->first();
-                        $oldTotal = unserialize($dataObj->total);
-                        $oldTotal['sent_count'] = isset($oldTotal['sent_count']) ? $oldTotal['sent_count']+1 : 1;
-                        \DB::table('salla_abandonedCarts')->where('id',$oneCart['order_id'])->update([
-                            'total' => serialize($oldTotal),
-                        ]);
-                    }elseif($this->module == 2){
-                        $dataObj = \DB::table('zid_abandonedCarts')->where('cart_id',$oneCart['order_id'])->first();
-                        \DB::table('zid_abandonedCarts')->where('cart_id',$oneCart['order_id'])->update([
-                            'reminders_count' => $dataObj->reminders_count + 1, 
-                        ]);
+                $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',now()-1800)->where('body',$sendData['body'])->first();
+                if(!$msg){
+                    $result = $mainWhatsLoopObj->sendMessage($sendData);
+                    $result = $result->json();
+                    if(isset($result['data']) && isset($result['data']['id'])){
+                        if($this->module == 1){
+                            $dataObj = \DB::table('salla_abandonedCarts')->where('id',$oneCart['order_id'])->first();
+                            $oldTotal = unserialize($dataObj->total);
+                            $oldTotal['sent_count'] = isset($oldTotal['sent_count']) ? $oldTotal['sent_count']+1 : 1;
+                            \DB::table('salla_abandonedCarts')->where('id',$oneCart['order_id'])->update([
+                                'total' => serialize($oldTotal),
+                            ]);
+                        }elseif($this->module == 2){
+                            $dataObj = \DB::table('zid_abandonedCarts')->where('cart_id',$oneCart['order_id'])->first();
+                            \DB::table('zid_abandonedCarts')->where('cart_id',$oneCart['order_id'])->update([
+                                'reminders_count' => $dataObj->reminders_count + 1, 
+                            ]);
+                        }
                     }
                 }
             }

@@ -808,6 +808,10 @@ return [
 	'daily' => 'Daily',
 	'clientsValidate' => 'Please Select at least one client',
 	'sentBefore' => 'Had been sent before' ,
+	'pubDate' => 'Publish Date',
+
+	'messagesQueue' => 'Messages in progress',
+	'first100Msgs' => 'First 100 Messages',
 ];
 
 

@@ -120,15 +120,15 @@
                                                 </select>
                                             </div>
                                             <div class='col-md-4 repy'>
-                                                <textarea class="{{ $oneItem['msg_type'] == 0 ? '' : 'hidden'  }}" name='btn_reply_{{ $oneItem['id'] }}' placeholder='{{ trans('main.messageContent') }}' maxlength="140">{{ $oneItem['msg_type'] == 0 ? json_decode($oneItem['msg']) : ''  }}</textarea>
+                                                <textarea class="{{ $oneItem['msg_type'] == 0 ? '' : 'hidden'  }}" name='btn_reply_{{ $oneItem['id'] }}' placeholder='{{ trans('main.messageContent') }}' maxlength="140">{{ $oneItem['msg_type'] == 0 ? $oneItem['msg'] : ''  }}</textarea>
                                                 <select data-toggle="{{ $oneItem['msg_type'] > 0 ? 'select2' : ''  }}" class='dets {{ $oneItem['msg_type'] > 0 ? '' : 'hidden'  }}' name='btn_msg_{{ $oneItem['id'] }}'>
                                                     <option value='' selected>{{ trans('main.choose') }}</optin>
                                                     @foreach($data->bots as $bot)
-                                                    <option value="{{ $bot->id }}" data-type="1" {{ $oneItem['msg_type'] == 1 && isset(json_decode($oneItem['msg'])->id) && json_decode($oneItem['msg'])->id == $bot->id ? 'selected' : '' }}>{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>
+                                                    <option value="{{ $bot->id }}" data-type="1" {{ $oneItem['msg_type'] == 1 && isset($oneItem['msg']) && $oneItem['msg'] == $bot->id ? 'selected' : '' }}>{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>
                                                     @endforeach
                                                     @foreach($data->botPlus as $plusBot)
                                                     @if($plusBot->id != $data->data->id)
-                                                    <option value="{{ $plusBot->id }}" data-type="2" {{ $oneItem['msg_type'] == 2 && isset(json_decode($oneItem['msg'])->id)  && json_decode($oneItem['msg'])->id == $plusBot->id ? 'selected' : '' }}>{{ trans('main.clientMessage') . ' ( ' .$plusBot->message . ' ) ==== ' . trans('main.botPlus') }}</option>
+                                                    <option value="{{ $plusBot->id }}" data-type="2" {{ $oneItem['msg_type'] == 2 && isset($oneItem['msg'])  && $oneItem['msg'] == $plusBot->id ? 'selected' : '' }}>{{ trans('main.clientMessage') . ' ( ' .$plusBot->message . ' ) ==== ' . trans('main.botPlus') }}</option>
                                                     @endif
                                                     @endforeach
                                                 </select>

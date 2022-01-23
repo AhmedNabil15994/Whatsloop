@@ -33,7 +33,7 @@ class GroupMsg extends Model{
     static function dataList($status=null,$id=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted()->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->with(['Group','Creator'])->where(function ($query) use ($input) {
                     if (isset($input['group_id']) && !empty($input['group_id'])) {
                         $query->where('group_id', $input['group_id']);
                     } 

@@ -66,7 +66,7 @@ class PushChannelSetting extends Command
                 $updateResult = $mainWhatsLoopObj->postSettings($myData);
                 $result = $updateResult->json();
 
-                if($result['status']['status'] == 1){
+                if(isset($result) && isset($result['status']) && $result['status']['status'] == 1){
                     $user->setting_pushed = 1;
                     $user->save();
                     

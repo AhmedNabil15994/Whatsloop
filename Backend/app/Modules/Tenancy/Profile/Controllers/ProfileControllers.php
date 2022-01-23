@@ -28,6 +28,7 @@ use App\Models\CentralUser;
 use App\Models\BankAccount;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\CentralVariable;
 use Storage;
 use DataTables;
 use Validator;
@@ -68,14 +69,17 @@ class ProfileControllers extends Controller {
 
         if(isset($input['email']) && !empty($input['email'])){
             $userObj = User::checkUserBy('email',$input['email'],USER_ID);
+            User::where('email',$input['email'])->where('deleted_by','!=',null)->delete();
             if($userObj){
                 Session::flash('error', trans('main.emailError'));
                 return redirect()->back()->withInput();
             }
             $mainUserObj->email = $input['email'];
         }
+        
         if(isset($input['phone']) && !empty($input['phone'])){
             $userObj = User::checkUserBy('phone',$input['phone'],USER_ID);
+            User::where('phone',$input['phone'])->where('deleted_by','!=',null)->delete();
             if($userObj){
                 Session::flash('error', trans('main.phoneError'));
                 return redirect()->back()->withInput();
@@ -693,6 +697,52 @@ class ProfileControllers extends Controller {
             $sallaObj->save();
         }
 
+        $userObj = User::first();
+        $addonObj = UserAddon::where('addon_id',5)->where('user_id',$userObj->id)->first();
+        if($addonObj->setting_pushed != 1){
+            $webhookUrl = str_replace('://', '://'.$userObj->domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/salla-webhook';
+            $actions = ['order.created','order.updated','product.created','product.updated','customer.created','customer.updated'];
+
+            $url = CentralVariable::getVar('SallaURL').'/webhooks/subscribe';
+            $managerToken = $input['store_token'];
+
+            foreach($actions as $key => $action){
+                $urlData = [
+                    'name' => ucwords(str_replace('.',' ',$action)).' Notify',
+                    'event' => $action,
+                    'url' => $webhookUrl,
+                    'headers' => [
+                        [
+                            'key' => 'Authorization',
+                            'value' => $managerToken,
+                        ],
+                        [
+                            'key' => 'Accept-Language',
+                            'value' => "AR",
+                        ]
+                    ],
+                ];
+
+                $payload = json_encode($urlData);
+
+                if($managerToken){
+
+                    $ch = curl_init($url);
+
+                    curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
+                    curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
+                        'Content-Type: application/json', 
+                        'Authorization: Bearer '.$managerToken,
+                    )); 
+                    curl_setopt($ch, CURLOPT_POST,           1 );
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+                    $result=curl_exec ($ch);  
+                    $addonObj->setting_pushed = 1;
+                    $addonObj->save();
+                }
+            }
+        }
+
         if($request->ajax()){
             return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
         }else{
@@ -752,6 +802,51 @@ class ProfileControllers extends Controller {
             $zidStoreID->updated_at = DATE_TIME;
             $zidStoreID->updated_by = USER_ID;
             $zidStoreID->save();
+        }
+
+        $userObj = User::first();
+        $addonObj = UserAddon::where('addon_id',4)->where('user_id',$userObj->id)->first();
+        if($addonObj->setting_pushed != 1){
+            $webhookUrl = str_replace('://', '://'.$userObj->domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/zid-webhook';
+            $actions = ['order.create','order.status.update','product.create','product.update','product.publish','product.delete'];
+            $url = CentralVariable::getVar('ZidURL').'/managers/webhooks';
+            
+            $storeId = $input['store_id'];
+            $managerToken = $input['store_token'];
+            $merchantToken = CentralVariable::getVar('ZidMerchantToken');
+            
+            foreach($actions as $key => $action){
+                $urlData = [
+                    'event' => $action,
+                    'target_url' => $webhookUrl,
+                    'original_id' => 610 + $key,
+                    'subscriber' => ucwords(str_replace('.',' ',$action)).' Notify',
+                    'conditions' => "{}",
+                ];
+                $payload = json_encode($urlData);
+
+
+                if($storeId && $managerToken){
+
+                    $ch = curl_init($url);
+
+                    curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
+                    curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
+                        'Content-Type: application/json', 
+                        'X-MANAGER-TOKEN: '.$managerToken,
+                        'STORE-ID: '.$storeId,
+                        'ROLE: Manager',
+                        'User-Agent: whatsloop/1.00.00 (web)',
+                        'Accept-Language: en',
+                        'Authorization: Bearer '.$merchantToken,
+                    )); 
+                    curl_setopt($ch, CURLOPT_POST,           1 );
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+                    $result=curl_exec ($ch);   
+                    $addonObj->setting_pushed = 1;
+                    $addonObj->save();
+                }
+            }
         }
 
         if($request->ajax()){
@@ -828,6 +923,13 @@ class ProfileControllers extends Controller {
             $data['status'] = [];
         }
 
+        $msgQueue = $mainWhatsLoopObj->showMessagesQueue();
+        $queueResult = $msgQueue->json();
+        if($queueResult && isset($queueResult['data'])){
+            $data['totalQueueMessages'] = $queueResult['data']['totalMessages'];
+            $data['queuedMessages'] = $queueResult['data']['first100'];
+        }
+
         $data['allMessages'] = ChatMessage::count();
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
         $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
@@ -836,6 +938,14 @@ class ProfileControllers extends Controller {
 
         $data['channelSettings'] = $channelSettings;
         return view('Tenancy.Profile.Views.V5.subscription')->with('data', (object) $data);
+    }
+
+    public function clearMessagesQueue(){
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $msgQueue = $mainWhatsLoopObj->clearMessagesQueue();
+        $queueResult = $msgQueue->json();
+        Session::flash('success',trans('main.inPrgo'));
+        return redirect()->back();
     }
 
     public function updateChannelSettings(){
@@ -1086,20 +1196,20 @@ class ProfileControllers extends Controller {
         $centralUser->setting_pushed = 0;
         $centralUser->save();
         
-        Variable::whereIn('var_key',[
-            'MODULE_1','MODULE_2','MODULE_3','MODULE_4','MODULE_5',
-            'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
-        ])->update(['var_value'=>0]);   
+        // Variable::whereIn('var_key',[
+        //     'MODULE_1','MODULE_2','MODULE_3','MODULE_4','MODULE_5',
+        //     'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
+        // ])->update(['var_value'=>0]);   
 
-        if($userObj->is_old != 1){
-            Contact::where('id','!=',null)->delete();
-            Category::where('id','!=',null)->delete();
-            ChatMessage::where('id','!=',null)->delete();
-            ChatDialog::where('id','!=',null)->delete();
-            ContactLabel::where('id','!=',null)->delete();
-            ContactReport::where('id','!=',null)->delete();
-            UserStatus::where('id','!=',null)->delete();
-        }
+        // if($userObj->is_old != 1){
+        //     Contact::where('id','!=',null)->delete();
+        //     Category::where('id','!=',null)->delete();
+        //     ChatMessage::where('id','!=',null)->delete();
+        //     ChatDialog::where('id','!=',null)->delete();
+        //     ContactLabel::where('id','!=',null)->delete();
+        //     ContactReport::where('id','!=',null)->delete();
+        //     UserStatus::where('id','!=',null)->delete();
+        // }
      
         Session::flash('success',trans('main.logoutDone'));
         return redirect()->back();

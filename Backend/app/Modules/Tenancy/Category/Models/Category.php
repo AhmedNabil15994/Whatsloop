@@ -210,8 +210,6 @@ class Category extends Model{
             return [11,'#ffaf04','Orange'];
         }elseif($hexColor == '#b5ebff' || $hexColor == 12){
             return [12,'#b5ebff','ColumbiaBlue'];
-        }elseif($hexColor == '#9ba6ff' || $hexColor == 13){
-            return [13,'#9ba6ff',''];
         }elseif($hexColor == '#9368cf' || $hexColor == 14){
             return [14,'#9368cf','Amethyst'];
         }elseif($hexColor == '#ff9485' || $hexColor == 15){

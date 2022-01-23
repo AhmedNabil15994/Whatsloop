@@ -485,7 +485,7 @@ class MainWhatsLoop {
     Queues
     ----------------------------------------------------------*/
 
-    public function showMessagesQueue(){
+    public function showMessagesQueue($data=[]){
         $mainURL = $this->baseUrl.'queues/showMessagesQueue';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,
@@ -501,7 +501,7 @@ class MainWhatsLoop {
         ])->post($mainURL,$data);
     }
 
-    public function showActionsQueue(){
+    public function showActionsQueue($data=[]){
         $mainURL = $this->baseUrl.'queues/showActionsQueue';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,

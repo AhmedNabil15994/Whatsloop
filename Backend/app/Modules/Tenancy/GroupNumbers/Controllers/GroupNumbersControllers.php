@@ -243,7 +243,7 @@ class GroupNumbersControllers extends Controller {
             return \Response::json((object) GroupNumber::getData($dataObj));
         }
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to('/groupNumberReports');
+        return redirect()->to($this->getData()['mainData']['url'].'/');
     }
 
     public function delete($id) {
@@ -305,7 +305,11 @@ class GroupNumbersControllers extends Controller {
             $rows = Excel::toArray(new ContactImport, $request->file('file'));
             $headers = $rows[0][0];
             $data = array_slice($rows[0], 1, 10);
-            return response()->json(["headers"=>$headers,'data'=>$data,'files'=>json_encode($rows)]);
+            $varObj = Variable::where('var_key','grpFile')->first();
+            if(!$varObj){
+                Variable::create(['var_value' => json_encode($rows),'var_key'=>'grpFile']);
+            }
+            return response()->json(["headers"=>$headers,'data'=>$data,'files'=>json_encode([])]);
         }
     }
 
@@ -330,8 +334,9 @@ class GroupNumbersControllers extends Controller {
             $dataObj->save();
             $input['group_id'] = $dataObj->id;
         }
-
+        
         $groupObj = GroupNumber::getOne($input['group_id']);
+        // dd($groupObj);
         if($groupObj == null) {
             return Redirect('404');
         }
@@ -340,9 +345,11 @@ class GroupNumbersControllers extends Controller {
             Session::flash('error', trans('main.pleaseAttachExcel'));
             return redirect()->back();
         }
-        $rows = json_decode($input['files']);
+        
+        $varObj = Variable::where('var_key','grpFile')->first();
+        $rows = json_decode($varObj->var_value);
+        // $rows = json_decode($input['files']);
         $mainData = $rows[0];
-        // dd($rows);
 
         $modelProps = ['name','email','country','city','phone'];
         $userInputs = $input;
@@ -383,44 +390,41 @@ class GroupNumbersControllers extends Controller {
             $storeData[$i]['group_id'] = $input['group_id'];
             $storeData[$i]['created_at'] = DATE_TIME;
             $storeData[$i]['created_by'] = USER_ID;
-            $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
+            // $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
         }
-
+        
+        $contsArr = [];
         foreach ($storeData as $value) {
-            if(!isset($value['phone'])){
-                Session::flash('error', trans('main.pleaseAttachExcel'));
-                return redirect()->back();
-            }
-            if($value['phone'] != null){
-                $phone = "+".$value['phone'];
+            if(isset($value['phone']) && $value['phone'] != null){
+                $phone = str_replace('+','',$value['phone']);
                 $phone = str_replace('\r', '', $phone);
-                $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',$phone)->first();
-                if(!$contactObj){
-                    if(!isset($value['name']) || empty($value['name'])){
-                        $value['name'] = $phone;
-                    }
-                    if(isset($value['email']) && empty($value['email'])){
-                        $value['email'] = $input['email'];
-                    }
-                    if(isset($value['country']) && empty($value['country'])){
-                        $value['country'] = $input['country'];
-                    }
-                    if(isset($value['city']) && empty($value['city'])){
-                        $value['city'] = $input['city'];
-                    }
-                    $value['phone'] = trim(str_replace('\r', '', $phone));
-                    $value['status'] = 1;
-
-                    $contactObj = new Contact;
-                    foreach($value as $attr => $val){
-                        $contactObj->$attr = $val;
-                    }
-                    $contactObj->save();
+                // $contactObj = Contact::NotDeleted()->where('group_id',$value['group_id'])->where('phone',$phone)->first();
+                // if(!$contactObj){
+                if(!isset($value['name']) || empty($value['name'])){
+                    $value['name'] = $phone;
                 }
-                $consForQueue[] = $contactObj;
+                if(isset($value['email']) && empty($value['email'])){
+                    $value['email'] = $input['email'];
+                }
+                if(isset($value['country']) && empty($value['country'])){
+                    $value['country'] = $input['country'];
+                }
+                if(isset($value['city']) && empty($value['city'])){
+                    $value['city'] = $input['city'];
+                }
+                $value['phone'] = trim(str_replace('\r', '', $phone));
+                $value['status'] = 1;
+
+                $item = [];
+                foreach($value as $attr => $val){
+                    $item[$attr]= $val;
+                }
+                $contsArr[] = $item;
+                // }
+                $consForQueue[] = $item;
             }
         }
-
+        
         $chunks = 400;
         $contacts = array_chunk($consForQueue,$chunks);
         foreach ($contacts as $contact) {
@@ -434,7 +438,7 @@ class GroupNumbersControllers extends Controller {
         WebActions::newType(1,'Contact');
         \Session::forget('rows');
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to('/groupNumberReports');
+        return redirect()->to('/groupNumbers');
     }
 
     public function charts() {

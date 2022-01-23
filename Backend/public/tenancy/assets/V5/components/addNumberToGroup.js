@@ -109,7 +109,7 @@ $(function(){
                 $('#colData').empty();
         
                 $.each(oneItem,function(index,item){
-                    if(index != '__rowNum__'){
+                    if(index != '__rowNum__' && item != null){
                         cols.push(index);
                         var selectProps =   '<select data-toggle="select2" data-style="btn-outline-myPR">'+options+'</select>';
                         selectProps =   '<div class="row mb-2">'+

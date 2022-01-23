@@ -214,7 +214,7 @@ class CategoryControllers extends Controller {
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['labelId'] = $dataObj->labelId;
 
-        if($nameUpdateFlag == 1 && !$disable){
+        if($nameUpdateFlag == 1 && !$disable && $dataObj->labelId){
             $data['name'] = $this->reformLabelName($input['name_ar'],$input['name_en']);
             $updateResult = $mainWhatsLoopObj->updateLabel($data);
             $result = $updateResult->json();
@@ -225,7 +225,7 @@ class CategoryControllers extends Controller {
             }
         }
 
-        if($colorUpdateFlag == 1 && !$disable){
+        if($colorUpdateFlag == 1 && !$disable && $dataObj->labelId){
             $data['color'] = Category::getColorData($input['color_id'])[2];
             $updateResult = $mainWhatsLoopObj->updateLabel($data);
             $result = $updateResult->json();

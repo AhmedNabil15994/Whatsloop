@@ -83,7 +83,7 @@ class SubscriptionHelper {
         $hasMembership = 0;
         if($arrType == 'old'){
             foreach($cartObj as $key => $one){
-                $end_date =  $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date));
+                $end_date =  $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date)));
                 if($one['type'] == 'membership'){
                     $disableUpdate = 0;
                     $hasMembership = 1;
@@ -138,7 +138,7 @@ class SubscriptionHelper {
             }
         }else{
             foreach($cartObj as $key => $one){
-                $end_date =  $myEndDate != null ? $myEndDate : ($one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year'),strtotime($start_date)));
+                $end_date =  $myEndDate != null ? $myEndDate : ($one[3] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date))));
                 if($one[1] == 'membership'){
                     $disableUpdate = 0;
                     $hasMembership = 1;

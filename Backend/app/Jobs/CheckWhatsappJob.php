@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+Use App\Models\Contact;
 
 class CheckWhatsappJob implements ShouldQueue
 {
@@ -33,18 +34,26 @@ class CheckWhatsappJob implements ShouldQueue
      */
     public function handle()
     {   
-        foreach ($this->contacts as $contact) {
+        foreach ($this->contacts as $contactArr) {
             try {
-                if($contact->phone != null){
+                $contact = (object) $contactArr;
+                $contactObj = Contact::where('group_id',$contact->group_id)->where('phone',$contact->phone)->first();
+                if($contactObj){
+                    $contactObj->update($contactArr);
+                }else{
+                    $contactObj = Contact::create($contactArr);
+                }
+
+                if($contact->phone != null){   
                     $result = $this->checkWhatsappAvailability(str_replace('+', '', $contact->phone));
-                    $contact->has_whatsapp = $result;
-                    $contact->save();
+                    $contactObj->has_whatsapp = $result;
+                    $contactObj->save();
                 }
             } catch (Exception $e) {
                 // Logger('')   
             }
         }
-        return 1;
+        sleep(120);
     }
 
     public function checkWhatsappAvailability($contact){

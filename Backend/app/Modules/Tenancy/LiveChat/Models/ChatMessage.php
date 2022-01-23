@@ -22,7 +22,7 @@ class ChatMessage extends Model{
         return self::where('id', $id)->first();
     }
 
-    static function dataList($chatId=null,$limit=null,$disDetails=null) {
+    static function dataList($chatId=null,$limit=null,$disDetails=null,$start=null) {
         $input = \Request::all();
         $source = self::NotDeleted();
         if(isset($input['message']) && !empty($input['message'])){
@@ -30,6 +30,9 @@ class ChatMessage extends Model{
         }
         if(isset($input['id']) && !empty($input['id'])){
             $source->where('id',$input['id'])->orderBy('time','DESC');
+        }
+        if($start!= null){
+            $source->skip($start);
         }
         if($chatId != null){
             $source->where('chatId',$chatId)->orderBy('time','DESC')->orderBy('messageNumber','DESC');
@@ -69,6 +72,7 @@ class ChatMessage extends Model{
         if($limit != null){
             $data['pagination'] = \Helper::GeneratePagination($sourceArr);
         }
+
         return $data;
     }
 

@@ -264,8 +264,10 @@ class GroupMsgsControllers extends Controller {
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
+        $newGroup = 0;
 
         if($input['group_id'] == '@'){
+            $newGroup = 1;
             $groupObj = new GroupNumber;
             $groupObj->channel = Session::get('channelCode');
             $groupObj->name_ar = $input['name_ar'];

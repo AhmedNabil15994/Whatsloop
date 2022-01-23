@@ -11,6 +11,8 @@ use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
 use App\Models\ModNotificationReport;
 
+use Throwable;
+
 class ZidWebhook extends ProcessWebhookJob{
 	public function handle(){
 	    $data = json_decode($this->webhookCall, true);
@@ -44,7 +46,6 @@ class ZidWebhook extends ProcessWebhookJob{
 	    // If New Webhook
 	    if(!empty($mainData) && !$dis){
 	    	// Project (Delete)
-	    	Logger($mainData);
 	    	if(isset($mainData['product_id']) && isset($mainData['deleted_at'])){
 	    		return \DB::table('zid_products')->where('id',$mainData['product_id'])->delete();
 	    	}
@@ -69,10 +70,12 @@ class ZidWebhook extends ProcessWebhookJob{
 	    	if(isset($mainData['order_url']) && isset($mainData['order_status'])){
 	    		// Order Status Updated
 	    		$status = $mainData['order_status']['name'];
-	    		if($status == 'تجهيز'){
+                if($status == 'تجهيز'){
 	    			$status = 'جاري التجهيز';
-	    		}else if($status == 'توصيل'){
+	    		}else if($status == 'جاري التوصيل'){
 	    			$status = 'جارى التوصيل';
+	    		}else if($status == 'تم الإلغاء'){
+	    		    $status = 'تم الالغاء';
 	    		}
 	    		$templateObj = ModTemplate::NotDeleted()->where('status',1)->where('mod_id',2)->where('statusText',$status)->first();
 	    		if($templateObj){
@@ -87,30 +90,33 @@ class ZidWebhook extends ProcessWebhookJob{
 					$whats_message_type = 'chat';
     				$sendData['body'] = $content;
 	    			$sendData['chatId'] = str_replace('+', '', $mainData['customer']['mobile']).'@c.us';
-	    			$result = $mainWhatsLoopObj->sendMessage($sendData);
+	    			$checkObj = ModNotificationReport::where('mod_id',2)->where('client',$sendData['chatId'])->where('order_id',$mainData['id'])->where('statusText',$status)->first();
+	    			if(!$checkObj){
+	    				$result = $mainWhatsLoopObj->sendMessage($sendData);
 
-	    			if(isset($result['data']) && isset($result['data']['id'])){
-			            $messageId = $result['data']['id'];
-			            $lastMessage['status'] = 'APP';
-			            $lastMessage['id'] = $messageId;
-			            $lastMessage['chatId'] = $sendData['chatId'];
-			            $lastMessage['fromMe'] = 1;
-			            $lastMessage['message_type'] = $message_type;
-			            $lastMessage['type'] = $whats_message_type;
-			            $lastMessage['time'] = time();
-			            $lastMessage['sending_status'] = 1;
-        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
-        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
-			            ChatMessage::newMessage($lastMessage);
+		    			if(isset($result['data']) && isset($result['data']['id'])){
+				            $messageId = $result['data']['id'];
+				            $lastMessage['status'] = 'APP';
+				            $lastMessage['id'] = $messageId;
+				            $lastMessage['chatId'] = $sendData['chatId'];
+				            $lastMessage['fromMe'] = 1;
+				            $lastMessage['message_type'] = $message_type;
+				            $lastMessage['type'] = $whats_message_type;
+				            $lastMessage['time'] = time();
+				            $lastMessage['sending_status'] = 1;
+	        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+	        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+				            ChatMessage::newMessage($lastMessage);
 
-			            ModNotificationReport::create([
-        					'mod_id' => 2,
-        					'client' => $sendData['chatId'],
-        					'order_id' => $mainData['id'],
-        					'statusText' => $status,
-        					'created_at' => date('Y-m-d H:i:s'),
-        				]);
-			        }
+				            ModNotificationReport::create([
+	        					'mod_id' => 2,
+	        					'client' => $sendData['chatId'],
+	        					'order_id' => $mainData['id'],
+	        					'statusText' => $status,
+	        					'created_at' => date('Y-m-d H:i:s'),
+	        				]);
+				        }
+	    			}
 	    		}
 
 	    		$orderObj = \DB::table('zid_orders')->where('id',$mainData['id'])->first();
@@ -145,5 +151,14 @@ class ZidWebhook extends ProcessWebhookJob{
 	    }
 
 	}
+    
+    public function failed(Throwable $exception){
+        $count = \DB::connection('main')->table('failed_jobs')->count();
+        if($count > 10){
+        	\DB::connection('main')->table('failed_jobs')->truncate();
+        }
+        system('/usr/local/bin/php /home/wloop/public_html/artisan queue:restart');
+        // system('/home/wloop/public_html/vendor/supervisorctl restart whatsloop:*');
+    }
 
 }

@@ -298,7 +298,7 @@ $(function(){
 	    // }
 
 	    var invoiceID = $('input[name="inv"]').val();
-	    if(invoiceID){
+	    if(invoiceID > 0){
 	    	if(totals.length && data.length && $('.card-body.membership').length){
 		    	$('.payments').submit();
 		    }

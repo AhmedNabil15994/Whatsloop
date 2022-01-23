@@ -34,6 +34,14 @@ class Contact extends Model{
         return $this->hasMany('App\Models\ContactReport','contact','phone');
     }
 
+    public function LastReport(){
+        return $this->hasOne(ContactReport::class,'contact','phone')->ofMany([
+            'created_at' => 'max',
+        ], function ($query) {
+            $query->where('created_at', '!=', null);
+        });
+    }
+
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)
@@ -185,14 +193,27 @@ class Contact extends Model{
     }
 
     static function getFullContactsInfo($group_id,$group_message_id){
-        $source = self::NotDeleted()->with(['Reports','Group'])->where('group_id',$group_id);
+        $source = self::NotDeleted()->with(['Group','LastReport'])->where('group_id',$group_id);
         if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
                 $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
         $source->orderBy('sort','ASC');
-        return self::generateObj($source,'withMessageStatus',$group_message_id);
+        return self::generateReportObj($source,$group_message_id);
+    }
+
+    static function generateReportObj($source,$group_message_id){
+        $sourceArr = $source->get();
+        $groupMsgObj = GroupMsg::getOne($group_message_id);
+        $groupMsgObj = $groupMsgObj ? GroupMsg::getData($groupMsgObj) : null;
+        $list = [];
+        foreach($sourceArr as $key => $value) {
+            $list[$key] = new \stdClass();
+            $list[$key] = self::getReportData($value,$groupMsgObj);
+        }
+        $data['data'] = $list;
+        return $data;
     }
 
     static function getContactsReports(){
@@ -299,6 +320,54 @@ class Contact extends Model{
         }
         return $data;
     }
+
+    static function getReportData($source,$groupMsgObj) {
+        $data = new  \stdClass();
+        $data->id = $source->id;
+        $data->group_id = $source->group_id;
+        $data->group = $source->Group != null ? $source->Group->{'name_'.(\Session::has('group_id') ? LANGUAGE_PREF : 'ar')} : '';
+        $data->phone = $source->phone;
+        $data->phone2 = str_replace('+', '', str_replace('@c.us','',$source->phone));
+        $data->name = $source->name != null ? $source->name : $data->phone2;
+        $data->lang = $source->lang;
+        $data->langText = $source->lang == 0 ? trans('main.arabic') : trans('main.english');
+        $data->notes = $source->notes;
+        $data->has_whatsapp = $source->has_whatsapp;
+        $data->email = $source->email != null ? $source->email : '';
+        $data->city = $source->city != null ? $source->city : '';
+        $data->country = $source->country != null ? $source->country : '';
+        $data->status = $source->status;
+        $data->sort = $source->sort;
+        $data->created_at = \Helper::formatDate($source->created_at);
+        $data->created_at2 = self::reformDate(strtotime($source->created_at));
+        if($groupMsgObj != null){
+            $status = [];
+            if($groupMsgObj && $groupMsgObj->sent_type == trans('main.publishSoon')){
+                $status= ['dark',trans('main.publishSoon')];
+                $data->reportStatus = $status;
+                return $data;
+            }
+
+            $reportObj = $source->LastReport;
+            if($reportObj == null){
+                $status= ['info',trans('main.inPrgo')];
+            }else{
+                if($reportObj->status == 0){
+                    $status = ['danger',trans('main.notSent')];
+                }else if($reportObj->status == 1){
+                    $status = ['success',trans('main.sent')];
+                }else if($reportObj->status == 2){
+                    $status = ['info',trans('main.received')];
+                }else if($reportObj->status == 3){
+                    $status = ['primary',trans('main.seen')];
+                }
+            }
+            $data->reportStatus = $status;
+
+        }
+        return $data;
+    }
+
 
     static function newSortIndex(){
         return self::count() + 1;

@@ -54,38 +54,52 @@ class GroupMessageJob implements ShouldQueue
     }
 
     public function sendData($contact,$messageObj){
+        $contact = (object) $contact;
         $sendData['chatId'] = str_replace('+', '', $contact->phone).'@c.us';
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        // $check = $mainWhatsLoopObj->checkPhone(['phone' => str_replace('+', '', $contact->phone)]);
-        // $check = $check->json();
-        // $status = 0;
-        // if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
-        //     $status = 1;
-        // }
-        // if($status){
-            
-        // }
         $status = 0;
+        if($contact->has_whatsapp != 1){
+            $check = $mainWhatsLoopObj->checkPhone(['phone' => str_replace('+', '', $contact->phone)]);
+            $check = $check->json();
+            if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
+                $status = 1;
+                $contactObj->has_whatsapp = 1;
+                $contactObj->save();
+            }
+        }
+
+        $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',now()-1800);
+
         if($messageObj['message_type'] == 1){
             $sendData['body'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
-            $result = $mainWhatsLoopObj->sendMessage($sendData);
+            if(!$msg->where('body',$sendData['body'])->first()){
+                $result = $mainWhatsLoopObj->sendMessage($sendData);
+            }
         }elseif($messageObj['message_type'] == 2){
             $sendData['filename'] = $messageObj['file_name'];
             $sendData['body'] = $messageObj['file'];
             $sendData['caption'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
-            $result = $mainWhatsLoopObj->sendFile($sendData);
+            if(!$msg->where('body',$sendData['body'])->first()){
+                $result = $mainWhatsLoopObj->sendFile($sendData);
+            }
         }elseif($messageObj['message_type'] == 3){
             $sendData['audio'] = $messageObj['file'];
-            $result = $mainWhatsLoopObj->sendPTT($sendData);
+            if(!$msg->where('body',$sendData['audio'])->first()){
+                $result = $mainWhatsLoopObj->sendPTT($sendData);
+            }
         }elseif($messageObj['message_type'] == 4){
             $sendData['body'] = $messageObj['https_url'];
             $sendData['title'] = $messageObj['url_title'];
             $sendData['description'] = $this->reformMessage($messageObj['url_desc'],$contact->name,str_replace('+', '', $contact->phone));
             //$sendData['previewBase64'] = base64_encode(file_get_contents($messageObj['url_image']));
-            $result = $mainWhatsLoopObj->sendLink($sendData);
+            if(!$msg->where('body',$sendData['body'])->first()){
+                $result = $mainWhatsLoopObj->sendLink($sendData);
+            }
         }elseif($messageObj['message_type'] == 5){
             $sendData['contactId'] = str_replace('+','',$messageObj['whatsapp_no']);
-            $result = $mainWhatsLoopObj->sendContact($sendData);
+            if(!$msg->where('body',$sendData['contactId'])->first()){
+                $result = $mainWhatsLoopObj->sendContact($sendData);
+            }
         }
         if($result){
             $result = $result->json();

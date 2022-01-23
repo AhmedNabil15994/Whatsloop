@@ -83,6 +83,7 @@ return [
     'ProfileControllers@syncOrdersProducts' => 'subscription',
     'ProfileControllers@restoreAccountSettings' => 'subscription',
     'ProfileControllers@read' => 'subscription',
+    'ProfileControllers@clearMessagesQueue' => 'subscription',
     'ProfileControllers@transferPayment' => 'subscription',
     'ProfileControllers@renewToFirst' => 'subscription',
     'ProfileControllers@updateChannelSettings' => 'subscription',

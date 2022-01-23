@@ -193,17 +193,17 @@ class SubscriptionControllers extends Controller {
         }
 
         $testData = [];
-        $total = $bundleObj->monthly_after_vat;
         $start_date = date('Y-m-d');
-
+        $annual = isset($input['annual']) ? 2 : 1;  
+        $total = $annual == 1 ? $bundleObj->monthly_after_vat : $bundleObj->annual_after_vat;
         $testData[] = [
             $membershipObj->id,
             'membership',
             $membershipObj->title,
-            1,
+            $annual,
             $start_date,
-            date('Y-m-d',strtotime('+1 month',strtotime($start_date))),
-            $membershipObj->monthly_after_vat,
+            $annual == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date))),
+            $annual == 1 ? $membershipObj->monthly_after_vat : $membershipObj->annual_after_vat,
             1,
         ];
 
@@ -212,10 +212,10 @@ class SubscriptionControllers extends Controller {
                 $addon->id,
                 'addon',
                 $addon->title,
-                1,
+                $annual,
                 $start_date,
-                date('Y-m-d',strtotime('+1 month',strtotime($start_date))),
-                $addon->monthly_after_vat,
+                $annual == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date))),
+                $annual == 1 ? $addon->monthly_after_vat : $addon->annual_after_vat,
                 1,
             ];
         }
@@ -228,7 +228,7 @@ class SubscriptionControllers extends Controller {
             $tax,
             $total,
         ];
-        \Session::put('BUNDLE',$total);
+
         $data['user'] = User::getOne(USER_ID);
         $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
@@ -276,7 +276,7 @@ class SubscriptionControllers extends Controller {
         if(!empty($data['payment']) && $data['payment']->country){
             $data['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$data['payment']->country)->get();
         }
-
+        
         return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
     }
 
@@ -408,12 +408,6 @@ class SubscriptionControllers extends Controller {
 
         // }
         $url = \URL::to('/pushInvoice');
-        if(\Session::has('BUNDLE')){
-            Variable::where('var_key','bundle')->firstOrCreate([
-                'var_key' => 'bundle',
-                'var_value' => \Session::get('BUNDLE'), 
-            ]);
-        }
         if(isset($input['dataType']) && $input['dataType'] > 1){
             $url = \URL::to('/pushInvoice2');
             if($input['dataType'] == 2){
@@ -539,7 +533,7 @@ class SubscriptionControllers extends Controller {
             return redirect()->to('/paymentError')->withInput();
         }
     }
-
+    
     public function paymentError(){
         return view('Tenancy.Dashboard.Views.V5.paymentError');
     }
@@ -716,7 +710,7 @@ class SubscriptionControllers extends Controller {
         }
 
         $dataObj = null;
-        $data['memberships'] = Session::has('invoice_id') ? Membership::dataList(1)['data'] : [];
+        $data['memberships'] = Session::has('invoice_id') && Session::get('invoice_id') != 0 ? Membership::dataList(1)['data'] : [];
         $data['addons'] = [];
         $data['extraQuotas'] = [];
 
@@ -754,7 +748,7 @@ class SubscriptionControllers extends Controller {
             }
             $addons = array_unique($addons);
             $data['addons'] = Addons::dataList(1,null,$addons)['data'];
-            if(Session::has('invoice_id')){
+            if(Session::has('invoice_id') && Session::get('invoice_id') != 0){
                 $data['membership'] = (object)['id'=>0]; //Membership::getData(Membership::getOne(Session::get('membership')));
             }
         }
@@ -804,7 +798,7 @@ class SubscriptionControllers extends Controller {
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['user'] = User::first();
-        $data['countries'] = \DB::connection('main')->table('country')->get();
+        $data['countries'] =  \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         if(!empty($data['payment']) && $data['payment']->country){
             $data['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$data['payment']->country)->get();

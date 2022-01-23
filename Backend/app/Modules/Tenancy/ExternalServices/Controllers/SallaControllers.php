@@ -432,7 +432,7 @@ class SallaControllers extends Controller {
 
             $clients = [];
             if(!empty($source)){
-                foreach($source->get() as $oneItem){
+                foreach($source->orderBy('created_at','DESC')->get() as $oneItem){
                     $customer = unserialize($oneItem->customer);
                     $price = unserialize($oneItem->total);
 

@@ -245,7 +245,7 @@ class BotPlusControllers extends Controller {
             if($modelName != '' && $msg == ''){
                 $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
                 if($dataObj){
-                    $msg = $modelName::getData($dataObj);
+                    $msg = $dataObj->id;
                 }
             }
 
@@ -255,7 +255,7 @@ class BotPlusControllers extends Controller {
                 'reply_type' => $input['btn_reply_type_'.($i+1)],
                 'msg_type' => $modelType,
                 'model_name' => $modelName,
-                'msg' => json_encode($msg),
+                'msg' => $msg,
             ];
         }
 
@@ -345,7 +345,7 @@ class BotPlusControllers extends Controller {
             if($modelName != '' && $msg == ''){
                 $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
                 if($dataObj){
-                    $msg = $modelName::getData($dataObj);
+                    $msg = $dataObj->id;
                 }
             }
 
@@ -355,10 +355,10 @@ class BotPlusControllers extends Controller {
                 'reply_type' => $input['btn_reply_type_'.($i+1)],
                 'msg_type' => $modelType,
                 'model_name' => $modelName,
-                'msg' => json_encode($msg),
+                'msg' => $msg,
             ];
         }
-
+        
         $dataObj = new BotPlus;
         $dataObj->channel = Session::get('channelCode');
         $dataObj->message_type = $input['message_type'];

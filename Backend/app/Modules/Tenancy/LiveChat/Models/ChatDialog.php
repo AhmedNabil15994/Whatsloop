@@ -180,7 +180,8 @@ class ChatDialog extends Model{
         }else if($diff>0 && $diff<=1){
             return trans('main.yesterday');
         }else if($diff > 1 && $diff < 7){
-            return $date->locale(@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName;
+            $myDate = \Carbon\Carbon::parse(date('Y-m-d H:i:s',$time));
+            return $myDate->locale(@defined(LANGUAGE_PREF) ? LANGUAGE_PREF : 'ar')->dayName;
         }else{
             return date('Y-m-d',$time);
         }

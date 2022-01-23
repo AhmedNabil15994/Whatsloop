@@ -12,6 +12,9 @@
     .supportForm{
         padding: 20px;
     }
+    .cards{
+        max-height: 500px;
+    }
 </style>
 @endsection
 @section('content')
@@ -101,7 +104,6 @@
                                     <div class="col-md-4">{{ trans('main.status') }}</div>      
                                 </div>
                                 @foreach($data->contacts as $key => $contact)
-                                @if($key <= 9)
                                 <div class="card mb-1">
                                     <div class="card-body cont-card">
                                         <div class="row">
@@ -110,7 +112,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                @endif
                                 @endforeach
                             </div>
                         </div> 

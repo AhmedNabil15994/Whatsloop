@@ -42,6 +42,7 @@
 			<table class="tableDetails">
 				<thead>
 					<tr>
+						<th>{{ trans('main.pubDate') }}</th>
 						<th>{{ trans('main.due_date') }}</th>
 						<th>{{ trans('main.paymentMethod') }}</th>
 						<th>{{ trans('main.appName') }}</th>
@@ -51,6 +52,7 @@
 				</thead>
 				<tbody>
 					<tr>
+						<td>{{ date('M d, Y',strtotime($data->data->created_at)) }}</td>
 						<td>{{ date('M d, Y',strtotime($data->data->due_date)) }}</td>
 						<td>{{ $data->data->status == 1 ? $data->data->payment_gateaway : '-------' }}</td>
 						<td>
@@ -94,10 +96,10 @@
 		            <thead>
 		                <tr>
 		                    <th>#</th>
-		                    <th>{{ trans('main.item') }}</th>
+		                    <th colspan="3">{{ trans('main.item') }}</th>
 		                    <th>{{ trans('main.quantity') }}</th>
-		                    <th>{{ trans('main.start_date') }}</th>
-		                    <th>{{ trans('main.end_date') }}</th>
+		                    {{-- <th>{{ trans('main.start_date') }}</th> --}}
+		                    {{-- <th>{{ trans('main.end_date') }}</th> --}}
 		                    <th class="text-center">{{ trans('main.total') }}</th>
 		                </tr>
 		            </thead>
@@ -110,20 +112,20 @@
                         @php 
                         	$mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
                         	$oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
-                            $tax = Helper::calcTax($isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
-                            $grandTotal = $isOld ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
-                            $total = $isOld ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
+                            $tax = Helper::calcTax($isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
+                            $grandTotal = $isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+                            $total = $isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
                         @endphp
                         <tr class="mainRow">
                             <td>{{ $key+1 }}</td>
-                            <td>
+                            <td colspan="3">
                                 <p>
                                     <a href="#">{{ $item['data']['title_'.LANGUAGE_PREF] }}</a><br>
                                     <small><b>{{ trans('main.extra_type') }}:</b> {{ trans('main.'.$item['type']) }} </small>
                                 </p>
                             </td>
                             <td>{{ $item['data']['quantity'] }}</td>
-                            <td>
+                            {{-- <td>
                             	@if($data->data->status == 1)
                             	{{ $data->data->due_date }}
                             	@endif
@@ -132,7 +134,7 @@
                             	@if($data->data->status == 1)
                             	{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)- 86400))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date )- 86400)) }}
                             	@endif
-                            </td>
+                            </td> --}}
                             <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
                         </tr>
                         @endforeach

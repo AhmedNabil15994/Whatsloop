@@ -52,6 +52,7 @@ Route::group(['prefix' => '/profile'] , function () {
     Route::get('/subscription/syncOrdersProducts', [$controller,'syncOrdersProducts']);
     Route::get('/subscription/restoreAccountSettings', [$controller,'restoreAccountSettings']);
     Route::get('/subscription/read/{status}', [$controller,'read']);
+    Route::get('/subscription/clearMessagesQueue', [$controller,'clearMessagesQueue']);
     Route::get('/subscription/transferPayment',[$controller,'transferPayment']);
     Route::post('/subscription/renewToFirst',[$controller,'renewToFirst']);
     Route::post('/subscription/updateChannelSettings',[$controller,'updateChannelSettings']);

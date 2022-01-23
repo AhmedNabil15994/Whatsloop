@@ -482,15 +482,18 @@ class ZidControllers extends Controller {
             //     $source->where('first_name','LIKE','%'.$input['keyword'].'%')->orWhere('last_name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('country','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
             // }
             $clients = [];
-            
+            $firstOrderObj = \DB::table('zid_orders')->first();
+            if($firstOrderObj){
+                $storeUrl = $firstOrderObj->store_url.'cart/view';
+            }
             if(!empty($source)){
-                foreach($source->get() as $oneItem){
+                foreach($source->orderBy('created_at','DESC')->get() as $oneItem){
                     $clients[] = [
                         'name' => $oneItem->customer_name,
                         'mobile' => $oneItem->customer_mobile,
                         'order_id' => $oneItem->cart_id,
                         'total' => $oneItem->cart_total_string,
-                        'url' => 'https://web.zid.sa/abandoned-cart/'.$oneItem->id,
+                        'url' => $firstOrderObj ? $storeUrl : '',
                     ];
                 }
             }

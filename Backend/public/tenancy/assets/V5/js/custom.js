@@ -240,7 +240,20 @@ resizeMenu();
 		$("."+parent+" .tab").hide();
 		
 		$("."+parent+" ." + myButton).fadeIn();
+
+		if(myButton == 'tab2'){
+			$.each($("."+parent+" ." + myButton + " div .mainquta-card .card-back .btnStyle.card-link"),function(index,item){
+				var newURL = $(item).attr('href');
+				if(newURL.indexOf("annual") == -1){
+         			newURL = newURL+'?annual=1';
+      			}	
+
+				
+				$(item).attr('href',newURL);				
+			});
+		}
 		
+
 	});
 	
 	/****** End Tabs ******/

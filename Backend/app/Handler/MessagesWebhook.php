@@ -71,7 +71,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		$senderMessage = $message['body'];
 	    		// Fire Incoming Message Event For Web Application
 				$this->handleMessages($userObj->domain,$message,$tenantObj->tenant_id);
-	    		if($message['fromMe'] == false){			
+	    		if($message['fromMe'] == false && strpos($message['chatId'], '@g.us') === false){			
 
 	    			if($message['type'] == 'buttons_response' && !$dis2){
 	    				$msgText= $message['quotedMsgBody'];
@@ -85,16 +85,16 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				}
 
 		    				if($replyData && isset($replyData['reply_type']) && $replyData['reply_type'] == 1){
-			    				$sendData['body'] = json_decode($replyData['msg']);
+			    				$sendData['body'] = $replyData['msg'];
 			    				$sendData['chatId'] = $sender;
 		    					$result = $mainWhatsLoopObj->sendMessage($sendData);
 	        					$this->handleRequest($message,$userObj->domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage');
 		    				}else if($replyData && isset($replyData['reply_type']) && $replyData['reply_type'] == 2){
 		    					if($replyData['msg_type'] == 2){
-		    						$botObj = BotPlus::getData(BotPlus::getOne(json_decode($replyData['msg'])->id));
+		    						$botObj = BotPlus::getData(BotPlus::getOne($replyData['msg']));
 			    					$this->handleBotPlus($message,$botObj,$userObj->domain,$sender);
 		    					}elseif($replyData['msg_type'] == 1){
-		    						$botObj = Bot::getData(Bot::getOne(json_decode($replyData['msg'])->id),$tenantObj->tenant_id);
+		    						$botObj = Bot::getData(Bot::getOne($replyData['msg']),$tenantObj->tenant_id);
 		    						$this->handleBasicBot($botObj,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
 		    					}
 	    					}
@@ -134,7 +134,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				}
 		    			}
 
-		    			if(!$botObj){
+		    			if(!$botObj && !$dis2){
 		    				// Find BotPlus Object Based on incoming message
 			    			$botObjs = BotPlus::findBotMessage($langPref,$senderMessage);
 			    			if($botObjs && !$dis2){

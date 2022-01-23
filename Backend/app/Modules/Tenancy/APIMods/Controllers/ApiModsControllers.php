@@ -174,9 +174,43 @@ class ApiModsControllers extends Controller {
     }
 
     public function msgsArchive(Request $request){
-        if($request->ajax()){
-            $data = ChatMessage::dataList(null,null,'notNull');
-            return Datatables::of($data['data'])->rawColumns(['icon'])->make(true);
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+        $columnIndex = @$columnIndex_arr[0]['column']; // Column index
+        $columnName = @$columnName_arr[$columnIndex]['data']; // Column name
+        $columnSortOrder = @$order_arr[0]['dir']; // asc or desc
+        $searchValue = @$search_arr['value']; // Search value
+
+        // Fetch records
+        // $draw = ($start / 10) + 1 ; 
+        if($start >= 10){
+            $records = ChatMessage::orderBy('time','DESC')
+               ->skip($start)
+               ->take($rowperpage);
+
+            $data = ChatMessage::generateObj($records,null,null);
+        }else{
+            $data = ChatMessage::dataList(null,10,'notNull');
+        }
+
+        $totalRecords = ChatMessage::count();
+        $totalRecordswithFilter = $totalRecords;
+        
+        if($request->ajax()){       
+            $response = [
+                "draw" => intval($draw),
+                "iTotalRecords" => $totalRecordswithFilter,
+                "iTotalDisplayRecords" => $totalRecords,
+                "data" => $data['data']
+            ];
+            return json_encode($response);
         }
 
         $userObj = User::find(USER_ID);

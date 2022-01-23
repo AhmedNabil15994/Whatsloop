@@ -11,6 +11,8 @@ use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
 use App\Models\ModNotificationReport;
 
+use Throwable;
+
 class SallaWebhook extends ProcessWebhookJob{
 	public function handle(){
 	    $data = json_decode($this->webhookCall, true);
@@ -61,28 +63,33 @@ class SallaWebhook extends ProcessWebhookJob{
 						$whats_message_type = 'chat';
 	    				$sendData['body'] = $content;
 		    			$sendData['chatId'] = str_replace('+', '', $mainData['mobile_code'].$mainData['mobile']).'@c.us';
-		    			$result = $mainWhatsLoopObj->sendMessage($sendData);
+		    			
+		    			$checkObj = ModNotificationReport::where('mod_id',1)->where('client',$sendData['chatId'])->where('statusText','ترحيب بالعميل')->first();
+		    			if(!$checkObj){
+		    				$result = $mainWhatsLoopObj->sendMessage($sendData);
 
-		    			if(isset($result['data']) && isset($result['data']['id'])){
-				            $messageId = $result['data']['id'];
-				            $lastMessage['status'] = 'APP';
-				            $lastMessage['id'] = $messageId;
-				            $lastMessage['chatId'] = $sendData['chatId'];
-				            $lastMessage['fromMe'] = 1;
-				            $lastMessage['message_type'] = $message_type;
-				            $lastMessage['type'] = $whats_message_type;
-				            $lastMessage['time'] = time();
-				            $lastMessage['sending_status'] = 1;
-	        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
-	        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
-	        				ModNotificationReport::create([
-	        					'mod_id' => 1,
-	        					'client' => $sendData['chatId'],
-	        					'statusText' => 'ترحيب بالعميل',
-	        					'created_at' => date('Y-m-d H:i:s'),
-	        				]);
-				            return ChatMessage::newMessage($lastMessage);
-				        }
+			    			if(isset($result['data']) && isset($result['data']['id'])){
+					            $messageId = $result['data']['id'];
+					            $lastMessage['status'] = 'APP';
+					            $lastMessage['id'] = $messageId;
+					            $lastMessage['chatId'] = $sendData['chatId'];
+					            $lastMessage['fromMe'] = 1;
+					            $lastMessage['message_type'] = $message_type;
+					            $lastMessage['type'] = $whats_message_type;
+					            $lastMessage['time'] = time();
+					            $lastMessage['sending_status'] = 1;
+		        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+		        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+		        				ModNotificationReport::create([
+		        					'mod_id' => 1,
+		        					'client' => $sendData['chatId'],
+		        					'statusText' => 'ترحيب بالعميل',
+		        					'created_at' => date('Y-m-d H:i:s'),
+		        				]);
+					            return ChatMessage::newMessage($lastMessage);
+					        }
+		    			}
+		    			
 		    		}
 	    		}else{
                 	return \DB::table('salla_customers')->where('id',$dataObj[0]['id'])->update($dataObj[0]);
@@ -95,8 +102,10 @@ class SallaWebhook extends ProcessWebhookJob{
 	    		$productObj = \DB::table('salla_products')->where('id',$mainData['id'])->first();
 	    		$dataObj = \ExternalServices::reformatModelData([$mainData]);
 	    		if(!$productObj){
+	    		    unset($dataObj['tags']);
                 	return \DB::table('salla_products')->insert($dataObj);
 	    		}else{
+	    		    unset($dataObj[0]['tags']);
                 	return \DB::table('salla_products')->where('id',$dataObj[0]['id'])->update($dataObj[0]);
 	    		}
 	    	}
@@ -118,30 +127,33 @@ class SallaWebhook extends ProcessWebhookJob{
 					$whats_message_type = 'chat';
     				$sendData['body'] = $content;
 	    			$sendData['chatId'] = str_replace('+', '', $mainData['customer']['mobile_code'].$mainData['customer']['mobile']).'@c.us';
-	    			$result = $mainWhatsLoopObj->sendMessage($sendData);
+	    			$checkObj = ModNotificationReport::where('mod_id',1)->where('client',$sendData['chatId'])->where('order_id',$mainData['reference_id'])->where('statusText',$status)->first();
+	    			if(!$checkObj){
+	    				$result = $mainWhatsLoopObj->sendMessage($sendData);
+		    			if(isset($result['data']) && isset($result['data']['id'])){
+				            $messageId = $result['data']['id'];
+				            $lastMessage['status'] = 'APP';
+				            $lastMessage['id'] = $messageId;
+				            $lastMessage['chatId'] = $sendData['chatId'];
+				            $lastMessage['fromMe'] = 1;
+				            $lastMessage['message_type'] = $message_type;
+				            $lastMessage['type'] = $whats_message_type;
+				            $lastMessage['time'] = time();
+				            $lastMessage['sending_status'] = 1;
+	        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+	        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+				            ChatMessage::newMessage($lastMessage);
 
-	    			if(isset($result['data']) && isset($result['data']['id'])){
-			            $messageId = $result['data']['id'];
-			            $lastMessage['status'] = 'APP';
-			            $lastMessage['id'] = $messageId;
-			            $lastMessage['chatId'] = $sendData['chatId'];
-			            $lastMessage['fromMe'] = 1;
-			            $lastMessage['message_type'] = $message_type;
-			            $lastMessage['type'] = $whats_message_type;
-			            $lastMessage['time'] = time();
-			            $lastMessage['sending_status'] = 1;
-        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
-        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
-			            ChatMessage::newMessage($lastMessage);
-
-			            ModNotificationReport::create([
-        					'mod_id' => 1,
-        					'client' => $sendData['chatId'],
-        					'order_id' => $mainData['reference_id'],
-        					'statusText' => $status,
-        					'created_at' => date('Y-m-d H:i:s'),
-        				]);
-			        }
+				            ModNotificationReport::create([
+	        					'mod_id' => 1,
+	        					'client' => $sendData['chatId'],
+	        					'order_id' => $mainData['reference_id'],
+	        					'statusText' => $status,
+	        					'created_at' => date('Y-m-d H:i:s'),
+	        				]);
+				        }
+	    			}
+	    			
 	    		}
 
 	    		$orderObj = \DB::table('salla_orders')->where('id',$mainData['id'])->first();
@@ -163,4 +175,13 @@ class SallaWebhook extends ProcessWebhookJob{
 	    }
 
 	}
+	
+	public function failed(Throwable $exception){
+        $count = \DB::connection('main')->table('failed_jobs')->count();
+        if($count > 10){
+        	\DB::connection('main')->table('failed_jobs')->truncate();
+        }
+        system('/usr/local/bin/php /home/wloop/public_html/artisan queue:restart');
+        // system('/home/wloop/public_html/vendor/supervisorctl restart whatsloop:*');
+    }
 }

@@ -66,30 +66,26 @@
     }
 
     .select2-results ul li:nth-child(15){
-      background-color: #9368cf !important;
-    }
-
-    .select2-results ul li:nth-child(16){
       background-color: #ff9485 !important;
     }
 
-    .select2-results ul li:nth-child(17){
+    .select2-results ul li:nth-child(16){
       background-color: #64c4ff !important;
     }
 
-    .select2-results ul li:nth-child(18){
+    .select2-results ul li:nth-child(17){
       background-color: #ffd429 !important;
     }
 
-    .select2-results ul li:nth-child(19){
+    .select2-results ul li:nth-child(18){
       background-color: #dfaef0 !important;
     }
 
-    .select2-results ul li:nth-child(20){
+    .select2-results ul li:nth-child(19){
       background-color: #99b6c1 !important;
     }
 
-    .select2-results ul li:nth-child(21){
+    .select2-results ul li:nth-child(20){
       background-color: #55ccb3 !important;
     }
 </style>

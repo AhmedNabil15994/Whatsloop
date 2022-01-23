@@ -16,7 +16,7 @@ class Variables extends Migration
         Schema::create('variables', function (Blueprint $table) {
             $table->id();
             $table->string('var_key');
-            $table->text('var_value')->nullable();
+            $table->longText('var_value')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

@@ -298,7 +298,17 @@ class LiveChatControllers extends Controller {
             $sendData['body'] = $input['message'];
             $bodyData = $input['message'];
             $whats_message_type = 'chat';
-            $result = $mainWhatsLoopObj->sendMessage($sendData);
+            if(strpos($sendData['body'], 'http') !== false){
+                $message_type = 'link';
+                $whats_message_type = 'link';
+                $sendData['body'] = $input['message'];
+                $sendData['title'] = $input['message'];
+                $sendData['description'] = $input['message'];
+                $bodyData = $sendData['body'];
+                $result = $mainWhatsLoopObj->sendLink($sendData);
+            }else{
+                $result = $mainWhatsLoopObj->sendMessage($sendData);
+            }
         }elseif($input['type'] == 2){
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
