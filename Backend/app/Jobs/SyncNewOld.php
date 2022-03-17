@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
 
 use App\Jobs\SyncOldClient;
 
-class SyncHugeOld implements ShouldQueue
+class SyncNewOld implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 

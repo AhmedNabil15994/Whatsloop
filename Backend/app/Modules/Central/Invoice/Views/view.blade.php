@@ -100,15 +100,15 @@
                                 <tbody>
                                     @php 
                                         $mainPrices = 0; 
+                                        $hasAddons = 0;
                                         $isOld = App\Models\CentralUser::find($data->data->client_id)->is_old;
                                     @endphp
                                     @foreach($data->data->items as $key => $item)
                                     @php 
+                                        if($item['type'] == 'addon'){
+                                            $hasAddons = 1;
+                                        }
                                         $mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
-                                        $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
-                                        $tax = Helper::calcTax($isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount);
-                                        $grandTotal = $isOld ? $mainPrices - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
-                                        $total = $isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount;
                                     @endphp
                                     <tr class="mainRow">
                                         <td>{{ $key+1 }}</td>
@@ -124,6 +124,13 @@
                                         <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
                                     </tr>
                                     @endforeach
+                                    @php
+                                        $data->data->discount = $hasAddons == 1 ? $data->data->discount : 0;
+                                        $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
+                                        $tax = Helper::calcTax($isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount);
+                                        $grandTotal = $isOld ? $mainPrices - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+                                        $total = $isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount;
+                                    @endphp
                                     <tr>
                                         <td colspan="5"></td>
                                         <td class="text-left">
@@ -176,7 +183,7 @@
                                         <td>{{ $key+1 }}</td>
                                         <td>
                                             <p class="m-0 d-inline-block align-middle font-16">
-                                                <a href="#" class="text-reset font-family-secondary">{{ $data->data->due_date }}</a><br>
+                                                <a href="#" class="text-reset font-family-secondary">{{ $data->data->paid_date }}</a><br>
                                             </p>
                                         </td>
                                         <td>{{ $data->data->payment_gateaway }}</td>

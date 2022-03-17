@@ -17,6 +17,14 @@
         font-weight: bold;
         color: #FFF;
     }
+    .desc .btn.btn-md{
+        color: #FFF;
+        margin-bottom: 5px;
+    }
+    .modal-full-width{
+        width: 75%;
+        max-width: unset;
+    }
 </style>
 @endsection
 
@@ -76,6 +84,30 @@
         </div>
 
         <div class="col-lg-8 col-xl-8">
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="header-title mb-3">{{ trans('main.actions') }}</h2>
+                </div>
+                <div class="card-body text-center">
+                    <div class="desc">
+                        <a href="#" class="btn btn-md screen color1">{{ trans('main.screenshot') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/sync') }}" class="btn btn-md color2">{{ trans('main.sync') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/syncAll') }}" class="btn btn-md color3">{{ trans('main.syncAll') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/restoreAccountSettings') }}" class="btn btn-md color4">{{ trans('main.restoreAccountSettings') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/reconnect') }}" class="btn btn-md color5">{{ trans('main.reestablish') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/closeConn') }}" class="btn btn-md color6">{{ trans('main.closeConn') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/read/1') }}" class="btn btn-md color7">{{ trans('main.readAll') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/read/0') }}" class="btn btn-md color8">{{ trans('main.unreadAll') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/syncDialogs') }}" class="btn btn-md color1">{{ trans('main.syncDialogs') }}</a>
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/syncLabels') }}" class="btn btn-md color2">{{ trans('main.syncLabels') }}</a>
+                        @if($data->data->addons != null && count(unserialize($data->data->addons)) > 0 && in_array(9,unserialize($data->data->addons)))
+                        <a href="{{ URL::to('/clients/view/'.$data->data->id.'/syncOrdersProducts') }}" class="btn btn-md color3">{{ trans('main.syncOrdersProducts') }}</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <ul class="nav nav-pills navtab-bg nav-justified" style="padding: 20px;">
                     <li class="nav-item">
@@ -664,6 +696,7 @@
 @section('modals')
 @include('central.Partials.photoswipe_modal')
 @include('central.Partials.transferDaysModal')
+@include('tenant.Partials.screen_modal')
 @endsection
 
 
@@ -672,4 +705,5 @@
 <script src="{{ asset('tenancy/assets/js/photoswipe-ui-default.min.js') }}"></script>
 <script src="{{ asset('tenancy/assets/components/myPhotoSwipe.js') }}"></script>      
 <script src="{{ asset('tenancy/assets/components/addClient.js') }}" type="text/javascript"></script>
+<script src="{{ asset('tenancy/assets/V5/components/subscription.js') }}" type="text/javascript"></script>
 @endsection

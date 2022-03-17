@@ -26,9 +26,10 @@ class CheckReconnection extends Component
     }
 
     public function render(){   
-        \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
         $userStatusObj = UserStatus::orderBy('id','DESC')->first();
-
+        if(!$userStatusObj){
+            \Artisan::call('tenants:run instance:status --tenants='.$this->tenant_id);
+        }
         $data = [];
         $data['haveImage'] = 0;
         $data['dis'] = 0;
@@ -38,8 +39,6 @@ class CheckReconnection extends Component
         if(isset($userStatusObj) && $userStatusObj->status == 4 && $varObj != null){            
             $data['haveImage'] = 1;
             $data['dis'] = 1;
-        }elseif(isset($userStatusObj) && in_array($userStatusObj->status,[2,3])){
-            $data['seconds'] = 60;
         }
             
         $userAddonsTutorial = [];

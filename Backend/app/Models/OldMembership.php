@@ -40,4 +40,21 @@ class OldMembership extends Model{
         }
         return $duration == 1 ? $price : $price * 10;
     }
+
+    static function getOldPrice($membership){
+        if($membership == 'المنصة التفاعلية'){
+            $price = 289;
+        }elseif($membership == 'باقه البوت'){
+            $price = 345;
+        }elseif($membership == 'باقه شاملة' || $membership == 'باقة خدمة عملاء واتس لوب'){
+            $price = 749;
+        }elseif($membership == 'باقه زد'){
+            $price = 345;
+        }elseif($membership == 'باقة سلة'){
+            $price = 345;
+        }else{
+            $price = 345;
+        }
+        return $price;
+    }
 }

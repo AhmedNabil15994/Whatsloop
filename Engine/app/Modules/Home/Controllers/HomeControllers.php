@@ -133,7 +133,7 @@ class HomeControllers extends Controller {
         $dataList['data'] = $serverResult->json();
         // Customization For QR Code Images
         if(in_array($status, ['status','qr_code','screenshot'])){
-        	$image = '/uploads/instanceImage' . time() . '.png';
+        	$image = '/uploads/instance'.CHANNEL_ID.'Image' . time() . '.png';
             $destinationPath = public_path() . $image;
             if($status == 'status'){
             	$result = $serverResult->json();

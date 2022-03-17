@@ -1,7 +1,23 @@
-$('.btnNext:not(.btnPrev)').on('click',function(e){
+$('.btnNext:not(.btnPrev):not(.invoice)').on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
     next($(this));
+});
+
+$('.invoice').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var divToPrint=document.getElementById('helpPage');
+    var head = $('head').text();
+    var newWin=window.open('','Print-Window');
+
+    newWin.document.open();
+
+    newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+
+    newWin.document.close();
+
+    setTimeout(function(){newWin.close();},10);
 });
 
 $('.btnPrev').on('click',function(e){
@@ -125,6 +141,7 @@ $(document).on('change', '.labelUpload input[type="file"]', function() {
     formData.append('city', $('input[name="city"]').val());
     formData.append('postal_code', $('input[name="postal_code"]').val());
     formData.append('tax_id', $('input[name="tax_id"]').val());
+    formData.append('invoice_id', $('input[name="invoice_id"]').val());
 
     formData.append('data', JSON.stringify(data));
     formData.append('totals', JSON.stringify(totals));

@@ -6,6 +6,7 @@ use URL;
 use Session;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 
 class NoonControllers extends Controller {
 
@@ -83,7 +84,7 @@ class NoonControllers extends Controller {
         if($validate->fails()){
             return \TraitsFunc::ErrorMessage($validate->messages()->first());
         }
-        $date = date('Y-m-d H:i:s');
+        $date = (string) Str::orderedUuid();
         $data = [
             "apiOperation" => "INITIATE",
             "order" => [
@@ -96,7 +97,7 @@ class NoonControllers extends Controller {
             ],
             "configuration" => [
                 "tokenizeCc" => "true",
-                "returnUrl" => URL::to('/noon/pushResult?date='.strtotime($date)),
+                "returnUrl" => URL::to('/noon/pushResult?date='.$date),
                 "locale" => $input['paypage_lang'],
                 "paymentAction" => "Sale"
             ],
@@ -129,8 +130,9 @@ class NoonControllers extends Controller {
                 'app_name' => APP_NAME,
                 'app_key' => APP_KEY,
                 'auth_key' => AUTH_KEY,
+                'uuid' => $date,
                 'returnURL' => $input['returnURL'],
-                'created_at' => $date,
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
 
             $fullData = (array) $noon;
@@ -151,7 +153,7 @@ class NoonControllers extends Controller {
 
     public function testResult(){
         $input = \Request::all();
-        $transactionObj = Transaction::where('type','Noon')->where('created_at',date('Y-m-d H:i:s',$input['date']))->orderBy('created_at','DESC')->first();
+        $transactionObj = Transaction::where('type','Noon')->where('uuid',$input['date'])->orderBy('created_at','DESC')->first();
 
         $data = [
             'auth_key' => $transactionObj->auth_key,

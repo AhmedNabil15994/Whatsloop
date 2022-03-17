@@ -5920,3 +5920,7 @@ table tbody tr .date i
 	display: block;
 }
 
+#kt_datatable{
+	display: block;
+	width: 100% !important;
+}

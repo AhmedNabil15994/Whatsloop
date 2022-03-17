@@ -135,12 +135,12 @@ class ContactReport extends Model{
             $dataObj->created_at = date('Y-m-d H:i:s');
             $dataObj->save();
         }
-
-        $dataObj->status = $status;
+        if($status != 0){
+            $dataObj->status = $status;
+        }
         if($message_id != ''){
             $dataObj->message_id = $message_id;
         }
-        $dataObj->created_at = date('Y-m-d H:i:s');
         $dataObj->save();
     }
 

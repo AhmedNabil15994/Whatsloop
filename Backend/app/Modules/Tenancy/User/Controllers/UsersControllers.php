@@ -233,7 +233,7 @@ class UsersControllers extends Controller {
         $data['designElems']['mainData']['title'] = trans('main.edit') . ' '.trans('main.users') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-pencil-alt';
         $data['permissions'] = \Helper::getPermissions(true);
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
+        $data['timelines'] = [];
         return view('Tenancy.User.Views.edit')->with('data', (object) $data);      
     }
 
@@ -322,7 +322,7 @@ class UsersControllers extends Controller {
                 $dataObj->image = $images;
                 $dataObj->save();  
                 if($dataObj->group_id == 1){
-                    CentralUser::where('id',$dataObj->id)->update([
+                    CentralUser::where('id',User::first()->id)->update([
                         'name' => $dataObj->name,
                         'email' => $dataObj->email,
                         'extra_rules' => $dataObj->extra_rules,
@@ -365,7 +365,7 @@ class UsersControllers extends Controller {
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.users') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
-        $data['timelines'] = WebActions::getByModule($data['designElems']['mainData']['modelName'],10)['data'];
+        $data['timelines'] = [];
         $data['permissions'] = \Helper::getPermissions(true);
         return view('Tenancy.User.Views.add')->with('data', (object) $data);
     }
@@ -481,7 +481,10 @@ class UsersControllers extends Controller {
                 'password' => $input['password'],
             ],
         ];
-        \MailHelper::prepareEmail($allData);
+        
+        if($dataObj->email != null){
+            \MailHelper::prepareEmail($allData);
+        }
 
         $notificationTemplateObj = NotificationTemplate::getOne(1,'newEmployee');
         $phoneData = $allData;

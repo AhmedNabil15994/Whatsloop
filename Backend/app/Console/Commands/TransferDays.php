@@ -63,8 +63,13 @@ class TransferDays extends Command
         if($balanceDays < ( (1 * count($channels) )  + 2 ) ){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
             $data['body'] = "You Have To recharge at least ". (  ( (1 * count($channels) )  + 2 ) - $balanceDays )  ." day To Complete Transfering Days for all channels";
-            $data['phone'] = str_replace('+','',CentralUser::first()->phone);
-            $mainWhatsLoopObj->sendMessage($data);
+            $users = CentralUser::where('group_id',1)->get();
+            foreach ($users as $key => $user) {
+                if(in_array($user->phone, ['+201009383326','+966557722074'])){
+                    $data['phone'] = str_replace('+','',$user->phone);
+                    $mainWhatsLoopObj->sendMessage($data);
+                }
+            }
             // return 1;
         }
 
@@ -81,7 +86,7 @@ class TransferDays extends Command
                 $later = new \DateTime(date('Y-m-d',$channel['paidTill'] / 1000));
                 $earlier = new \DateTime(date('Y-m-d'));
                 $duration = abs($later->diff($earlier)->format("%a"));
-                if(in_array($channel['id'],$activeChannels) && $duration <= 1){
+                if(in_array($channel['id'],$activeChannels) && $duration < 1){
                     $transferDaysData = [
                         'receiver' => $channel['id'],
                         'days' => 1,
@@ -93,6 +98,6 @@ class TransferDays extends Command
                 }
             }
         }
-
+        return 1;
     }
 }

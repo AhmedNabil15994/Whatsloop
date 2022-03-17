@@ -69,26 +69,45 @@ class ProfileControllers extends Controller {
 
         if(isset($input['email']) && !empty($input['email'])){
             $userObj = User::checkUserBy('email',$input['email'],USER_ID);
-            User::where('email',$input['email'])->where('deleted_by','!=',null)->delete();
+            $oldEmail = null;
             if($userObj){
-                Session::flash('error', trans('main.emailError'));
-                return redirect()->back()->withInput();
+                if($userObj->deleted_by != null){
+                    $oldEmail = $userObj->email;
+                    User::where('email',$input['email'])->where('deleted_by','!=',null)->delete();
+                }else{
+                    Session::flash('error', trans('main.emailError'));
+                    return redirect()->back()->withInput();
+                }
             }
             $mainUserObj->email = $input['email'];
+
+            CentralUser::where('id',User::first()->id)->update(['email' => $input['email']]);
+            if($oldEmail != null){
+                UserData::where('email',$oldEmail)->where('domain',$userObj->domain)->update(['email' => $input['email']]);
+            }
         }
         
         if(isset($input['phone']) && !empty($input['phone'])){
             $userObj = User::checkUserBy('phone',$input['phone'],USER_ID);
-            User::where('phone',$input['phone'])->where('deleted_by','!=',null)->delete();
+            $oldPhone = null;
             if($userObj){
-                Session::flash('error', trans('main.phoneError'));
-                return redirect()->back()->withInput();
+                if($userObj->deleted_by != null){
+                    $oldPhone = $userObj->phone;
+                    User::where('phone',$input['phone'])->where('deleted_by','!=',null)->delete();
+                }else{
+                    Session::flash('error', trans('main.phoneError'));
+                    return redirect()->back()->withInput();
+                }
             }
             $mainUserObj->phone = $input['phone'];
 
             \DB::connection('main')->table('tenants')->where('id',$domainObj->tenant_id)->update([
                 'phone' => $input['phone'],
             ]);
+            CentralUser::where('id',User::first()->id)->update(['phone' => $input['phone']]);
+            if($oldPhone != null){
+                UserData::where('phone',$oldPhone)->where('domain',$userObj->domain)->update(['phone' => $input['phone']]);
+            }
         }
 
         if(isset($input['pin_code']) && !empty($input['pin_code'])){
@@ -103,7 +122,7 @@ class ProfileControllers extends Controller {
             $mainUserObj->emergency_number = $input['emergency_number'];
         }
 
-        if(isset($input['domain']) && !empty($input['domain'])){
+        if(isset($input['domain']) && !empty($input['domain']) && $oldDomainValue != $input['domain']){
 
             $rules = [
                 'domain' => 'regex:/^([a-zA-Z0-9][a-zA-Z0-9-_])*[a-zA-Z0-9]*[a-zA-Z0-9-_]*[[a-zA-Z0-9]$/',
@@ -156,10 +175,12 @@ class ProfileControllers extends Controller {
 
         if(isset($input['company']) && !empty($input['company'])){
             $mainUserObj->company = $input['company'];
+            CentralUser::where('id',User::first()->id)->update(['company' => $input['company']]);
         }
 
         if(isset($input['name']) && !empty($input['name'])){
             $mainUserObj->name = $input['name'];
+            CentralUser::where('id',User::first()->id)->update(['name' => $input['name']]);
             \DB::connection('main')->table('tenants')->where('id',$domainObj->tenant_id)->update([
                 'title' => $input['name'],
             ]);
@@ -898,7 +919,7 @@ class ProfileControllers extends Controller {
             'parallelHooks' => 1,
         ];
         if($channelObj){
-            $channelStatus = ($channelObj->leftDays > 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
+            $channelStatus = ($channelObj->leftDays >= 0 && date('Y-m-d') <= $channelObj->end_date) ? 1 : 0;
             $channelSettings = $mainWhatsLoopObj->settings([]);
             $channelSettings = isset($channelSettings->json()['data']) ? $channelSettings->json()['data'] : $myData;
         }
@@ -992,7 +1013,7 @@ class ProfileControllers extends Controller {
 
     public function closeConn(){
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $updateResult = $mainWhatsLoopObj->logout();
+        $updateResult = $mainWhatsLoopObj->clearInstance();
         $result = $updateResult->json();
 
         if($result != null && $result['status']['status'] != 1){
@@ -1018,7 +1039,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
 
-        if($result['data'] && $result['data']['messages']){
+        if($result != null && $result['data'] != null && $result['data']['messages'] != null){
             try {
                 dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
             } catch (Exception $e) {
@@ -1046,7 +1067,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
 
-        if($result['data'] && $result['data']['messages']){
+        if($result != null && $result['data'] != null && $result['data']['messages'] != null){
             try {
                 dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
             } catch (Exception $e) {
@@ -1074,7 +1095,7 @@ class ProfileControllers extends Controller {
             return redirect()->back();
         }
 
-        if($result['data'] && $result['data']['dialogs']){
+        if($result != null && $result['data'] != null && $result['data']['dialogs'] != null){
             try {
                 dispatch(new SyncDialogsJob($result['data']['dialogs']))->onConnection('cjobs');
             } catch (Exception $e) {
@@ -1196,19 +1217,19 @@ class ProfileControllers extends Controller {
         $centralUser->setting_pushed = 0;
         $centralUser->save();
         
-        // Variable::whereIn('var_key',[
-        //     'MODULE_1','MODULE_2','MODULE_3','MODULE_4','MODULE_5',
-        //     'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
-        // ])->update(['var_value'=>0]);   
+        Variable::whereIn('var_key',[
+            'MODULE_1','MODULE_2','MODULE_3','MODULE_4','MODULE_5',
+            'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
+        ])->update(['var_value'=>0]);   
 
         // if($userObj->is_old != 1){
-        //     Contact::where('id','!=',null)->delete();
-        //     Category::where('id','!=',null)->delete();
-        //     ChatMessage::where('id','!=',null)->delete();
-        //     ChatDialog::where('id','!=',null)->delete();
-        //     ContactLabel::where('id','!=',null)->delete();
-        //     ContactReport::where('id','!=',null)->delete();
-        //     UserStatus::where('id','!=',null)->delete();
+            Contact::where('id','!=',null)->delete();
+            Category::where('id','!=',null)->delete();
+            ChatMessage::where('id','!=',null)->delete();
+            ChatDialog::where('id','!=',null)->delete();
+            ContactLabel::where('id','!=',null)->delete();
+            ContactReport::where('id','!=',null)->delete();
+            UserStatus::where('id','!=',null)->delete();
         // }
      
         Session::flash('success',trans('main.logoutDone'));

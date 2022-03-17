@@ -709,3 +709,29 @@ $('.btnDark').on('click',function(e){
 
     });
 });
+
+
+$(document).on('click','#unknownBot .addBotReply',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var elem = $('#unknownBot textarea');
+    var message = elem.val();
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+    $.ajax({
+        type: 'POST',
+        url: '/bots/addBotReply',
+        data:{
+            '_token': $('meta[name="csrf-token"]').attr('content'),
+            'message': message,
+        },
+        success:function(data){
+            if(data.status.status == 1){
+                successNotification(data.status.message);
+                elem.val(' ');
+                $('#unknownBot').modal('toggle');
+            }else{
+                errorNotification(data.status.message);
+            }
+        },
+    });
+});

@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\GroupMsg;
 use App\Models\ContactReport;
+use App\Models\Contact;
 use App\Models\ChatMessage;
 // implements ShouldQueue
 class GroupMessageJob implements ShouldQueue
@@ -39,6 +40,21 @@ class GroupMessageJob implements ShouldQueue
     {   
         $unsent = $this->messageObj->unsent_msgs;
         $sent = $this->messageObj->sent_msgs;
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $msgQueue = $mainWhatsLoopObj->showMessagesQueue();
+        $queueResult = $msgQueue->json();
+
+        if($queueResult && isset($queueResult['data'])){
+            $count = $queueResult['data']['totalMessages'];
+            if($count >= 300){
+                $delMsgQueue = $mainWhatsLoopObj->clearMessagesQueue();
+                $newResult = $delMsgQueue->json();
+            }
+        }
+
+        
+
         foreach ($this->contacts as $contact) {
             $result = $this->sendData($contact,(array) $this->messageObj);
             if($result == 1){
@@ -47,6 +63,7 @@ class GroupMessageJob implements ShouldQueue
                 $unsent+=1;
             }
         }
+
         GroupMsg::NotDeleted()->where('id',$this->messageObj->id)->update([
             'sent_count' => $sent,
             'unsent_count' => $unsent,
@@ -58,17 +75,16 @@ class GroupMessageJob implements ShouldQueue
         $sendData['chatId'] = str_replace('+', '', $contact->phone).'@c.us';
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $status = 0;
-        if($contact->has_whatsapp != 1){
-            $check = $mainWhatsLoopObj->checkPhone(['phone' => str_replace('+', '', $contact->phone)]);
-            $check = $check->json();
-            if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
-                $status = 1;
-                $contactObj->has_whatsapp = 1;
-                $contactObj->save();
-            }
-        }
+        // if($contact->has_whatsapp != 1){
+        //     $check = $mainWhatsLoopObj->checkPhone(['phone' => str_replace('+', '', $contact->phone)]);
+        //     $check = $check->json();
+        //     if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
+        //         $status = 1;
+        //         Contact::where('phone',str_replace('+', '', $contact->phone))->update(['has_whatsapp'=>$status]);
+        //     }
+        // }
 
-        $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',now()-1800);
+        $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',strtotime(date('Y-m-d H:i:s'))-1800);
 
         if($messageObj['message_type'] == 1){
             $sendData['body'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
@@ -79,8 +95,17 @@ class GroupMessageJob implements ShouldQueue
             $sendData['filename'] = $messageObj['file_name'];
             $sendData['body'] = $messageObj['file'];
             $sendData['caption'] = $this->reformMessage($messageObj['message'],$contact->name,str_replace('+', '', $contact->phone));
-            if(!$msg->where('body',$sendData['body'])->first()){
-                $result = $mainWhatsLoopObj->sendFile($sendData);
+            if($messageObj['file_name'] == null || $messageObj['file'] == null){
+                if(!$msg->where('body',$sendData['caption'])->first()){
+                    $result = $mainWhatsLoopObj->sendMessage([
+                        'chatId' => $sendData['chatId'],
+                        'body' => $sendData['caption'],
+                    ]);
+                }
+            }else{
+                if(!$msg->where('body',$sendData['body'])->first()){
+                    $result = $mainWhatsLoopObj->sendFile($sendData);
+                }
             }
         }elseif($messageObj['message_type'] == 3){
             $sendData['audio'] = $messageObj['file'];
@@ -101,24 +126,24 @@ class GroupMessageJob implements ShouldQueue
                 $result = $mainWhatsLoopObj->sendContact($sendData);
             }
         }
-        if($result){
+        if(isset($result) && $result){
             $result = $result->json();
-            $status = 1;
             if(isset($result['status']) && isset($result['status']['status']) && $result['status']['status'] != 1){
                 $status = 0;
             }
         }
 
         $messageId = '';
-        if(isset($result['data']) && isset($result['data']['id'])){
+        if(isset($result) && $result && isset($result['data']) && isset($result['data']['id'])){
             $messageId = $result['data']['id'];
             $lastMessage['status'] = 'APP';
             $lastMessage['id'] = $messageId;
             $lastMessage['chatId'] = $sendData['chatId'];
+            $status = 1;
             ChatMessage::newMessage($lastMessage);
         }
 
-        ContactReport::newStatus('+'.str_replace('@c.us','',$sendData['chatId']),$messageObj['group_id'],$messageObj['id'],$status,$messageId);
+        ContactReport::newStatus(str_replace('@c.us','',$sendData['chatId']),$messageObj['group_id'],$messageObj['id'],$status,$messageId);
         return $status;
     }
 

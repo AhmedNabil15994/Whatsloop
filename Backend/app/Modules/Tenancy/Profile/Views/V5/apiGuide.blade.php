@@ -225,6 +225,36 @@
             </div>
         </div>
     </div>
+
+    <div class="sendMsg accordion" id="accordion">
+        <h2 class="title accordion-title" id="accordion-title ">{{ trans('main.send_buttons') }}</h2>
+        <div class="details accordion-content" id="accordion-content">
+            <div class="desc form">
+                <ul class="btnsTabs" id="tabs1">
+                    <li id="tab1" class="active">PHP - CURL</li>
+                    <li id="tab2">PHP Class</li>
+                    <li id="tab3">Curl (Bash)</li>
+                </ul>
+                <div class="tabs tabs1">
+                    <div class="tab tab1 active">
+                        <div class="content">
+                            {{ preg_replace('/\b\d+\b/', '', highlight_file(public_path('tenancy/assets/codes/phpCurl/sendButtons.php'))) }}
+                        </div>
+                    </div>
+                    <div class="tab tab2">
+                        <div class="content">
+                            {{ preg_replace('/\b\d+\b/', '', highlight_file(public_path('tenancy/assets/codes/phpClass/sendButtons.php'))) }}
+                        </div>
+                    </div>
+                    <div class="tab tab3">
+                        <div class="content">
+                            {{ preg_replace('/\b\d+\b/', '', highlight_file(public_path('tenancy/assets/codes/curl/sendButtons.php'))) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @endsection

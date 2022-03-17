@@ -34,6 +34,8 @@ Route::group(['prefix' => '/services/salla'] , function (){
 Route::group(['prefix' => '/services/zid'] , function (){
 	$controller = \App\Http\Controllers\ZidControllers::class;
 	Route::get('/customers',[$controller,'customers']);
+	Route::post('/settings',[$controller,'settings']);
+	Route::post('/postSettings',[$controller,'postSettings']);
 	Route::get('/products',[$controller,'products']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/abandonedCarts',[$controller,'abandonedCarts']);

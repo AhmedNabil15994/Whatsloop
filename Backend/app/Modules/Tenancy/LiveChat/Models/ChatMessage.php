@@ -4,15 +4,36 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use App\Models\Product;
 use App\Jobs\SyncProducts;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class ChatMessage extends Model{
-    use \TraitsFunc;
+    use \TraitsFunc,SearchableTrait;
 
     protected $table = 'messages';
     protected $primaryKey = 'id';
     protected $fillable = ['id','body','fromMe','isForwarded','author','time','chatId','messageNumber','type','message_type','status','senderName','chatName','caption','sending_status'];    
     public $timestamps = false;
     public $incrementing = false;
+
+    protected $searchable = [
+        'columns' => [
+            'id' => 255,
+            'body' => 255,
+            'fromMe' => 11,
+            'isForwarded' => 11,
+            'author' => 255,
+            'time' => 255,
+            'chatId' => 255,
+            'messageNumber' => 11,
+            'type' => 11,
+            'message_type' => 255,
+            'status' => 11,
+            'senderName' => 255,
+            'chatName' => 255,
+            'caption' => 255,
+            'sending_status' => 11,
+        ],
+    ];
 
     public function Order(){
         return $this->belongsTo('App\Models\Order','id','message_id');
@@ -163,7 +184,7 @@ class ChatMessage extends Model{
             if($dataObj->quotedMsgId != null){
                 $dataObj->quotedMsgObj = self::getData(self::getOne($source->quotedMsgId));
             }
-            if(in_array($dataObj->whatsAppMessageType , ['document','video','ppt','image']) && $disDetails == null){
+            if(in_array($dataObj->whatsAppMessageType , ['document','video','ptt','image']) && $disDetails == null){
                 $dataObj->file_size = self::getPhotoSize($dataObj->body);
                 $dataObj->file_name = self::getFileName($dataObj->body);
             }

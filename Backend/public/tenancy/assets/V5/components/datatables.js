@@ -58,6 +58,7 @@ $(function(){
 		var detailsText = 'Details';
 		var enableText = 'Enable';
 		var disableText = 'Disable';
+		var refreshText = 'Refresh';
 	}else{
 		var showCols = " عرض الأعمدة <i class='fa fas fa-angle-down'></i>";
 		var direction = 'rtl';
@@ -83,6 +84,7 @@ $(function(){
 		var detailsText = 'التفاصيل';
 		var enableText = 'تفعيل';
 		var disableText = 'تعطيل';
+		var refreshText = 'تحديث';
 	}
 
 	var iCounter = 1;
@@ -182,7 +184,7 @@ $(function(){
 
 					if(designElems.mainData.url == 'groupMsgs' && $('input[name="data-tab"]').val() == 1){
 						showButton = '<a href="/groupMsgs/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+detailsText+'</a>';
-						editButton = '';
+						editButton = '<a href="/groupMsgs/refresh/'+full.id+'" class="action-icon btn btn-block btn-outline-success"> <i class="si si-refresh"></i> '+refreshText+'</a>';
 						deleteButton = '';
 					}
 

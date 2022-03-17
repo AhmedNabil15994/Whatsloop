@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\WebActions;
 use App\Jobs\GroupMessageJob;
 use App\Jobs\CheckWhatsappJob;
+use App\Jobs\FixReport;
 use DataTables;
 use Storage;
 use Redirect;
@@ -159,13 +160,6 @@ class GroupMsgsControllers extends Controller {
                 'data-col' => 'sent_type',
                 'anchor-class' => '',
             ],
-            'messages_count' => [
-                'label' => trans('main.msgs_no'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'messages_count',
-                'anchor-class' => '',
-            ],
             'contacts_count' => [
                 'label' => trans('main.contacts_count'),
                 'type' => '',
@@ -185,6 +179,13 @@ class GroupMsgsControllers extends Controller {
                 'type' => '',
                 'className' => '',
                 'data-col' => 'unsent_msgs',
+                'anchor-class' => '',
+            ],
+            'viewed_msgs' => [
+                'label' => trans('main.viewed_msgs'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'viewed_msgs',
                 'anchor-class' => '',
             ],
             'publish_at' => [
@@ -264,10 +265,8 @@ class GroupMsgsControllers extends Controller {
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
-        $newGroup = 0;
 
         if($input['group_id'] == '@'){
-            $newGroup = 1;
             $groupObj = new GroupNumber;
             $groupObj->channel = Session::get('channelCode');
             $groupObj->name_ar = $input['name_ar'];
@@ -292,7 +291,7 @@ class GroupMsgsControllers extends Controller {
             } 
             $myPhones = [];
             for ($i = 0; $i < count($numbersArr) ; $i++) {
-                $phone = '+'.str_replace('\r', '', $numbersArr[$i]);
+                $phone = str_replace('\r', '', $numbersArr[$i]);
                 $myPhones[] = str_replace('+', '', $phone);
                 $contactObj = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('phone',$phone)->first();
                 if(!$contactObj){
@@ -346,14 +345,14 @@ class GroupMsgsControllers extends Controller {
         }
 
         $contactsCount = Contact::NotDeleted()->where('group_id',$groupObj->id)->count();
-        $messagesArr = str_split(strip_tags($checkMessage), 140);
+        $messagesArr = 1;
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
         $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
         $dailyCount = Session::get('dailyMessageCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount + $extraQuotas <= $messagesCount + (count($messagesArr) * $contactsCount )){
+        if($dailyCount + $extraQuotas <= $messagesCount + $contactsCount ){
             Session::flash('error', trans('main.messageQuotaError'));
             return redirect()->back()->withInput();
         }
@@ -367,7 +366,7 @@ class GroupMsgsControllers extends Controller {
         $dataObj->publish_at = $date;
         $dataObj->later = $flag;
         $dataObj->contacts_count = $contactsCount;
-        $dataObj->messages_count = count($messagesArr);
+        $dataObj->messages_count = 1;
         $dataObj->sort = GroupMsg::newSortIndex();
         $dataObj->status = $input['status'];
         if($input['message_type'] == 5){
@@ -413,7 +412,18 @@ class GroupMsgsControllers extends Controller {
         }
 
         $dataObj = GroupMsg::getData($dataObj);
-        $chunks = 400;
+        $chunks = 100;
+
+        $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+            foreach($data as $key => $oneChunk){
+                try {
+                    $on = \Carbon\Carbon::now()->addSeconds($key*60);   
+                    dispatch(new GroupMessageJob($oneChunk,$dataObj))->onConnection('cjobs')->delay($on);
+                } catch (Exception $e) {}
+            }
+        });
+
+
         if($flag == 0){
             // Fire Job Queue
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
@@ -431,7 +441,7 @@ class GroupMsgsControllers extends Controller {
             $diff =  $sendDate->diffInSeconds($now);
             $on = \Carbon\Carbon::now()->addSeconds($diff);   
 
-            $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+            $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj,$on){
                 try {
                     dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs')->delay($on);
                 } catch (Exception $e) {
@@ -461,15 +471,26 @@ class GroupMsgsControllers extends Controller {
         if($groupMsgObj == null) {
             return Redirect('404');
         }
-        $data['data'] = GroupMsg::getData($groupMsgObj);        
-        $data['contacts'] = Contact::getFullContactsInfo($groupMsgObj->group_id,$groupMsgObj->id)['data'];
+
+        $phone = str_replace("+", '', $groupMsgObj->Creator->phone);
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $updateResult = $mainWhatsLoopObj->me();
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] == 1 && isset($result['data'])){
+            $phone = str_replace('@c.us', '', $result['data']['id']);
+        }
+
+        $data = Contact::getFullContactsInfo($groupMsgObj->group_id,$groupMsgObj->id);
+        $data['msg'] = GroupMsg::getData($groupMsgObj);        
+        $data['phone'] = $phone;
         $data['designElems']['mainData'] = $this->getData()['mainData'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
         return view('Tenancy.GroupMsgs.Views.V5.view')->with('data', (object) $data);
     }
 
-    public function resend($id){
+    public function resend($id,$status){
         $id = (int) $id;
         $groupMsgObj = GroupMsg::NotDeleted()->find($id);
         if($groupMsgObj == null) {
@@ -478,16 +499,45 @@ class GroupMsgsControllers extends Controller {
 
         $dataObj = GroupMsg::getData($groupMsgObj);
         $chunks = 400;
-        $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
-            try {
-                dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
-            } catch (Exception $e) {
-                
-            }
-        });
+        if($status == 1){
+            $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+                try {
+                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
+            });
+        }else{
+            $contacts = Contact::NotDeleted()->whereHas('Reports',function($whereHasQuery) use ($id){
+                $whereHasQuery->where('group_message_id',$id)->where('status',0);
+            })->chunk($chunks,function($data) use ($dataObj){
+                try {
+                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+                } catch (Exception $e) {
+                    
+                }
+            });
+        }
 
         Session::flash('success', trans('main.addSuccess'));
         return redirect()->to($this->getData()['mainData']['url'].'/view/'.$groupMsgObj->id);
+    }
+
+    public function refresh($id){
+        $id = (int) $id;
+        $groupMsgObj = GroupMsg::NotDeleted()->find($id);
+        if($groupMsgObj == null) {
+            return Redirect('404');
+        }
+
+        try {
+            dispatch(new FixReport($id))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
+
+        Session::flash('success', trans('main.inPrgo'));
+        return redirect()->back();
     }
 
     public function charts() {

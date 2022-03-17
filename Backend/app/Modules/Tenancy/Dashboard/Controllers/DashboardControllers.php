@@ -44,8 +44,49 @@ class DashboardControllers extends Controller {
     }
 
     public function Dashboard(){   
+
+        // $base_url = 'https://accounts.salla.sa/oauth2/token';
+
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, $base_url);
+        // curl_setopt($ch, CURLOPT_POST, TRUE);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+        //         'client_id'     => '1ad1ad373c0234a41c52a34556e4db3f',
+        //         'client_secret' => 'a133165c2690b7dbc04b0854b2a2bab2',
+        //         'username'      => '685f4xfyylmlwtxr@email.partners',
+        //         'grant_type'    => 'authorization code',
+        // ));
+
+        // $data = curl_exec($ch);
+
+        // $auth_string = json_decode($data, true);
+        // dd($auth_string);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         $varObj = Variable::getVar('QRIMAGE');
         if($varObj){
+            $sendStatus = 0;
+        }else{
+            $sendStatus = 100;
+        }
+        $userStatusObj = UserStatus::orderBy('id','DESC')->first();
+        if($userStatusObj!= null && in_array($userStatusObj->status,[2,3,4])){
             $sendStatus = 0;
         }else{
             $sendStatus = 100;
@@ -53,12 +94,12 @@ class DashboardControllers extends Controller {
 
         $messages = (object) ChatMessage::lastMessages();
         
-        $data['allDialogs'] = ChatDialog::count();
+        $data['allDialogs'] = ChatDialog::whereHas('LastMessage')->count();
         $data['data'] = $messages->data;
         $data['pagination'] = $messages->pagination;
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
         $data['incomingMessages'] = ChatMessage::count() - $data['sentMessages'];
-        $data['contactsCount'] = Contact::NotDeleted()->count();
+        $data['contactsCount'] = Contact::NotDeleted()->whereHas('NotDeletedGroup')->count();
         $data['sendStatus'] = $sendStatus;
         $data['serverStatus'] = 100;
         $data['lastContacts'] = Contact::lastContacts()['data'];

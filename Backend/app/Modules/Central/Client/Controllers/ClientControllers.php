@@ -18,6 +18,19 @@ use App\Models\CentralTicket;
 use App\Models\UserStatus;
 use App\Models\Contact;
 use App\Models\Invoice;
+use App\Models\WebActions;
+use App\Models\ChatDialog;
+use App\Models\Category;
+use App\Models\ContactLabel;
+use App\Models\ContactReport;
+use App\Models\ExtraQuota;
+use App\Models\UserExtraQuota;
+use App\Models\UserData;
+use App\Models\BankAccount;
+use App\Models\Product;
+use App\Models\Order;
+use App\Models\CentralVariable;
+use App\Models\Group;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +44,10 @@ use App\Jobs\TransferDays;
 
 use DataTables;
 use Storage;
+
+use App\Jobs\SyncMessagesJob;
+use App\Jobs\SyncDialogsJob;
+use App\Jobs\ReadChatsJob;
 
 
 class ClientControllers extends Controller {
@@ -210,7 +227,453 @@ class ClientControllers extends Controller {
             return Datatables::of($data['data'])->make(true);
         }
         $data['designElems'] = $this->getData();
-        return view('Central.User.Views.index')->with('data', (object) $data);
+        return view('Central.Client.Views.index')->with('data', (object) $data);
+    }
+
+    public function transferDay(){
+        shell_exec("/usr/local/bin/php /home/wloop/public_html/artisan transfer:days");
+        \Session::flash('success', trans('main.inPrgo'));
+        return redirect()->back();
+    }
+
+    public function pushAddonSetting(){
+        shell_exec("/usr/local/bin/php /home/wloop/public_html/artisan push:addonSetting");
+        \Session::flash('success', trans('main.inPrgo'));
+        return redirect()->back();
+    }
+
+    public function pushChannelSetting(){
+        shell_exec("/usr/local/bin/php /home/wloop/public_html/artisan push:channelSetting");
+        \Session::flash('success', trans('main.inPrgo'));
+        return redirect()->back();
+    }
+
+    public function setInvoices(){
+        shell_exec("/usr/local/bin/php /home/wloop/public_html/artisan set:invoices");
+        \Session::flash('success', trans('main.inPrgo'));
+        return redirect()->back();
+    }
+
+    public function screenshot($id){
+        // Perform Whatsapp Integration
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        $data['data'] = CentralUser::getData($userObj);
+        $channel = CentralChannel::first();
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $channelObj = UserChannels::first();
+        tenancy()->end($tenant);
+
+        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        $updateResult = $mainWhatsLoopObj->screenshot();
+        $result = $updateResult->json();
+
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+        $dataList['image'] = str_replace('/engine','/engine/public',$result['data']['image']);
+        $dataList['status'] = \TraitsFunc::SuccessResponse();
+        return \Response::json((object) $dataList);           
+    }
+
+    public function reconnect($id){
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        $data['data'] = CentralUser::getData($userObj);
+        $channel = CentralChannel::first();
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $channelObj = UserChannels::first();
+        tenancy()->end($tenant);
+
+        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        $updateResult = $mainWhatsLoopObj->reboot();
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+        Session::flash('success',trans('main.reconnectDone'));
+        return redirect()->back();
+    }
+
+    public function closeConn($id){
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        $data['data'] = CentralUser::getData($userObj);
+        $channel = CentralChannel::first();
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $channelObj = UserChannels::first();
+        tenancy()->end($tenant);
+
+        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        $updateResult = $mainWhatsLoopObj->logout();
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+        Session::flash('success',trans('main.logoutDone'));
+        return redirect()->back();
+    }
+
+    public function sync($id){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $lastMessageObj = ChatMessage::orderBy('time','DESC')->first();
+        if($lastMessageObj != null){
+            $data['min_time'] = $lastMessageObj->time - 7200;
+        }
+        $updateResult = $mainWhatsLoopObj->messages($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        if($result['data'] && $result['data']['messages']){
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
+            Session::flash('success',trans('main.syncInProgress'));
+        }
+
+        tenancy()->end($tenant);
+        return redirect()->back();
+    }
+
+    public function syncAll($id){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $userObj = User::first();
+        // if($userObj->is_old != 1){
+        //     $lastMessageObj = ChatMessage::where('id','!=',null)->delete();
+        // }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->messages($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        if($result['data'] && $result['data']['messages']){
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
+            Session::flash('success',trans('main.syncInProgress'));
+        }
+
+        tenancy()->end($tenant);
+        return redirect()->back();
+    }
+
+    public function syncDialogs($id){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $userObj = User::first();
+        // if($userObj->is_old != 1){
+        //     ChatDialog::where('id','!=',null)->delete();
+        // }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->dialogs($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        if($result['data'] && $result['data']['dialogs']){
+            try {
+                dispatch(new SyncDialogsJob($result['data']['dialogs']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }            
+            Session::flash('success',trans('main.inPrgo'));
+        }
+
+        tenancy()->end($tenant);
+        return redirect()->back();
+    }
+
+    public function syncLabels($id){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            ChatDialog::where('id','!=',null)->delete();
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->labelsList($data);
+        $updateResult = $updateResult->json();
+
+        if(isset($updateResult['data']) && !empty($updateResult['data'])){
+            $labels = $updateResult['data']['labels'];
+            $value = 1;
+            if(empty($labels)){
+                $value = 0;
+            }
+
+            $varObj = Variable::where('var_key','BUSINESS')->first();
+            if(!$varObj){
+                $varObj = new Variable;
+                $varObj->var_key = 'BUSINESS';
+            }
+            $varObj->var_value = $value;
+            $varObj->save();
+
+            $channelObj = CentralChannel::where('global_user_id',$userObj->global_id)->first();
+            foreach($labels as $label){
+                $labelObj = Category::NotDeleted()->where('labelId',$label['id'])->first();
+                if(!$labelObj){
+                    $labelObj = new Category;
+                    $labelObj->channel = $channelObj->instanceId;
+                    $labelObj->sort = Category::newSortIndex();
+                }
+                $labelObj->labelId = $label['id'];
+                $labelObj->name_ar = $label['name'];
+                $labelObj->name_en = $label['name'];
+                $labelObj->color_id = Category::getColorData($label['hexColor'])[0];
+                $labelObj->status = 1;
+                $labelObj->save();
+            }
+        }
+
+        tenancy()->end($tenant);
+        Session::flash('success',trans('main.inPrgo'));
+        return redirect()->back();
+    }
+
+    public function syncOrdersProducts($id){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $userObj = User::first();
+        if($userObj->is_old != 1){
+            Order::truncate();
+            Product::truncate();
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['limit'] = 0;
+        $updateResult = $mainWhatsLoopObj->messages($data);
+        $result = $updateResult->json();
+
+        if($result != null && $result['status']['status'] != 1){
+            Session::flash('error',$result['status']['message']);
+            return redirect()->back();
+        }
+
+        if($result['data'] && $result['data']['messages']){
+            try {
+                dispatch(new SyncMessagesJob($result['data']['messages']))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
+            Session::flash('success',trans('main.syncInProgress'));
+        }
+
+        tenancy()->end($tenant);
+        return redirect()->back();
+    }
+
+
+    public function restoreAccountSettings($id){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        // // Update User With Settings For Whatsapp Based On His Domain
+        $domain = User::first()->domain;
+        $myData = [
+            'sendDelay' => '0',
+            'webhookUrl' => str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/messages-webhook',
+            'instanceStatuses' => 1,
+            'webhookStatuses' => 1,
+            'statusNotificationsOn' => 1,
+            'ackNotificationsOn' => 1,
+            'chatUpdateOn' => 1,
+            'ignoreOldMessages' => 1,
+            'videoUploadOn' => 1,
+            'guaranteedHooks' => 1,
+            'parallelHooks' => 1,
+        ];
+        $updateResult = $mainWhatsLoopObj->postSettings($myData);
+        $result = $updateResult->json();
+
+        $updateResult = $mainWhatsLoopObj->clearInstance();
+        $result = $updateResult->json();
+    
+        $userObj = User::first();
+        $centralUser = CentralUser::getOne($userObj->id);
+        
+        $userObj->setting_pushed = 0;
+        $userObj->save();
+        tenancy()->end($tenant);
+
+        $centralUser->setting_pushed = 0;
+        $centralUser->save();
+        
+        Variable::whereIn('var_key',[
+            'MODULE_1','MODULE_2','MODULE_3','MODULE_4','MODULE_5',
+            'MODULE_6','MODULE_7','MODULE_8','MODULE_9',
+        ])->update(['var_value'=>0]);   
+
+        // if($userObj->is_old != 1){
+            Contact::where('id','!=',null)->delete();
+            Category::where('id','!=',null)->delete();
+            ChatMessage::where('id','!=',null)->delete();
+            ChatDialog::where('id','!=',null)->delete();
+            ContactLabel::where('id','!=',null)->delete();
+            ContactReport::where('id','!=',null)->delete();
+            UserStatus::where('id','!=',null)->delete();
+        // }
+     
+        Session::flash('success',trans('main.logoutDone'));
+        return redirect()->back();
+    }
+
+    public function read($id,$status){
+        $id = (int) $id;
+
+        $userObj = CentralUser::NotDeleted()->find($id);
+        if($userObj == null) {
+            return Redirect('404');
+        }
+        
+        $data['data'] = CentralUser::getData($userObj);
+        if($data['data']->domain == ''){
+            return redirect()->back();
+        }
+        
+        $domainObj = Domain::where('domain',$data['data']->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $status = (int) $status;
+        if(!in_array($status, [0,1])){
+            return redirect('404');
+        }
+
+        $sending_status_text = 2;
+        if($status == 1){
+            $sending_status_text = 3;
+        }
+
+        $messages = ChatMessage::where('fromMe',0)->groupBy('chatId')->pluck('chatId');
+        ChatMessage::whereIn('chatId',reset($messages))->update(['sending_status' => $sending_status_text]);
+        try {
+            dispatch(new ReadChatsJob(reset($messages),$status))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
+
+        tenancy()->end($tenant);
+        Session::flash('success',trans('main.inPrgo'));
+        return redirect()->back();
     }
 
     public function edit($id) {
@@ -314,6 +777,8 @@ class ClientControllers extends Controller {
         $data['addons'] = Addons::dataList(1)['data'];
         $data['userAddons'] = UserAddon::getDataForUser($id);
         $data['settings'] = isset($settingsArr) ? $settingsArr : $myData;
+        $data['channelSettings'] = $data['settings'];
+
         return view('Central.Client.Views.view')->with('data', (object) $data);      
     }
 

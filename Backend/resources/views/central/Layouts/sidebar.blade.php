@@ -146,7 +146,7 @@
             @endif
 
 
-            @if(\Helper::checkRules('list-clients,list-transfers'))
+            @if(\Helper::checkRules('list-clients,list-transfers,list-salla'))
                <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">
                     <div class="side-angle1"></div>
@@ -161,6 +161,29 @@
                     @endif
                     @if(\Helper::checkRules('list-transfers'))
                     <li><a class="slide-item" href="{{ URL::to('/transfers') }}">{{ trans('main.transfers') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('list-salla'))
+                    <li><a class="slide-item" href="{{ URL::to('/salla') }}">{{ trans('main.salla') }}</a></li>
+                    @endif
+                </ul>
+            </li>
+            @endif
+
+            @if(\Helper::checkRules('list-zidReports,list-sallaReports'))
+               <li class="slide">
+                <a class="side-menu__item" data-toggle="slide" href="#">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/team.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.reports') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
+                </a>
+                <ul class="slide-menu">
+                    @if(\Helper::checkRules('list-zidReports'))
+                    <li><a class="slide-item" href="{{ URL::to('/reports/zid') }}">{{ trans('main.zidReports') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('list-zidReports'))
+                    <li><a class="slide-item" href="{{ URL::to('/reports/salla') }}">{{ trans('main.sallaReports') }}</a></li>
                     @endif
                 </ul>
             </li>
@@ -275,7 +298,7 @@
             @endif    
 
             <li class="slide">
-                <a class="side-menu__item {{ Active(URL::to('/profile')) }}" href="{{ URL::to('/profile') }}">
+                <a class="side-menu__item {{ Active(URL::to('/users/edit/'.USER_ID)) }}" href="{{ URL::to('/users/edit/'.USER_ID) }}">
                     <div class="side-angle1"></div>
                     <div class="side-angle2"></div>
                     <div class="side-arrow"></div>

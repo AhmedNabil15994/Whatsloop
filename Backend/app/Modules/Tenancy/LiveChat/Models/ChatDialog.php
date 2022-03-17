@@ -16,6 +16,7 @@ class ChatDialog extends Model{
 
     public function LastMessage(){
         return $this->hasOne(ChatMessage::class,'chatId','id')->ofMany([
+            // 'messageNumber' => 'max',
             'time' => 'max',
         ], function ($query) {
             $query->where('time', '!=', null);
@@ -24,6 +25,7 @@ class ChatDialog extends Model{
 
     public function SenderLastMessage(){
         return $this->hasOne(ChatMessage::class,'chatId','id')->ofMany([
+            // 'messageNumber' => 'max',
             'time' => 'max',
         ], function ($query) {
             $query->where('fromMe',0)->where('time', '!=', null);

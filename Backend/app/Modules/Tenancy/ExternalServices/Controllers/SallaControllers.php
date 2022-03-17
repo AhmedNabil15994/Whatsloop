@@ -13,6 +13,10 @@ use App\Models\Template;
 use App\Models\CentralVariable;
 use App\Jobs\AbandonedCart;
 use App\Models\UserAddon;
+use App\Models\OAuthData;
+use App\Models\BotPlus;
+use App\Models\Bot;
+use App\Models\Category;
 use App\Models\ModNotificationReport;
 use DB;
 use DataTables;
@@ -29,8 +33,10 @@ class SallaControllers extends Controller {
             $dis = 1;
         }
     }
-
+    // $client_id = '1ad1ad373c0234a41c52a34556e4db3f'; 
+    //$client_secret_key = 'a133165c2690b7dbc04b0854b2a2bab2';
     public function customers(Request $request){
+
         $input = \Request::all();
         $modelName = 'customers';
         $service = $this->service;
@@ -49,6 +55,25 @@ class SallaControllers extends Controller {
             'service' => $service,
             'params' => [],
         ];
+
+        $userObj = User::first();
+        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+        if($oauthDataObj && $oauthDataObj->authorization != null){
+            $token = $oauthDataObj->authorization;
+
+            $dataArr = [
+                'baseUrl' => 'https://api.salla.dev/admin/v2',
+                'storeToken' => $token,
+                'dataURL' => 'https://api.salla.dev/admin/v2/customers',
+                'tableName' => $tableName,
+                'myHeaders' => $myHeaders,
+                'service' => $service,
+                'params' => [],
+            ];
+        }else{
+            $input['refresh'] = '';
+        }
+
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
@@ -82,6 +107,24 @@ class SallaControllers extends Controller {
             'service' => $service,
             'params' => [],
         ];
+
+        $userObj = User::first();
+        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+        if($oauthDataObj && $oauthDataObj->authorization != null){
+            $token = $oauthDataObj->authorization;
+
+            $dataArr = [
+                'baseUrl' => 'https://api.salla.dev/admin/v2',
+                'storeToken' => $token,
+                'dataURL' => 'https://api.salla.dev/admin/v2/products',
+                'tableName' => $tableName,
+                'myHeaders' => $myHeaders,
+                'service' => $service,
+                'params' => [],
+            ];
+        }else{
+            $input['refresh'] = '';
+        }
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
@@ -120,6 +163,34 @@ class SallaControllers extends Controller {
         $newDataArr = $dataArr;
         $newDataArr['dataURL'] = $dataArr['dataURL'].'/statuses';
         $newDataArr['tableName'] = $service.'_order_status';  
+
+        $userObj = User::first();
+        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+        if($oauthDataObj && $oauthDataObj->authorization != null){
+            $token = $oauthDataObj->authorization;
+
+            $dataArr = [
+                'baseUrl' => 'https://api.salla.dev/admin/v2',
+                'storeToken' => $token,
+                'dataURL' => 'https://api.salla.dev/admin/v2/orders',
+                'tableName' => $tableName,
+                'myHeaders' => $myHeaders,
+                'service' => $service,
+                'params' => [],
+            ];
+
+            $newDataArr = [
+                'baseUrl' => 'https://api.salla.dev/admin/v2',
+                'storeToken' => $token,
+                'dataURL' => 'https://api.salla.dev/admin/v2/orders/statuses',
+                'tableName' => $service.'_order_status',
+                'myHeaders' => $myHeaders,
+                'service' => $service,
+                'params' => [],
+            ];
+        }else{
+            $input['refresh'] = '';
+        }
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($newDataArr);
@@ -224,6 +295,26 @@ class SallaControllers extends Controller {
             'service' => $service,
             'params' => [],
         ];
+
+
+        $userObj = User::first();
+        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+        if($oauthDataObj && $oauthDataObj->authorization != null){
+            $token = $oauthDataObj->authorization;
+
+            $dataArr = [
+                'baseUrl' => 'https://api.salla.dev/admin/v2',
+                'storeToken' => $token,
+                'dataURL' => 'https://api.salla.dev/admin/v2/carts/abandoned',
+                'tableName' => $tableName,
+                'myHeaders' => $myHeaders,
+                'service' => $service,
+                'params' => [],
+            ];
+        }else{
+            $input['refresh'] = '';
+        }
+
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
         $externalHelperObj = new \ExternalServices($dataArr);
@@ -801,6 +892,10 @@ class SallaControllers extends Controller {
             return Redirect('404');
         }
 
+        $checkAvailBot = UserAddon::checkUserAvailability(USER_ID,1);
+        $checkAvailBotPlus = UserAddon::checkUserAvailability(USER_ID,10);
+
+
         $userObj = User::getData(User::getOne(USER_ID));
 
         $data['designElems']['mainData'] = [
@@ -812,8 +907,43 @@ class SallaControllers extends Controller {
             'icon' => 'fa fa-pencil-alt',
         ];
 
+        if (Schema::hasTable($service.'_order_status')) {
+            $statuses = DB::table($service.'_order_status')->get();
+            foreach ($statuses as $value) {
+                $options[] = ['id'=>$value->id,'name'=>$value->name];
+            }
+        }
+
         $data['data'] = ModTemplate::getData($dataObj);
+        $data['mods'] = User::getModerators()['data'];
+        $data['labels'] = Category::dataList()['data'];
+        $data['statuses'] = $options;
+        $data['bots'] = $checkAvailBot ? Bot::dataList(1)['data'] : [];
+        $data['botPluss'] = $checkAvailBotPlus ? BotPlus::dataList(1)['data'] : [];
+        $data['botPlus'] = $dataObj->type > 1 ? BotPlus::getData(BotPlus::find($dataObj->type)) : [];        
+        $data['checkAvailBotPlus'] = $checkAvailBotPlus != null ? 1 : 0;
+        $data['checkAvailBot'] = $checkAvailBot != null ? 1 : 0;
+        // dd($data);
         return view('Tenancy.ExternalServices.Views.V5.edit')->with('data', (object) $data);      
+    }
+
+    protected function validateInsertObject($input){
+        $rules = [
+            'title' => 'required',
+            'body' => 'required',
+            'footer' => 'required',
+            'buttons' => 'required',
+        ];
+
+        $message = [
+            'title.required' => trans('main.titleValidate'),
+            'body.required' => trans('main.bodyValidate'),
+            'footer.required' => trans('main.footerValidate'),
+            'buttons.required' => trans('main.buttonsValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+        return $validate;
     }
 
     public function templatesUpdate($id) {
@@ -825,15 +955,114 @@ class SallaControllers extends Controller {
         if($dataObj == null) {
             return Redirect('404');
         }
+        // dd($input);
 
-        $dataObj->content_ar = $input['content_ar'];
-        $dataObj->content_en = $input['content_en'];
-        $dataObj->status = $input['status'];
-        $dataObj->updated_at = DATE_TIME;
-        $dataObj->updated_by = USER_ID;
-        $dataObj->save();
+        if(isset($input['type']) && !empty($input['type'])){
+            if($input['type'] == 2){
+                $validate = $this->validateInsertObject($input);
+                if($validate->fails()){
+                    Session::flash('error', $validate->messages()->first());
+                    return redirect()->back();
+                }
 
-        Session::flash('success', trans('main.editSuccess'));
+                $myData = [];
+                for ($i = 0; $i < $input['buttons']; $i++) {
+                    if(!isset($input['btn_text_'.($i+1)]) || empty($input['btn_text_'.($i+1)]) || $input['btn_text_'.($i+1)] == null ){
+                        Session::flash('error', trans('main.invalidText',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    if(!isset($input['btn_reply_type_'.($i+1)]) || empty($input['btn_reply_type_'.($i+1)]) || $input['btn_reply_type_'.($i+1)] == null ){
+                        Session::flash('error', trans('main.invalidType',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    $replyType = (int)$input['btn_reply_type_'.($i+1)];
+                    if($replyType == 1 && ( !isset($input['btn_reply_'.($i+1)]) || empty($input['btn_reply_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidReply',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    if($replyType == 2 && ( !isset($input['btn_msg_'.($i+1)]) || empty($input['btn_msg_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    if($replyType == 3 && ( !isset($input['btn_msgs_'.($i+1)]) || empty($input['btn_msgs_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    $modelType = '';
+                    if($replyType == 2 && ( !isset($input['btn_msg_type_'.($i+1)]) || empty($input['btn_msg_type_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    $modelType = (int)$input['btn_msg_type_'.($i+1)];
+
+                    $modelName = $modelType != '' ?  ($modelType == 1 ? '\App\Models\Bot' : '\App\Models\BotPlus')  : '';
+                    $msg = $replyType == 1 ? $input['btn_reply_'.($i+1)] : '';
+
+                    if($modelName != '' && $msg == '' && $replyType != 3){
+                        $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
+                        if($dataObj){
+                            $msg = $dataObj->id;
+                        }
+                    }
+
+                    if($replyType == 3){
+                        $msg = $input['btn_msgs_'.($i+1)];
+                        $modelName = 'salla_order_status';
+                    }
+
+                    $myData[] = [
+                        'id' => $i + 1,
+                        'text' => $input['btn_text_'.($i+1)],
+                        'reply_type' => $input['btn_reply_type_'.($i+1)],
+                        'msg_type' => $modelType,
+                        'model_name' => $modelName,
+                        'msg' => $msg,
+                    ];
+                }
+
+                // dd($myData);
+                if($dataObj->type > 1){
+                    $botObj = BotPlus::find($dataObj->type);
+                }else{
+                    $botObj = new BotPlus();
+                }
+                
+                $botObj->message_type = 1;
+                $botObj->channel = Session::get('channelCode');
+                $botObj->message = 'Salla Template '.$id;
+                $botObj->title = $input['title'];
+                $botObj->body = $input['body'];
+                $botObj->footer = $input['footer'];
+                $botObj->buttons = $input['buttons'];
+                $botObj->buttonsData = serialize($myData);
+                $botObj->status = 1;
+                $botObj->deleted_by = 1;
+                $botObj->deleted_at = DATE_TIME;
+                $botObj->save();
+
+                $input['content_ar'] = $input['body'];
+                $input['content_en'] = $input['body'];
+                $input['type'] = $botObj->id;
+            }
+
+            $dataObj = ModTemplate::find($id);
+            $dataObj->content_ar = $input['content_ar'];
+            $dataObj->content_en = $input['content_en'];
+            $dataObj->status = $input['status'];
+            $dataObj->type = $input['type'];
+            $dataObj->category_id = $input['category_id'];
+            $dataObj->moderator_id = $input['moderator_id'];
+            $dataObj->updated_at = DATE_TIME;
+            $dataObj->updated_by = USER_ID;
+            $dataObj->save();
+            Session::flash('success', trans('main.editSuccess'));
+        }        
         return \Redirect::back()->withInput();
     }
 

@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
                 $schedule->command('tenants:run check:contacts --tenants='.$channel->tenant_id)->everyMinute()->withoutOverlapping();
             }
         }
-        $schedule->command('set:invoices')->cron('0 9,12 * * *');
+        // $schedule->command('set:invoices')->cron('0 9,12 * * *');
         // $schedule->command('push:channelSetting')->everyMinute();
         // $schedule->command('push:addonSetting')->daily();
         // $schedule->command('transfer:days')->cron('0 0 */3 * *');

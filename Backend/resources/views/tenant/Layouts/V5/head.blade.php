@@ -1,3 +1,4 @@
+<link rel="icon" href="{{ URL::asset('V5/images/logoChannel.png') }}" type="image/ico" />
 <link rel="stylesheet" href="{{ asset('V5/css/font.css') }}" />
 
 <link rel="stylesheet" href="{{ asset('V5/css/flaticon.css') }}" />

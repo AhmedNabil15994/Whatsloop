@@ -194,6 +194,23 @@ class BotPlusControllers extends Controller {
         return Redirect::to('/botPlus/edit/'.$newDataObj->id);      
     }
 
+    public function changeStatus($id) {
+        $id = (int) $id;
+
+        $dataObj = Bot::NotDeleted()->find($id);
+        $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
+        if($dataObj == null || !$checkAvail) {
+            return Redirect('404');
+        }
+
+
+        $dataObj->status = $dataObj->status == 1 ? 0 : 1;
+        $dataObj->save();
+
+        Session::flash('success', trans('main.editSuccess'));
+        return Redirect::to('/botPlus/');      
+    }
+
     public function update($id) {
         $id = (int) $id;
 

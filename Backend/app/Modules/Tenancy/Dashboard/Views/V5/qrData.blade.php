@@ -27,7 +27,9 @@
     {
         font-family: 'Tajawal-Bold';
     }
-    
+    .botStyle .settings .attention{
+        z-index:9;
+    }
 </style>
 @endsection
 
@@ -168,7 +170,7 @@
             </div>
             <div class="qr">
                 <div class="row">
-                    <div class="col-md-3" style="overflow: hidden;">
+                    <div class="col-md-3">
                         @livewire('qr-image')
                     </div>
                     <div class="col-md-5">

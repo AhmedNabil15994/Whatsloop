@@ -28,4 +28,24 @@ Route::group(['prefix' => '/clients'] , function () {
     Route::post('/add/uploadImage', [$controller,'uploadImage']);
     Route::post('/edit/{id}/editImage', [$controller,'uploadImage']);
     Route::post('/edit/{id}/deleteImage', [$controller,'deleteImage']);
+
+
+    Route::get('/transferDay', [$controller,'transferDay']);
+    Route::get('/pushAddonSetting', [$controller,'pushAddonSetting']);
+    Route::get('/pushChannelSetting', [$controller,'pushChannelSetting']);
+    Route::get('/setInvoices', [$controller,'setInvoices']);
+
+
+    Route::get('/view/{id}/screenshot', [$controller,'screenshot']);
+    Route::get('/view/{id}/reconnect', [$controller,'reconnect']);
+    Route::get('/view/{id}/closeConn', [$controller,'closeConn']);
+    Route::get('/view/{id}/sync', [$controller,'sync']);
+    Route::get('/view/{id}/syncAll', [$controller,'syncAll']);
+    Route::get('/view/{id}/syncDialogs', [$controller,'syncDialogs']);
+    Route::get('/view/{id}/syncLabels', [$controller,'syncLabels']);
+    Route::get('/view/{id}/syncOrdersProducts', [$controller,'syncOrdersProducts']);
+    Route::get('/view/{id}/restoreAccountSettings', [$controller,'restoreAccountSettings']);
+    Route::get('/view/{id}/read/{status}', [$controller,'read']);
+    Route::get('/view/{id}/clearMessagesQueue', [$controller,'clearMessagesQueue']);
+
 });

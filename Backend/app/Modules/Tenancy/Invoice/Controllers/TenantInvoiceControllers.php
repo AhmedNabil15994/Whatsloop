@@ -14,6 +14,7 @@ use App\Models\CentralChannel;
 use App\Models\Variable;
 use App\Models\PaymentInfo;
 use App\Models\CentralVariable;
+use App\Models\OldMembership;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -252,11 +253,13 @@ class TenantInvoiceControllers extends Controller {
         $discount = $invoiceObj->discount;
         $testData = [];
         $total = 0;
-        $start_date = $invoiceObj->due_date;
+        $main = 0;
+        $start_date = $invoiceObj->due_date < date('Y-m-d') && $invoiceObj->status == 2 ? date('Y-m-d') : $invoiceObj->due_date;
         foreach($myData as $key => $one){
             if($one['type'] == 'membership'){
                 $dataObj = Membership::getOne($one['data']['id']);
                 $title = $dataObj->{'title_'.LANGUAGE_PREF};
+                $main = 1;
             }else if($one['type'] == 'addon'){
                 $dataObj = Addons::getOne($one['data']['id']);
                 $title = $dataObj->{'title_'.LANGUAGE_PREF};
@@ -277,8 +280,36 @@ class TenantInvoiceControllers extends Controller {
             $total+= $testData[$key][6] * (int)$one['data']['quantity'];
         }
 
+        $userObj = User::getOne(USER_ID);
+        $type = 'PayInvoice';
+        if(Session::has('invoice_id') && Session::get('invoice_id') > 0){
+            $type = 'Suspended';
+        }
+        $cartObj = Variable::where('var_key','inv_status')->first();
+        if(!$cartObj){
+            $cartObj = new Variable();
+        }
+        $cartObj->var_key = 'inv_status';
+        $cartObj->var_value = $type;
+        $cartObj->save();
+
+        // $paymentObj = new \SubscriptionHelper(); 
+        // $invoice = $paymentObj->setInvoice($testData,USER_ID,TENANT_ID,GLOBAL_ID,$type);   
+
+        $data['user'] = $userObj;
+        $data['invoice'] = $invoiceObj;
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
+
+
         $data['data'] = $testData;
-        $data['user'] = User::getOne(USER_ID);
         $tax = \Helper::calcTax($total - $discount);
         $data['totals'] = [
             $total-$tax-$discount,
@@ -286,6 +317,32 @@ class TenantInvoiceControllers extends Controller {
             $tax,
             $total - $discount,
         ];
+
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($total - $discount), // invoice total amount
+            new InvoiceTaxAmount($tax) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
+
+        if($userObj->is_old && $main){
+            $oldMembershipObj = OldMembership::where('user_id',$userObj->id)->first();
+            if($oldMembershipObj){
+                $oldPrice = OldMembership::getOldPrice($oldMembershipObj->membership);
+                $discount = $total - $oldPrice;
+                $tax = \Helper::calcTax($oldPrice);
+
+                $data['totals'] = [
+                    $total-$tax-$discount,
+                    $discount,
+                    $tax,
+                    $oldPrice,
+                ];
+            }
+        }
+        
         $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
@@ -319,14 +376,6 @@ class TenantInvoiceControllers extends Controller {
             $userCreditsObj->var_value = Session::get('userCredits');
             $userCreditsObj->var_key = 'userCredits';
             $userCreditsObj->save();
-
-            $startDateObj = Variable::where('var_key','start_date')->first();
-            if(!$startDateObj){
-                $startDateObj = new Variable();
-            }
-            $startDateObj->var_value = json_decode($cartData)[0][4];
-            $startDateObj->var_key = 'start_date';
-            $startDateObj->save();
         }
         
         $userObj = User::first();
@@ -350,38 +399,6 @@ class TenantInvoiceControllers extends Controller {
         }
 
         $names = explode(' ', $userObj->name ,2);
-        // if($input['payType'] == 2){ // Paytabs Integration
-        //     $profileId = '49334';
-        //     $serverKey = 'SWJNLRLRKG-JBZZRMGMMM-GZKTBBLMNW';
-
-        //     $dataArr = [
-        //         'returnURL' => \URL::to('/invoices/'.$id.'/pushInvoice'),
-        //         'cart_id' => 'whatsloop-'.$userObj->id,
-        //         'cart_amount' => $totals,
-        //         'cart_description' => 'New',
-        //         'paypage_lang' => LANGUAGE_PREF,
-        //         'name' => $userObj->name,
-        //         'email' => $userObj->email,
-        //         'phone' => $userObj->phone,
-        //         'street' => $paymentInfoObj->address,
-        //         'city' => $paymentInfoObj->city,
-        //         'state' => $paymentInfoObj->region,
-        //         'country' => $paymentInfoObj->country,
-        //         'postal_code' => $paymentInfoObj->postal_code,
-        //     ];
-
-        //     $extraHeaders = [
-        //         'PROFILEID: '.$profileId,
-        //         'SERVERKEY: '.$serverKey,
-        //     ];
-
-        //     $paymentObj = new \PaymentHelper();        
-        //     $result = $paymentObj->hostedPayment($dataArr,'/paytabs',$extraHeaders);
-        //     $result = json_decode($result);
-
-        //     return redirect()->away($result->data->redirect_url);
-
-        // }else
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
@@ -431,9 +448,21 @@ class TenantInvoiceControllers extends Controller {
         }
 
         $cartObj = unserialize($invoiceObj->items);
-        $type = \Session::has('invoice_id') ? 'renew' : 'payInvoice';
+        $type = Variable::getVar('inv_status');
+        $data = [
+            'cartObj' => $cartObj, 
+            'type' => $type,
+            'transaction_id' => $transaction_id,
+            'paymentGateaway' => $paymentGateaway,
+            'start_date' => $type == 'Suspended' ? date('Y-m-d') : $invoiceObj->due_date,
+            'invoiceObj' => $invoiceObj,
+            'transferObj' => null,
+            'arrType' => 'old',
+            'myEndDate' => null,
+        ];
+
         try {
-          dispatch(new NewClient($cartObj,$type,$transaction_id,$paymentGateaway,$invoiceObj->due_date,$invoiceObj,null,'old'))->onConnection('cjobs');
+            dispatch(new NewClient($data))->onConnection('cjobs');
         } catch (Exception $e) {
             
         }

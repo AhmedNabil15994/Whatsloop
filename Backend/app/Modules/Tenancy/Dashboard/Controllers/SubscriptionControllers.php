@@ -33,6 +33,14 @@ use App\Jobs\SyncOldClient;
 use App\Jobs\NewClient;
 use Http;
 
+use Salla\ZATCA\GenerateQrCode;
+use Salla\ZATCA\Tags\InvoiceDate;
+use Salla\ZATCA\Tags\InvoiceTaxAmount;
+use Salla\ZATCA\Tags\InvoiceTotalAmount;
+use Salla\ZATCA\Tags\Seller;
+use Salla\ZATCA\Tags\TaxNumber;
+
+
 class SubscriptionControllers extends Controller {
 
     use \TraitsFunc;
@@ -134,6 +142,13 @@ class SubscriptionControllers extends Controller {
         return redirect()->to('/menu');
     }
 
+    public function getCities(){
+        $input = \Request::all();
+        $statusObj['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$input['id'])->get();
+        $statusObj['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $statusObj);
+    }
+
     public function packages(){   
         $input = \Request::all();
         if(Session::get('membership') != null){
@@ -221,15 +236,60 @@ class SubscriptionControllers extends Controller {
         }
 
         $data['data'] = $testData;
+        $botObj = Addons::getOne(1);
         $tax = \Helper::calcTax($total);
         $data['totals'] = [
             $total-$tax,
-            0,
+            (in_array($bundleObj->id,[5,6]) ? ($annual == 1 ? $botObj->monthly_after_vat : $botObj->annual_after_vat ) : 0),
             $tax,
             $total,
         ];
 
-        $data['user'] = User::getOne(USER_ID);
+        $userObj = User::getOne(USER_ID);
+        if($userObj->membership_id == null){
+            $type = 'NewClient';
+        }
+
+        $cartObj = Variable::where('var_key','inv_status')->first();
+        if(!$cartObj){
+            $cartObj = new Variable();
+        }
+        $cartObj->var_key = 'inv_status';
+        $cartObj->var_value = $type;
+        $cartObj->save();
+
+        $paymentObj = new \SubscriptionHelper(); 
+        $invoice = $paymentObj->setInvoice($testData,USER_ID,TENANT_ID,GLOBAL_ID,$type,$total);   
+
+        $inv_id = Variable::where('var_key','inv_id')->first();
+        if(!$inv_id){
+            $inv_id = new Variable();
+        }
+        $inv_id->var_key = 'inv_id';
+        $inv_id->var_value = $invoice->id;
+        $inv_id->save();
+
+        $data['user'] = $userObj;
+        $data['invoice'] = Invoice::getData($invoice);
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
+
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($total), // invoice total amount
+            new InvoiceTaxAmount($tax) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
+
         $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
@@ -263,28 +323,63 @@ class SubscriptionControllers extends Controller {
             $total+= $testData[$key][6] * (int)$testData[$key][7];
         }
         
+        $userObj = User::getOne(USER_ID);
+        if($userObj->membership_id == null){
+            $type = 'NewClient';
+        }
+        $cartObj = Variable::where('var_key','inv_status')->first();
+        if(!$cartObj){
+            $cartObj = new Variable();
+        }
+        $cartObj->var_key = 'inv_status';
+        $cartObj->var_value = $type;
+        $cartObj->save();
+
+        $paymentObj = new \SubscriptionHelper(); 
+        $invoice = $paymentObj->setInvoice($testData,USER_ID,TENANT_ID,GLOBAL_ID,$type);   
+
+        $inv_id = Variable::where('var_key','inv_id')->first();
+        if(!$inv_id){
+            $inv_id = new Variable();
+        }
+        $inv_id->var_key = 'inv_id';
+        $inv_id->var_value = $invoice->id;
+        $inv_id->save();
+
+        $data['user'] = $userObj;
+        $data['invoice'] = Invoice::getData($invoice);
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
+
         $input['totals'] = json_decode($input['totals']);
         $input['totals'][3] = $total;
+
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($input['totals'][3]), // invoice total amount
+            new InvoiceTaxAmount($input['totals'][2]) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
 
         $data['data'] = $testData;
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
         $data['bankAccounts'] = BankAccount::dataList(1)['data'];
-        $data['user'] = User::getOne(USER_ID);
         $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         if(!empty($data['payment']) && $data['payment']->country){
             $data['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$data['payment']->country)->get();
         }
-        
         return view('Tenancy.Dashboard.Views.V5.checkout')->with('data',(object) $data);
-    }
-
-    public function getCities(){
-        $input = \Request::all();
-        $statusObj['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$input['id'])->get();
-        $statusObj['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $statusObj);
     }
 
     public function calcData($total,$cartData,$userObj){
@@ -295,6 +390,9 @@ class SubscriptionControllers extends Controller {
         if(!$cartObj){
             $cartObj = new Variable();
         }
+        $cartObj->var_key = 'cartObj';
+        $cartObj->var_value = json_encode($cartData);
+        $cartObj->save();
 
         if(Session::has('userCredits')){
             $userCreditsObj = Variable::where('var_key','userCredits')->first();
@@ -304,22 +402,8 @@ class SubscriptionControllers extends Controller {
             $userCreditsObj->var_value = Session::get('userCredits');
             $userCreditsObj->var_key = 'userCredits';
             $userCreditsObj->save();
-
-            $startDateObj = Variable::where('var_key','start_date')->first();
-            if(!$startDateObj){
-                $startDateObj = new Variable();
-            }
-            $startDateObj->var_value = json_decode($cartData)[0][4];
-            $startDateObj->var_key = 'start_date';
-            $startDateObj->save();
         }
         
-
-        $cartObj->var_key = 'cartObj';
-        $cartObj->var_value = json_encode($cartData);
-        $cartObj->save();
-        
-
         $paymentInfoObj = PaymentInfo::NotDeleted()->where('user_id',$userObj->id)->first();
         if(!$paymentInfoObj){
             $paymentInfoObj = new PaymentInfo;
@@ -375,67 +459,35 @@ class SubscriptionControllers extends Controller {
         
         $this->calcData($input['totals'],$cartData,$userObj);
 
-        // if($input['payType'] == 2){ // Paytabs Integration
-        //     $profileId = '49334';
-        //     $serverKey = 'SWJNLRLRKG-JBZZRMGMMM-GZKTBBLMNW';
 
-        //     $dataArr = [
-        //         'returnURL' => \URL::to('/pushInvoice'),
-        //         'cart_id' => 'whatsloop-'.$userObj->id,
-        //         'cart_amount' => $totals,
-        //         'cart_description' => 'New',
-        //         'paypage_lang' => LANGUAGE_PREF,
-        //         'name' => $userObj->name,
-        //         'email' => $userObj->email,
-        //         'phone' => $userObj->phone,
-        //         'street' => $paymentInfoObj->address,
-        //         'city' => $paymentInfoObj->city,
-        //         'state' => $paymentInfoObj->region,
-        //         'country' => $paymentInfoObj->country,
-        //         'postal_code' => $paymentInfoObj->postal_code,
-        //     ];
-
-        //     $extraHeaders = [
-        //         'PROFILEID: '.$profileId,
-        //         'SERVERKEY: '.$serverKey,
-        //     ];
-
-        //     $paymentObj = new \PaymentHelper();        
-        //     $result = $paymentObj->hostedPayment($dataArr,'/paytabs',$extraHeaders);
-        //     $result = json_decode($result);
-
-        //     return redirect()->away($result->data->redirect_url);
-
-        // }
         $url = \URL::to('/pushInvoice');
-        if(isset($input['dataType']) && $input['dataType'] > 1){
-            $url = \URL::to('/pushInvoice2');
-            if($input['dataType'] == 2){
-                $nextStartMonth = date('Y-m-d',strtotime('first day of +1 month',strtotime(date('Y-m-d'))));
+        // if(isset($input['dataType']) && $input['dataType'] > 1){
+        //     $url = \URL::to('/pushInvoice2');
+        //     if($input['dataType'] == 2){
+        //         $nextStartMonth = date('Y-m-d',strtotime('first day of +1 month',strtotime(date('Y-m-d'))));
 
-                Variable::where('var_key','endDate')->firstOrCreate([
-                    'var_key' => 'endDate',
-                    'var_value' => $nextStartMonth, 
-                ]);
-            }else{
-                $nextStartMonth = date('Y-m-d',strtotime('+1 month',strtotime(date('Y-m-d'))));
+        //         Variable::where('var_key','endDate')->firstOrCreate([
+        //             'var_key' => 'endDate',
+        //             'var_value' => $nextStartMonth, 
+        //         ]);
+        //     }else{
+        //         $nextStartMonth = date('Y-m-d',strtotime('+1 month',strtotime(date('Y-m-d'))));
 
-                Variable::where('var_key','endDate')->firstOrCreate([
-                    'var_key' => 'endDate',
-                    'var_value' => $nextStartMonth, 
-                ]);
-            }
-            Variable::where('var_key','start_date')->firstOrCreate([
-                'var_key' => 'start_date',
-                'var_value' => date('Y-m-d'), 
-            ]);
-        }
+        //         Variable::where('var_key','endDate')->firstOrCreate([
+        //             'var_key' => 'endDate',
+        //             'var_value' => $nextStartMonth, 
+        //         ]);
+        //     }
+        //     Variable::where('var_key','start_date')->firstOrCreate([
+        //         'var_key' => 'start_date',
+        //         'var_value' => date('Y-m-d'), 
+        //     ]);
+        // }
 
         if($input['payType'] == 2){// Noon Integration
             $urlSecondSegment = '/noon';
             $noonData = [
                 'returnURL' => $url ,
-                // 'returnURL' => \URL::to('/pushInvoice'),  // For Local 
                 'cart_id' => 'whatsloop-'.rand(1,100000),
                 'cart_amount' => json_decode($input['totals'])[3],
                 'cart_description' => 'New Membership',
@@ -460,37 +512,17 @@ class SubscriptionControllers extends Controller {
             
             $userObj = User::first();
             $centralUser = CentralUser::getOne($userObj->id);
-            
-            if(isset($request->name) && !empty($request->name)){
-
-                $names = explode(' ',$request->name);
-                if(count($names) < 2){
-                    return \TraitsFunc::ErrorMessage(trans('main.name2Validate'));
-                }
-
-                $userObj->name = $request->name;
-                $userObj->save();
-
-                $centralUser->name = $request->name;
-                $centralUser->save();
-            }
-
-            if(isset($request->company_name) && !empty($request->company_name)){
-                $userObj->company = $request->company_name;
-                $userObj->save();
-
-                $centralUser->company = $request->company_name;
-                $centralUser->save();
-            }
 
             $files = $request->file('transfer_image');
 
             $bankTransferObj = BankTransfer::NotDeleted()->where('user_id',USER_ID)->where('status',1)->first();
+            $invoiceObj = Invoice::find($request->invoice_id);
             if(!$bankTransferObj){
                 $bankTransferObj = new BankTransfer;
                 $bankTransferObj->user_id = USER_ID;
                 $bankTransferObj->tenant_id = TENANT_ID;
                 $bankTransferObj->global_id = GLOBAL_ID;
+                $bankTransferObj->invoice_id = $invoiceObj->id;
                 $bankTransferObj->domain = DOMAIN;
                 $bankTransferObj->order_no = rand(1,100000);
                 $bankTransferObj->status = 1;
@@ -498,7 +530,7 @@ class SubscriptionControllers extends Controller {
                 $bankTransferObj->created_at = DATE_TIME;
                 $bankTransferObj->created_by = USER_ID;
             }
-            $bankTransferObj->total = $request->total;
+            $bankTransferObj->total = $invoiceObj->total;
             $bankTransferObj->save();
 
             $fileName = \ImagesHelper::uploadFileFromRequest('bank_transfers', $files,$bankTransferObj->id);
@@ -541,26 +573,34 @@ class SubscriptionControllers extends Controller {
     public function activate($transaction_id = null , $paymentGateaway = null){
         $cartObj = Variable::getVar('cartObj');
         $cartObj = json_decode(json_decode($cartObj));
-        // dd($cartObj);
+        $inv_id = Variable::getVar('inv_id');
+        $invoiceObj = Invoice::find($inv_id);
+        $type = Variable::getVar('inv_status');
 
+        $data = [
+            'cartObj' => $cartObj, 
+            'type' => $type,
+            'transaction_id' => $transaction_id,
+            'paymentGateaway' => $paymentGateaway,
+            'start_date' => null,
+            'invoiceObj' => $invoiceObj,
+            'transferObj' => null,
+            'arrType' => null,
+            'myEndDate' => null,
+        ];
+        
         try {
-          dispatch(new NewClient($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d')))->onConnection('cjobs');
+            dispatch(new NewClient($data))->onConnection('cjobs');
         } catch (Exception $e) {
             
         }
-        // $paymentObj = new \SubscriptionHelper(); 
-        // $resultData = $paymentObj->newSubscription($cartObj,'new',$transaction_id,$paymentGateaway,date('Y-m-d'));   
-        // if($resultData[0] == 0){
-            // Session::flash('error',$resultData[1]);
-            // return back()->withInput();
-        // }         
-
 
         // Session::forget('userCredits');
         $userObj = User::first();
         User::setSessions($userObj);
-
-        Session::put('hasJob',1);
+        if($type == 'NewClient'){
+            Session::put('hasJob',1);
+        }
         return redirect()->to('/dashboard');
     }
 
@@ -624,14 +664,6 @@ class SubscriptionControllers extends Controller {
             return \TraitsFunc::ErrorMessage(trans('main.channelNameValidate'));
         }
 
-        // $mainWhatsLoopObj = new \MainWhatsLoop();
-        // $result = $mainWhatsLoopObj->setName(['name' => $input['name']]);
-        // $result = $result->json();
-
-        // if($result['status']['status'] != 1){
-        //     return \TraitsFunc::ErrorMessage($result['status']['message']);
-        // }
-
         $channelObj =  UserChannels::first();
         $channelObj->name = $input['name'];
         $channelObj->save();
@@ -644,14 +676,15 @@ class SubscriptionControllers extends Controller {
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $result = $mainWhatsLoopObj->status();
         $result = $result->json();
+        $channelObj =  UserChannels::first();
+
         if(isset($result['data'])){
             if($result['data']['accountStatus'] == 'got qr code'){
                 if(isset($result['data']['qrCode'])){
-                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $image = '/uploads/instance'.$channelObj->id.'Image' . time() . '.png';
                     $destinationPath = public_path() . $image;
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
                     $succ = file_put_contents($destinationPath, $qrCode);   
-                    // $data['qrImage'] = \URL::to('/public'.$image);
                     $statusObj['data']['qrImage'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');
                     $statusObj['status'] = \TraitsFunc::SuccessMessage();
                     return \Response::json((object) $statusObj);
@@ -701,7 +734,7 @@ class SubscriptionControllers extends Controller {
     public function updateSubscription(){
         $input = \Request::all();
         Session::forget('userCredits');
-        if( (!isset($input['type']) || empty($input['type'])) || !in_array($input['type'], ['membership','addon','extra_quota'])){
+        if( (!isset($input['type']) || empty($input['type'])) || !in_array($input['type'], ['membership','addon','new','extra_quota'])){
             return redirect(404);    
         }
 
@@ -727,17 +760,20 @@ class SubscriptionControllers extends Controller {
             $newPriceAfterVat = $dataObj->monthly_after_vat;
 
             if($oldDuration == 1){
-                $usedCost = ($dataObj->monthly_after_vat / 30) * $usedDays;
+                $oldPriceDay = $dataObj->monthly_after_vat / 30;
             }else if($oldDuration == 2){
-                $usedCost = ($dataObj->annual_after_vat / 365) * $usedDays;
-                $newPriceAfterVat = $dataObj->annual_after_vat;
+                $oldPriceDay = $dataObj->annual_after_vat / 365;
             }
 
-            $data['userCredits'] = round($newPriceAfterVat - $usedCost,2);
-            Session::put('userCredits',$data['userCredits']);
+            if($userChannelObj->leftDays > 0){
+                $data['userCredits'] = round($oldPriceDay * $userChannelObj->leftDays ,2);
+                Session::put('userCredits',$data['userCredits']);
+            }
+
             $data['membership'] = Membership::getData($dataObj);
             $data['memberships'] = Membership::dataList(1)['data'];
             $data['start_date'] = $userChannelObj->start_date;
+            $data['end_date'] = $userChannelObj->end_date;
         }else if($input['type'] == 'addon'){
             $data['userCredits'] = 0;
             $data['start_date'] = date('Y-m-d');
@@ -751,11 +787,18 @@ class SubscriptionControllers extends Controller {
             if(Session::has('invoice_id') && Session::get('invoice_id') != 0){
                 $data['membership'] = (object)['id'=>0]; //Membership::getData(Membership::getOne(Session::get('membership')));
             }
-        }
-        else if($input['type'] == 'extra_quota'){
+        }else if($input['type'] == 'extra_quota'){
             $data['userCredits'] = 0;
             $data['start_date'] = date('Y-m-d');
             $data['extraQuotas'] = ExtraQuota::dataList(1,null)['data'];
+        }else{
+            $data['addons'] = Addons::dataList(1)['data'];
+            $data['extraQuotas'] = ExtraQuota::dataList(1)['data'];
+
+            $data['membership'] = null;
+            $data['memberships'] = Membership::dataList(1)['data'];
+            $data['start_date'] = date('Y-m-d');
+            $data['userCredits'] = 0;
         }
 
         return view('Tenancy.Profile.Views.V5.cart')->with('data',(object) $data);
@@ -788,18 +831,90 @@ class SubscriptionControllers extends Controller {
                 $title = $dataObj->extra_count . ' '.$dataObj->extraTypeText . ' ' . ($dataObj->extra_type == 1 ? trans('main.msgPerDay') : '');
             }
             $testData[$key][2] = $title;
-            $testData[$key][6] = $one[3] == 1 ? $dataObj->monthly_after_vat : $dataObj->annual_after_vat;
-            $total+= $testData[$key][6] * (int)$testData[$key][7];
+
+            if(abs($total) > 0 && $one[1] == 'membership'){
+                $userChannelObj = UserChannels::getUserChannels()['data'][0];
+                $testData[$key][4] = $userChannelObj->start_date;
+                $testData[$key][5] = $userChannelObj->end_date;
+
+                if($one[3] == 1){
+                    $newPriceDay = $dataObj->monthly_after_vat / 30;
+                }else if($oldDuration == 2){
+                    $newPriceAfterVat = $dataObj->annual_after_vat;
+                    $newPriceDay = $dataObj->annual_after_vat / 365;
+                }
+                $input['totals'] = json_decode($input['totals']);
+                $input['totals'][0] = $newPriceDay * $userChannelObj->leftDays + $total;
+                $tax = \Helper::calcTax($input['totals'][0]);
+                $totalArr = [
+                    number_format((float)$input['totals'][0] - $tax, 2, '.', ''),
+                    0,
+                    number_format((float)$tax, 2, '.', ''),
+                    number_format((float)$input['totals'][0], 2, '.', ''),
+                ];
+
+
+                $input['totals'] = json_encode($totalArr);
+                $testData[$key][6] = $newPriceDay * $userChannelObj->leftDays + $total;
+                $total+= $newPriceDay * $userChannelObj->leftDays ;
+
+            }else{
+                $testData[$key][6] = $one[3] == 1 ? $dataObj->monthly_after_vat : $dataObj->annual_after_vat;
+                $total+= $testData[$key][6] * (int)$testData[$key][7];
+            }
         }
+
+
+        $cartObj = Variable::where('var_key','inv_status')->first();
+        if(!$cartObj){
+            $cartObj = new Variable();
+        }
+        $cartObj->var_key = 'inv_status';
+        $cartObj->var_value = !Session::has('userCredits') ? 'SubscriptionChanged' : 'Upgraded';
+        $cartObj->save();
+
+        $paymentObj = new \SubscriptionHelper(); 
+        $invoice = $paymentObj->setInvoice($testData,USER_ID,TENANT_ID,GLOBAL_ID,'SubscriptionChanged');   
+
+        $inv_id = Variable::where('var_key','inv_id')->first();
+        if(!$inv_id){
+            $inv_id = new Variable();
+        }
+        $inv_id->var_key = 'inv_id';
+        $inv_id->var_value = $invoice->id;
+        $inv_id->save();
+
+        $userObj = User::find(USER_ID);
+        $data['user'] = $userObj;
+        $data['invoice'] = Invoice::getData($invoice);
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
             
         $input['totals'] = json_decode($input['totals']);
         $input['totals'][3] = $total;
+
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($input['totals'][3]), // invoice total amount
+            new InvoiceTaxAmount($input['totals'][2]) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
+        
         $data['data'] = $testData;
         $data['totals'] = $input['totals'];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();
-        $data['user'] = User::first();
         $data['countries'] =  \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
+        $data['disDelete'] = true;
         if(!empty($data['payment']) && $data['payment']->country){
             $data['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$data['payment']->country)->get();
         }

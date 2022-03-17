@@ -13,6 +13,7 @@ use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\OldMembership;
 use App\Models\NotificationTemplate;
 
 
@@ -53,24 +54,28 @@ class SetInvoices extends Command
         $channels = CentralChannel::dataList()['data'];
         $invoices = [];
         foreach ($channels as $value) {
-            if($value->leftDays <= 7){
+            if($value->leftDays <= 7 && $value->leftDays >= -15 ){
                 $userObj = CentralUser::where('global_id',$value->global_user_id)->first();
                 if(isset($userObj->membership_id) && $userObj->membership_id != null){
                     $membershipObj = $userObj->Membership; 
                     $invoiceItems['id'] = $membershipObj->id;
                     $invoiceItems['title_ar'] = $membershipObj->title_ar;
                     $invoiceItems['title_en'] = $membershipObj->title_en;
+                    if($userObj->membership_id != 1){
+                        OldMembership::where('user_id',$userObj->id)->delete();
+                    }
+                    
                     if(in_array($userObj->duration_type,[1,2])){
                         if($userObj->duration_type == 1){
                             $invoiceItems['price'] = $membershipObj->monthly_price;
                             $total = $membershipObj->monthly_after_vat;
                             $invoiceItems['price_after_vat'] = $total;
-                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                            $dueDate =  $value->leftDays < 0 ? strtotime(date('Y-m-d')) : strtotime('+1 day',strtotime($value->end_date) );
                         }else if($userObj->duration_type == 2){
                             $invoiceItems['price'] = $membershipObj->annual_price;
                             $total = $membershipObj->annual_after_vat;
                             $invoiceItems['price_after_vat'] = $total;
-                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                            $dueDate =  $value->leftDays < 0 ? strtotime(date('Y-m-d')) : strtotime('+1 day',strtotime($value->end_date) );
                         }
                         $invoiceItems['duration_type'] = $userObj->duration_type;
                         $invoiceItems['quantity'] = 1;
@@ -90,7 +95,7 @@ class SetInvoices extends Command
                 }
             }
         }
-
+        
         if(!empty($invoices)){
             // Check New Invoices For Addons
             $userAddons = UserAddon::NotDeleted()->groupBy(['user_id','end_date'])->get();
@@ -100,7 +105,7 @@ class SetInvoices extends Command
                 $userObj = CentralUser::find($addon->user_id);
 
                 foreach ($userAddon as $value) {
-                    if($value->leftDays <= 7){
+                    if($value->leftDays <= 7 && $value->status == 1 && $value->leftDays >= -15){
 
                         $membershipObj = $value->Addon; 
                         $oneObj = [];
@@ -111,12 +116,12 @@ class SetInvoices extends Command
                             $oneObj['price'] = $membershipObj->monthly_price;
                             $total = $membershipObj->monthly_after_vat;
                             $oneObj['price_after_vat'] = $membershipObj->monthly_after_vat;
-                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                            $dueDate =  $value->leftDays < 0 ? strtotime(date('Y-m-d')) : strtotime('+1 day',strtotime($value->end_date) );
                         }else if($value->duration_type == 2){
                             $oneObj['price'] = $membershipObj->annual_price;
                             $total = $membershipObj->annual_after_vat;
                             $oneObj['price_after_vat'] = $membershipObj->annual_after_vat;
-                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                            $dueDate =  $value->leftDays < 0 ? strtotime(date('Y-m-d')) : strtotime('+1 day',strtotime($value->end_date) );
                         }
                         $oneObj['duration_type'] = $value->duration_type;
                         $oneObj['quantity'] = 1;
@@ -168,7 +173,7 @@ class SetInvoices extends Command
                 $userExtra = UserExtraQuota::dataList($userExtraQuota->user_id,$userExtraQuota->end_date)['data'];
                 $userObj = CentralUser::find($userExtraQuota->user_id);
                 foreach ($userExtra as $value) {
-                    if($value->leftDays <= 7){
+                    if($value->leftDays <= 7 && $value->leftDays >= -15 && $value->status == 1 ){
 
                         $membershipObj = ExtraQuota::getData($value->ExtraQuota);
                         if(isset($found[$membershipObj->id])){
@@ -184,12 +189,12 @@ class SetInvoices extends Command
                             $oneObj['price'] = $membershipObj->monthly_price;
                             $total = $membershipObj->monthly_after_vat;
                             $oneObj['price_after_vat'] = $membershipObj->monthly_after_vat;
-                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                            $dueDate =  $value->leftDays < 0 ? strtotime(date('Y-m-d')) : strtotime('+1 day',strtotime($value->end_date) );
                         }else if($value->duration_type == 2){
                             $oneObj['price'] = $membershipObj->annual_price;
                             $total = $membershipObj->annual_after_vat;
                             $oneObj['price_after_vat'] = $membershipObj->annual_after_vat;
-                            $dueDate = strtotime('+1 day',strtotime($value->end_date) );
+                            $dueDate =  $value->leftDays < 0 ? strtotime(date('Y-m-d')) : strtotime('+1 day',strtotime($value->end_date) );
                         }
                         $oneObj['duration_type'] = $value->duration_type;
                         $oneObj['quantity'] = $found[$membershipObj->id];
@@ -235,21 +240,23 @@ class SetInvoices extends Command
             }
 
             $channelObj = \DB::connection('main')->table('channels')->first();
-
+            
             foreach($invoices as $invoiceKey  =>  $invoice){
                 foreach ($invoice as $invoiceDate => $oneItem) {
+
                     $emailData = [
                         'name' => $userObj->name,
                         'email' => $userObj->email,
                     ];
 
-                    $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('items',serialize($oneItem['data']['items']))->where('due_date',$invoiceDate)->first();
-
                     $status = 2;
-                    if(date('Y-m-d',strtotime($invoiceDate)) >= date('Y-m-d')){
+                    if(date('Y-m-d',strtotime($invoiceDate)) > date('Y-m-d')){
                         $status = 3;
                     }
-
+                    $dueDate = 
+                    Invoice::where('client_id',$invoiceKey)->where('status','!=',1)->where('due_date','>=',date('Y-m-01',strtotime($invoiceDate)))->where('main',$oneItem['data']['main'])->where('due_date','<=',date('Y-m-t',strtotime($invoiceDate)))->delete();
+                    $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('due_date',$invoiceDate)->where('main',$oneItem['data']['main'])->where('items',serialize($oneItem['data']['items']))->first();
+                    
                     if(!$invoiceObj){
                         $invoiceObj = new Invoice;
                         $invoiceObj->client_id = $invoiceKey;
@@ -275,13 +282,22 @@ class SetInvoices extends Command
                         $invoiceObj->created_by = 1;
                         $invoiceObj->save();
                     }else{
-                        if($invoiceObj->status == 2){
-                            $invoiceObj->status = 3;
-                        }
+                        $invoiceObj->status = $status;
                         $invoiceObj->main = $oneItem['data']['main'];
                         $invoiceObj->save();
                     }
 
+                    // if($oneItem['data']['main'] == 1){
+                    //     $oldMembershipObj = OldMembership::where('user_id',$invoiceKey)->first();
+                    //     if($oldMembershipObj){
+                    //         $oldPr = OldMembership::getOldPrice($oldMembershipObj->membership);
+                    //         if($invoiceObj->total > $oldPr){
+                    //             $invoiceObj->total =  $oldPr;
+                    //             $invoiceObj->save();
+                    //         }
+                    //     }
+                    // }
+                    
                     $tenant = Tenant::find($oneItem['data']['tenant_id']);
                     if($tenant){
                         tenancy()->initialize($tenant);
@@ -453,6 +469,7 @@ class SetInvoices extends Command
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
                         \MailHelper::prepareEmail($phoneData,1,'service');
+                
                     }
                     
                 }

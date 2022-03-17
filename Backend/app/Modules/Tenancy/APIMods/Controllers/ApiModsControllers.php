@@ -133,27 +133,6 @@ class ApiModsControllers extends Controller {
                 'data-col' => 'status',
                 'anchor-class' => 'badge badge-success',
             ],
-            'contacts' => [
-                'label' => trans('main.contactsNos'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'contacts',
-                'anchor-class' => '',
-            ],
-            'hasWhatsapp' => [
-                'label' => trans('main.hasWhats'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'hasWhatsapp',
-                'anchor-class' => '',
-            ],
-            'hasNoWhatsapp' => [
-                'label' => trans('main.hasNotWhats'),
-                'type' => '',
-                'className' => '',
-                'data-col' => 'hasNoWhatsapp',
-                'anchor-class' => '',
-            ],
             'total' => [
                 'label' => trans('main.addNos'),
                 'type' => '',
@@ -187,7 +166,7 @@ class ApiModsControllers extends Controller {
         $columnName = @$columnName_arr[$columnIndex]['data']; // Column name
         $columnSortOrder = @$order_arr[0]['dir']; // asc or desc
         $searchValue = @$search_arr['value']; // Search value
-
+        // dd($searchValue);
         // Fetch records
         // $draw = ($start / 10) + 1 ; 
         if($start >= 10){
@@ -197,10 +176,11 @@ class ApiModsControllers extends Controller {
 
             $data = ChatMessage::generateObj($records,null,null);
         }else{
-            $data = ChatMessage::dataList(null,10,'notNull');
+            $records = ChatMessage::NotDeleted()->search($searchValue)->orderBy('time','DESC');
+            $data = ChatMessage::generateObj($records,10,null);
         }
 
-        $totalRecords = ChatMessage::count();
+        $totalRecords = ChatMessage::search($searchValue)->count();
         $totalRecordswithFilter = $totalRecords;
         
         if($request->ajax()){       

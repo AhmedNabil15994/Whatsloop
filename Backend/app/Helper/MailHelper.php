@@ -83,8 +83,11 @@ class MailHelper
         }
 
         $whatsLoopObj =  new \MainWhatsLoop($channelObj->id,$channelObj->token);
-        $data['body'] = str_replace(' <br> ','\n',$emailData['content']);
-        $data['body'] = str_replace('<br>','\n',$data['body']);
+        $data['body'] = htmlspecialchars_decode($emailData['content']);
+        $breaks = array("<br />","<br>","<br/>");  
+        $data['body'] = str_ireplace($breaks, "\r\n", $data['body']);
+        // $data['body'] = str_replace(' <br> ','\n',$data['body']);
+        // $data['body'] = str_replace('<br>','\n',$data['body']);
         $data['phone'] = str_replace('+','',$phone);
         $test = $whatsLoopObj->sendMessage($data);
         $result = $test->json();

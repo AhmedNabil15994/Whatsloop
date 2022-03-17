@@ -23,13 +23,16 @@
 @endif
 <input type="hidden" name="designElems" value="{{ json_encode($data->designElems) }}">
 
-@if($data->designElems['mainData']['url'] == 'bots')
+@if($data->designElems['mainData']['url'] == 'bots' || $data->designElems['mainData']['url'] == 'botPlus')
 <input type="hidden" name="data-tabs" value="{{ \Helper::checkRules('copy-'.$data->designElems['mainData']['nameOne']) }}">
 @endif
 
 @if($data->designElems['mainData']['url'] == 'tickets')
 <input type="hidden" name="tenant" value="1">
 @endif
+
+
+
 
 @if($data->designElems['mainData']['url'] == 'groupMsgs' || $data->designElems['mainData']['url'] == 'tickets' || $data->designElems['mainData']['url'] == 'invoices' || $data->designElems['mainData']['name'] == 'whatsapp-bankTransfers')
 <input type="hidden" name="data-tab" value="{{ \Helper::checkRules('view-'.$data->designElems['mainData']['nameOne']) }}">
@@ -73,6 +76,11 @@
                         @endif
                     </a>
                     @endif
+
+                    @if($data->designElems['mainData']['url'] == 'bots' && IS_ADMIN && \Helper::checkRules('add-'.$data->designElems['mainData']['nameOne']))
+                        <a href="#" class="edit unknownReply" data-toggle="modal" data-target="#unknownBot">{{ trans('main.unknownReply') }} <i class="flaticon-add"></i></a>
+                    @endif
+
                 </div> 
                 @endif
             </div>
@@ -98,6 +106,9 @@
 @endsection
 
 @section('modals')
+@if($data->designElems['mainData']['url'] == 'bots' && IS_ADMIN)
+@include('tenant.Partials.unknownBot')
+@endif
 @include('tenant.Partials.search_modal')
 @endsection
 

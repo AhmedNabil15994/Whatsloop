@@ -101,6 +101,7 @@
                                                             <i @click="openOptions(index)" class="fa fa-angle-down openOptions"></i>
                                                             <ul class="listOptions" :class="'listOptions'+index">
                                                                 <li @click="reply(message)">رد</li>
+                                                                <li v-if="parseInt(message.file_size) <= 0" @click="resend(message.id)">أعادة ارسال</li>
                                                             </ul>
                                                         </div>
                                                         <!-- withImage:message.quotedMsgBody !== '' -->
@@ -297,7 +298,7 @@
                                                                     </div>
                                                                     <div class="media-body">
                                                                         <div class="text-left">
-                                                                            <h5 class="font-size-14 mb-1 text-truncate" >File.{{message.file_name.split(".")[1]}}</h5>
+                                                                            <h5 class="font-size-14 mb-1 text-truncate" >{{message.caption}}</h5>
                                                                         </div>
                                                                     </div>
 
@@ -649,7 +650,7 @@
                     ref="myVueDropzone"
                     @vdropzone-removed-file="checkFile = false"
                     @vdropzone-file-added="checkFile = true"
-                    acceptedFileTypes=".png,.jpg,.jpeg,.gif,.bmp,.txt,.pdf,.xlsx,'wav','.mp3','.mp4','.m3u','.aac','.vorbis','.flac','.alac','.aiff','.dsd','.ogg','.oga','.ppt','.ptt'"
+                    acceptedFileTypes=".png,.jpg,.jpeg,.gif,.bmp,.txt,.pdf,.xlsx,'wav','.mp3','.mp4','.m3u','.aac','.vorbis','.flac','.alac','.aiff','.dsd','.ogg','.oga','.ppt',.rar,.zip,'.ptt'"
                     id="dropzone"
                     :useCustomSlot="true"
                     :options="dropzoneOptions"
@@ -1138,7 +1139,7 @@ export default {
                         if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("image")) {
                             data.append("type", "2");
                             type = 'image';
-                        } else if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("text") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("sheet") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("pdf")) {
+                        } else if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("text") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("sheet") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("pdf") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("rar") || this.$refs.myVueDropzone.dropzone.files[i].type.includes("zip")) {
                             data.append("type", "2");
                             type = 'document';
                         } else if(this.$refs.myVueDropzone.dropzone.files[i].type.includes("video")) {
@@ -1151,7 +1152,7 @@ export default {
                         if(this.replyArry !== null ) {
                             data.append("replyOn", this.replyArry.id);
                         }
-                      //  console.log(this.$refs.myVueDropzone.dropzone.files[i].type)
+                        console.log(this.$refs.myVueDropzone.dropzone.files[i].type)
                         data.append("file", this.$refs.myVueDropzone.dropzone.files[i]);
 
                         x++;
@@ -1513,6 +1514,14 @@ export default {
                         
                     }
                 })
+            }
+            
+        },
+        resend(id) {
+            if(id){
+                this.$http.get(this.urlApi+`messages/repeatHoook?message_id=${id}`)
+                .then((res) => {
+                });
             }
             
         }

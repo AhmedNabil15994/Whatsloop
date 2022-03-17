@@ -225,6 +225,7 @@ return [
 	'sent_type' => 'Sending Status',
 	'sent_msgs' => 'Sent Messages',
 	'unsent_msgs' => 'Un-Sent Messages',
+	'viewed_msgs' => 'Viewed Messages',
 	'msgs_no' => 'Messages Number',
 	'send' => 'Send',
 	'msgsArchive' => 'Messages Archive',
@@ -533,7 +534,7 @@ return [
 	'invoices' => 'Invoices',
 	'invoiceLink' => 'View Invoice',
 	'tenantInvoice' => 'Invoices',
-	'invoice' => 'Invoice',
+	'invoice' => 'Tax Invoice',
 	'invoice_status_0' => 'Draft', 
 	'invoice_status_1' => 'Paid', 
 	'invoice_status_2' => 'UnPaid', 
@@ -790,28 +791,54 @@ return [
 	'paymentFailedP' => 'Payment Failed,Please try again later or use different payment menthod.',
 	'pleaseWait' => 'Please Wait.',
 	'resetOld' => 'Please reset your password to access the new version',
-
+	
 	'notificationTemplates' => 'Notification Templates',
 	'templateType' => 'Type',
 	'whatsAppMessage' => 'WhatsApp Message',
 	'emailMessage' => 'Email',
 	'contentArValidate' => 'Content Arabic Field is required',
 	'templateTypeValidate' => 'Type Field is required',
-
+	
 	'botPlusNote' => 'Note: Only 3 Buttons appear in WhatsApp Android Application. ',
 	'apiMods' => 'API Modules',
 	'whatsAppCoupon' => 'WhatsApp Orders Coupons ',
-	'resend' => 'Resend',
-
-	'channelSettings_disableGroupsArchive' => 'Disable Groups Archive',
+    'resend' => 'Resend (All)',
+	'resendUnsent' => 'Resend (Un-Sent)',
+    
+    'channelSettings_disableGroupsArchive' => 'Disable Groups Archive',
 	'channelSettings_disableDialogsArchive' => 'Disable Dialogs Archive',
 	'daily' => 'Daily',
 	'clientsValidate' => 'Please Select at least one client',
 	'sentBefore' => 'Had been sent before' ,
 	'pubDate' => 'Publish Date',
-
+	
 	'messagesQueue' => 'Messages in progress',
 	'first100Msgs' => 'First 100 Messages',
+    
+    
+    'transferDays' => 'Transfer Days',
+	'pushChannelSetting' => 'Push Channel Settings',
+	'pushAddonSetting' => 'Push Addons Settings',
+	'setInvoices' => 'Publish Invoices',
+	'refresh2' => 'Refresh',
+	
+	'reports' => 'Reports',
+	'zidReports' => 'Zid Reports',
+	'sallaReports' => 'Salla Reports',
+	'webhooksCount' => 'Count',
+	'invoiceId' => 'Invoice No',
+	
+	'try_again_in_minute' => 'please try again in a minute',
+	'unknownReply' => 'Reply to unrecognized messages',
+	'send_buttons' => 'Send Buttons',
+	
+	'botPlusNotify' => 'To improve your experience in WhatsApp Loop, please do not upgrade to the beta version of WhatsApp Beta until it is officially stable',
+
+    'oldUpgradeNotify' => 'When adding any package, the subscription will be calculated on the new prices of the platform.',
+	
+    'templatesNotify' => 'Zid & Salla Templates have been upgraded to be able to use Bot Plus in customer alerts.',
+    'mods' => 'Moderators',
+    'assignLabel' => 'Assign Label To Conversation',
+    'assignMod' => 'Assign Moderator To Conversation',
+    'changeOrderStatusTo' => 'Change Order Status To',
 ];
-
-

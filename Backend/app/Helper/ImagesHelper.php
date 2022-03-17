@@ -31,7 +31,7 @@ class ImagesHelper {
 
     static function checkExtensionType($extension,$type=null){
         $images = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
-        $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','pdf','plain'];
+        $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','x-rar','pdf','plain'];
         $videos = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv','x-m4v'];
         $sounds = ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd','ogg','oga','ppt','ptt'];
 

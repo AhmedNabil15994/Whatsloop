@@ -219,4 +219,12 @@ return [
     'CentralCategoryControllers@arrange' => 'sort-category',
     'CentralCategoryControllers@charts' => 'charts-category',
 
+    'ReportsControllers@zid' => 'list-zidReports',
+    'ReportsControllers@salla' => 'list-sallaReports',
+
+    'SallaControllers@index' => 'list-salla',
+    'SallaControllers@edit' => 'edit-salla',
+    'SallaControllers@update' => 'edit-salla',
+    'SallaControllers@add' => 'add-salla',
+    'SallaControllers@create' => 'add-salla',
 ];

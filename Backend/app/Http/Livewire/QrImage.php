@@ -31,6 +31,7 @@ class QrImage extends Component
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $result = $mainWhatsLoopObj->status();
         $result = $result->json();
+        $channelObj =  UserChannels::first();
         
         $data['url'] = asset('images/qr-load.png');
         $data['area'] = 1;
@@ -40,7 +41,7 @@ class QrImage extends Component
             Variable::where('var_key','QRSYNCING')->delete();
             if($result['data']['accountStatus'] == 'got qr code'){
                 if(isset($result['data']['qrCode'])){
-                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $image = '/uploads/instance'.$channelObj->id.'Image' . time() . '.png';
                     $destinationPath = public_path() . $image;
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
                     $data['url'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');

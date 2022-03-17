@@ -100,7 +100,7 @@
                             <div class="box-content">
                                 <div class="row">
                                     @foreach($data->memberships as $membership)
-                                    @if($membership->id != 4 && $membership->id != $data->membership->id)
+                                    @if($membership->id != 4 && $membership->id != @$data->membership->id)
                                     <div class="col-sm-6 col-md-4 col-lg-4 item-parent">
                                         <div class="quta-card">
                                             <h5 class="card-title">{{ trans('main.features') }}</h5>

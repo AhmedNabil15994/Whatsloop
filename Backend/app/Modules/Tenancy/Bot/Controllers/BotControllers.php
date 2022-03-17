@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Bot;
+use App\Models\Variable;
 use App\Models\UserExtraQuota;
 use App\Models\Template;
 use App\Models\Photo;
@@ -18,6 +19,24 @@ class BotControllers extends Controller {
 
     use \TraitsFunc;
     public $addonId = '1';
+
+    public function addBotReply(){
+        $input = \Request::all();
+        if(isset($input['message']) && !empty($input['message'])){
+            $varObj = Variable::where('var_key','UNKNOWN_BOT_REPLY')->first();
+            if($varObj){
+                $varObj->var_value = $input['message'];
+                $varObj->save();
+            }else{
+                $varObj = new Variable;
+                $varObj->var_key = 'UNKNOWN_BOT_REPLY';
+                $varObj->var_value = $input['message'];
+                $varObj->save();
+            }
+            return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+        }
+        return \TraitsFunc::ErrorMessage(trans('main.replyValidate'));
+    }
 
     public function getData(){
         $userObj = User::find(USER_ID);

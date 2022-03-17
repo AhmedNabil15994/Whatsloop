@@ -29,6 +29,9 @@
         margin-left: 15px;
         margin-right: 15px;
     }
+    .break{
+        white-space: break-spaces;
+    }
 </style>
 @endsection
 
@@ -54,7 +57,7 @@
                             <span class="time">{{ $comment->created_at }}</span>
                         </div>
                         <div class="commentContent">
-                            {!! $comment->comment !!}
+                            <div class="break">{!! $comment->comment !!}</div>
                             <div class="files">
                                 @if($comment->file_name != null)
                                 @if($comment->file_type == 'photo')

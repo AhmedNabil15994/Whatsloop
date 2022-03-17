@@ -15,6 +15,10 @@ class BankTransfer extends Model{
         return $this->belongsTo('App\Models\CentralUser','user_id');
     }
 
+    public function Invoice(){
+        return $this->belongsTo('App\Models\Invoice','invoice_id');
+    }
+
     static function getPhotoPath($id, $photo) {
         return \ImagesHelper::GetImagePath('bank_transfers', $id, $photo,false);
     }
@@ -74,7 +78,7 @@ class BankTransfer extends Model{
         $data->tenant_id = $source->tenant_id;
         $data->invoice_id = $source->invoice_id;
         $data->order_no = $source->order_no;
-        $data->total = $source->total;
+        $data->total = $source->Invoice != null ? Invoice::getData($source->Invoice)->roTtotal : $source->total;
         $data->domain = $source->domain;
         $data->sort = $source->sort;
         $data->status = $source->status;

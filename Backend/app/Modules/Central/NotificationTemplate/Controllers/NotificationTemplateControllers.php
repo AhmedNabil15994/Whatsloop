@@ -72,6 +72,13 @@ class NotificationTemplateControllers extends Controller {
                 'data-col' => 'title_ar',
                 'anchor-class' => 'editable',
             ],
+            'title_en' => [
+                'label' => trans('main.name_en'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'title_en',
+                'anchor-class' => '',
+            ],
             'content_ar' => [
                 'label' => trans('main.content_ar'),
                 'type' => '',

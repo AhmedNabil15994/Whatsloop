@@ -35,6 +35,15 @@
 			'tenant_id' => TENANT_ID
 			])
 		@endif
+
+		@if(Session::get('is_old') == 1 && Request::segment(1) == 'updateSubscription')
+		<div class="container-fluid">
+			<div class="Additions" style="margin-top: 86px;">
+		        <h2 class="title">{{ trans('main.oldUpgradeNotify') }}</h2>
+		        <a href="#" class="btnAdd" style="visibility: hidden;"></a>
+		    </div> 
+		</div>
+		@endif
 		
 		@yield('content')
 

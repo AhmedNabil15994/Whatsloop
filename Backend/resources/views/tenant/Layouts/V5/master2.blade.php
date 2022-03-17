@@ -39,8 +39,17 @@
 					'tenant_id' => TENANT_ID
 					])
 				@endif
+
+				@if(in_array(10,Session::get('addons')))
+				<div class="Additions">
+			        <h2 class="title">{{ trans('main.botPlusNotify') }}</h2>
+			        <a href="#" class="btnAdd" style="visibility: hidden;"></a>
+			    </div> 
+				@endif
+
 				@yield('content')
 			</div>
+
 		</div>
 		
 		@yield('modals')

@@ -30,6 +30,11 @@ class Contact extends Model{
         return $this->belongsTo('App\Models\GroupNumber','group_id');
     }
 
+    public function NotDeletedGroup(){
+        return $this->belongsTo(GroupNumber::class,'group_id','id')->where('deleted_by',  null);
+    }
+
+
     public function Reports(){
         return $this->hasMany('App\Models\ContactReport','contact','phone');
     }
@@ -65,6 +70,12 @@ class Contact extends Model{
         $contactObj->save();
     }
 
+    static function reformChatId($chatId){
+        $chatId = str_replace('@c.us','',$chatId);
+        $chatId = str_replace('@g.us','',$chatId);
+        return $chatId;
+    }
+
     static function getOneByPhone($phone){
         $contactObj = self::NotDeleted()->where('phone','+'.$phone)->orderBy('id','DESC')->first();
         if($contactObj != null){
@@ -73,7 +84,7 @@ class Contact extends Model{
     }
 
     static function lastContacts(){
-        $contactObj = self::NotDeleted()->with('Group')->orderBy('id','DESC')->take(20)->inRandomOrder();
+        $contactObj = self::NotDeleted()->whereHas('NotDeletedGroup')->with('Group')->orderBy('id','DESC')->take(20)->inRandomOrder();
         if($contactObj != null){
             return self::generateObj($contactObj);
         }
@@ -82,7 +93,7 @@ class Contact extends Model{
     static function dataList($status=null,$id=null,$group_id=null,$withMessageStatus=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted()->with(['Group'])->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->whereHas('NotDeletedGroup')->with(['Group'])->where(function ($query) use ($input) {
                     if (isset($input['id']) && !empty($input['id'])) {
                         $query->where('id', $input['id']);
                     } 
@@ -130,7 +141,7 @@ class Contact extends Model{
         $input = \Request::all();
         $pageNo = 15;
 
-        $source = self::NotDeleted()->with(['Group','Reports'])->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->whereHas('NotDeletedGroup')->with(['Group','Reports'])->where(function ($query) use ($input) {
                     if (isset($input['name']) && !empty($input['name'])) {
                         $query->where('name', 'LIKE', '%' . $input['name'] . '%');
                     } 
@@ -204,7 +215,7 @@ class Contact extends Model{
     }
 
     static function generateReportObj($source,$group_message_id){
-        $sourceArr = $source->get();
+        $sourceArr = $source->paginate(10);
         $groupMsgObj = GroupMsg::getOne($group_message_id);
         $groupMsgObj = $groupMsgObj ? GroupMsg::getData($groupMsgObj) : null;
         $list = [];
@@ -213,29 +224,28 @@ class Contact extends Model{
             $list[$key] = self::getReportData($value,$groupMsgObj);
         }
         $data['data'] = $list;
+        $data['pagination'] = \Helper::GeneratePagination($sourceArr);
         return $data;
     }
 
     static function getContactsReports(){
-        $source = self::NotDeleted()->with('Group');
+        $source = self::NotDeleted()->whereHas('NotDeletedGroup')->with('Group');
         if(Session::has('channelCode')){
             $source->whereHas('Group',function($groupQuery){
                 $groupQuery->where('channel',Session::get('channelCode'))->orWhere('channel','');
             });
         }
-        $source = $source->select('*','phone as phones',\DB::raw('count(*) as total'),\DB::raw('sum(has_whatsapp) as found'))->groupBy('created_at','group_id')->orderBy('created_at','DESC')->get();
+        $source = $source->select('*',\DB::raw('count(*) as total'),\DB::raw('sum(has_whatsapp) as found'))->groupBy('created_at','group_id')->orderBy('created_at','DESC')->get();
 
         $list = [];
         $i = 1;
-        $myContacts = [];
         $hasWhatsapp = 0;
         $hasNoWhatsapp = 0;
-
         foreach ($source as $key => $contact) {
             // $contacts = self::NotDeleted()->where('group_id',$value->group_id)->where('created_at',$value->created_at)->get();
             // $contacts = reset($contacts);
+            $totals = Variable::getVar('check_'.$contact->group_id.'_'.$contact->created_at);
 
-            $myContacts[] = str_replace('+', '', $contact->phone);
             $hasWhatsapp = $contact->found; 
             $hasNoWhatsapp = $contact->total - $contact->found; 
             
@@ -244,10 +254,10 @@ class Contact extends Model{
             $list[$key]->id = $i;
             $list[$key]->group_id = $contact->group_id;
             $list[$key]->group_name = $contact->Group->{'name_'.LANGUAGE_PREF};
-            $list[$key]->status = trans('main.done');
+            $list[$key]->status = $totals == null ? trans('main.done') : ($totals == $contact->total ? trans('main.done') : trans('main.inPrgo'));
             $list[$key]->total = $contact->total;
-            $list[$key]->hasWhatsapp = $hasWhatsapp;
-            $list[$key]->hasNoWhatsapp = $hasNoWhatsapp;
+            $list[$key]->hasWhatsapp = $hasWhatsapp == null ? 0 : $hasWhatsapp;
+            $list[$key]->hasNoWhatsapp = $hasNoWhatsapp == null ? 0 : $hasNoWhatsapp;
             $list[$key]->contacts = $contact->total;
             $list[$key]->created_at = $contact->created_at;
             $i++;
@@ -273,7 +283,7 @@ class Contact extends Model{
         $data->group = $source->Group != null ? $source->Group->{'name_'.(\Session::has('group_id') ? LANGUAGE_PREF : 'ar')} : '';
         $data->phone = $source->phone;
         $data->phone2 = str_replace('+', '', str_replace('@c.us','',$source->phone));
-        $data->name = $source->name != null ? $source->name : $data->phone2;
+        $data->name = $source->name != null ? self::reformChatId($source->name) : self::reformChatId($data->phone2);
         $data->lang = $source->lang;
         $data->langText = $source->lang == 0 ? trans('main.arabic') : trans('main.english');
         $data->notes = $source->notes;
@@ -348,18 +358,18 @@ class Contact extends Model{
                 return $data;
             }
 
-            $reportObj = $source->LastReport;
+            $reportObj = $source->LastReport()->where('group_message_id',$groupMsgObj->id)->first();
             if($reportObj == null){
-                $status= ['info',trans('main.inPrgo')];
+                $status= ['info',trans('main.inPrgo'),date('Y-m-d H:i:s')];
             }else{
                 if($reportObj->status == 0){
-                    $status = ['danger',trans('main.notSent')];
+                    $status = ['danger',trans('main.notSent'),$reportObj->created_at];
                 }else if($reportObj->status == 1){
-                    $status = ['success',trans('main.sent')];
+                    $status = ['success',trans('main.sent'),$reportObj->created_at];
                 }else if($reportObj->status == 2){
-                    $status = ['info',trans('main.received')];
+                    $status = ['info',trans('main.received'),$reportObj->created_at];
                 }else if($reportObj->status == 3){
-                    $status = ['primary',trans('main.seen')];
+                    $status = ['primary',trans('main.seen'),$reportObj->created_at];
                 }
             }
             $data->reportStatus = $status;

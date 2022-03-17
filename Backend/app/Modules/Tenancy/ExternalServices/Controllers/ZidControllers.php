@@ -14,6 +14,9 @@ use App\Models\CentralVariable;
 use App\Jobs\AbandonedCart;
 use App\Models\UserAddon;
 use App\Models\ModNotificationReport;
+use App\Models\OAuthData;
+use App\Models\BotPlus;
+use App\Models\Bot;
 use DB;
 use DataTables;
 
@@ -30,30 +33,167 @@ class ZidControllers extends Controller {
         }
     }
 
+    public function settings(){
+        $mainUser = User::first();
+        // Prepare OAuth Data
+        $oauthData = [
+            'type' => 'zid',
+            'user_id' => $mainUser->id,
+            'tenant_id' => TENANT_ID,
+            'phone' => $mainUser->phone,
+            'domain' => $mainUser->domain,
+            'created_at' => date('Y-m-d H:i:s'),
+
+        ];
+
+        $firstObj = OAuthData::where('type','zid')->orderBy('id','DESC')->first();
+        if($firstObj->access_token != null){
+            $oauthDataObj = OAuthData::where('type','zid')->where('user_id',$mainUser->id)->first();
+            if(!$oauthDataObj){
+                OAuthData::where('type','zid')->where('user_id',$mainUser->id)->create($oauthData);
+            }
+
+            $base_url = 'https://oauth.zid.sa';
+
+            //Authorization Endpoint (Redirect)
+            $queries = http_build_query([
+                'client_id' => CentralVariable::getVar('ZID_CLIENT_ID'),
+                'redirect_uri' => config('app.BASE_URL').'/oauth/callback',
+                'response_type' => 'code'
+            ]);
+            // dd($queries);
+            $input = \Request::all();
+
+            $rules = [
+                'store_id' => 'required',
+            ];
+
+            $message = [
+                'store_id.required' => trans('main.storeIDValidation'),
+            ];
+
+            if(isset($input['store_id']) && !empty($input['store_id'])){
+                $zidStoreID = Variable::NotDeleted()->where('var_key','ZidStoreID')->first();
+                if($zidStoreID == null){
+                    $zidStoreID = new Variable;
+                    $zidStoreID->var_key = 'ZidStoreID';
+                    $zidStoreID->var_value = $input['store_id'];
+                    $zidStoreID->created_at = DATE_TIME;
+                    $zidStoreID->created_by = USER_ID;
+                    $zidStoreID->save();
+                }else{
+                    $zidStoreID->var_value = $input['store_id'];
+                    $zidStoreID->updated_at = DATE_TIME;
+                    $zidStoreID->updated_by = USER_ID;
+                    $zidStoreID->save();
+                }
+            }
+
+            return redirect($base_url . '/oauth/authorize?' . $queries);
+        }else{
+            Session::flash('success', trans('main.try_again_in_minute'));
+            return redirect()->to('/dashboard');
+        }        
+    }
+
+    public function postSettings(Request $request){
+        $input = $request->all();
+        if($input['type'] == 'success'){
+            $data = json_decode($input['data']);
+            $storeId = Variable::getVar('ZidStoreID');
+
+            $userObj = User::first();
+            $addonObj = UserAddon::where('addon_id',4)->where('user_id',$userObj->id)->first();
+            // if($addonObj->setting_pushed != 1){
+                $webhookUrl = str_replace('://', '://'.$userObj->domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/zid-webhook';
+                $actions = ['order.create','order.status.update','product.create','product.update','product.publish','product.delete'];
+                $url = CentralVariable::getVar('ZidURL').'/managers/webhooks';
+                
+                $managerToken = CentralVariable::getVar('ZidMerchantToken2');
+                $authorize = CentralVariable::getVar('ZidMerchantToken');
+                $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
+                
+                foreach($actions as $key => $action){
+                    $urlData = [
+                        'event' => $action,
+                        'target_url' => $webhookUrl,
+                        'original_id' => 610 + $key,
+                        'subscriber' => ucwords(str_replace('.',' ',$action)).' Notify',
+                        'conditions' => "{}",
+                    ];
+                    $payload = json_encode($urlData);
+
+
+                    if($storeId && $managerToken){
+
+                        $ch = curl_init($url);
+
+                        curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 
+                        curl_setopt($ch, CURLOPT_HTTPHEADER,     array(
+                            'Content-Type: application/json', 
+                            'STORE-ID: '.$storeId,
+                            'ROLE: Manager',
+                            'X-MANAGER-TOKEN: '.$managerToken,
+                            'User-Agent: whatsloop/1.00.00 (web)',
+                            'Accept-Language: en',
+                            'Authorization: Bearer '.$authorize,
+                        )); 
+                        curl_setopt($ch, CURLOPT_POST,           1 );
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+                        $result=curl_exec ($ch);   
+                        $addonObj->setting_pushed = 1;
+                        $addonObj->save();
+                    }
+                }
+            // }
+
+
+            Session::flash('success', trans('main.inPrgo'));
+            return redirect()->to('/dashboard');     
+        }else{
+            Session::flash('success', trans('main.try_again_in_minute'));
+            return redirect()->to('/dashboard');
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     public function customers(Request $request){
         $input = \Request::all();
         $modelName = 'customers';
         $service = $this->service;
 
         $baseUrl = CentralVariable::getVar('ZidURL');
-        $storeID = Variable::getVar('ZidStoreID');
+        // $storeID = Variable::getVar('ZidStoreID');
         $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        $managerToken = Variable::getVar('ZidStoreToken');
-        
+        // $managerToken = Variable::getVar('ZidStoreToken');
+        $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
+        $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
+
         $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
 
         $tableName = $service.'_'.$modelName;
 
         $myHeaders = [
-            "X-MANAGER-TOKEN" => $managerToken,
-            "STORE-ID" => $storeID,
-            "ROLE" => 'Manager',
-            'User-Agent' => 'whatsloop/1.00.00 (web)',
+            "X-MANAGER-TOKEN" => $storeToken,
+            // "Authorization" => $authorize,
+            // "STORE-ID" => $storeID,
+            // "ROLE" => 'Manager',
+            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
             'baseUrl' => $baseUrl,
-            'storeToken' => $storeToken,
+            'storeToken' => $oauthDataObj->authorization,
             'dataURL' => $dataURL,
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
@@ -83,22 +223,26 @@ class ZidControllers extends Controller {
         $baseUrl = CentralVariable::getVar('ZidURL');
         $storeID = Variable::getVar('ZidStoreID');
         $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        $managerToken = Variable::getVar('ZidStoreToken');
+        // $managerToken = Variable::getVar('ZidStoreToken');
+        $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
+        $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
+
         
         $dataURL = $baseUrl.'/'.$modelName.'/'; 
 
         $tableName = $service.'_'.$modelName;
 
         $myHeaders = [
-            "X-MANAGER-TOKEN" => $managerToken,
+            "X-MANAGER-TOKEN" => $storeToken,
+            // "Authorization" => $authorize,
             "STORE-ID" => $storeID,
             "ROLE" => 'Manager',
-            'User-Agent' => 'whatsloop/1.00.00 (web)',
+            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
             'baseUrl' => $baseUrl,
-            'storeToken' => $storeToken,
+            'storeToken' => $oauthDataObj->authorization,
             'dataURL' => $dataURL,
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
@@ -126,24 +270,27 @@ class ZidControllers extends Controller {
         $service = $this->service;
 
         $baseUrl = CentralVariable::getVar('ZidURL');
-        $storeID = Variable::getVar('ZidStoreID');
+        // $storeID = Variable::getVar('ZidStoreID');
         $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        $managerToken = Variable::getVar('ZidStoreToken');
+        // $managerToken = Variable::getVar('ZidStoreToken');
+        $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
+        $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
         
         $dataURL = $baseUrl.'/managers/store/'.$modelName.'/'; 
 
         $tableName = $service.'_'.$modelName;
 
         $myHeaders = [
-            "X-MANAGER-TOKEN" => $managerToken,
-            "STORE-ID" => $storeID,
-            "ROLE" => 'Manager',
-            'User-Agent' => 'whatsloop/1.00.00 (web)',
+            "X-MANAGER-TOKEN" => $storeToken,
+            // "Authorization" => $authorize,
+            // "STORE-ID" => $storeID,
+            // "ROLE" => 'Manager',
+            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
             'baseUrl' => $baseUrl,
-            'storeToken' => $storeToken,
+            'storeToken' => $oauthDataObj->authorization,
             'dataURL' => $dataURL,
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
@@ -235,24 +382,27 @@ class ZidControllers extends Controller {
         $service = $this->service;
 
         $baseUrl = CentralVariable::getVar('ZidURL');
-        $storeID = Variable::getVar('ZidStoreID');
+        // $storeID = Variable::getVar('ZidStoreID');
         $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        $managerToken = Variable::getVar('ZidStoreToken');
+        // $managerToken = Variable::getVar('ZidStoreToken');
+        $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
+        $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
         
         $dataURL = $baseUrl.'/managers/store/abandoned-carts'; 
 
         $tableName = $service.'_'.$modelName;
 
         $myHeaders = [
-            "X-MANAGER-TOKEN" => $managerToken,
-            "STORE-ID" => $storeID,
-            "ROLE" => 'Manager',
-            'User-Agent' => 'whatsloop/1.00.00 (web)',
+            "X-MANAGER-TOKEN" => $storeToken,
+            // "Authorization" => $authorize,
+            // "STORE-ID" => $storeID,
+            // "ROLE" => 'Manager',
+            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
             'baseUrl' => $baseUrl,
-            'storeToken' => $storeToken,
+            'storeToken' => $oauthDataObj->authorization,
             'dataURL' => $dataURL,
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
@@ -856,6 +1006,9 @@ class ZidControllers extends Controller {
             return Redirect('404');
         }
 
+        $checkAvailBot = UserAddon::checkUserAvailability(USER_ID,1);
+        $checkAvailBotPlus = UserAddon::checkUserAvailability(USER_ID,10);
+
         $userObj = User::getData(User::getOne(USER_ID));
 
         $data['designElems']['mainData'] = [
@@ -868,27 +1021,161 @@ class ZidControllers extends Controller {
         ];
 
         $data['data'] = ModTemplate::getData($dataObj);
+        $data['mods'] = User::getModerators()['data'];
+        $data['labels'] = Category::dataList()['data'];
+        $data['statuses'] = [
+            ['id'=>'جديد','name'=>'جديد'],
+            ['id'=>'جاري التجهيز','name'=>'جاري التجهيز'],
+            ['id'=>'جاهز','name'=>'جاهز'],
+            ['id'=>'جارى التوصيل','name'=>'جارى التوصيل'],
+            ['id'=>'تم التوصيل','name'=>'تم التوصيل'],
+            ['id'=>'تم الالغاء','name'=>'تم الالغاء'],
+            ['id'=>'ترحيب بالعميل','name'=>'ترحيب بالعميل'],
+        ];
+        $data['bots'] = $checkAvailBot ? Bot::dataList(1)['data'] : [];
+        $data['botPluss'] = $checkAvailBotPlus ? BotPlus::dataList(1)['data'] : [];
+        $data['botPlus'] = $dataObj->type > 1 ? BotPlus::getData(BotPlus::find($dataObj->type)) : [];        
+        $data['checkAvailBotPlus'] = $checkAvailBotPlus != null ? 1 : 0;
+        $data['checkAvailBot'] = $checkAvailBot != null ? 1 : 0;
         return view('Tenancy.ExternalServices.Views.V5.edit')->with('data', (object) $data);      
+    }
+
+    protected function validateInsertObject($input){
+        $rules = [
+            'title' => 'required',
+            'body' => 'required',
+            'footer' => 'required',
+            'buttons' => 'required',
+        ];
+
+        $message = [
+            'title.required' => trans('main.titleValidate'),
+            'body.required' => trans('main.bodyValidate'),
+            'footer.required' => trans('main.footerValidate'),
+            'buttons.required' => trans('main.buttonsValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+        return $validate;
     }
 
     public function templatesUpdate($id) {
         $id = (int) $id;
         $service = $this->service;
-       
+
         $input = \Request::all();
         $dataObj = ModTemplate::NotDeleted()->where('mod_id',2)->where('id',$id)->first();
         if($dataObj == null) {
             return Redirect('404');
         }
+        // dd($input);
 
-        $dataObj->content_ar = $input['content_ar'];
-        $dataObj->content_en = $input['content_en'];
-        $dataObj->status = $input['status'];
-        $dataObj->updated_at = DATE_TIME;
-        $dataObj->updated_by = USER_ID;
-        $dataObj->save();
+        if(isset($input['type']) && !empty($input['type'])){
+            if($input['type'] == 2){
+                $validate = $this->validateInsertObject($input);
+                if($validate->fails()){
+                    Session::flash('error', $validate->messages()->first());
+                    return redirect()->back();
+                }
 
-        Session::flash('success', trans('main.editSuccess'));
+                $myData = [];
+                for ($i = 0; $i < $input['buttons']; $i++) {
+                    if(!isset($input['btn_text_'.($i+1)]) || empty($input['btn_text_'.($i+1)]) || $input['btn_text_'.($i+1)] == null ){
+                        Session::flash('error', trans('main.invalidText',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    if(!isset($input['btn_reply_type_'.($i+1)]) || empty($input['btn_reply_type_'.($i+1)]) || $input['btn_reply_type_'.($i+1)] == null ){
+                        Session::flash('error', trans('main.invalidType',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    $replyType = (int)$input['btn_reply_type_'.($i+1)];
+                    if($replyType == 1 && ( !isset($input['btn_reply_'.($i+1)]) || empty($input['btn_reply_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidReply',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    if($replyType == 2 && ( !isset($input['btn_msg_'.($i+1)]) || empty($input['btn_msg_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    if($replyType == 3 && ( !isset($input['btn_msgs_'.($i+1)]) || empty($input['btn_msgs_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    $modelType = '';
+                    if($replyType == 2 && ( !isset($input['btn_msg_type_'.($i+1)]) || empty($input['btn_msg_type_'.($i+1)]) )){
+                        Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                        return redirect()->back()->withInput();
+                    }
+
+                    $modelType = (int)$input['btn_msg_type_'.($i+1)];
+
+                    $modelName = $modelType != '' ?  ($modelType == 1 ? '\App\Models\Bot' : '\App\Models\BotPlus')  : '';
+                    $msg = $replyType == 1 ? $input['btn_reply_'.($i+1)] : '';
+
+                    if($modelName != '' && $msg == '' && $replyType != 3){
+                        $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
+                        if($dataObj){
+                            $msg = $dataObj->id;
+                        }
+                    }
+
+                    if($replyType == 3){
+                        $msg = $input['btn_msgs_'.($i+1)];
+                        $modelName = 'zid_order_status';
+                    }
+
+                    $myData[] = [
+                        'id' => $i + 1,
+                        'text' => $input['btn_text_'.($i+1)],
+                        'reply_type' => $input['btn_reply_type_'.($i+1)],
+                        'msg_type' => $modelType,
+                        'model_name' => $modelName,
+                        'msg' => $msg,
+                    ];
+                }
+
+                // dd($myData);
+                if($dataObj->type > 1){
+                    $botObj = BotPlus::find($dataObj->type);
+                }else{
+                    $botObj = new BotPlus();
+                }
+                
+                $botObj->message_type = 1;
+                $botObj->channel = Session::get('channelCode');
+                $botObj->message = 'Zid Template '.$id;
+                $botObj->title = $input['title'];
+                $botObj->body = $input['body'];
+                $botObj->footer = $input['footer'];
+                $botObj->buttons = $input['buttons'];
+                $botObj->buttonsData = serialize($myData);
+                $botObj->status = 1;
+                $botObj->deleted_by = 1;
+                $botObj->deleted_at = DATE_TIME;
+                $botObj->save();
+
+                $input['content_ar'] = $input['body'];
+                $input['content_en'] = $input['body'];
+                $input['type'] = $botObj->id;
+            }
+
+            $dataObj = ModTemplate::find($id);
+            $dataObj->content_ar = $input['content_ar'];
+            $dataObj->content_en = $input['content_en'];
+            $dataObj->status = $input['status'];
+            $dataObj->type = $input['type'];
+            $dataObj->category_id = $input['category_id'];
+            $dataObj->moderator_id = $input['moderator_id'];
+            $dataObj->updated_at = DATE_TIME;
+            $dataObj->updated_by = USER_ID;
+            $dataObj->save();
+            Session::flash('success', trans('main.editSuccess'));
+        }        
         return \Redirect::back()->withInput();
     }
 

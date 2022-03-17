@@ -122,7 +122,7 @@ class AuthControllers extends Controller {
         session()->flush();
         $lang = Session::put('locale',$lang);
         Session::flash('success', trans('auth.seeYou'));
-        return redirect()->away('https://wloop.net/logout');
+        return redirect()->away('http://whatsloop.localhost/logout');
     }
 
     public function getResetPassword(){

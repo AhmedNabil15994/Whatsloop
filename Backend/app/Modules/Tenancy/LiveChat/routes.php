@@ -13,6 +13,7 @@ Route::group(['prefix' => '/livechat'] , function () use ($controller) {
     Route::post('/unreadChat', [$controller,'unreadChat']);
 
     Route::get('/messages', [$controller,'messages']);
+    Route::get('/messages/repeatHoook', [$controller,'repeatHoook']);
     Route::post('/sendMessage', [$controller,'sendMessage']);
     
     Route::get('/labels', [$controller,'labels']);

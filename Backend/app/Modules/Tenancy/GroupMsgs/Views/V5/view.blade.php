@@ -15,6 +15,26 @@
     .cards{
         max-height: 500px;
     }
+    .nextPrev .btnNext.resend{
+        width: auto;
+    }
+    .mainRow{
+        border-bottom: 1px solid #F6F6F6;
+    }
+    html[dir="rtl"] .res{
+        margin-top: 10px;
+        padding-left: 30px;
+    }
+    html[dir="ltr"] .res{
+        margin-top: 10px;
+        padding-right: 30px;
+    }
+    .mt-5{
+        margin-top: 50px;
+    }
+    .pagin{
+        padding: 15px;
+    }
 </style>
 @endsection
 @section('content')
@@ -22,34 +42,33 @@
 <div class="container-fluid">
     <div class="row stats">    
         <div class="col-md-3">
-            <div class="itemStats color1">
-                <h2 class="title">{{ trans('main.msgs_no') }}</h2>
-                <span class="numb">{{ $data->data->messages_count }}</span>
-                <i class="icon flaticon-email-1"></i>
-            </div>
-        </div>
-        <div class="col-md-3">
             <div class="itemStats color2">
                 <h2 class="title">{{ trans('main.contacts_count') }}</h2>
-                <span class="numb">{{ $data->data->contacts_count }}</span>
+                <span class="numb">{{ $data->msg->contacts_count }}</span>
                 <i class="icon flaticon-users"></i>
             </div>
         </div>
         <div class="col-md-3">
             <div class="itemStats color3">
                 <h2 class="title">{{ trans('main.sent_msgs') }}</h2>
-                <span class="numb">{{ $data->data->sent_msgs }}</span>
+                <span class="numb">{{ $data->msg->sent_msgs }}</span>
                 <i class="icon flaticon-paper-plane"></i>
             </div>
         </div>
         <div class="col-md-3">
             <div class="itemStats color4">
                 <h2 class="title">{{ trans('main.unsent_msgs') }}</h2>
-                <span class="numb">{{ $data->data->unsent_msgs }}</span>
+                <span class="numb">{{ $data->msg->unsent_msgs }}</span>
                 <i class="icon flaticon-reply"></i>
             </div>
         </div>
-        
+         <div class="col-md-3">
+            <div class="itemStats color1">
+                <h2 class="title">{{ trans('main.viewed_msgs') }}</h2>
+                <span class="numb">{{ $data->msg->viewed_msgs }}</span>
+                <i class="icon fa fa-eye"></i>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -67,7 +86,7 @@
                                 <label class="titleLabel">{{ trans('main.status') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input disabled name="name_ar" value="{{ $data->data->sent_msgs > 0 ? trans('main.sent') : $data->data->sent_type }}">
+                                <input disabled name="name_ar" value="{{ $data->msg->sent_msgs > 0 ? trans('main.sent') : $data->msg->sent_type }}">
                             </div>
                         </div> 
                         <div class="row">
@@ -75,7 +94,7 @@
                                 <label class="titleLabel">{{ trans('main.sender') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input disabled name="name_ar" value="{{ $data->data->creator }}">
+                                <input disabled name="name_ar" value="{{ $data->phone }}">
                             </div>
                         </div> 
                         <div class="row">
@@ -83,7 +102,7 @@
                                 <label class="titleLabel">{{ trans('main.sentDate') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <input disabled name="name_ar" value="{{ $data->data->publish_at2 }}">
+                                <input disabled name="name_ar" value="{{ $data->msg->publish_at2 }}">
                             </div>
                         </div>
                         <div class="row">
@@ -91,28 +110,7 @@
                                 <label class="titleLabel">{{ trans('main.message_content') }} :</label>
                             </div>
                             <div class="col-md-9">
-                                <textarea disabled name="name_ar">{{ $data->data->message }}</textarea>
-                            </div>
-                        </div> 
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label class="titleLabel">{{ trans('main.recipients') }} :</label>
-                            </div>
-                            <div class="col-md-9 cards" style="overflow-y: scroll;">
-                                <div class="row mb-1">
-                                    <div class="col-md-8">{{ trans('main.phone') }}</div>      
-                                    <div class="col-md-4">{{ trans('main.status') }}</div>      
-                                </div>
-                                @foreach($data->contacts as $key => $contact)
-                                <div class="card mb-1">
-                                    <div class="card-body cont-card">
-                                        <div class="row">
-                                            <div class="col-md-8 text-left" dir="ltr">{{ $contact->phone }}</div>
-                                            <div class="col-md-4"><span class="badge badge-{{ $contact->reportStatus[0] }}">{{ $contact->reportStatus[1] }}</span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
+                                <textarea disabled name="name_ar">{{ $data->msg->message }}</textarea>
                             </div>
                         </div> 
                         <hr class="mt-5">
@@ -121,7 +119,7 @@
                                 <div class="nextPrev clearfix ">
                                     <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
                                     @if(\Helper::checkRules('add-group-message'))
-                                    <a href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/resend/'.$data->data->id) }}" class="btn btnNext">{{ trans('main.resend') }}</a>
+                                    <a href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/resend/'.$data->msg->id.'/1') }}" class="btn resend btnNext">{{ trans('main.resend') }}</a>
                                     @endif
                                 </div>
                                 <div class="clearfix"></div>
@@ -190,7 +188,7 @@
                         </div>
                         <div class="conversation">
                             <div class="conversation-container overflowY clearfix">    
-                                <div class="message received" style="margin-top: 70px;">{{ $data->data->message }}</div>
+                                <div class="message received" style="margin-top: 70px;">{{ $data->msg->message }}</div>
                             </div>
                         </div>
                         <div class="phone-footer">
@@ -203,6 +201,51 @@
               </div>
             </section>
         </div> 
+    </div>
+    <div class="mt-5"></div>
+    <div class="row">
+        <div class="col transmitters bill">
+            <div class="form">
+                <div class="row mainRow">
+                    <div class="col-xs-6">
+                        <h2 class="title">{{ trans('main.recipients') }}</h2>                
+                    </div>
+                    <div class="col-xs-6 text-right res">
+                        <div class="nextPrev clearfix ">
+                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/resend/'.$data->msg->id.'/2') }}" class="btn mt-2 resend btnNext">{{ trans('main.resendUnsent') }}</a>   
+                            <a href="{{ URL::to('/'.$data->designElems['mainData']['url'].'/refresh/'.$data->msg->id) }}" class="btn mt-2 resend btnNext">{{ trans('main.refresh2') }}</a>   
+                        </div>         
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="overflowTable">
+                        <table class="tableBills table table-striped  dt-responsive nowrap w-100">
+                            <thead>
+                                <tr>
+                                    <th>{{ trans('main.id') }}</th>
+                                    <th>{{ trans('main.phone') }}</th>
+                                    <th>{{ trans('main.status') }}</th>
+                                    <th>{{ trans('main.date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data->data as $key => $contact)
+                                <tr>
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{$contact->phone}}</td>
+                                    <td>
+                                        <span class="badge badge-{{ $contact->reportStatus[0] }}">{{ $contact->reportStatus[1] }}</span>
+                                    </td>
+                                    <td>{{ $contact->reportStatus[2] }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @include('tenant.Partials.pagination')
+            </div>
+        </div>
     </div>
     <!-- end row-->
 </div> <!-- container -->

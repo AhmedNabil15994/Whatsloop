@@ -43,6 +43,14 @@ class BotPlus extends Model{
         return $botObj;
     }
 
+    static function getMsg2($senderMessage){
+        $botObj = self::NotDeleted()->where('status',1)->where('message',$senderMessage)->first();
+        if($botObj){
+            return self::getData($botObj);
+        }
+        return $botObj;
+    }
+
     static function dataList($status=null) {
         $input = \Request::all();
 

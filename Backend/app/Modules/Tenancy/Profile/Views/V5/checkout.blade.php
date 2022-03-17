@@ -10,6 +10,9 @@
     .select2-container .select2-selection--single{
         margin-bottom: 25px;
     }
+    .helpPage{
+        display: none;
+    }
 </style>
 @endsection
 
@@ -88,7 +91,7 @@
                         <td class="quantity">1</td>
                         <td class="prices"><span class="price">{{ $oneItem[1] == 'extra_quota' ?  number_format((float)$oneItem[6] * $oneItem[7], 2, '.', '') : number_format((float)$oneItem[6], 2, '.', '') }}</span> {{ trans('main.sar') }}</td>
                         <td>
-                            @if($oneItem[1] != 'membership')
+                            @if($oneItem[1] != 'membership' && isset($data->disDelete) && !$data->disDelete)
                             <a class="remove rmv"><i class="flaticon-trash"></i></a>
                             @endif
                         </td>
@@ -115,6 +118,7 @@
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev" disabled>{{ trans('main.prev') }}</button>
                         <button class="btnNext">{{ trans('main.next') }}</button>
+                        <button class="invoice btnNext">{{ trans('main.invoice') }}</button>
                     </div>
                 </center>
             </div>
@@ -194,6 +198,7 @@
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
                         <button class="btnNext">{{ trans('main.next') }}</button>
+                        <button class="invoice btnNext">{{ trans('main.invoice') }}</button>
                     </div>
                 </center>
             </div>
@@ -230,6 +235,7 @@
                 <center>
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
+                        <button class="invoice btnNext">{{ trans('main.invoice') }}</button>
                     </div>
                 </center>
             </div>
@@ -238,6 +244,7 @@
 
 </div>
 
+@include('Tenancy.Dashboard.Views.V5.invoice')
 @endsection
 
 {{-- Scripts Section --}}

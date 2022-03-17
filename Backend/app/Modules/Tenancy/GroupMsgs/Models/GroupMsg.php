@@ -86,7 +86,7 @@ class GroupMsg extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-
+        $counts = self::getCounts($source);
         $data->id = $source->id;
         $data->channel = $source->channel;
         $data->publish_at = $source->publish_at;
@@ -103,13 +103,14 @@ class GroupMsg extends Model{
         $data->url_image = $source->url_image != null ? self::getPhotoPath($source->id, $source->url_image) : "";
         $data->contacts_count = $source->contacts_count;
         $data->messages_count = $source->messages_count;
-        $data->sent_msgs = $source->sent_count;
-        $data->unsent_msgs = $source->unsent_count;
+        $data->sent_msgs = $counts[0];
+        $data->unsent_msgs = $counts[1];
+        $data->viewed_msgs = $counts[2];
         $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name) : "";
         $data->file_name = $source->file_name;
         $data->file_size = $data->file != '' ? \ImagesHelper::getPhotoSize($data->file) : '';
         $data->file_type = $data->file != '' ? \ImagesHelper::checkFileExtension($data->file_name) : '';
-        $data->sent_type = self::getStatus($source);
+        $data->sent_type = self::getStatus($data);
         $data->whatsapp_no = $source->whatsapp_no;
         $data->status = $source->status;
         $data->sort = $source->sort;
@@ -119,13 +120,23 @@ class GroupMsg extends Model{
         return $data;
     }  
 
+    static function getCounts($source){
+        $startTime = date('Y-m-d H:i',strtotime($source->publish_at));
+        $endTime = date('Y-m-d H:i',strtotime('+60 minutes',strtotime($startTime)));
+        $sent = ContactReport::where('group_message_id',$source->id)->where('message_id','!=','')->whereBetween('created_at', [$startTime, $endTime])->count();
+        $viewed = ContactReport::where('group_message_id',$source->id)->where('status',3)->whereBetween('created_at', [$startTime, $endTime])->count();
+        $notSent = $source->contacts_count - $sent - ContactReport::where('group_message_id',$source->id)->where('message_id',null)->whereBetween('created_at', [$startTime, $endTime])->count();
+
+        return [$sent,$notSent,$viewed];
+    }
+
     static function getStatus($source){
-        if($source->publish_at > date('Y-m-d H:i:s') && $source->later == 1){
+        if($source->publish_at > date('Y-m-d H:i:s') && (isset($source->later) && $source->later == 1) ){
             return trans('main.publishSoon');
         }
 
-        if($source->sent_count + $source->unsent_count == $source->contacts_count){
-            return trans('main.done');
+        if($source->sent_msgs + $source->unsent_msgs == $source->contacts_count && $source->sent_msgs > 0){
+            return trans('main.sent');
         }else{
             return trans('main.inPrgo');
         }

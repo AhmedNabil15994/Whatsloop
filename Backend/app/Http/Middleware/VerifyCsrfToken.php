@@ -49,7 +49,8 @@ class VerifyCsrfToken extends Middleware
 
         '/livewire/message/*',
         
-        '/orders/pushInvoice/*',
+        '/services/zid/postSettings',
+        '/services/salla/postSettings',
 
     ];
 }

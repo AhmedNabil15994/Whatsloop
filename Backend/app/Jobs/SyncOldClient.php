@@ -893,6 +893,23 @@ class SyncOldClient implements ShouldQueue
                         'senderName' => '+'.$oneItemData['SenderNumber'] ,
                         'chatName' => '+'. (str_replace('@c.us','',$oneItemData['ChatApiID'])),
                     ];
+
+                    if(in_array($messageData[0], ['photo','image','video','sound'])){
+                        $folder = '/home/wloop/public_html/public/uploads/'.$this->tenant_id.'/chats/'.$item['body'];
+                        $url = 'https://whatsloop.net/resources/Gallery/'.$item['body'];
+                        // $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+                        $directory = '/home/wloop/public_html/public/uploads/'.$this->tenant_id.'/chats/';
+                        // dd($extension);
+                        if(!file_exists($folder)){
+                            @$content = file_get_contents($url);                    
+                            if(!file_exists($directory)){
+                                @mkdir($directory, 0777, true);
+                            }
+                            $succ = file_put_contents($folder, $content);   
+                        }
+                        $item['body'] = 'https://wloop.net/public/uploads/'.$this->tenant_id.'/chats/'.$item['body']; 
+                    }
+
                     $dataObj = ChatMessage::find($item['id']);
                     if($dataObj){
                         $dataObj->update($item);

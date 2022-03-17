@@ -21,6 +21,7 @@ Route::group(['prefix' => '/'] , function () {
     
 
 
+    Route::get('/oauth/callback',[App\Http\Controllers\CentralAuthControllers::class,'zidCallback']);
 
     
     Route::get('/', function(){ return redirect()->to('/login'); });

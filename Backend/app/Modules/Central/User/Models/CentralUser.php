@@ -259,4 +259,65 @@ class CentralUser extends Model implements SyncMaster
 
         return true;
     }
+
+    public function Addons(){
+        return $this->HasMany('App\Models\UserAddon','user_id');
+    }
+
+    public function OAuthData(){
+        return $this->hasOne('App\Models\OAuthData','user_id')->where('type','salla');
+    }
+
+    static function sallaList() {
+        $input = \Request::all();
+
+        $source = self::NotDeleted()->with(['tenants','OAuthData'])->whereHas('Addons',function($whereHasQuery){
+            $whereHasQuery->where('addon_id',5);
+        });
+
+        if (isset($input['name']) && !empty($input['name'])) {
+            $source->where('name', 'LIKE', '%' . $input['name'] . '%');
+        }
+        if (isset($input['id']) && !empty($input['id'])) {
+            $source->where('id', $input['id']);
+        }
+   
+        $source->orderBy('sort', 'ASC');
+        return self::generateSallaObj($source);
+    }
+
+    static function generateSallaObj($source){
+        $sourceArr = $source->get();
+
+        $list = [];
+        foreach($sourceArr as $key => $value) {
+            $list[$key] = new \stdClass();
+            $list[$key] = self::getSallaData($value);
+        }
+
+        $data['data'] = $list;
+
+        return $data;
+    }
+
+    static function getSallaData($source) {
+        $data = new  \stdClass();
+        $data->id = $source->id;
+        $data->name = $source->name != null ? $source->name : '';
+        $data->phone = $source->phone != null ? str_replace('+', '', $source->phone) : '';
+        $data->addons = $source->addons != null ? unserialize($source->addons) : [];
+        $data->domain = self::getDomain($source); //$tenants->first()->domains()->first()->domain : '';
+        $data->tenant_id = $source->tenants()->first()->id;
+        $data->channels = $source->channels != null ? UserChannels::NotDeleted()->whereIn('id',unserialize($source->channels))->get() : [];
+        $data->channelCodes = !empty($data->channels) ?  implode(',', unserialize($source->channels)) : '';
+        $data->channelIDS = !empty($data->channels) ? unserialize($source->channels) : [];
+        $data->channel = !empty($data->channelIDS) ? $data->channelIDS[0] : '';
+        $data->oauthDataObj = $source->OAuthData != null ? $source->OAuthData : [];
+        $data->client_id = $source->OAuthData != null ? $source->OAuthData->client_id : '';
+        $data->oauth_id = $source->OAuthData != null ? $source->OAuthData->id : '';
+        $data->client_secret = $source->OAuthData != null ? $source->OAuthData->client_secret : '';
+        $data->webhook_secret = $source->OAuthData != null ? $source->OAuthData->webhook_secret : '';
+        $data->webhook_url = 'https://'.$data->domain.'.wloop.net/whatsloop/webhooks/salla-webhook';
+        return $data;
+    }
 }

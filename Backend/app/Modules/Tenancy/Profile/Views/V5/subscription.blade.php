@@ -39,9 +39,9 @@
         overflow-y: scroll;
     }
     .queues .desc2 .row div.col-md-2,
-    .queues .desc2 .row div.col-md-3{
+    .queues .desc2 .row div.col-md-3,
+    .queues .desc2 .row div.col-md-6{
         padding: 10px;
-        border-bottom: 1px solid #EFEFEF;
     }
     .row.mains{
         border-bottom: 1px solid #EFEFEF;
@@ -52,6 +52,10 @@
     .queues .desc2 .row div.col-md-2.phone{
         direction: ltr;
     }   
+    .queues .desc2 .row {
+        border-bottom: 1px solid #EFEFEF;
+    }
+
 </style>
 @endsection
 
@@ -118,9 +122,8 @@
             </div>
             <div class="desc desc2">
                 <div class="row">
-                    <div class="col-md-3">ID</div>
                     <div class="col-md-2">{{trans('main.phone')}}</div>
-                    <div class="col-md-3">{{trans('main.messageContent')}}</div>
+                    <div class="col-md-6">{{trans('main.messageContent')}}</div>
                     <div class="col-md-2">{{trans('main.messageType')}}</div>
                     <div class="col-md-2">{{trans('main.date')}}</div>
                 </div>
@@ -129,9 +132,8 @@
                 $newMsgData = \Helper::reformMessage($msg);
                 @endphp
                 <div class="row">
-                    <div class="col-md-3">{{$newMsgData->id}}</div>
                     <div class="col-md-2 phone">{{$newMsgData->chatId}}</div>
-                    <div class="col-md-3">{{$newMsgData->body}}</div>
+                    <div class="col-md-6">{{$newMsgData->body}}</div>
                     <div class="col-md-2">{{$newMsgData->type}}</div>
                     <div class="col-md-2">{{$newMsgData->last_try}}</div>
                 </div>

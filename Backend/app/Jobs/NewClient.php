@@ -19,26 +19,10 @@ class NewClient implements ShouldQueue
      * @return void
      */
 
-    public $cartObj;
-    public $type;
-    public $transaction_id;
-    public $paymentGateaway;
-    public $startDate;
-    public $invoiceObj;
-    public $transferObj;
-    public $arrType;
-    public $myEndDate;
-    public function __construct($cartObj,$type,$transaction_id,$paymentGateaway,$startDate,$invoiceObj=null,$transferObj=null,$arrType=null,$myEndDate=null)
+    public $data;
+    public function __construct($data)
     {
-        $this->cartObj = $cartObj;
-        $this->type = $type;
-        $this->transaction_id = $transaction_id;
-        $this->paymentGateaway = $paymentGateaway;
-        $this->startDate = $startDate;
-        $this->invoiceObj = $invoiceObj;
-        $this->transferObj = $transferObj;
-        $this->arrType = $arrType;
-        $this->myEndDate = $myEndDate;
+        $this->data = $data;
     }
 
     /**
@@ -49,7 +33,7 @@ class NewClient implements ShouldQueue
     public function handle()
     {
         $paymentObj = new \SubscriptionHelper(); 
-        $paymentObj->newSubscription($this->cartObj,$this->type,$this->transaction_id,$this->paymentGateaway,$this->startDate,$this->invoiceObj,$this->transferObj,$this->arrType,$this->myEndDate);   
+        $paymentObj->initSubscription($this->data);   
     }
 
 }

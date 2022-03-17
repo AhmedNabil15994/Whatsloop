@@ -65,6 +65,27 @@ class LiveChatControllers extends Controller {
         return \Response::json((object) $dataList);        
     }
 
+    public function repeatHoook(Request $request) {
+        $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!isset($input['message_id']) || empty($input['message_id']) ){
+            return \TraitsFunc::ErrorMessage("Message ID Is Required");
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['messageId'] = $input['message_id'];
+        $result = $mainWhatsLoopObj->repeatHook($data);
+        $result = $result->json();
+        
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
+        $dataList['status'] = $result['status'];
+        return \Response::json((object) $dataList);        
+    }
+
     public function pinChat(Request $request) {
         $input = \Request::all();
 
@@ -269,7 +290,7 @@ class LiveChatControllers extends Controller {
                 
             // }
             try {
-                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus));
+                dispatch(new NewDialogJob( $chats , $input , $request->hasFile('file') ? $request->file('file') : null  , $domain,$senderStatus))->onConnection('cjobs');
             } catch (Exception $e) {
                 
             }

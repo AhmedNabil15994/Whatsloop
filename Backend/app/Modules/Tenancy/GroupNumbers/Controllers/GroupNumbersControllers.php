@@ -306,9 +306,11 @@ class GroupNumbersControllers extends Controller {
             $headers = $rows[0][0];
             $data = array_slice($rows[0], 1, 10);
             $varObj = Variable::where('var_key','grpFile')->first();
-            if(!$varObj){
-                Variable::create(['var_value' => json_encode($rows),'var_key'=>'grpFile']);
+            if($varObj){
+                $varObj->delete();
             }
+            Variable::create(['var_value' => json_encode($rows),'var_key'=>'grpFile']);
+            
             return response()->json(["headers"=>$headers,'data'=>$data,'files'=>json_encode([])]);
         }
     }
@@ -351,7 +353,7 @@ class GroupNumbersControllers extends Controller {
         // $rows = json_decode($input['files']);
         $mainData = $rows[0];
 
-        $modelProps = ['name','email','country','city','phone'];
+        $modelProps = ['name','email','country','city','phone','Phone'];
         $userInputs = $input;
         unset($userInputs['status']);
         unset($userInputs['group_id']);
@@ -369,7 +371,7 @@ class GroupNumbersControllers extends Controller {
             // unset($userInputs[$key]);    
         }
         
-        
+        $dateTime = DATE_TIME;
         $rows =  array_slice($rows[0], 1);
         for ($i = 1; $i < count($mainData); $i++) {
             $header = $mainData[0];
@@ -388,12 +390,13 @@ class GroupNumbersControllers extends Controller {
             }
             $storeData[$i]['status'] = $input['status'];
             $storeData[$i]['group_id'] = $input['group_id'];
-            $storeData[$i]['created_at'] = DATE_TIME;
+            $storeData[$i]['created_at'] = $dateTime;
             $storeData[$i]['created_by'] = USER_ID;
             // $storeData[$i]['sort'] = Contact::newSortIndex()+$i;
         }
-        
+
         $contsArr = [];
+        $phones = [];
         foreach ($storeData as $value) {
             if(isset($value['phone']) && $value['phone'] != null){
                 $phone = str_replace('+','',$value['phone']);
@@ -403,18 +406,18 @@ class GroupNumbersControllers extends Controller {
                 if(!isset($value['name']) || empty($value['name'])){
                     $value['name'] = $phone;
                 }
-                if(isset($value['email']) && empty($value['email'])){
-                    $value['email'] = $input['email'];
-                }
-                if(isset($value['country']) && empty($value['country'])){
-                    $value['country'] = $input['country'];
-                }
-                if(isset($value['city']) && empty($value['city'])){
-                    $value['city'] = $input['city'];
-                }
+                // if(isset($value['email']) && !empty($value['email'])){
+                //     $value['email'] = $input['email'];
+                // }
+                // if(isset($value['country']) && !empty($value['country'])){
+                //     $value['country'] = $input['country'];
+                // }
+                // if(isset($value['city']) && !empty($value['city'])){
+                //     $value['city'] = $input['city'];
+                // }
                 $value['phone'] = trim(str_replace('\r', '', $phone));
                 $value['status'] = 1;
-
+                $phones[] = $value['phone'];
                 $item = [];
                 foreach($value as $attr => $val){
                     $item[$attr]= $val;
@@ -424,21 +427,39 @@ class GroupNumbersControllers extends Controller {
                 $consForQueue[] = $item;
             }
         }
-        
-        $chunks = 400;
-        $contacts = array_chunk($consForQueue,$chunks);
-        foreach ($contacts as $contact) {
-            try {
-                dispatch(new CheckWhatsappJob($contact))->onConnection('cjobs');
-            } catch (Exception $e) {
-                
-            }
+        $totals = count(array_unique($phones));
+        $varObj = Variable::where('var_key','check_'.$input['group_id'].'_'.$dateTime)->first();
+        if(!$varObj){
+            Variable::create([
+                'var_key' => 'check_'.$input['group_id'].'_'.$dateTime,
+                'var_value' => $totals,
+            ]);
+        }else{
+            $varObj->update([
+                'var_key' => 'check_'.$input['group_id'].'_'.$dateTime,
+                'var_value' => $totals,
+            ]);
         }
+
+        try {
+            dispatch(new CheckWhatsappJob($consForQueue))->onConnection('cjobs');
+        } catch (Exception $e) {
+            
+        }
+        // $chunks = 400;
+        // $contacts = array_chunk($consForQueue,$chunks);
+        // foreach ($contacts as $contact) {
+        //     try {
+        //         dispatch(new CheckWhatsappJob($contact));//->onConnection('cjobs');
+        //     } catch (Exception $e) {
+                
+        //     }
+        // }
 
         WebActions::newType(1,'Contact');
         \Session::forget('rows');
         Session::flash('success', trans('main.addSuccess'));
-        return redirect()->to('/groupNumbers');
+        return redirect()->to('/groupNumberReports');
     }
 
     public function charts() {

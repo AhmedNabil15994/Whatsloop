@@ -148,26 +148,27 @@ class TransferRequestControllers extends Controller {
             tenancy()->initialize($tenant);
             $cartObj = Variable::getVar('cartObj');
             $endDate = Variable::getVar('endDate');
+            $type = Variable::getVar('inv_status');
             $cartObj = json_decode(json_decode($cartObj));
             tenancy()->end($tenant);
 
-            // $paymentObj = new \SubscriptionHelper(); 
-            if($endDate != null){
-                try {
-                    dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate))->onConnection('cjobs');
-                } catch (Exception $e) {
-                    
-                }
-        
-                // $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),null,null,$transferObj,null,$endDate);   
-            }else{
-                try {
-                    dispatch(new NewClient($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj))->onConnection('cjobs');
-                } catch (Exception $e) {
-                    
-                }
+            $invoiceObj = Invoice::getOne($transferObj->invoice_id);
+           
+            $data = [
+                'cartObj' => $cartObj, 
+                'type' => $type,
+                'transaction_id' => $transferObj->order_no,
+                'paymentGateaway' => trans('main.bankTransfer'),
+                'start_date' => $type == 'Suspended' ? date('Y-m-d') : $invoiceObj->due_date,
+                'invoiceObj' => $invoiceObj,
+                'transferObj' => $transferObj,
+                'arrType' => null,
+                'myEndDate' => null,
+            ];
+            try {
+                dispatch(new NewClient($data))->onConnection('cjobs');
+            } catch (Exception $e) {
                 
-                // $resultData = $paymentObj->newSubscription($cartObj,'transferRequest',$transferObj->order_no,trans('main.bankTransfer'),date('Y-m-d'),null,$transferObj);   
             }
             // if($resultData[0] == 0){
             //     Session::flash('error',$resultData[1]);

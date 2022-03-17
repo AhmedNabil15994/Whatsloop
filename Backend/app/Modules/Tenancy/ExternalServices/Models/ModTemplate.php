@@ -68,6 +68,9 @@ class ModTemplate extends Model{
         $data->statusText = self::getStatusText($source->statusText);
         $data->mod_id = $source->mod_id;
         $data->status = $source->status;
+        $data->type = $source->type;
+        $data->category_id = $source->category_id;
+        $data->moderator_id = $source->moderator_id;
         $data->statusIDText = $source->status == 1 ? trans('main.active') : trans('main.notActive');
         $data->updated_at = \Helper::formatDate($source->updated_at);
         return $data;

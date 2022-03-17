@@ -80,7 +80,7 @@
                     <center>
                         <div class="nextPrev clearfix">
                             <a href="{{ URL::to('/invoices/view/'.Session::get('invoice_id')) }}" class="btnNext">{{ trans('main.resubscribe_b1') }}</a>
-                            <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="btnNext">{{ trans('main.resubscribe_b2') }}</a>
+                            <a href="{{ URL::to('/updateSubscription?type=new') }}" class="btnNext">{{ trans('main.resubscribe_b2') }}</a>
                         </div>
                     </center>
                 </div>
@@ -148,7 +148,9 @@
                         <i class="icon flaticon-user-3"></i>
                         <h3 class="titleNumb">{{ $contact->name }}</h3>
                         <a href="#" class="numbStyle"><i class="flaticon-phone-call"></i> {{ $contact->phone2 }}</a>
-                        <span class="date">{{ $contact->created_at2[0] }}</span>
+                        @if( $contact->created_at2[0] != '1970-01-01')
+                            <span class="date">{{ $contact->created_at2[0] }}</span>
+                        @endif
                     </li>
                     @endforeach
                 </ul>
@@ -202,10 +204,8 @@
         </div>
     </div>
 
-    @php
-        $disabled = \App\Models\UserAddon::getDeactivated(\App\Models\User::first()->id);
-    @endphp
-    @if(in_array(2, $disabled))
+  
+    @if(!empty($data->logs))
     <div class="lastNumbers">
         <h2 class="title">{{ trans('main.activityLog') }}</h2>
         <ul class="listNumbers">

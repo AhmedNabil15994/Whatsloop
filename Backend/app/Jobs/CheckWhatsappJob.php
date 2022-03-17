@@ -45,15 +45,16 @@ class CheckWhatsappJob implements ShouldQueue
                 }
 
                 if($contact->phone != null){   
-                    $result = $this->checkWhatsappAvailability(str_replace('+', '', $contact->phone));
-                    $contactObj->has_whatsapp = $result;
-                    $contactObj->save();
+                    // $result = $this->checkWhatsappAvailability(str_replace('+', '', $contact->phone));
+                    // if($contactObj->has_whatsapp != 1){
+                        $contactObj->has_whatsapp = 1;
+                        $contactObj->save();
+                    // }
                 }
             } catch (Exception $e) {
                 // Logger('')   
             }
         }
-        sleep(120);
     }
 
     public function checkWhatsappAvailability($contact){
@@ -62,8 +63,8 @@ class CheckWhatsappJob implements ShouldQueue
 
         $checkResult = $mainWhatsLoopObj->checkPhone($checkData);
         $result = $checkResult->json();
-
-        if($result['status']['status'] != 1){
+        $status = 0;
+        if(isset($result) && isset($result['status']) && isset($result['status']['status']) && $result['status']['status'] != 1){
             $status = 0;
         }
 

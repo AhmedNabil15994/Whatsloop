@@ -50,7 +50,9 @@ if($lastpage >= 1){
     if($page === 1){
         $disabled = 'disabled';
     }
-    if ($page >= 1) $pagination.= "<li class='page-item paginate_button pagination-rounded page-prev {$disabled}'><a class='page-link' href='{$url}page={$prev}'><span aria-hidden='true'> < </span><span class='sr-only'>{$prevlabel}</span> </a></li>";
+    if ($lpm1 >0){
+        $pagination.= "<li class='page-item paginate_button pagination-rounded page-prev {$disabled}'><a class='page-link' href='{$url}page={$prev}'><span aria-hidden='true'> < </span><span class='sr-only'>{$prevlabel}</span> </a></li>";  
+    } 
 
     if ($lastpage < 7 + ($adjacents * 2)){
         for ($counter = 1; $counter <= $lastpage; $counter++){

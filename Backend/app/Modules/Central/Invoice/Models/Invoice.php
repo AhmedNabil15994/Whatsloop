@@ -28,7 +28,7 @@ class Invoice extends Model{
     static function dataList($status=null,$client_id=null) {
         $input = \Request::all();
 
-        $source = self::with('OldMembership')->NotDeleted()->where(function ($query) use ($input,$status,$client_id) { 
+        $source = self::with('OldMembership')->NotDeleted()->where('status','!=',0)->where(function ($query) use ($input,$status,$client_id) { 
                     if (isset($input['id']) && !empty($input['id'])) {
                         $query->where('id',  $input['id']);
                     } 
@@ -82,14 +82,84 @@ class Invoice extends Model{
         $data->items = $source->items != null ? unserialize($source->items) : [];
         $data->sort = $source->sort;
         $data->main = $source->main;
-        $data->oldPrice = $source->OldMembership != null && $source->main ? OldMembership::calcOldPrice($source->OldMembership,$data->items[0]['data']['duration_type']) : 0 ;
-        $data->discount = $data->oldPrice == 0 ? 0 : abs($source->total - $data->oldPrice);
-        $data->total = $source->total;
-        $data->roTtotal = $source->total - $data->discount;
+        
+        if($data->id != 1386){
+            $data->oldPrice = $source->OldMembership != null && $source->main ? OldMembership::calcOldPrice($source->OldMembership,$data->items[0]['data']['duration_type']) : 0 ;
+            $data->zidOrSalla = 0;
+            if($data->oldPrice == 0){
+                $datas = self::checkZidOrSalla($data->items,$source->total);
+                $data->oldPrice = $datas[0];
+                $data->zidOrSalla = $datas[1];
+            }
+            $data->discount = $data->oldPrice == 0 ? 0 : abs($source->total - $data->oldPrice);
+            if($source->main && count($data->items) == 1){
+                $data->discount = 0;
+            }
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }else{
+            $data->oldPrice =  0 ;
+            $data->zidOrSalla = 0;
+            $data->discount = $data->oldPrice == 0 ? 0 : abs($source->total - $data->oldPrice);
+            if($source->main && count($data->items) == 1){
+                $data->discount = 0;
+            }
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }
+
+        if($data->id == 7028){
+            $data->zidOrSalla = 0;
+            $data->oldPrice =  0 ;
+            $data->discount = 1897.50;
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }
+
+        if(in_array($data->id, [4849,4856,4857,6237])){
+            $data->oldPrice =  0 ;
+            $data->zidOrSalla = 0;
+            $data->discount = ($source->total * 10 ) / 100;
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }
+
+        if(in_array($data->id, [7178,])){
+            $data->oldPrice =  0 ;
+            $data->zidOrSalla = 0;
+            $data->discount = ($source->total * 40 ) / 100;
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }
+        
         $data->status = $source->status;
         $data->statusText = trans('main.invoice_status_'.$source->status);
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);
         return $data;
+    }
+
+    static function checkZidOrSalla($items,$total){
+        $hasSalla = 0 ;
+        $hasZid = 0 ;
+        $hasBot = 0 ;
+        $duration_type = $items[0]['data']['duration_type'];
+        foreach ($items as $key => $value) {
+            if($value['type'] == 'addon' && $value['data']['title_en'] == 'Salla'){
+                $hasSalla = 1;
+            }
+            if($value['type'] == 'addon' && $value['data']['title_en'] == 'Zid'){
+                $hasZid = 1;
+            }
+            if($value['type'] == 'addon' && $value['data']['title_en'] == 'Bot'){
+                $hasBot = 1;
+            }
+        }
+
+        if(($hasBot && $hasSalla) || ($hasBot  && $hasZid)){
+            return [$total - ($duration_type == 1 ? 230 : 2300),1];
+        }
+
+        return [0,0];
     }
 
     static function newSortIndex(){
@@ -97,6 +167,8 @@ class Invoice extends Model{
     }
 
     static function getDisabled($user_id){
-        return self::NotDeleted()->where('main',1)->where('client_id',$user_id)->where('status',2)->first();
+        $to = date('Y-m-t');
+        $from = date('Y-m-01');
+        return self::NotDeleted()->where('main',1)->whereBetween('due_date',[$from,$to])->where('client_id',$user_id)->where('status',2)->first();
     }
 }

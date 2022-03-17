@@ -42,7 +42,7 @@ class AbandonedCart implements ShouldQueue
             if(isset($oneCart['name']) && !empty($oneCart['name'])){
                 $sendData['body'] = $this->reformMessage($message,$oneCart);
                 $sendData['chatId'] = str_replace('+', '', $oneCart['mobile']).'@c.us';
-                $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',now()-1800)->where('body',$sendData['body'])->first();
+                $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',strtotime(date('Y-m-d H:i:s'))-1800)->where('body',$sendData['body'])->first();
                 if(!$msg){
                     $result = $mainWhatsLoopObj->sendMessage($sendData);
                     $result = $result->json();

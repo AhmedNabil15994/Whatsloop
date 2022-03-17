@@ -120,6 +120,8 @@ class RouteServiceProvider extends ServiceProvider
                     require app_path('Modules/Central/Coupon/routes.php');
                     require app_path('Modules/Central/BankAccount/routes.php');
                     require app_path('Modules/Central/NotificationTemplate/routes.php');
+                    require app_path('Modules/Central/Reports/routes.php');
+                    require app_path('Modules/Central/Salla/routes.php');
             });
         }
     }

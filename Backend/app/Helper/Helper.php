@@ -234,6 +234,7 @@ class Helper
                         'BotControllers@fastEdit' => 'edit-bot',
                         'BotControllers@changeStatus' => 'edit-bot',
                         'BotControllers@add' => 'add-bot',
+                        'BotControllers@addBotReply' => 'add-bot',
                         'BotControllers@create' => 'add-bot',
                         'BotControllers@copy' => 'copy-bot',
                         'BotControllers@delete' => 'delete-bot',
@@ -301,6 +302,7 @@ class Helper
                         'GroupMsgsControllers@create' => 'add-group-message',
                         'GroupMsgsControllers@resend' => 'add-group-message',
                         'GroupMsgsControllers@view' => 'view-group-message',
+                        'GroupMsgsControllers@refresh' => 'view-group-message',
                         'GroupMsgsControllers@charts' => 'charts-group-message',
                         'GroupMsgsControllers@uploadImage' => 'uploadImage-group-message',
                         
@@ -332,6 +334,8 @@ class Helper
                         'ZidControllers@templatesUpdate' => 'edit-zid-template',
                         'ZidControllers@templatesAdd' => 'add-zid-template',
                         'ZidControllers@templatesCreate' => 'add-zid-template',
+                        'ZidControllers@settings' => 'updateZid',
+                        'ZidControllers@postSettings' => 'updateZid',
                         // 'ZidControllers@templatesDelete' => 'delete-zid-template',
                         'ProfileControllers@updateZid' => 'updateZid',
                     ];
@@ -386,6 +390,7 @@ class Helper
                         'BotPlusControllers@index' => 'list-bots-plus',
                         'BotPlusControllers@edit' => 'edit-bot-plus',
                         'BotPlusControllers@update' => 'edit-bot-plus',
+                        'BotPlusControllers@changeStatus' => 'edit-bot-plus',
                         'BotPlusControllers@fastEdit' => 'edit-bot-plus',
                         'BotPlusControllers@add' => 'add-bot-plus',
                         'BotPlusControllers@create' => 'add-bot-plus',

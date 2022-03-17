@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\UserStatus;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\UserChannels;
 
 class InstanceStatus extends Command
 {
@@ -44,6 +45,7 @@ class InstanceStatus extends Command
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $result = $mainWhatsLoopObj->status();
         $result = $result->json();
+        $channelObj =  UserChannels::first();
 
         $statusInt = 4;
 
@@ -59,7 +61,7 @@ class InstanceStatus extends Command
             }else if($status == 'got qr code'){
                 $statusInt = 4;
                 if(isset($result['data']['qrCode'])){
-                    $image = '/uploads/instanceImage' . time() . '.png';
+                    $image = '/uploads/instance'.$channelObj->id.'Image' . time() . '.png';
                     $destinationPath = public_path() . $image;
                     $qrCode =  base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $result['data']['qrCode']));
                     $data['url'] = mb_convert_encoding($result['data']['qrCode'], 'UTF-8', 'UTF-8');

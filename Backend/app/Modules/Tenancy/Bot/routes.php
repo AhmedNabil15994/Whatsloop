@@ -17,6 +17,7 @@ Route::group(['prefix' => '/bots'] , function () {
 	Route::post('/create', [$controller,'create']);
     Route::get('/delete/{id}', [$controller,'delete']);
     Route::post('/arrange/sort', [$controller,'sort']);
+    Route::post('/addBotReply',[$controller,'addBotReply']);
 
     /*----------------------------------------------------------
     Images
