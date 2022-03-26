@@ -109,7 +109,7 @@ class ExternalServices {
         foreach ($data as $value) {
             $newObj = $value;
             foreach ($value as $key => $dataObj) {
-                if(in_array($key, ['hide_quantity','sort','tags','consisted_products','digital_download_limit','digital_download_expiry','hide_quantity','country_code','gender','birth_date','is_active','is_cod_enabled','purchase_restrictions'])){
+                if(in_array($key, ['hide_quantity','sort','tags','consisted_products','digital_download_limit','digital_download_expiry','hide_quantity','country_code','gender','birth_date','is_active','is_cod_enabled','purchase_restrictions','product_class','meta'])){
                     unset($newObj[$key]);
                 }
                 if(strpos($key, 'ed_at') !== false || $key == 'date'){

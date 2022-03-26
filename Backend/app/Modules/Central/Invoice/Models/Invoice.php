@@ -116,7 +116,7 @@ class Invoice extends Model{
             $data->roTtotal = $source->total - $data->discount;
         }
 
-        if(in_array($data->id, [4849,4856,4857,6237])){
+        if(in_array($data->id, [4849,4856,4857,6237,8031])){
             $data->oldPrice =  0 ;
             $data->zidOrSalla = 0;
             $data->discount = ($source->total * 10 ) / 100;
@@ -128,6 +128,22 @@ class Invoice extends Model{
             $data->oldPrice =  0 ;
             $data->zidOrSalla = 0;
             $data->discount = ($source->total * 40 ) / 100;
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }
+
+        if(in_array($data->id, [7680,])){
+            $data->oldPrice =  0 ;
+            $data->zidOrSalla = 0;
+            $data->discount = 460;
+            $data->total = $source->total;
+            $data->roTtotal = $source->total - $data->discount;
+        }
+
+        if(in_array($data->id, [7836,])){
+            $data->oldPrice =  0 ;
+            $data->zidOrSalla = 0;
+            $data->discount = ($source->total * 15 ) / 100;
             $data->total = $source->total;
             $data->roTtotal = $source->total - $data->discount;
         }

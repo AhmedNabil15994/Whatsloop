@@ -66,6 +66,14 @@
                 </form>
             </div>
         </div>
+        @livewire('activate-account')
+        @section('scripts')
+        <script>
+        Livewire.on('activateAccount', postId => {
+            $('form.completeJob').submit();
+        })
+        </script>
+        @endsection
     </div>
     @elseif(Session::has('invoice_id') && Session::get('invoice_id') != 0)
     <div class="row">

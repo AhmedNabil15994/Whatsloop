@@ -245,7 +245,7 @@
                 <div class="AdditionsSub">
                     <h2 class="title">
                         {{ trans('main.addons') }} 
-                        @if(IS_ADMIN && count($data->subscription->addons) < 10)
+                        @if(IS_ADMIN && count($data->subscription->addons) < 12)
                         <a href="{{ URL::to('/updateSubscription?type=addon') }}" class="edit">{{ !Session::has('invoice_id') ? trans('main.edit') : trans('main.resubscribe_b2') }}</a>
                         @endif
                     </h2>

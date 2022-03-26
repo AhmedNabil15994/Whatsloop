@@ -907,6 +907,7 @@ class SallaControllers extends Controller {
             'icon' => 'fa fa-pencil-alt',
         ];
 
+        $options = [];
         if (Schema::hasTable($service.'_order_status')) {
             $statuses = DB::table($service.'_order_status')->get();
             foreach ($statuses as $value) {
@@ -1005,9 +1006,9 @@ class SallaControllers extends Controller {
                     $msg = $replyType == 1 ? $input['btn_reply_'.($i+1)] : '';
 
                     if($modelName != '' && $msg == '' && $replyType != 3){
-                        $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
-                        if($dataObj){
-                            $msg = $dataObj->id;
+                        $itemObj = $modelName::find($input['btn_msg_'.($i+1)]);
+                        if($itemObj){
+                            $msg = $itemObj->id;
                         }
                     }
 
@@ -1058,6 +1059,7 @@ class SallaControllers extends Controller {
             $dataObj->type = $input['type'];
             $dataObj->category_id = $input['category_id'];
             $dataObj->moderator_id = $input['moderator_id'];
+            $dataObj->shipment_policy = isset($input['shipment_policy']) && !empty($input['shipment_policy']) ? $input['shipment_policy'] : null;
             $dataObj->updated_at = DATE_TIME;
             $dataObj->updated_by = USER_ID;
             $dataObj->save();

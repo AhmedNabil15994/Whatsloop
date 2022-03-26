@@ -183,15 +183,19 @@ class LiveChatControllers extends Controller {
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
+        $domain = explode('.', $request->getHost())[0];
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $data['liveChatId'] = $input['chatId'];
-        $result = $mainWhatsLoopObj->readChat($data);
-        $result = $result->json();
+        if($domain != 't1365'){
+            $result = $mainWhatsLoopObj->readChat($data);
+            $result = $result->json();   
+        }else{
+            return \TraitsFunc::ErrorMessage("Disabled");
+        }
 
         if($result['status']['status'] != 1){
             return \TraitsFunc::ErrorMessage($result['status']['message']);
         }
-        $domain = explode('.', $request->getHost())[0];
         $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
         $dialogObj->is_read = 1;
         $dialogObj->save();

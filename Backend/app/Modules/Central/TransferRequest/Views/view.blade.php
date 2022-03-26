@@ -54,6 +54,38 @@
                             </div>
                         </div>
                         <div class="form-group row mb-3">
+                            <div class="w-100">
+                                <p class="tx-bold mt-4">{{ trans('main.invoice_items') }}</p>
+                                <div class="table">
+                                    <table class="table mt-4 table-centered">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th colspan="3">{{ trans('main.item') }}</th>
+                                                <th>{{ trans('main.quantity') }}</th>
+                                                <th class="text-center">{{ trans('main.total') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($data->data->items->items as $key => $item)
+                                            <tr class="mainRow">
+                                                <td>{{ $key+1 }}</td>
+                                                <td colspan="3">
+                                                    <p class="m-0 d-inline-block align-middle font-16">
+                                                        <a href="#" class="text-reset font-family-secondary">{{ $item['data']['title_'.LANGUAGE_PREF] }}</a><br>
+                                                        <small class="mr-2"><b>{{ trans('main.extra_type') }}:</b> {{ trans('main.'.$item['type']) }} </small>
+                                                    </p>
+                                                </td>
+                                                <td>{{ $item['data']['quantity'] }}</td>
+                                                <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div> <!-- end table-responsive -->
+                            </div> <!-- end col -->
+                        </div>
+                        <div class="form-group row mb-3">
                             <label for="inputEmail3" class="col-3 col-form-label">{{ trans('main.status') }} :</label>
                             <div class="col-9">
                                 <select class="form-control" data-toggle="select2" name="status">

@@ -17,6 +17,7 @@ use App\Models\ModNotificationReport;
 use App\Models\OAuthData;
 use App\Models\BotPlus;
 use App\Models\Bot;
+use App\Models\Category;
 use DB;
 use DataTables;
 
@@ -86,6 +87,23 @@ class ZidControllers extends Controller {
                     $zidStoreID->updated_at = DATE_TIME;
                     $zidStoreID->updated_by = USER_ID;
                     $zidStoreID->save();
+                }
+            }
+
+            if(isset($input['store_token']) && !empty($input['store_token'])){
+                $zidStoreToken = Variable::NotDeleted()->where('var_key','ZidStoreToken')->first();
+                if($zidStoreToken == null){
+                    $zidStoreToken = new Variable;
+                    $zidStoreToken->var_key = 'ZidStoreToken';
+                    $zidStoreToken->var_value = $input['store_token'];
+                    $zidStoreToken->created_at = DATE_TIME;
+                    $zidStoreToken->created_by = USER_ID;
+                    $zidStoreToken->save();
+                }else{
+                    $zidStoreToken->var_value = $input['store_token'];
+                    $zidStoreToken->updated_at = DATE_TIME;
+                    $zidStoreToken->updated_by = USER_ID;
+                    $zidStoreToken->save();
                 }
             }
 
@@ -173,9 +191,7 @@ class ZidControllers extends Controller {
         $service = $this->service;
 
         $baseUrl = CentralVariable::getVar('ZidURL');
-        // $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        // $managerToken = Variable::getVar('ZidStoreToken');
+        $storeToken = Variable::getVar('ZidStoreToken');
         $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
         $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
 
@@ -185,10 +201,6 @@ class ZidControllers extends Controller {
 
         $myHeaders = [
             "X-MANAGER-TOKEN" => $storeToken,
-            // "Authorization" => $authorize,
-            // "STORE-ID" => $storeID,
-            // "ROLE" => 'Manager',
-            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
@@ -222,8 +234,7 @@ class ZidControllers extends Controller {
 
         $baseUrl = CentralVariable::getVar('ZidURL');
         $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        // $managerToken = Variable::getVar('ZidStoreToken');
+        $storeToken = Variable::getVar('ZidStoreToken');
         $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
         $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
 
@@ -234,10 +245,8 @@ class ZidControllers extends Controller {
 
         $myHeaders = [
             "X-MANAGER-TOKEN" => $storeToken,
-            // "Authorization" => $authorize,
             "STORE-ID" => $storeID,
             "ROLE" => 'Manager',
-            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
@@ -247,7 +256,10 @@ class ZidControllers extends Controller {
             'tableName' => $tableName,
             'myHeaders' => $myHeaders,
             'service' => $service,
-            'params' => [],
+            'params' => [
+                'page' => 1,
+                'page_size' => 100,
+            ],
         ];
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
@@ -270,9 +282,7 @@ class ZidControllers extends Controller {
         $service = $this->service;
 
         $baseUrl = CentralVariable::getVar('ZidURL');
-        // $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        // $managerToken = Variable::getVar('ZidStoreToken');
+        $storeToken = Variable::getVar('ZidStoreToken');
         $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
         $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
         
@@ -282,10 +292,6 @@ class ZidControllers extends Controller {
 
         $myHeaders = [
             "X-MANAGER-TOKEN" => $storeToken,
-            // "Authorization" => $authorize,
-            // "STORE-ID" => $storeID,
-            // "ROLE" => 'Manager',
-            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
@@ -382,9 +388,7 @@ class ZidControllers extends Controller {
         $service = $this->service;
 
         $baseUrl = CentralVariable::getVar('ZidURL');
-        // $storeID = Variable::getVar('ZidStoreID');
-        $storeToken = CentralVariable::getVar('ZidMerchantToken');
-        // $managerToken = Variable::getVar('ZidStoreToken');
+        $storeToken = Variable::getVar('ZidStoreToken');
         $oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
         $authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
         
@@ -394,10 +398,6 @@ class ZidControllers extends Controller {
 
         $myHeaders = [
             "X-MANAGER-TOKEN" => $storeToken,
-            // "Authorization" => $authorize,
-            // "STORE-ID" => $storeID,
-            // "ROLE" => 'Manager',
-            // 'User-Agent' => 'whatsloop/1.00.00 (web)',
         ];
 
         $dataArr = [
@@ -1118,9 +1118,9 @@ class ZidControllers extends Controller {
                     $msg = $replyType == 1 ? $input['btn_reply_'.($i+1)] : '';
 
                     if($modelName != '' && $msg == '' && $replyType != 3){
-                        $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
-                        if($dataObj){
-                            $msg = $dataObj->id;
+                        $itemObj = $modelName::find($input['btn_msg_'.($i+1)]);
+                        if($itemObj){
+                            $msg = $itemObj->id;
                         }
                     }
 

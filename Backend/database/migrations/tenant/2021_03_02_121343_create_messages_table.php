@@ -29,6 +29,9 @@ class CreateMessagesTable extends Migration
             $table->string('quotedMsgType')->nullable();
             $table->string('frontId')->nullable();
             $table->text('metadata')->nullable();
+            $table->string('module_id')->nullable();
+            $table->string('module_status')->nullable();
+            $table->string('module_order_id')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
             $table->index('chatId');

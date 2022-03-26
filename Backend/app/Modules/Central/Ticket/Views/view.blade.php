@@ -229,7 +229,7 @@
                                     </div>
                                 </div>
                                 <div class="col pl-0">
-                                    <a href="javascript:void(0);" class="text-muted font-weight-bold">{{ $oneFile->photo_name }}</a>
+                                    <a href="{{URL::to('/public/uploads/tickets/'.$data->data->id.'/'.$oneFile->photo_name)}}" class="text-muted font-weight-bold" target="_blank">{{ $oneFile->photo_name }}</a>
                                     <p class="mb-0 font-12">{{ $oneFile->photo_size }}</p>
                                 </div>
                                 <div class="col-auto">

@@ -841,4 +841,8 @@ return [
     'assignLabel' => 'Assign Label To Conversation',
     'assignMod' => 'Assign Moderator To Conversation',
     'changeOrderStatusTo' => 'Change Order Status To',
+    'shipmentPolicy' => 'Shipping Policy',
+    'last_comment_date' => 'Date of Last Comment',
+    'groupMsgNotify' => 'Group Messages have been upgraded to be able to use Bot Plus in messages.',
+    
 ];

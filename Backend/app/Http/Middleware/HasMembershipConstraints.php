@@ -28,7 +28,7 @@ class HasMembershipConstraints
                     return Redirect('/sync');
                 }
             }elseif(Session::get('is_synced') != 1){
-                if( (in_array($request->segment(1),['postBundle','checkout','packages','logout','completeOrder','pushInvoice','pushInvoice2']))){
+                if( (in_array($request->segment(1),['postBundle','checkout','packages','logout','completeOrder','completeJob','pushInvoice','pushInvoice2']))){
                     return $next($request);
                 }else{
                     return Redirect('/packages');

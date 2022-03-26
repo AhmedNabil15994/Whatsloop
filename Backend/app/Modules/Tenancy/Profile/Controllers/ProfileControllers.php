@@ -81,7 +81,9 @@ class ProfileControllers extends Controller {
             }
             $mainUserObj->email = $input['email'];
 
-            CentralUser::where('id',User::first()->id)->update(['email' => $input['email']]);
+            if($mainUserObj->group_id == 1){
+                CentralUser::where('id',User::first()->id)->update(['email' => $input['email']]);
+            }
             if($oldEmail != null){
                 UserData::where('email',$oldEmail)->where('domain',$userObj->domain)->update(['email' => $input['email']]);
             }
@@ -104,7 +106,9 @@ class ProfileControllers extends Controller {
             \DB::connection('main')->table('tenants')->where('id',$domainObj->tenant_id)->update([
                 'phone' => $input['phone'],
             ]);
-            CentralUser::where('id',User::first()->id)->update(['phone' => $input['phone']]);
+            if($mainUserObj->group_id == 1){
+                CentralUser::where('id',User::first()->id)->update(['phone' => $input['phone']]);
+            }
             if($oldPhone != null){
                 UserData::where('phone',$oldPhone)->where('domain',$userObj->domain)->update(['phone' => $input['phone']]);
             }
@@ -180,7 +184,9 @@ class ProfileControllers extends Controller {
 
         if(isset($input['name']) && !empty($input['name'])){
             $mainUserObj->name = $input['name'];
-            CentralUser::where('id',User::first()->id)->update(['name' => $input['name']]);
+            if($mainUserObj->group_id == 1){
+                CentralUser::where('id',User::first()->id)->update(['name' => $input['name']]);
+            }
             \DB::connection('main')->table('tenants')->where('id',$domainObj->tenant_id)->update([
                 'title' => $input['name'],
             ]);

@@ -14,7 +14,10 @@ use App\Models\Variable;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Template;
+use App\Models\CentralVariable;
 use App\Models\BotPlus;
+use App\Models\ModTemplate;
+use App\Models\OAuthData;
 use App\Events\BotMessage;
 use App\Events\SentMessage;
 use App\Events\MessageStatus;
@@ -71,10 +74,13 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    		// Fire Incoming Message Event For Web Application
 				$lastM = $this->handleMessages($userObj->domain,$message,$tenantObj->tenant_id);
 
-	    		if($message['fromMe'] == false && strpos($message['chatId'], '@g.us') === false){	
+	    		if($message['fromMe'] == false && !str_contains($message['chatId'], '@g.us') ){	
 	    			$this->handleNotification($message,$lastM);
 	    			if($message['type'] == 'buttons_response'){
 	    				$this->handleButtonsResponse($message,$sender,$userObj,$tenantObj);
+	    				if(!in_array(4,$disabled) || !in_array(5,$disabled)){
+	    					$this->handleTemplateButtonsResponse($message,$sender,$userObj,$tenantObj);
+	    				}
 	    			}else{
 	    				// Check User Message
 		    			if(in_array(strtolower($senderMessage), ['english','عربي','#','خروج','exit'])){
@@ -152,6 +158,116 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 	}
 
+
+	public function handleTemplateButtonsResponse($message,$sender,$userObj,$tenantObj){
+		$mainWhatsLoopObj = new \MainWhatsLoop();
+		$msgId= $message['quotedMsgId'];
+		$msgObj = ChatMessage::find($msgId);
+		if($msgObj){
+			if(in_array($msgObj->module_id,[4,5]) && $msgObj->module_status != '' ){
+				$mod_id = $msgObj->module_id == 4 ? 2 : 1;
+				$templateObj = ModTemplate::where('mod_id',$mod_id)->where('statusText',$msgObj->module_status)->first();
+				if($templateObj && $templateObj->type > 1){
+					$botObj = BotPlus::find($templateObj->type);
+					$replyData = null;
+					$botObj = BotPlus::getData($botObj);
+					if($botObj && isset($botObj->buttonsData)){
+						foreach($botObj->buttonsData as $buttonData){
+							if($buttonData['text'] == $message['body']){
+								$replyData = $buttonData;
+							}
+						}
+					}
+					if($replyData != null){
+						if(isset($replyData['reply_type']) && $replyData['reply_type'] == 1){
+							$sendData['body'] = $replyData['msg'];
+							$sendData['chatId'] = $sender;
+							$result = $mainWhatsLoopObj->sendMessage($sendData);
+							$this->handleRequest($message,$userObj->domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage');
+						}else if(isset($replyData['reply_type']) && $replyData['reply_type'] == 2){
+							if($replyData['msg_type'] == 2){
+								$botObj = BotPlus::getData(BotPlus::getOne($replyData['msg']));
+								$this->handleBotPlus($message,$botObj,$userObj->domain,$sender);
+							}elseif($replyData['msg_type'] == 1){
+								$botObj = Bot::getData(Bot::getOne($replyData['msg']),$tenantObj->tenant_id);
+								$this->handleBasicBot($botObj,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+							}
+						}else if(isset($replyData['reply_type']) && $replyData['reply_type'] == 3){
+							$this->handleTemplateOrderStatus($mod_id,$msgObj->module_order_id,$replyData);
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	public function handleTemplateOrderStatus($mod_id,$module_order_id,$replyData){
+		if($mod_id == 1){ // Salla
+			$status = $replyData['msg'];
+	        $baseUrl = 'https://api.salla.dev/admin/v2/orders/'.$module_order_id.'/status';
+	        $token = Variable::getVar('SallaStoreToken'); 
+	        $userObj = User::first();
+	        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+	        if($oauthDataObj && $oauthDataObj->authorization != null){
+	            $token = $oauthDataObj->authorization;
+	        }
+
+	        $data = Http::withToken($token)->post($baseUrl,['status_id'=>$status]);
+	        $result = $data->json();
+		}elseif($mod_id == 2){  // Zid
+			$status = $replyData['msg'];
+			if($replyData['msg'] == 'جديد'){
+				$status = 'new';
+			}elseif($replyData['msg'] == 'جاري التجهيز'){
+				$status = 'preparing';
+			}elseif($replyData['msg'] == 'جاهز'){
+				$status = 'ready';
+			}elseif($replyData['msg'] == 'جارى التوصيل'){
+				$status = 'indelivery';
+			}elseif($replyData['msg'] == 'تم التوصيل'){
+				$status = 'delivered';
+			}elseif($replyData['msg'] == 'تم الالغاء'){
+				$status = 'cancelled';
+			}
+
+        	$baseUrl = 'https://api.zid.sa/v1/managers/store/orders/'.$module_order_id.'/change-order-status';
+        	$storeID = Variable::getVar('ZidStoreID');
+        	$storeToken = CentralVariable::getVar('ZidMerchantToken');
+        	$managerToken = Variable::getVar('ZidStoreToken');
+
+        	$oauthDataObj = OAuthData::where('type','zid')->where('user_id',User::first()->id)->first();
+        	$authorize = $oauthDataObj != null && $oauthDataObj->token_type != null ? $oauthDataObj->token_type . ' ' . $oauthDataObj->authorization : '';
+	        $myHeaders = [
+	            "X-MANAGER-TOKEN" => $managerToken,
+	            "order-id" => $module_order_id,
+	        ];
+	        if($authorize != ''){
+	        	$data = Http::withToken($oauthDataObj->authorization)->withHeaders($myHeaders)->post($baseUrl,['order_status'=>$status,]);         
+	        	$result = $data->json();
+	        }else{
+        		$myHeaders = [
+		            "X-MANAGER-TOKEN" => $managerToken,
+		            "STORE-ID" => $storeID,
+		            "ROLE" => 'Manager',
+		            'User-Agent' => 'whatsloop/1.00.00 (web)',
+		        ];
+
+		        $dataArr = [
+		            'baseUrl' => $baseUrl,
+		            'storeToken' => $storeToken,
+		            'dataURL' => $dataURL,
+		            'tableName' => $tableName,
+		            'myHeaders' => $myHeaders,
+		            'service' => $service,
+		            'params' => [],
+		        ];
+		        $data = Http::withToken($storeToken)->withHeaders($myHeaders)->post($baseUrl,['order_status'=>$status,]);
+	        	$result = $data->json();
+	        }
+		}
+	}
+
 	public function handleButtonsResponse($message,$sender,$userObj,$tenantObj){
 		$mainWhatsLoopObj = new \MainWhatsLoop();
 		$msgText= $message['quotedMsgBody'];
@@ -222,11 +338,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 		
 		if(!empty($ids)){
 			\OneSignalHelper::sendnotification([
-				'title' => 'New Incoming Message From '.$message['senderName'],
+				'title' => $message['senderName'],
 				'message' => $lastM,
 				'type' => 'ios',
 				'to' => array_values($ids),
-				'image' => 'https://wloop.net/public/tenancy/assets/images/logo.png',
+				'image' => '',
 			]);
 		}
 
@@ -448,13 +564,13 @@ class MessagesWebhook extends ProcessWebhookJob{
 		if($message['type'] == 'chat'){
 			return $message['body'];
 		}elseif($message['type'] == 'document'){
-			return 'Document '.$fileName;
+			return 'Document ';
 		}elseif($message['type'] == 'video'){
-			return 'Video '.$fileName;
+			return 'Video ';
 		}elseif($message['type'] == 'ppt'){
-			return 'Sound '.$fileName;
+			return 'Sound ';
 		}elseif($message['type'] == 'image'){
-			return 'Photo '.$fileName;
+			return 'Photo ';
 		}elseif($message['type'] == 'vcard'){
 			$number = @explode(':+',explode(';waid=',$message['body'])[1])[0];
 			return 'Contact '.str_replace('END:VCARD','',$number);

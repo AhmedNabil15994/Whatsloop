@@ -250,9 +250,20 @@
                     <br>
                     <span dir="ltr">{{ $data->phone }}</span>
                 </div>
+                <form class="completeJob" action="{{ URL::to('/completeJob') }}" method="post">
+                    @csrf
+                </form>
             </div>
         </div>
     </div>
+    @livewire('activate-account',['transfer_order_no'=>$data->transfer->order_no])
+    @section('scripts')
+    <script>
+    Livewire.on('activateAccount', postId => {
+        $('form.completeJob').submit();
+    })
+    </script>
+    @endsection
     @endif
     <!-- end row -->
 @endsection

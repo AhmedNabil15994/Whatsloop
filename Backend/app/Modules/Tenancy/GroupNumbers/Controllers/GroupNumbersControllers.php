@@ -223,7 +223,7 @@ class GroupNumbersControllers extends Controller {
         $dataObj = new GroupNumber;
         $dataObj->channel = Session::get('channelCode');
         $dataObj->name_ar = $input['name_ar'];
-        $dataObj->name_en = $input['name_en'];
+        $dataObj->name_en = isset($input['name_en']) && !empty($input['name_en']) ? $input['name_en'] : '';
         if($request->ajax()){
             $input['status'] = 1;
             $input['description_ar'] = '';
@@ -326,7 +326,7 @@ class GroupNumbersControllers extends Controller {
             $dataObj = new GroupNumber;
             $dataObj->channel = Session::get('channelCode');
             $dataObj->name_ar = $input['name_ar'];
-            $dataObj->name_en = $input['name_en'];
+            $dataObj->name_en = isset($input['name_en']) && !empty($input['name_en']) ? $input['name_en'] : '';
             $dataObj->description_ar = '';
             $dataObj->description_en = '';
             $dataObj->sort = GroupNumber::newSortIndex();

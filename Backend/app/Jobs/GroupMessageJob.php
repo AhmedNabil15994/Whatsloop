@@ -12,6 +12,10 @@ use App\Models\GroupMsg;
 use App\Models\ContactReport;
 use App\Models\Contact;
 use App\Models\ChatMessage;
+use App\Models\BotPlus;
+use App\Models\UserAddon;
+use App\Models\User;
+
 // implements ShouldQueue
 class GroupMessageJob implements ShouldQueue
 {
@@ -42,48 +46,45 @@ class GroupMessageJob implements ShouldQueue
         $sent = $this->messageObj->sent_msgs;
 
         $mainWhatsLoopObj = new \MainWhatsLoop();
-        $msgQueue = $mainWhatsLoopObj->showMessagesQueue();
-        $queueResult = $msgQueue->json();
-
-        if($queueResult && isset($queueResult['data'])){
-            $count = $queueResult['data']['totalMessages'];
-            if($count >= 300){
-                $delMsgQueue = $mainWhatsLoopObj->clearMessagesQueue();
-                $newResult = $delMsgQueue->json();
-            }
+        
+        $botObj = null;
+        $messageObj = GroupMsg::NotDeleted()->where('id',$this->messageObj->id)->first();
+        if($messageObj->bot_plus_id != null){
+            $botObjs = BotPlus::find($messageObj->bot_plus_id);
+            $botObj = BotPlus::getData($botObjs);
         }
 
-        
+        $disBotPlus = 0;
+        $tenantUser = User::first();
+        $disabled = UserAddon::getDeactivated($tenantUser->id);
+        if(in_array(10,$disabled)){
+            $disBotPlus = 1;
+        }
 
         foreach ($this->contacts as $contact) {
-            $result = $this->sendData($contact,(array) $this->messageObj);
+            $result = $this->sendData($contact,(array) $this->messageObj,$botObj,$disBotPlus);
             if($result == 1){
                 $sent+=1;
             }else{
                 $unsent+=1;
             }
+            sleep(1);
         }
 
-        GroupMsg::NotDeleted()->where('id',$this->messageObj->id)->update([
+        
+
+        $messageObj->update([
             'sent_count' => $sent,
             'unsent_count' => $unsent,
         ]);
     }
 
-    public function sendData($contact,$messageObj){
+    public function sendData($contact,$messageObj,$botObj=null,$disBotPlus=0){
         $contact = (object) $contact;
         $sendData['chatId'] = str_replace('+', '', $contact->phone).'@c.us';
         $mainWhatsLoopObj = new \MainWhatsLoop();
         $status = 0;
-        // if($contact->has_whatsapp != 1){
-        //     $check = $mainWhatsLoopObj->checkPhone(['phone' => str_replace('+', '', $contact->phone)]);
-        //     $check = $check->json();
-        //     if(isset($check['data']) && isset($check['data']['result']) && $check['data']['result'] == 'exists'){
-        //         $status = 1;
-        //         Contact::where('phone',str_replace('+', '', $contact->phone))->update(['has_whatsapp'=>$status]);
-        //     }
-        // }
-
+        
         $msg = ChatMessage::where('fromMe',1)->where('chatId',$sendData['chatId'])->where('time','>=',strtotime(date('Y-m-d H:i:s'))-1800);
 
         if($messageObj['message_type'] == 1){
@@ -116,7 +117,6 @@ class GroupMessageJob implements ShouldQueue
             $sendData['body'] = $messageObj['https_url'];
             $sendData['title'] = $messageObj['url_title'];
             $sendData['description'] = $this->reformMessage($messageObj['url_desc'],$contact->name,str_replace('+', '', $contact->phone));
-            //$sendData['previewBase64'] = base64_encode(file_get_contents($messageObj['url_image']));
             if(!$msg->where('body',$sendData['body'])->first()){
                 $result = $mainWhatsLoopObj->sendLink($sendData);
             }
@@ -124,6 +124,20 @@ class GroupMessageJob implements ShouldQueue
             $sendData['contactId'] = str_replace('+','',$messageObj['whatsapp_no']);
             if(!$msg->where('body',$sendData['contactId'])->first()){
                 $result = $mainWhatsLoopObj->sendContact($sendData);
+            }
+        }elseif($messageObj['message_type'] == 6){
+
+            if(isset($botObj->buttonsData) && !empty($botObj->buttonsData) && !$disBotPlus){
+                $buttons = '';
+                foreach($botObj->buttonsData as $key => $oneItem){
+                    $buttons.= $oneItem['text'].( $key == $botObj->buttons -1 ? '' : ',');
+                }
+                $sendData['body'] = $this->reformMessage($botObj->body,$contact->name,str_replace('+', '', $contact->phone));
+                $sendData['title'] = $this->reformMessage($botObj->title,$contact->name,str_replace('+', '', $contact->phone));
+                $sendData['footer'] = $this->reformMessage($botObj->footer,$contact->name,str_replace('+', '', $contact->phone));
+                $sendData['buttons'] = $buttons;
+                $sendData['chatId'] = str_replace('@c.us','',$sendData['chatId']);
+                $result = $mainWhatsLoopObj->sendButtons($sendData);
             }
         }
         if(isset($result) && $result){

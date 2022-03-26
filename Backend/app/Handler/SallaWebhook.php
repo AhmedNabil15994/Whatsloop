@@ -18,8 +18,8 @@ use App\Models\Category;
 use App\Models\Variable;
 use App\Models\ModNotificationReport;
 use App\Events\ChatLabelStatus;
+use App\Events\BotMessage;
 
-use App\Models\CentralChannel;
 use Throwable;
 
 class SallaWebhook extends ProcessWebhookJob{
@@ -50,8 +50,12 @@ class SallaWebhook extends ProcessWebhookJob{
             $dis = 1;
         }
 
-	    $channel = CentralChannel::first();
-	    $mainWhatsLoopObj = new \MainWhatsLoop($channel->id,$channel->token);
+        $disBotPlus = 0;
+        if(in_array(10,$disabled)){
+            $disBotPlus = 1;
+        }
+
+	    $mainWhatsLoopObj = new \MainWhatsLoop();
 
 	    // If New Webhook
 	    if(!empty($allData) && !$dis){
@@ -111,6 +115,9 @@ class SallaWebhook extends ProcessWebhookJob{
 						            $lastMessage['type'] = $whats_message_type;
 						            $lastMessage['time'] = time();
 						            $lastMessage['sending_status'] = 1;
+						            $lastMessage['module_id'] = 5;
+					            	$lastMessage['module_status'] = 'ترحيب بالعميل';
+					            	$lastMessage['module_order_id'] = '';
 			        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
 			        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
 			        				ChatMessage::newMessage($lastMessage);
@@ -118,7 +125,7 @@ class SallaWebhook extends ProcessWebhookJob{
 						    }else{
 						    	$botObjs = BotPlus::find($templateObj->type);
 		    					$botObj = BotPlus::getData($botObjs);
-				    			$this->handleBotPlus($mainData,null,$botObj,$userObj->domain,$sendData['chatId'],$tenantUser->company);
+				    			$this->handleBotPlus($disBotPlus,$mainData,null,$botObj,$userObj->domain,$sendData['chatId'],$tenantUser->company,'ترحيب بالعميل');
 						    }
 
 						    if($templateObj->category_id != null){
@@ -218,6 +225,9 @@ class SallaWebhook extends ProcessWebhookJob{
 					            $lastMessage['type'] = $whats_message_type;
 					            $lastMessage['time'] = time();
 					            $lastMessage['sending_status'] = 1;
+					            $lastMessage['module_id'] = 5;
+					            $lastMessage['module_status'] = $status;
+					            $lastMessage['module_order_id'] = $mainData['id'];
 		        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
 		        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
 					            ChatMessage::newMessage($lastMessage);
@@ -225,7 +235,7 @@ class SallaWebhook extends ProcessWebhookJob{
 	    				}else{
 	    					$botObjs = BotPlus::find($templateObj->type);
 	    					$botObj = BotPlus::getData($botObjs);
-			    			$this->handleBotPlus($mainData,$status,$botObj,$userObj->domain,$sendData['chatId'],$tenantUser->company);
+			    			$this->handleBotPlus($disBotPlus,$mainData,$status,$botObj,$userObj->domain,$sendData['chatId'],$tenantUser->company,$status);
 	    				}
 
 	    				if($templateObj->category_id != null){
@@ -293,26 +303,80 @@ class SallaWebhook extends ProcessWebhookJob{
                 	return \DB::table('salla_orders')->where('id',$dataObj[0]['id'])->update($dataObj[0]);;
 	    		}
 	    	}
+
+	    	// IF Order Shipment Return
+	    	
+	    	if($allData['event'] == 'order.shipment.return.creating'){
+	    		$shipment_policy = 0;
+		    	$templateObj = ModTemplate::NotDeleted()->where('status',1)->where('mod_id',1)->where('statusText','مسترجع')->first();
+		    	if($templateObj && $templateObj->shipment_policy == 1){
+		    		$shipment_policy = 1;
+		    	}
+
+	    		if($shipment_policy == 1){
+	    			$shipmentData = $mainData['shipping']['shipment'];
+
+	    			$message_type = 'text';
+					$whats_message_type = 'chat';
+    				$sendData['body'] = $shipmentData['tracking_link'];
+	    			$sendData['chatId'] = str_replace('+', '', @$mainData['customer']['mobile_code'].$mainData['customer']['mobile']).'@c.us';
+	    			$result = $mainWhatsLoopObj->sendMessage($sendData);
+	    			if(isset($result['data']) && isset($result['data']['id'])){
+			            $messageId = $result['data']['id'];
+			            $lastMessage['status'] = 'APP';
+			            $lastMessage['id'] = $messageId;
+			            $lastMessage['chatId'] = $sendData['chatId'];
+			            $lastMessage['fromMe'] = 1;
+			            $lastMessage['message_type'] = $message_type;
+			            $lastMessage['type'] = $whats_message_type;
+			            $lastMessage['time'] = time();
+			            $lastMessage['sending_status'] = 1;
+			            $lastMessage['module_id'] = 5;
+        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+			            ChatMessage::newMessage($lastMessage);
+			        }
+
+			        $sendData['body'] = $shipmentData['label']['url'];
+	    			$result2 = $mainWhatsLoopObj->sendMessage($sendData);
+	    			if(isset($result2['data']) && isset($result2['data']['id'])){
+			            $messageId = $result2['data']['id'];
+			            $lastMessage['status'] = 'APP';
+			            $lastMessage['id'] = $messageId;
+			            $lastMessage['chatId'] = $sendData['chatId'];
+			            $lastMessage['fromMe'] = 1;
+			            $lastMessage['message_type'] = $message_type;
+			            $lastMessage['type'] = $whats_message_type;
+			            $lastMessage['time'] = time();
+			            $lastMessage['sending_status'] = 1;
+			            $lastMessage['module_id'] = 5;
+        				$checkMessageObj = ChatMessage::where('fromMe',0)->where('chatId',$sendData['chatId'])->where('chatName','!=',null)->first();
+        				$lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+			            ChatMessage::newMessage($lastMessage);
+			        }
+	    		}
+	    	}
 	    }
 
 	}
 
-	public function handleBotPlus($mainData,$status=null,$botObj,$domain,$sender,$company){
+	public function handleBotPlus($disBotPlus,$mainData,$status=null,$botObj,$domain,$sender,$company,$module_status){
 		$buttons = '';
-    	$channel = CentralChannel::first();
 
-	    $mainWhatsLoopObj = new \MainWhatsLoop($channel->id,$channel->token);
-        if(isset($botObj->buttonsData) && !empty($botObj->buttonsData)){
+	    $mainWhatsLoopObj = new \MainWhatsLoop();
+        if(isset($botObj->buttonsData) && !empty($botObj->buttonsData) && !$disBotPlus){
     		foreach($botObj->buttonsData as $key => $oneItem){
     			$buttons.= $oneItem['text'].( $key == $botObj->buttons -1 ? '' : ',');
     		}
 
     		$body = $botObj->body;
+    		$order_id = null;
     		if($status != null){
     			$body = str_replace('{CUSTOMERNAME}', $mainData['customer']['first_name'].' '.$mainData['customer']['last_name'], $body);
     			$body = str_replace('{STORENAME}', $company, $body);
     			$body = str_replace('{ORDERID}', $mainData['reference_id'], $body);
     			$body = str_replace('{ORDERSTATUS}', $status, $body);
+    			$order_id = $mainData['id'];
     		}else{
     			$body = str_replace('{CUSTOMERNAME}', $mainData['first_name'].' '.$mainData['last_name'], $body);
 		    	$body = str_replace('{STORENAME}', $company, $body);
@@ -324,6 +388,36 @@ class SallaWebhook extends ProcessWebhookJob{
     		$sendData['buttons'] = $buttons;
     		$sendData['chatId'] = str_replace('@c.us','',$sender);
     		$result = $mainWhatsLoopObj->sendButtons($sendData);
+    		$sendData['chatId'] = $sender;
+            $this->handleRequest($domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage',$botObj,$module_status,$order_id);
+        }
+	}
+
+	public function handleRequest($domain,$result,$sendData,$status,$message_type,$whats_message_type,$channel,$botObj=null,$module_status,$order_id=null){
+		if(isset($result['data']) && isset($result['data']['id'])){
+            $checkMessageObj = ChatMessage::where('chatId',$sendData['chatId'])->where('chatName','!=',null)->orderBy('messageNumber','DESC')->orderBy('time','DESC')->first();
+            $messageId = $result['data']['id'];
+            $lastMessage['status'] = 'BOT PLUS';
+            $lastMessage['id'] = $messageId;
+            $lastMessage['fromMe'] = 1;
+            $lastMessage['chatId'] = $sendData['chatId'];
+            $lastMessage['time'] = strtotime(date('Y-m-d H:i:s'));
+            $lastMessage['body'] = $sendData['body'];
+            $lastMessage['messageNumber'] = $checkMessageObj != null && $checkMessageObj->messageNumber != null ? $checkMessageObj->messageNumber+1 : 1;
+            $lastMessage['chatName'] = $checkMessageObj != null ? $checkMessageObj->chatName : '';
+            $lastMessage['message_type'] = $message_type;
+            $lastMessage['sending_status'] = 2;
+            $lastMessage['type'] = $whats_message_type;
+            $lastMessage['module_id'] = 5;
+			$lastMessage['module_status'] = $module_status;
+			$lastMessage['module_order_id'] = $order_id;
+            $messageObj = ChatMessage::newMessage($lastMessage);
+            $dialog = ChatDialog::getOne($sendData['chatId']);
+            $dialog->last_time = $lastMessage['time'];
+            $dialogObj = ChatDialog::getData($dialog);
+            $dialogObj->lastMessage = $messageObj;
+        	$dialogObj->lastMessage->bot_details = $botObj;
+			broadcast(new BotMessage($domain , $dialogObj));
         }
 	}
 	

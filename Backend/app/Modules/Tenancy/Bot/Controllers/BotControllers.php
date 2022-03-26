@@ -22,15 +22,15 @@ class BotControllers extends Controller {
 
     public function addBotReply(){
         $input = \Request::all();
-        if(isset($input['message']) && !empty($input['message'])){
+        if(isset($input['message']) || empty($input['message'])){
             $varObj = Variable::where('var_key','UNKNOWN_BOT_REPLY')->first();
             if($varObj){
-                $varObj->var_value = $input['message'];
+                $varObj->var_value = isset($input['message']) && !empty($input['message']) ? $input['message'] : '';
                 $varObj->save();
             }else{
                 $varObj = new Variable;
                 $varObj->var_key = 'UNKNOWN_BOT_REPLY';
-                $varObj->var_value = $input['message'];
+                $varObj->var_value = isset($input['message']) && !empty($input['message']) ? $input['message'] : '';
                 $varObj->save();
             }
             return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));

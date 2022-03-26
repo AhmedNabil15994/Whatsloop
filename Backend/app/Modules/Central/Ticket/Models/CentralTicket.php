@@ -22,6 +22,14 @@ class CentralTicket extends Model{
         return $this->belongsTo('App\Models\CentralDepartment','department_id');
     }
 
+    public function LastComment(){
+        return $this->hasOne(CentralComment::class,'ticket_id','id')->ofMany([
+            'id' => 'max',
+        ], function ($query) {
+            $query->with('Creator')->where('id', '!=', null);
+        });
+    }
+
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)
@@ -52,6 +60,9 @@ class CentralTicket extends Model{
                     if (isset($input['user_id']) && !empty($input['user_id'])) {
                         $query->where('user_id', $input['user_id']);
                     } 
+                    if (isset($input['from']) && !empty($input['from']) && isset($input['to']) && !empty($input['to'])) {
+                        $query->where('created_at','>=', date('Y-m-d',strtotime($input['from'])).' 00:00:00')->where('created_at','<=',date('Y-m-d',strtotime($input['to'])). ' 23:59:59');
+                    }
                 });
         if($status != null){
             $source->where('status',$status);
@@ -100,8 +111,11 @@ class CentralTicket extends Model{
         $data->files = $source->files != null ? self::getImages(unserialize($source->files),$source->id) : [];
         $data->status = $source->status;
         $data->statusText = self::getStatus($source->status);
+        $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);
+        $data->last_comment = $source->LastComment != null && $source->LastComment->Creator != null ? $source->LastComment->Creator->name : $data->client;
+        $data->last_comment_date = $source->LastComment != null ? $source->LastComment->created_at : $data->created_at;    
         return $data;
     }
    

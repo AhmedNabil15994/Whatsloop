@@ -605,12 +605,19 @@ class SubscriptionControllers extends Controller {
     }
 
     public function completeJob(){
+        $checkHasJob = Session::has('hasJob') ? 1 : 0;
         Session::forget('hasJob');
         Session::forget('userCredits');
         
         $userObj = User::first();
+        Session::flush();
+
         User::setSessions($userObj);
-        return redirect()->to('/QR');
+        if($checkHasJob){
+            return redirect()->to('/QR');
+        }else{
+            return redirect()->to('/dashboard');
+        }
     }
 
     public function qrIndex(){

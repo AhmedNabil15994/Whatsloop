@@ -1,0 +1,1 @@
+<div wire:poll.visible.2s wire:model="ActivateAccount" data-area="{{ $data->activateAccount }}"></div>

@@ -82,6 +82,22 @@
                                 </div>
                             </div>
                         </div> 
+                        @if($data->data->statusText == 'مسترجع' && $data->data->mod_id == 1)
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label class="titleLabel">{{ trans('main.shipmentPolicy') }} :</label>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" readonly name="shipment_policy">
+                                        <option value="">{{ trans('main.choose') }}</option>
+                                        <option value="0" {{ $data->data->shipment_policy == 0 || $data->data->shipment_policy == null ? 'selected' : '' }}>{{ trans('main.notActive') }}</option>
+                                        <option value="1" {{ $data->data->shipment_policy == 1 ? 'selected' : '' }}>{{ trans('main.active') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div> 
+                        @endif
                         <div class="form-group row">
                             <div class="col-md-3">
                                 <label class="titleLabel">{{ trans('main.extra_type') }} :</label>
@@ -180,7 +196,7 @@
                                                 </div>
                                                 <div class='col-md-4 repy'>
                                                     <textarea class="{{ $oneItem['msg_type'] == 0 && $oneItem['reply_type'] != 3 ? '' : 'hidden'  }}" name='btn_reply_{{ $oneItem['id'] }}' placeholder='{{ trans('main.messageContent') }}'>{{ $oneItem['msg_type'] == 0 && $oneItem['reply_type'] != 3 ? $oneItem['msg'] : ''  }}</textarea>
-                                                    <select data-toggle="{{ $oneItem['msg_type'] > 0 ? 'select2' : ''  }}" class='dets select1s {{ $oneItem['msg_type'] > 0 ? '' : 'hidden'  }}' name='btn_msg_{{ $oneItem['id'] }}'>
+                                                    <select data-toggle="{{ in_array($oneItem['msg_type'],[1,2]) ? 'select2' : ''  }}" class='dets select1s {{ in_array($oneItem['msg_type'],[1,2]) ? '' : 'hidden'  }}' name='btn_msg_{{ $oneItem['id'] }}'>
                                                         <option value='' selected>{{ trans('main.choose') }}</optin>
                                                         @foreach($data->bots as $bot)
                                                         <option value="{{ $bot->id }}" data-type="1" {{ $oneItem['msg_type'] == 1 && isset($oneItem['msg']) && $oneItem['msg'] == $bot->id ? 'selected' : '' }}>{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>

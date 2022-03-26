@@ -21,6 +21,10 @@ class CreateModTemplatesTable extends Migration
             $table->text('content_ar')->nullable();
             $table->text('content_en')->nullable();
             $table->integer('status')->nullable();
+            $table->string('type')->nullable()->default(1);
+            $table->string('moderator_id')->nullable();
+            $table->string('category_id')->nullable();
+            $table->string('shipment_policy')->nullable();
             $table->integer('updated_by')->nullable();
             $table->dateTime('updated_at')->nullable();
             $table->integer('deleted_by')->nullable();

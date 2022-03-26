@@ -8,6 +8,8 @@ use App\Models\ChatMessage;
 use App\Models\ContactReport;
 use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
+use App\Models\Bot;
+use App\Models\BotPlus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -249,13 +251,39 @@ class GroupMsgsControllers extends Controller {
         }
 
         Session::forget('msgFile');
+        $checkAvailBot = UserAddon::checkUserAvailability(USER_ID,1);
+        $checkAvailBotPlus = UserAddon::checkUserAvailability(USER_ID,10);
 
         $data['designElems'] = $this->getData();
         $data['designElems']['mainData']['title'] = trans('main.add') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-plus';
         $data['groups'] = GroupNumber::dataList(1,[1])['data'];
         $data['contacts'] = Contact::dataList(1)['data'];
+        $data['bots'] = $checkAvailBot ? Bot::dataList(1)['data'] : [];
+        $data['botPlus'] = $checkAvailBotPlus ? BotPlus::dataList(1)['data'] : [];
+        // $data['botPlus'] = $dataObj->type > 1 ? BotPlus::getData(BotPlus::find($dataObj->type)) : [];        
+        $data['checkAvailBotPlus'] = $checkAvailBotPlus != null ? 1 : 0;        
+        $data['checkAvailBot'] = $checkAvailBot != null ? 1 : 0;
         return view('Tenancy.GroupMsgs.Views.V5.add')->with('data', (object) $data);
+    }
+
+    protected function validateInsertBotPlusObject($input){
+        $rules = [
+            'title' => 'required',
+            'body' => 'required',
+            'footer' => 'required',
+            'buttons' => 'required',
+        ];
+
+        $message = [
+            'title.required' => trans('main.titleValidate'),
+            'body.required' => trans('main.bodyValidate'),
+            'footer.required' => trans('main.footerValidate'),
+            'buttons.required' => trans('main.buttonsValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+        return $validate;
     }
 
     public function create() {
@@ -264,6 +292,69 @@ class GroupMsgsControllers extends Controller {
         if($validate->fails()){
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
+        }
+
+        $myData = [];
+        if($input['message_type'] == 1){
+            if(!isset($input['messageText']) || empty($input['messageText'])){
+                Session::flash('error', trans('main.messageValidate'));
+                return redirect()->back()->withInput();
+            }
+        }elseif($input['message_type'] == 6){
+            $validate = $this->validateInsertBotPlusObject($input);
+            if($validate->fails()){
+                Session::flash('error', $validate->messages()->first());
+                return redirect()->back()->withInput();
+            }
+
+            for ($i = 0; $i < $input['buttons']; $i++) {
+                if(!isset($input['btn_text_'.($i+1)]) || empty($input['btn_text_'.($i+1)]) || $input['btn_text_'.($i+1)] == null ){
+                    Session::flash('error', trans('main.invalidText',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                if(!isset($input['btn_reply_type_'.($i+1)]) || empty($input['btn_reply_type_'.($i+1)]) || $input['btn_reply_type_'.($i+1)] == null ){
+                    Session::flash('error', trans('main.invalidType',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                $replyType = (int)$input['btn_reply_type_'.($i+1)];
+                if($replyType == 1 && ( !isset($input['btn_reply_'.($i+1)]) || empty($input['btn_reply_'.($i+1)]) )){
+                    Session::flash('error', trans('main.invalidReply',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                if($replyType == 2 && ( !isset($input['btn_msg_'.($i+1)]) || empty($input['btn_msg_'.($i+1)]) )){
+                    Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                $modelType = '';
+                if($replyType == 2 && ( !isset($input['btn_msg_type_'.($i+1)]) || empty($input['btn_msg_type_'.($i+1)]) )){
+                    Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                $modelType = (int)$input['btn_msg_type_'.($i+1)];
+                $modelName = $modelType != '' ?  ($modelType == 1 ? '\App\Models\Bot' : '\App\Models\BotPlus')  : '';
+                $msg = $replyType == 1 ? $input['btn_reply_'.($i+1)] : '';
+
+                if($modelName != '' && $msg == ''){
+                    $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
+                    if($dataObj){
+                        $msg = $dataObj->id;
+                    }
+                }
+
+                $myData[] = [
+                    'id' => $i + 1,
+                    'text' => $input['btn_text_'.($i+1)],
+                    'reply_type' => $input['btn_reply_type_'.($i+1)],
+                    'msg_type' => $modelType,
+                    'model_name' => $modelName,
+                    'msg' => $msg,
+                ];
+            }
         }
 
         if($input['group_id'] == '@'){
@@ -308,7 +399,6 @@ class GroupMsgsControllers extends Controller {
                     $foundData[] = $phone;
                 }
             }
-
         }else{
             $groupObj = GroupNumber::getOne($input['group_id']);
             if($groupObj == null){
@@ -316,12 +406,6 @@ class GroupMsgsControllers extends Controller {
             }
         }
         
-        if($input['message_type'] == 1){
-            if(!isset($input['messageText']) || empty($input['messageText'])){
-                Session::flash('error', trans('main.messageValidate'));
-                return redirect()->back()->withInput();
-            }
-        }
 
         $date = now();
         $flag = 0;
@@ -411,24 +495,44 @@ class GroupMsgsControllers extends Controller {
             }
         }
 
+        if($input['message_type'] == 6){
+            $botObj = new BotPlus;
+            $botObj->channel = Session::get('channelCode');
+            $botObj->message_type = 1;
+            $botObj->message = 'Group Message '.$dataObj->id;
+            $botObj->title = $input['title'];
+            $botObj->body = $input['body'];
+            $botObj->footer = $input['footer'];
+            $botObj->buttons = $input['buttons'];
+            $botObj->buttonsData = serialize($myData);
+            $botObj->sort = BotPlus::newSortIndex();
+            $botObj->status = 1;
+            $botObj->deleted_by = 1;
+            $botObj->deleted_at = DATE_TIME;
+            $botObj->save();
+
+            $dataObj->bot_plus_id = $botObj->id;
+            $dataObj->save();
+        }
+
         $dataObj = GroupMsg::getData($dataObj);
         $chunks = 100;
 
-        $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
-            foreach($data as $key => $oneChunk){
-                try {
-                    $on = \Carbon\Carbon::now()->addSeconds($key*60);   
-                    dispatch(new GroupMessageJob($oneChunk,$dataObj))->onConnection('cjobs')->delay($on);
-                } catch (Exception $e) {}
-            }
-        });
+        // $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
+        //     foreach($data as $key => $oneChunk){
+        //         try {
+        //             $on = \Carbon\Carbon::now()->addSeconds($key*60);   
+        //             dispatch(new GroupMessageJob($oneChunk,$dataObj))->onConnection('cjobs')->delay($on);
+        //         } catch (Exception $e) {}
+        //     }
+        // });
 
 
         if($flag == 0){
             // Fire Job Queue
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
                 try {
-                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+                    dispatch(new GroupMessageJob(reset($data),$dataObj))->onConnection('cjobs');
                 } catch (Exception $e) {
                     
                 }
@@ -443,7 +547,7 @@ class GroupMsgsControllers extends Controller {
 
             $contacts = Contact::NotDeleted()->where('group_id',$groupObj->id)->where('status',1)->chunk($chunks,function($data) use ($dataObj,$on){
                 try {
-                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs')->delay($on);
+                    dispatch(new GroupMessageJob(reset($data),$dataObj))->onConnection('cjobs')->delay($on);
                 } catch (Exception $e) {
                     
                 }
@@ -482,8 +586,12 @@ class GroupMsgsControllers extends Controller {
         }
 
         $data = Contact::getFullContactsInfo($groupMsgObj->group_id,$groupMsgObj->id);
+        $checkAvailBotPlus = UserAddon::checkUserAvailability(USER_ID,10);
+
+        $data['checkAvailBotPlus'] = $checkAvailBotPlus != null ? 1 : 0;        
         $data['msg'] = GroupMsg::getData($groupMsgObj);        
         $data['phone'] = $phone;
+        $data['botPlus'] = $groupMsgObj->bot_plus_id > 1 ? BotPlus::getData(BotPlus::find($groupMsgObj->bot_plus_id)) : [];       
         $data['designElems']['mainData'] = $this->getData()['mainData'];
         $data['designElems']['mainData']['title'] = trans('main.view') . ' '.trans('main.groupMsgs') ;
         $data['designElems']['mainData']['icon'] = 'fa fa-eye';
@@ -502,7 +610,7 @@ class GroupMsgsControllers extends Controller {
         if($status == 1){
             $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->where('status',1)->chunk($chunks,function($data) use ($dataObj){
                 try {
-                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+                    dispatch(new GroupMessageJob(reset($data),$dataObj))->onConnection('cjobs');
                 } catch (Exception $e) {
                     
                 }
@@ -512,7 +620,7 @@ class GroupMsgsControllers extends Controller {
                 $whereHasQuery->where('group_message_id',$id)->where('status',0);
             })->chunk($chunks,function($data) use ($dataObj){
                 try {
-                    dispatch(new GroupMessageJob($data,$dataObj))->onConnection('cjobs');
+                    dispatch(new GroupMessageJob(reset($data),$dataObj))->onConnection('cjobs');
                 } catch (Exception $e) {
                     
                 }

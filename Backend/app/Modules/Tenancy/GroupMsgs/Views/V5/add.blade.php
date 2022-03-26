@@ -24,6 +24,25 @@
 
 @endsection
 @section('content')
+
+@if($data->checkAvailBotPlus == 1)
+<div class="Additions">
+    <h2 class="title">{{ trans('main.groupMsgNotify') }}</h2>
+    <a href="#" class="btnAdd" style="visibility: hidden;"></a>
+</div> 
+
+<select name="bots" class="hidden">
+    @if($data->checkAvailBot == 1)
+    @foreach($data->bots as $bot)
+    <option value="{{ $bot->id }}" data-type="1">{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>
+    @endforeach
+    @endif
+
+    @foreach($data->botPlus as $plusBot)
+    <option value="{{ $plusBot->id }}" data-type="2">{{ trans('main.clientMessage') . ' ( ' .$plusBot->message . ' ) ==== ' . trans('main.botPlus') }}</option>
+    @endforeach
+</select>
+@endif
 <!-- Start Content-->
 <div class="container-fluid">
     <div class="row">
@@ -92,6 +111,9 @@
                                         <option value="3" {{ old('message_type') == 3 ? 'selected' : '' }}>{{ trans('main.sound') }}</option>
                                         <option value="4" {{ old('message_type') == 4 ? 'selected' : '' }}>{{ trans('main.link') }}</option>
                                         <option value="5" {{ old('message_type') == 5 ? 'selected' : '' }}>{{ trans('main.whatsappNos') }}</option>
+                                        @if($data->checkAvailBotPlus == 1)
+                                        <option value="6" {{ old('message_type') == 6 ? 'selected' : '' }}>{{ trans('main.botPlus') }}</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -243,6 +265,87 @@
                                 </div>
                             </div>
                         </div>
+                        @if($data->checkAvailBotPlus == 1)
+                        <div class="reply" data-id="6">
+                            <div class="row hidden">
+                                <div class="col-md-3">
+                                    <label for="inputPassword3" class="titleLabel">{{ trans('main.title') }} :</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" value="{{ old('title') }}" name="title" placeholder="{{ trans('main.title') }}">
+                                </div>
+                            </div>
+                            <div class="row hidden">
+                                <div class="col-md-3">
+                                    <label for="inputPassword3" class="titleLabel">{{ trans('main.body') }} :</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <textarea name="body" placeholder="{{ trans('main.body') }}">{{ old('body') }}</textarea>
+                                </div>
+                            </div>
+                            <div class="row hidden">
+                                <div class="col-md-3">
+                                    <label for="inputPassword3" class="titleLabel">{{ trans('main.footer') }} :</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" value="{{ old('footer') }}" name="footer" placeholder="{{ trans('main.footer') }}">
+                                </div>
+                            </div>
+                            <div class="row hidden">
+                                <div class="col-md-3">
+                                    <label for="inputPassword3" class="titleLabel">{{ trans('main.buttons') }} :</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="buttons">
+                                        <option value="1" {{ old('buttons') == 1 ? 'selected' : '' }}>1</option>
+                                        <option value="2" {{ old('buttons') == 2 ? 'selected' : '' }}>2</option>
+                                        <option value="3" {{ old('buttons') == 3 ? 'selected' : '' }}>3</option>
+                                        <option value="4" {{ old('buttons') == 4 ? 'selected' : '' }}>4</option>
+                                        <option value="5" {{ old('buttons') == 5 ? 'selected' : '' }}>5</option>
+                                        <option value="6" {{ old('buttons') == 6 ? 'selected' : '' }}>6</option>
+                                        <option value="7" {{ old('buttons') == 7 ? 'selected' : '' }}>7</option>
+                                        <option value="8" {{ old('buttons') == 8 ? 'selected' : '' }}>8</option>
+                                        <option value="9" {{ old('buttons') == 9 ? 'selected' : '' }}>9</option>
+                                        <option value="10" {{ old('buttons') == 10 ? 'selected' : '' }}>10</option>
+                                    </select>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="buts">
+                                    <div class='row mains'>
+                                        <div class='col-md-3'>
+                                            <label class='titleLabel'>{{ trans('main.btnData',['button'=>1]) }} :</label>
+                                        </div>
+                                        <div class='col-md-9'>
+                                            <div class='row'>
+                                                <div class='col-md-4'>
+                                                    <input type='text' name='btn_text_1' value="" placeholder='{{ trans('main.text') }}'>
+                                                </div>
+                                                <div class='col-md-4'>
+                                                    <select data-toggle='select2' class='reply_types' name='btn_reply_type_1'>
+                                                        <option value='1' selected>{{ trans('main.newReply') }}</option>
+                                                        <option value='2'>{{ trans('main.botMsg') }}</option>
+                                                    </select>
+                                                </div>
+                                                <div class='col-md-4 repy'>
+                                                    <textarea class="" name='btn_reply_1' placeholder='{{ trans('main.messageContent') }}' maxlength="140"></textarea>
+                                                    <select data-toggle="" class='dets hidden' name='btn_msg_1'>
+                                                        <option value='' selected>{{ trans('main.choose') }}</optin>
+                                                        @foreach($data->bots as $bot)
+                                                        <option value="{{ $bot->id }}" data-type="1">{{ trans('main.clientMessage') . ' ( ' .$bot->message . ' ) ==== ' . trans('main.bot') }}</option>
+                                                        @endforeach
+                                                        @foreach($data->botPlus as $plusBot)
+                                                        <option value="{{ $plusBot->id }}" data-type="2">{{ trans('main.clientMessage') . ' ( ' .$plusBot->message . ' ) ==== ' . trans('main.botPlus') }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <input type='hidden' name='btn_msg_type_1' value=''>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                         <hr class="mt-5">
                         <div class="row">
                             <div class="col-xs-12 text-right">
@@ -338,4 +441,5 @@
 @section('topScripts')
 <script src="{{ asset('V5/components/phone.js') }}"></script>
 <script src="{{ asset('V5/components/addMsg.js') }}"></script>
+<script src="{{ asset('V5/components/addBotPlus.js') }}"></script>
 @endsection

@@ -24,6 +24,10 @@ class GroupMsg extends Model{
         return $this->belongsTo('App\Models\User','created_by');
     }
 
+    public function BotPlus(){
+        return $this->belongsTo('App\Models\BotPlus','bot_plus_id');
+    }
+
     static function getOne($id){
         return self::NotDeleted()
             ->where('id', $id)
@@ -115,6 +119,7 @@ class GroupMsg extends Model{
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->later = $source->later;
+        $data->bot_plus_id = $source->bot_plus_id;
         $data->creator = str_replace("+", '', $source->Creator->phone);
         $data->created_at = \Helper::formatDate($source->created_at);
         return $data;
@@ -146,10 +151,12 @@ class GroupMsg extends Model{
         $text = '';
         if($source->message_type == 1 || $source->message_type == 2){
             $text = $source->message;
-        }elseif($source->message_type == 5){
+        }elseif($source->message_type == 4){
             $text = $source->https_url;
-        }elseif($source->message_type == 6){
+        }elseif($source->message_type == 5){
             $text = $source->whatsapp_no;
+        }elseif($source->message_type == 6){
+            $text = $source->BotPlus->body;
         }
         return $text;
     }

@@ -80,6 +80,20 @@ class CentralTicketControllers extends Controller {
                 'options' => $statuses,
                 'label' => trans('main.status'),
             ],
+            'from' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'index' => '',
+                'id' => 'datepicker1',
+                'label' => trans('main.dateFrom'),
+            ],
+            'to' => [
+                'type' => 'text',
+                'class' => 'form-control m-input datepicker',
+                'index' => '',
+                'id' => 'datepicker2',
+                'label' => trans('main.dateTo'),
+            ],
         ];
 
         $data['tableData'] = [
@@ -123,6 +137,27 @@ class CentralTicketControllers extends Controller {
                 'type' => '',
                 'className' => '',
                 'data-col' => 'created_at',
+                'anchor-class' => '',
+            ],
+            'created_at' => [
+                'label' => trans('main.date'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'created_at',
+                'anchor-class' => '',
+            ],
+            'last_comment' => [
+                'label' => trans('main.owner'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'last_comment',
+                'anchor-class' => '',
+            ],
+            'last_comment_date' => [
+                'label' => trans('main.last_comment_date'),
+                'type' => '',
+                'className' => '',
+                'data-col' => 'last_comment_date',
                 'anchor-class' => '',
             ],
             'actions' => [

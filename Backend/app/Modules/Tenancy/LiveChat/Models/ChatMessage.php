@@ -145,6 +145,15 @@ class ChatMessage extends Model{
         if(isset($source->metadata) && $source->metadata != 'null' && isset($source->status) && $source->status == "BOT PLUS"){
             $dataObj->metadata = json_encode($source->metadata) ;
         }
+        if( isset($source->module_id) && $source->module_id != '' && $source->module_id != null){
+            $dataObj->module_id = $source->module_id;
+        }
+        if( isset($source->module_status) && $source->module_status != '' && $source->module_status != null){
+            $dataObj->module_status = $source->module_status;
+        }
+        if( isset($source->module_order_id) && $source->module_order_id != '' && $source->module_order_id != null){
+            $dataObj->module_order_id = $source->module_order_id;
+        }
         $dataObj->save();
 
         return $dataObj;
@@ -158,6 +167,9 @@ class ChatMessage extends Model{
             $dates = self::reformDate($source->time);
             $source = (object) $source;
             $dataObj->id = $source->id;
+            $dataObj->module_id = $source->module_id;
+            $dataObj->module_status = $source->module_status;
+            $dataObj->module_order_id = $source->module_order_id;
             $dataObj->body = isset($source->body) ? $source->body : '';
             $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
             $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';

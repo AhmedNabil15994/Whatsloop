@@ -26,9 +26,6 @@ use App\Jobs\SyncHugeOld;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Handler\MyTokenGenerator;
 
-use Illuminate\Database\Schema\Blueprint;
-    use Illuminate\Support\Facades\Schema;
-
 class CentralAuthControllers extends Controller {
 
     use \TraitsFunc;
@@ -85,42 +82,16 @@ class CentralAuthControllers extends Controller {
         return \Helper::RedirectWithPostForm($data,$url);
     }
 
-    public function appLogin(Request $request) {
+    public function appLogin() {
         $input =\Request::all();
-        // if(isset($input['type']) && !empty($input['type']) && $input['type'] == 'mob'){
-        //     return redirect()->away('https://whatsloop.net/ar/Login.html');
-        // }
-        
         if(isset($input['onesignal_push_id']) && !empty($input['onesignal_push_id']) ){
             $data['onesignal_push_id'] = $input['onesignal_push_id'];
             Session::put('one_signal',$input['onesignal_push_id']);
-            // \Helper::RedirectWithPostForm($data,$url);
         }
-        
-        // if(Session::has('user_id')){
-        //     return redirect('/dashboard');
-        // }
-        // return redirect()->away('https://whatsloop.net/ar/Login.html');
-        // $data['code'] = \Helper::getCountryCode() ? \Helper::getCountryCode()->countryCode : 'sa';
-        // return view('Central.Auth.Views.V5.login')->with('data',(object) $data);
         return redirect('/login');
     }
     
     public function login() {
-
-        $tenants = \DB::connection('main')->table('tenants')->get();
-        foreach ($tenants as $key => $value) {
-            tenancy()->initialize($value->id);
-            Schema::table('mod_templates', function (Blueprint $table) {
-                $table->string('type')->nullable()->default(1)->after('status'); // use this for field after specific column.
-                // //$table->string('moderator_id')->nullable()->after('type'); // use this for field after specific column.
-                // //$table->string('category_id')->nullable()->after('moderator_id'); // use this for field after specific column.
-            });
-            tenancy()->end();
-        }
-        
-
-
         if(Session::has('user_id') && !Session::has('t_reset')){
             return redirect('/dashboard');
         } 
@@ -211,6 +182,7 @@ class CentralAuthControllers extends Controller {
                     return \Response::json((object) $statusObj);
                 }
 
+                $oneSignal = Session::has('one_signal') && Session::get('one_signal') != null ? Session::get('one_signal') : null; 
                 $domainObj = Domain::where('domain',$userObj->domain)->first();
                 $tenant = Tenant::find($domainObj->tenant_id);
                 $ids = [];
@@ -226,10 +198,10 @@ class CentralAuthControllers extends Controller {
 
                     tenancy()->initialize($tenant->id);
                     //{"860f8c1f-9d5b-46d3-b9b5-c3e84b1b338c":"860f8c1f-9d5b-46d3-b9b5-c3e84b1b338c"}
-                    if(Session::has('one_signal') && Session::get('one_signal') != null){
+                    if($oneSignal != null){
                         $varObj = new Variable;
                         $varObj->var_key = 'ONESIGNALPLAYERID_'.str_replace('+','',$userObj->phone);
-                        $varObj->var_value = '{"'.Session::get('one_signal').'":"'.Session::get('one_signal').'"}';
+                        $varObj->var_value = '{"'.$oneSignal.'":"'.$oneSignal.'"}';
                         $varObj->save();
                     }
                     tenancy()->end();
@@ -367,7 +339,7 @@ class CentralAuthControllers extends Controller {
         session()->flush();
         $lang = Session::put('locale',$lang);
         Session::flash('success', trans('auth.seeYou'));
-        return redirect()->to(route('login'));
+        return redirect()->to('/appLogin');
     }
 
     public function getResetPassword(){

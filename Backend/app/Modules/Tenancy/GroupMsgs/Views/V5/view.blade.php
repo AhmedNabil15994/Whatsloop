@@ -35,9 +35,24 @@
     .pagin{
         padding: 15px;
     }
+    .received .btn-dark{
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .received b{
+        display: block;
+    }
 </style>
 @endsection
 @section('content')
+
+@if($data->checkAvailBotPlus == 1)
+<div class="Additions">
+    <h2 class="title">{{ trans('main.groupMsgNotify') }}</h2>
+    <a href="#" class="btnAdd" style="visibility: hidden;"></a>
+</div> 
+@endif
+
 <!-- Start Content-->
 <div class="container-fluid">
     <div class="row stats">    
@@ -188,7 +203,21 @@
                         </div>
                         <div class="conversation">
                             <div class="conversation-container overflowY clearfix">    
-                                <div class="message received" style="margin-top: 70px;">{{ $data->msg->message }}</div>
+                                @if(isset($data->botPlus->buttonsData) && $data->msg->bot_plus_id > 1 && $data->checkAvailBotPlus == 1)
+                                <div class="message received" style="white-space: pre-line;text-align:right;">
+                                    <b>{!! rtrim($data->botPlus->title) !!}</b>
+                                    <p>{!! rtrim($data->botPlus->body) !!}</p>
+                                    <b>{!! rtrim($data->botPlus->footer) !!}</b>
+                                    @foreach($data->botPlus->buttonsData as $oneItem)
+                                    <a href="#" class="btn btn-xs btn-dark">{{ $oneItem['text'] }}</a>
+                                    @endforeach
+                                    <span class="metadata mb-2">
+                                        <span class="time">{{ trans('main.now') }} <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"></path></svg></span>
+                                    </span>
+                                </div>
+                                @else
+                                <div class="message received pre-space break-space" style="margin-top: 70px;">{{ $data->msg->message }}</div>
+                                @endif
                             </div>
                         </div>
                         <div class="phone-footer">
