@@ -354,7 +354,8 @@ class LiveChatControllers extends Controller {
                 $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image,$message_type);
                 if($image == false || $fileName == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
-                }            
+                }      
+
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
                 $sendData['filename'] = $fileName;
                 $sendData['body'] = $bodyData;
@@ -363,6 +364,9 @@ class LiveChatControllers extends Controller {
                         $sendData['caption'] = $input['caption'];
                         $caption = $input['caption'];
                     }
+                }else{
+                    $caption = $request->file('file')->getClientOriginalName();
+                    $sendData['filename'] = $caption;
                 }
                 $whats_message_type = $message_type == 'photo' ? 'image' : 'document' ;
                 $result = $mainWhatsLoopObj->sendFile($sendData);

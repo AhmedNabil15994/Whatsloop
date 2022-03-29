@@ -15,12 +15,15 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Template;
 use App\Models\CentralVariable;
+use App\Models\Category;
+use App\Models\ContactLabel;
 use App\Models\BotPlus;
 use App\Models\ModTemplate;
 use App\Models\OAuthData;
 use App\Events\BotMessage;
 use App\Events\SentMessage;
 use App\Events\MessageStatus;
+use App\Events\ChatLabelStatus;
 use \Spatie\WebhookClient\ProcessWebhookJob;
 use \Spatie\WebhookServer\WebhookCall;
 use Http;
@@ -123,13 +126,11 @@ class MessagesWebhook extends ProcessWebhookJob{
 	    					}
 		    			}
 		    		
-		    			if(count($botObj) == 0){
-		    				// Find BotPlus Object Based on incoming message
-			    			$botObjs = BotPlus::findBotMessage($langPref,$senderMessage);
-			    			if($botObjs){
-			    				$botObj = BotPlus::getData($botObjs);
-			    				$this->handleBotPlus($message,$botObj,$userObj->domain,$sender);
-			    			}
+		    			// Find BotPlus Object Based on incoming message
+		    			$botPlusObjs = BotPlus::findBotMessage($langPref,$senderMessage);
+		    			if($botPlusObjs){
+		    				$botPlusObj = BotPlus::getData($botPlusObjs);
+		    				$this->handleBotPlus($message,$botPlusObj,$userObj->domain,$sender);
 		    			}
 		    			
 		    			if( ((!$botObj) || count($botObj) == 0) && !$botObjs){
@@ -445,6 +446,46 @@ class MessagesWebhook extends ProcessWebhookJob{
     		$sendData['chatId'] = str_replace('@c.us','',$sender);
     		$result = $mainWhatsLoopObj->sendButtons($sendData);
     		$sendData['chatId'] = $sender;
+
+    		if($botObj->category_id != null){
+				$categoryObj = Category::find($botObj->category_id);
+		        if($categoryObj){
+		        	$labelData['liveChatId'] = $sendData['chatId'];
+			        $labelData['labelId'] = $categoryObj->labelId;
+			        
+			        $varObj = Variable::getVar('BUSINESS');
+			        if($varObj){
+			            $mainWhatsLoopObj2 = new \MainWhatsLoop();
+			            $result1 = $mainWhatsLoopObj2->unlabelChat($labelData);
+			            $result2 = $mainWhatsLoopObj2->labelChat($labelData);
+			            $result3 = $result2->json();  
+			        }
+			        
+			        $contactLabelObj = ContactLabel::newRecord(str_replace('@c.us','',$sendData['chatId']),$labelData['labelId']);
+			        broadcast(new ChatLabelStatus($domain, ChatDialog::getData(ChatDialog::getOne($labelData['liveChatId'])) , Category::getData($categoryObj) , 1 ));
+		        }
+			}
+
+			if($botObj->moderator_id != null){
+				$modObj = User::find($botObj->moderator_id);
+				if($modObj){
+			        $dialogObj = ChatDialog::getOne($sendData['chatId']);
+			        $modArrs = $dialogObj->modsArr;
+			        if($modArrs == null){
+			            $dialogObj->modsArr = serialize([$botObj->moderator_id]);
+			            $dialogObj->save();
+			        }else{
+			            $oldArr = unserialize($dialogObj->modsArr);
+			            if(!in_array($botObj->moderator_id, $oldArr)){
+			                array_push($oldArr, $botObj->moderator_id);
+			                $dialogObj->modsArr = serialize($oldArr);
+			                $dialogObj->save();
+			            }
+			        }
+				}
+			}
+
+
             $this->handleRequest($message,$domain,$result,$sendData,'BOT PLUS','text','chat','BotMessage',$botObj);
         }
 	}

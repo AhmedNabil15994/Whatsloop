@@ -88,7 +88,7 @@ class CentralUser extends Model implements SyncMaster
     static function dataList($group_id = null,$ids = null,$langPref=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted();
+        $source = self::NotDeleted()->with(['Group','tenants']);
         if (isset($input['name']) && !empty($input['name'])) {
             $source->where('name', 'LIKE', '%' . $input['name'] . '%');
         }

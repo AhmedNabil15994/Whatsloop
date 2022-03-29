@@ -141,6 +141,41 @@
                                 </div> 
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h4 class="title"> {{ trans('main.actions') }}</h4>
+                            </div>
+                        </div>
+                        <div class="form-group row mt-3">
+                            <div class="col-md-3">
+                                <label class="titleLabel">{{ trans('main.assignLabel') }} :</label>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="category_id">
+                                        <option value="" >{{ trans('main.categories') }}</option>
+                                        @foreach($data->labels as $label)
+                                        <option value="{{ $label->id }}" {{ $label->id == old('category_id') ? 'selected' : '' }}>{{ $label->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label class="titleLabel">{{ trans('main.assignMod') }} :</label>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="selectStyle">
+                                    <select data-toggle="select2" data-style="btn-outline-myPR" name="moderator_id">
+                                        <option value="" >{{ trans('main.mods') }}</option>
+                                        @foreach($data->mods as $mod)
+                                        <option value="{{ $mod->id }}" {{ $mod->id == old('moderator_id') ? 'selected' : '' }}>{{ $mod->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div> 
                         <hr class="mt-5">
                         <div class="row">
                             <div class="col-xs-12 text-right">

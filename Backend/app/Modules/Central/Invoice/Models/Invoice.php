@@ -78,11 +78,13 @@ class Invoice extends Model{
         $data->paid_date = $source->paid_date != null ? $source->paid_date : '';
         $data->payment_method = $source->payment_method;
         $data->notes = $source->notes;
-        $data->payment_gateaway = $source->payment_gateaway;
+        $data->payment_gateaway = $source->payment_gateaway == 'Noon' ? 'دفع إلكتروني' : $source->payment_gateaway;
         $data->items = $source->items != null ? unserialize($source->items) : [];
         $data->sort = $source->sort;
         $data->main = $source->main;
-        
+        $data->discount_type = $source->discount_type;
+        $data->discount_value = $source->discount_value;
+    
         if($data->id != 1386){
             $data->oldPrice = $source->OldMembership != null && $source->main ? OldMembership::calcOldPrice($source->OldMembership,$data->items[0]['data']['duration_type']) : 0 ;
             $data->zidOrSalla = 0;
@@ -108,42 +110,24 @@ class Invoice extends Model{
             $data->roTtotal = $source->total - $data->discount;
         }
 
-        if($data->id == 7028){
-            $data->zidOrSalla = 0;
-            $data->oldPrice =  0 ;
-            $data->discount = 1897.50;
-            $data->total = $source->total;
-            $data->roTtotal = $source->total - $data->discount;
-        }
 
-        if(in_array($data->id, [4849,4856,4857,6237,8031])){
+        if($source->discount_type != null && $source->discount_value != null){
             $data->oldPrice =  0 ;
             $data->zidOrSalla = 0;
-            $data->discount = ($source->total * 10 ) / 100;
-            $data->total = $source->total;
-            $data->roTtotal = $source->total - $data->discount;
+            $data->tax = \Helper::calcTax($data->total);
+            $data->grandTotal =  $data->total - $data->tax;
+            $data->discount = $source->discount_type == 1 ? $source->discount_value : ($source->discount_value*$data->grandTotal)/100;
+            $data->grandTotal = $data->grandTotal - $data->discount;
+            $data->tax = ($data->grandTotal * 15) / 100;
+            $data->total = $data->grandTotal + $data->tax;
+            $data->roTtotal = round($data->total,2);
         }
 
-        if(in_array($data->id, [7178,])){
-            $data->oldPrice =  0 ;
-            $data->zidOrSalla = 0;
-            $data->discount = ($source->total * 40 ) / 100;
-            $data->total = $source->total;
-            $data->roTtotal = $source->total - $data->discount;
-        }
-
+        // If Client Has Balance Inside System
         if(in_array($data->id, [7680,])){
             $data->oldPrice =  0 ;
             $data->zidOrSalla = 0;
             $data->discount = 460;
-            $data->total = $source->total;
-            $data->roTtotal = $source->total - $data->discount;
-        }
-
-        if(in_array($data->id, [7836,])){
-            $data->oldPrice =  0 ;
-            $data->zidOrSalla = 0;
-            $data->discount = ($source->total * 15 ) / 100;
             $data->total = $source->total;
             $data->roTtotal = $source->total - $data->discount;
         }

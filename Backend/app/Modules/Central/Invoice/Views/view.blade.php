@@ -125,11 +125,19 @@
                                     </tr>
                                     @endforeach
                                     @php
-                                        $data->data->discount = $hasAddons == 1 ? $data->data->discount : 0;
-                                        $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
-                                        $tax = Helper::calcTax($isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount);
-                                        $grandTotal = $isOld ? $mainPrices - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
-                                        $total = $isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount;
+                                        if($data->data->discount_value != null && $data->data->discount_type != null){
+                                            $oldDiscount = $data->data->discount;
+                                            $tax = $data->data->tax;
+                                            $grandTotal =  $data->data->grandTotal;
+                                            $total = $tax + $grandTotal;
+                                        }else{
+                                            $data->data->discount = $hasAddons == 1 ? $data->data->discount : 0;
+                                            $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
+                                            $tax = Helper::calcTax($isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount);
+                                            $grandTotal = $isOld ? $mainPrices - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+                                            $total = $isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount;
+                                        }
+                                        
                                     @endphp
                                     <tr>
                                         <td colspan="5"></td>
@@ -200,6 +208,8 @@
                 <div class="row text-right d-block">
                     <div class="mt-4 mb-1">
                         <div class="d-print-none">
+                            <a href="{{ URL::to('/invoices/'.$data->data->id.'/downloadPDF') }}" class="btn btn-info waves-effect waves-light">PDF</a>
+
                             <a href="javascript:window.print()" class="btn btn-primary waves-effect waves-light"><i class="mdi mdi-printer mr-1"></i> {{ trans('main.print') }}</a>
                             <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" class="btn btn-danger waves-effect waves-light">{{ trans('main.back') }}</a>
                         </div>

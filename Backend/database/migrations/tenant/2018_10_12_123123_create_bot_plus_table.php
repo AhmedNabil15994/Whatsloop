@@ -24,6 +24,8 @@ class CreateBotPlusTable extends Migration
             $table->integer('buttons');
             $table->text('buttonsData');
             $table->integer('status')->nullable();
+            $table->integer('category_id')->nullable();
+            $table->integer('moderator_id')->nullable();
             $table->integer('sort')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();

@@ -35,6 +35,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/getCities', [App\Http\Controllers\SubscriptionControllers::class,'getCities'])->name('getCities');
     Route::post('/checkout', [App\Http\Controllers\SubscriptionControllers::class,'postCheckout']);
     Route::post('/checkout/bankTransfer', [App\Http\Controllers\SubscriptionControllers::class,'bankTransfer']);
+    Route::post('/coupon', [App\Http\Controllers\SubscriptionControllers::class,'addCoupon']);
 
     Route::get('/postBundle/{id}', [App\Http\Controllers\SubscriptionControllers::class,'postBundle']);
     

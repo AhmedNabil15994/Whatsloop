@@ -67,7 +67,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($data->data->items->items as $key => $item)
+                                            @foreach($data->data->items as $key => $item)
                                             <tr class="mainRow">
                                                 <td>{{ $key+1 }}</td>
                                                 <td colspan="3">

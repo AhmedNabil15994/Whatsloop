@@ -102,6 +102,8 @@ class BotPlus extends Model{
         $data->message_type_text = self::getMessageType($source->message_type);
         $data->message = $source->message;
         $data->title = $source->title;
+        $data->category_id = $source->category_id;
+        $data->moderator_id = $source->moderator_id;
         $data->body = $source->body;
         $data->footer = $source->footer;
         $data->buttons = $source->buttons;

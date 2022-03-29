@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\CentralWebActions;
 use DataTables;
+use Salla\ZATCA\GenerateQrCode;
+use Salla\ZATCA\Tags\InvoiceDate;
+use Salla\ZATCA\Tags\InvoiceTaxAmount;
+use Salla\ZATCA\Tags\InvoiceTotalAmount;
+use Salla\ZATCA\Tags\Seller;
+use Salla\ZATCA\Tags\TaxNumber;
+use PDF;
 
 
 class InvoiceControllers extends Controller {
@@ -92,11 +99,11 @@ class InvoiceControllers extends Controller {
                 'data-col' => 'due_date',
                 'anchor-class' => '',
             ],
-            'total' => [
+            'roTtotal' => [
                 'label' => trans('main.total'),
                 'type' => '',
                 'className' => '',
-                'data-col' => 'total',
+                'data-col' => 'roTtotal',
                 'anchor-class' => '',
             ],
             'statusText' => [
@@ -122,6 +129,51 @@ class InvoiceControllers extends Controller {
             ],
         ];
         return $data;
+    }
+
+    public function downloadPDF($id){
+        $id = (int) $id;
+
+        $invoiceObj = Invoice::NotDeleted()->find($id);
+        if($invoiceObj == null) {
+            return Redirect('404');
+        }
+
+        $data['invoice'] = Invoice::getData($invoiceObj);
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
+        $tax = \Helper::calcTax($data['invoice']->roTtotal);
+
+        $userObj = CentralUser::NotDeleted()->find($invoiceObj->client_id);
+        $userObjData = CentralUser::getData($userObj);
+        $domainObj = Domain::where('domain',$userObjData->domain)->first();
+        $tenant = Tenant::find($domainObj->tenant_id);
+        tenancy()->initialize($tenant);
+        $paymentObj = PaymentInfo::where('user_id',$userObj->id)->first();
+        if($paymentObj) $data['paymentObj'] = PaymentInfo::getData($paymentObj);
+        tenancy()->end($tenant);
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($data['invoice']->roTtotal), // invoice total amount
+            new InvoiceTaxAmount($tax) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
+        $pdf = PDF::loadView('Central.Invoice.Views.invoicePDF',['data'=> (object)$data])
+                ->setPaper('a4', 'landscape')
+                ->setOption('margin-bottom', '0mm')
+                ->setOption('margin-top', '0mm')
+                ->setOption('margin-right', '0mm')
+                ->setOption('margin-left', '0mm');
+        return $pdf->download('invoice #'.($id+10000).'.pdf');
     }
 
     public function index(Request $request) {

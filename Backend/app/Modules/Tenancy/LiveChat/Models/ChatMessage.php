@@ -198,7 +198,7 @@ class ChatMessage extends Model{
             }
             if(in_array($dataObj->whatsAppMessageType , ['document','video','ptt','image']) && $disDetails == null){
                 $dataObj->file_size = self::getPhotoSize($dataObj->body);
-                $dataObj->file_name = self::getFileName($dataObj->body);
+                $dataObj->file_name = $dataObj->whatsAppMessageType != 'image' ? ($source->caption != null ? $source->caption : self::getFileName($dataObj->body) ) : self::getFileName($dataObj->body);
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard' && $disDetails == null){
                 if(strpos($dataObj->body, 'FN:') !== false){

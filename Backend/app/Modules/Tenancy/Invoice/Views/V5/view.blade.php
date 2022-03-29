@@ -139,11 +139,20 @@
                         </tr>
                         @endforeach
                         @php
-	                    	$data->data->discount = $hasAddons == 1 ? $data->data->discount : 0;
-	                    	$oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
-	                        $tax = Helper::calcTax($isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
-	                        $grandTotal = $isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
-	                        $total = $isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
+
+
+	                        if($data->data->discount_value != null && $data->data->discount_type != null){
+                        		$oldDiscount = $data->data->discount;
+								$tax = $data->data->tax;
+		                        $grandTotal =  $data->data->grandTotal;
+		                        $total = $tax + $grandTotal;
+                        	}else{
+                        		$data->data->discount = $hasAddons == 1 ? $data->data->discount : 0;
+		                    	$oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
+		                        $tax = Helper::calcTax($isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount);
+		                        $grandTotal = $isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
+		                        $total = $isOld && $data->data->discount > 0 ? $data->data->total - $oldDiscount : $mainPrices - $oldDiscount;
+                        	}
                         @endphp
                         <tr>
                             <td colspan="5"></td>
@@ -206,6 +215,7 @@
 			</div>
 			@endif
 			<div class="nextPrev last clearfix">
+				<a href="{{ URL::to('/invoices/'.$data->data->id.'/downloadPDF') }}" class="btnNext btn">PDF</a>
 				<a href="javascript:window.print()" class="btnNext btn">{{ trans('main.print') }}</a>
 				<a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" class="btnNext btn">{{ trans('main.back') }}</a>
 			</div>		  	 			

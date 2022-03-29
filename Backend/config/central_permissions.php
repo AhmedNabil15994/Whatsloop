@@ -201,6 +201,7 @@ return [
     'InvoiceControllers@index' => 'list-invoices',
     'InvoiceControllers@edit' => 'edit-invoice',
     'InvoiceControllers@view' => 'view-invoice',
+    'InvoiceControllers@downloadPDF' => 'view-invoice',
     'InvoiceControllers@update' => 'edit-invoice',
     'InvoiceControllers@fastEdit' => 'edit-invoice',
     'InvoiceControllers@delete' => 'delete-invoice',

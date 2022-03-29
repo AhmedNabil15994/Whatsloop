@@ -13,6 +13,25 @@
     .helpPage{
         display: none;
     }
+    a[data-toggle="modal"]{
+        color: #000;
+        display: inline-block;
+        margin-top: 15px;
+    }
+    .checkbox{
+        width: 20px;
+        height: 20px;
+        margin-right: 20px;
+        display: inline-block;
+    }
+    input[name="terms"]{
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    #step2 .totalConfirm{
+        height: 40px;
+    }
 </style>
 @endsection
 
@@ -110,10 +129,10 @@
         <div class="totalConfirm">
             <h2 class="title clearfix">{{ trans('main.total') }} <span><b class="total">{{ number_format((float)$data->totals[3], 2, '.', '') }}</b> {{ trans('main.sar') }}</span></h2>
             <div class="clearfix">
-                <form class="coupon">
-                    <input type="number" placeholder="{{ trans('main.couponCode') }}" />
-                    <button>{{ trans('main.apply') }}</button>
-                </form>
+                <div class="coupon">
+                    <input type="text" placeholder="{{ trans('main.couponCode') }}" />
+                    <button class="addCoupon">{{ trans('main.apply') }}</button>
+                </div>
                 <center>
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev" disabled>{{ trans('main.prev') }}</button>
@@ -179,11 +198,18 @@
             <input type="hidden" name="payType" value="">
             <input type="hidden" name="totals" value="{{ json_encode($data->totals) }}">
             <input type="hidden" name="data" value="{{ json_encode($data->data) }}">
+            <div class="inputStyle">
+                <div class="checkbox checkbox-blue checkbox-single float-left">
+                    <input type="checkbox" name="terms" class="">
+                    <label></label>
+                </div>
+                <a data-effect="effect-sign" data-toggle="modal" data-target="#termsModal" data-backdrop="static">{{ trans('main.conditions') }}</a>
+            </div>
             <div class="totalConfirm">
                 <center>
                     <div class="nextPrev clearfix">
                         <button class="btnNext btnPrev">{{ trans('main.prev') }}</button>
-                        <button class="btnNext">{{ trans('main.next') }}</button>
+                        <button class="btnNext myNext" disabled>{{ trans('main.next') }}</button>
                         <button class="invoice btnNext">{{ trans('main.invoice') }}</button>
                     </div>
                 </center>
@@ -231,6 +257,7 @@
 </div>
 
 @include('Tenancy.Dashboard.Views.V5.invoice')
+@include('tenant.Partials.termsModal')
 @endsection
 
 {{-- Scripts Section --}}

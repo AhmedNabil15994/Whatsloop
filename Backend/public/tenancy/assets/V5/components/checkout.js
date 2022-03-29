@@ -183,3 +183,51 @@ $('.finish').on('click',function(e){
     var allData = getData();
     setData(allData);
 });
+
+$('.addCoupon:not(.newCoupon)').on('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    var inputItem = $(this).parents('.coupon').children('input');
+    var couponVal  = inputItem.val();
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+    $.ajax({
+        type: 'POST',
+        url: '/coupon',
+        data:{
+            '_token': $('meta[name="csrf-token"]').attr('content'),
+            'coupon': couponVal,
+        },
+        success:function(data){
+            if(data.status.status == 1){
+                successNotification(data.status.message);
+                // inputItem.val(' ');
+                var discount_type = data.data.discount_type;
+                var discount_value = data.data.discount_value;
+
+                var total = $('b.total').text();
+                var grandTotal = $('b.grandTotal').text();
+                var discount = discount_type == 1 ? discount_value : (discount_value*grandTotal)/100;
+                var taxDiscount = ((discount * 15) / 100).toFixed(2); 
+                //Calc New Prices
+                $('b.discount').text((parseFloat($('b.discount').text())  +  parseFloat(discount)).toFixed(2));
+                $('b.grandTotal').text((parseFloat($('b.grandTotal').text())  -  parseFloat(discount)).toFixed(2)); 
+                $('b.estimatedTax').text((parseFloat($('b.estimatedTax').text())  -  parseFloat(taxDiscount)).toFixed(2)); 
+                $('b.total').text((parseFloat($('b.total').text())  -  parseFloat(discount) - parseFloat(taxDiscount)).toFixed(2)); 
+                $('.addCoupon').attr('disabled',true);
+                $('.addCoupon').addClass('newCoupon');
+            }else{
+                errorNotification(data.status.message);
+            }
+        },
+    });
+});
+
+$('#step2 input[name="terms"]').on('change',function(){
+    if($(this).is(":checked")){
+        $('.myNext').attr('disabled',false);
+        $('#termsModal').modal('show');
+    }else{
+        $('.myNext').attr('disabled',true);
+    }
+});

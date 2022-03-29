@@ -29,6 +29,7 @@ use Salla\ZATCA\Tags\InvoiceTaxAmount;
 use Salla\ZATCA\Tags\InvoiceTotalAmount;
 use Salla\ZATCA\Tags\Seller;
 use Salla\ZATCA\Tags\TaxNumber;
+use PDF;
 
 class TenantInvoiceControllers extends Controller {
 
@@ -135,6 +136,47 @@ class TenantInvoiceControllers extends Controller {
             ],
         ];
         return $data;
+    }
+
+    public function downloadPDF($id){
+        $id = (int) $id;
+
+        $invoiceObj = Invoice::NotDeleted()->find($id);
+        if($invoiceObj == null || $invoiceObj->client_id != User::first()->id) {
+            return Redirect('404');
+        }
+
+        $data['invoice'] = Invoice::getData($invoiceObj);
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
+        $tax = \Helper::calcTax($data['invoice']->roTtotal);
+        $paymentObj = PaymentInfo::NotDeleted()->where('user_id',$invoiceObj->client_id)->first();
+        if($paymentObj){
+            $data['paymentObj'] = PaymentInfo::getData($paymentObj);
+        }
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers), // seller name        
+            new TaxNumber($data['companyAddress']->tax_id), // seller tax number
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))), // invoice date as Zulu ISO8601 @see https://en.wikipedia.org/wiki/ISO_8601
+            new InvoiceTotalAmount($data['invoice']->roTtotal), // invoice total amount
+            new InvoiceTaxAmount($tax) // invoice tax amount
+            // TODO :: Support others tags
+        ])->render();
+
+        $pdf = PDF::loadView('Tenancy.Invoice.Views.V5.invoicePDF',['data'=> (object)$data])
+                ->setPaper('a4', 'landscape')
+                ->setOption('margin-bottom', '0mm')
+                ->setOption('margin-top', '0mm')
+                ->setOption('margin-right', '0mm')
+                ->setOption('margin-left', '0mm');
+        return $pdf->download('invoice #'.($id+10000).'.pdf');
     }
 
     public function index(Request $request) {

@@ -290,6 +290,10 @@ $(function(){
 		},
 		drawCallback: function () {
 			$('.page-item').addClass('pagination-rounded');
+			if(designElems.mainData.url == 'msgsArchive'){
+	        	var opts = '<option value="1000">1000</option><option value="50000">50000</option>';
+	        	$('select[name="kt_datatable_length"]').append(opts);
+	        }
 		},
 		responsive: false,
 		searchDelay: 500,

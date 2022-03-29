@@ -352,12 +352,18 @@
 									$tax = Helper::calcTax($data->invoice->roTtotal);
 			                        $grandTotal =  $data->invoice->roTtotal - $tax;
 			                        $total = $data->invoice->roTtotal;
-									
 	                        	}else{
 	                        		$oldDiscount = $mainPrices - $data->invoice->total + $data->invoice->discount;
 			                        $tax = Helper::calcTax($data->invoice->total);
 			                        $grandTotal =  $data->invoice->total - $tax;
 			                        $total = $data->invoice->total;
+	                        	}
+
+	                        	if($data->invoice->discount_value != null && $data->invoice->discount_type != null){
+	                        		$oldDiscount = $data->invoice->discount;
+    								$tax = $data->invoice->tax;
+    		                        $grandTotal =  $data->invoice->grandTotal;
+    		                        $total = $tax + $grandTotal;
 	                        	}
 	                        @endphp
 	                        <input type="hidden" name="invoice_id" value="{{ $data->invoice->id }}">

@@ -29,6 +29,7 @@ use App\Models\ModTemplate;
 use App\Models\Bundle;
 use App\Models\BankTransfer;
 use App\Models\BankAccount;
+use App\Models\Coupon;
 use App\Jobs\SyncOldClient;
 use App\Jobs\NewClient;
 use Http;
@@ -147,6 +148,35 @@ class SubscriptionControllers extends Controller {
         $statusObj['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$input['id'])->get();
         $statusObj['status'] = \TraitsFunc::SuccessMessage();
         return \Response::json((object) $statusObj);
+    }
+
+    public function addCoupon(){
+        $input = \Request::all();
+
+        $availableCoupons = Coupon::availableCoupons();
+        $availableCoupons = reset($availableCoupons);        
+        $coupon = $input['coupon'];
+
+        if($coupon != null){
+            if(count($availableCoupons) > 0 && !in_array($coupon, $availableCoupons)){
+                return \TraitsFunc::ErrorMessage('هذا الكود ('.$coupon.') غير متاح حاليا');
+            }
+
+            if(in_array($coupon, $availableCoupons)){
+                $couponObj = Coupon::NotDeleted()->where('code',$coupon)->where('status',1)->first();
+                if($couponObj){
+                    $invoiceObj = Invoice::NotDeleted()->where('client_id',USER_ID)->where('status',0)->orderBy('id','DESC')->first();
+                    if($invoiceObj){
+                        $invoiceObj->discount_type = $couponObj->discount_type;
+                        $invoiceObj->discount_value = $couponObj->discount_value;
+                        $invoiceObj->save();
+                    }
+                    $statusObj['data'] = Coupon::getData($couponObj);
+                    $statusObj['status'] = \TraitsFunc::SuccessMessage(trans('main.addSuccess'));
+                    return \Response::json((object) $statusObj);
+                }
+            }
+        }
     }
 
     public function packages(){   

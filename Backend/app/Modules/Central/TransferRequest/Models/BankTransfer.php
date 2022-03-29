@@ -77,9 +77,9 @@ class BankTransfer extends Model{
         $data->global_id = $source->global_id;
         $data->tenant_id = $source->tenant_id;
         $data->invoice_id = $source->invoice_id;
-        $data->items = $source->invoice_id != null && Invoice::getData($source->Invoice) != null ? Invoice::getData($source->Invoice) : [];
+        $data->items = $source->invoice_id != null && Invoice::getOne($source->invoice_id) != null ? Invoice::getData($source->Invoice)->items : [];
         $data->order_no = $source->order_no;
-        $data->total = $source->Invoice != null ? Invoice::getData($source->Invoice)->roTtotal : $source->total;
+        $data->total = $source->Invoice != null && Invoice::getOne($source->invoice_id) != null ? Invoice::getData($source->Invoice)->roTtotal : $source->total;
         $data->domain = $source->domain;
         $data->sort = $source->sort;
         $data->status = $source->status;

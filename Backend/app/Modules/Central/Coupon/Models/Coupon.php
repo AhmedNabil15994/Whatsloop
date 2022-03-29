@@ -81,7 +81,7 @@ class Coupon extends Model{
             ['status','=',1],
             ['valid_type','=',2],
             ['valid_value','>=',now()->format('Y-m-d')],
-        ])->orderBy('id','desc')->get();
+        ])->orderBy('id','desc')->pluck('code');
     }
 
     static function getData($source) {

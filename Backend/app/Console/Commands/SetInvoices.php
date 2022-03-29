@@ -243,7 +243,7 @@ class SetInvoices extends Command
             
             foreach($invoices as $invoiceKey  =>  $invoice){
                 foreach ($invoice as $invoiceDate => $oneItem) {
-
+                    $dontSend = 0;
                     $emailData = [
                         'name' => $userObj->name,
                         'email' => $userObj->email,
@@ -253,8 +253,11 @@ class SetInvoices extends Command
                     if(date('Y-m-d',strtotime($invoiceDate)) > date('Y-m-d')){
                         $status = 3;
                     }
-                    $dueDate = 
-                    Invoice::where('client_id',$invoiceKey)->where('status','!=',1)->where('due_date','>=',date('Y-m-01',strtotime($invoiceDate)))->where('main',$oneItem['data']['main'])->where('due_date','<=',date('Y-m-t',strtotime($invoiceDate)))->delete();
+                    $checkInv = Invoice::where('client_id',$invoiceKey)->where('status','!=',1)->where('due_date','>=',date('Y-m-01',strtotime($invoiceDate)))->where('main',$oneItem['data']['main'])->where('due_date','<=',date('Y-m-t',strtotime($invoiceDate)))->first();
+                    if($checkInv){
+                        $checkInv->delete();
+                        $dontSend = 1;
+                    }
                     $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('due_date',$invoiceDate)->where('main',$oneItem['data']['main'])->where('items',serialize($oneItem['data']['items']))->first();
                     
                     if(!$invoiceObj){
@@ -285,6 +288,7 @@ class SetInvoices extends Command
                         $invoiceObj->status = $status;
                         $invoiceObj->main = $oneItem['data']['main'];
                         $invoiceObj->save();
+                        $dontSend = 1;
                     }
 
                     // if($oneItem['data']['main'] == 1){
@@ -323,12 +327,16 @@ class SetInvoices extends Command
                                 'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
                             ],
                         ];
-                        \MailHelper::prepareEmail($allData);
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($allData);
+                        }
 
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'newInvoice');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        \MailHelper::prepareEmail($phoneData,1);
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($phoneData,1);
+                        }
                     }else if($oneItem['data']['leftDays'] == 3 && (int) date('H') == 12){
                         // First Reminder
                         $notificationTemplateObj = NotificationTemplate::getOne(2,'firstReminder');
@@ -345,12 +353,15 @@ class SetInvoices extends Command
                                 'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
                             ],
                         ];
-                        \MailHelper::prepareEmail($allData);
-
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($allData);
+                        }
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'firstReminder');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        \MailHelper::prepareEmail($phoneData,1);
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($phoneData,1);
+                        }
                     }else if($oneItem['data']['leftDays'] == 1 && (int) date('H') == 12){
                         // Second Reminder // تذكير بسداد الفاتورة
                         $notificationTemplateObj = NotificationTemplate::getOne(2,'secondReminder');
@@ -367,12 +378,15 @@ class SetInvoices extends Command
                                 'url' => 'https://'.$userObj->domain.'.wloop.net/invoices/view/'.$invoiceObj->id,
                             ],
                         ];
-                        \MailHelper::prepareEmail($allData);
-
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($allData);
+                        }
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'secondReminder');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        \MailHelper::prepareEmail($phoneData,1);
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($phoneData,1);
+                        }
                     }else if($oneItem['data']['leftDays'] == 0 && (int) date('H') == 12){
                         // Suspend 
                         if($invoiceObj->status == 2  && (int) date('H') == 9 ){
@@ -441,12 +455,16 @@ class SetInvoices extends Command
                                     'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                                 ],
                             ];
-                            \MailHelper::prepareEmail($allData);
+                            if(!$dontSend){
+                                \MailHelper::prepareEmail($allData);
+                            }
 
                             $notificationTemplateObj = NotificationTemplate::getOne(1,'accountSuspended');
                             $phoneData = $allData;
                             $phoneData['phone'] = $userObj->phone;
-                            \MailHelper::prepareEmail($phoneData,1);
+                            if(!$dontSend){
+                                \MailHelper::prepareEmail($phoneData,1);
+                            }
                         }   
                     }else if($oneItem['data']['leftDays'] == -1 && (int) date('H') == 12){
                         // Whatsloop Customer Service
@@ -463,13 +481,15 @@ class SetInvoices extends Command
                                 'url' => 'https://'.$userObj->domain.'.wloop.net/',
                             ],
                         ];
-                        \MailHelper::prepareEmail($allData);
-
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($allData);
+                        }
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'leadContact');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        \MailHelper::prepareEmail($phoneData,1,'service');
-                
+                        if(!$dontSend){
+                            \MailHelper::prepareEmail($phoneData,1,'service');
+                        }
                     }
                     
                 }

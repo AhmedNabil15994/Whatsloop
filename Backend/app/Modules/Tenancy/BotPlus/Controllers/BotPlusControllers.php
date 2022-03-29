@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Category;
 use App\Models\BotPlus;
 use App\Models\Bot;
 use App\Models\UserExtraQuota;
@@ -177,6 +178,8 @@ class BotPlusControllers extends Controller {
         $data['bots'] = $checkAsvail ? Bot::dataList(1)['data'] : [];
         $data['botPlus'] = BotPlus::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
+        $data['mods'] = User::getModerators()['data'];
+        $data['labels'] = Category::dataList()['data'];
         return view('Tenancy.BotPlus.Views.edit')->with('data', (object) $data);      
     }
 
@@ -197,7 +200,7 @@ class BotPlusControllers extends Controller {
     public function changeStatus($id) {
         $id = (int) $id;
 
-        $dataObj = Bot::NotDeleted()->find($id);
+        $dataObj = BotPlus::NotDeleted()->find($id);
         $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
         if($dataObj == null || !$checkAvail) {
             return Redirect('404');
@@ -284,6 +287,8 @@ class BotPlusControllers extends Controller {
         $botObj->buttons = $input['buttons'];
         $botObj->buttonsData = serialize($myData);
         $botObj->status = $input['status'];
+        $botObj->category_id = $input['category_id'];
+        $botObj->moderator_id = $input['moderator_id'];
         $botObj->updated_at = DATE_TIME;
         $botObj->updated_by = USER_ID;
         $botObj->save();
@@ -313,6 +318,8 @@ class BotPlusControllers extends Controller {
         $data['bots'] = $checkAsvail ? Bot::dataList(1)['data'] : [];
         $data['botPlus'] = BotPlus::dataList(1)['data'];
         $data['templates'] = Template::dataList(1)['data'];
+        $data['mods'] = User::getModerators()['data'];
+        $data['labels'] = Category::dataList()['data'];
         return view('Tenancy.BotPlus.Views.add')->with('data', (object) $data);
     }
 
@@ -385,6 +392,8 @@ class BotPlusControllers extends Controller {
         $dataObj->footer = $input['footer'];
         $dataObj->buttons = $input['buttons'];
         $dataObj->buttonsData = serialize($myData);
+        $dataObj->category_id = $input['category_id'];
+        $dataObj->moderator_id = $input['moderator_id'];
         $dataObj->sort = BotPlus::newSortIndex();
         $dataObj->status = $input['status'];
         $dataObj->created_at = DATE_TIME;

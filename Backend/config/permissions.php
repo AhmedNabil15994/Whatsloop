@@ -25,6 +25,7 @@ return [
     'SubscriptionControllers@paymentError' => 'general',
     
     'SubscriptionControllers@checkout' => 'general',
+    'SubscriptionControllers@addCoupon' => 'general',
     'SubscriptionControllers@postCheckout' => 'general',
     'SubscriptionControllers@completeOrder' => 'general',
     'SubscriptionControllers@pushInvoice' => 'general',
@@ -190,6 +191,7 @@ return [
 
     'TenantInvoiceControllers@index' => 'list-invoices',
     'TenantInvoiceControllers@view' => 'view-invoice',
+    'TenantInvoiceControllers@downloadPDF' => 'view-invoice',
     'TenantInvoiceControllers@sort' => 'sort-invoice',
     'TenantInvoiceControllers@arrange' => 'sort-invoice',
     'TenantInvoiceControllers@charts' => 'charts-invoice',

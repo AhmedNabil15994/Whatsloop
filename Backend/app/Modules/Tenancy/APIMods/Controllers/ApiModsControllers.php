@@ -173,11 +173,10 @@ class ApiModsControllers extends Controller {
             $records = ChatMessage::orderBy('time','DESC')
                ->skip($start)
                ->take($rowperpage);
-
-            $data = ChatMessage::generateObj($records,null,null);
+            $data = ChatMessage::generateObj($records,null,true);
         }else{
             $records = ChatMessage::NotDeleted()->search($searchValue)->orderBy('time','DESC');
-            $data = ChatMessage::generateObj($records,10,null);
+            $data = ChatMessage::generateObj($records,$rowperpage != null ? $rowperpage : 10,true);
         }
 
         $totalRecords = ChatMessage::search($searchValue)->count();
