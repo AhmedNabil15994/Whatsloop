@@ -8,7 +8,7 @@
 		<meta name="description" content="#" />
 		<meta name="csrf-token" content="{{ csrf_token() }}">
     	<meta name="userID" content="{{ USER_ID }}">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,user-scalable=no;user-scalable=0;">    	
     	<link rel="stylesheet" href="{{ mix('css/app.css') }}">
     	<link rel="icon" href="{{URL::to('/favicon.ico')}}">
 	</head>

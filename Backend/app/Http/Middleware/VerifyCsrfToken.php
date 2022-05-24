@@ -51,6 +51,8 @@ class VerifyCsrfToken extends Middleware
         
         '/services/zid/postSettings',
         '/services/salla/postSettings',
+        '/services/salla/abandonedCarts/uploadImage/*',
+        '/services/zid/abandonedCarts/uploadImage/*',
 
     ];
 }

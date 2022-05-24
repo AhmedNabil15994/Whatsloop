@@ -90,7 +90,14 @@
                                         <td>1</td>
                                         <td>{{ $data->data->due_date }}</td>
                                         <td>{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date))) }}</td>
-                                        <td>{{ $item['data']['price_after_vat'] }}</td>
+                                        <td class="text-center">
+                                            @php 
+                                            $total = $item['data']['quantity'] * $item['data']['price_after_vat'];
+                                            $tax=  \Helper::calcTax($total);
+                                            @endphp
+                                            {{ $total - $tax }} 
+                                            {{ trans('main.sar') }}
+                                        </td>
                                         <td>
                                             <a href="javascript:void(0);" class="action-icon" data-area="{{ json_encode($item) }}"> <i class="mdi mdi-delete"></i></a>
                                         </td>

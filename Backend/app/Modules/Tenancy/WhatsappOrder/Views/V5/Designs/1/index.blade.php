@@ -69,8 +69,7 @@
     <script src="{{ asset('V5/components/notifications.js') }}"></script>
     <script src="{{ asset('V5/components/orders.js') }}"></script>
     @yield('scripts')
-    @include('tenant.Partials.notf_messages')
-    
+    @include('tenant.Partials.notf_messages')    
 </body>
 
 </html>

@@ -55,10 +55,14 @@ class LiveChatControllers extends Controller {
         $data['limit'] = isset($input['limit']) && !empty($input['limit']) ? $input['limit'] : 30;
         $data['name'] = isset($input['name']) && !empty($input['name']) ? $input['name'] : null;
 
+        // if(!IS_ADMIN && !\Helper::checkRules('list-dialogs')){
+        //     $request->merge(['mine' => "3"]);
+        // }
+
         $dialogs = ChatDialog::dataList($data['limit'],$data['name']);
  
         $dataList = $dialogs;
-        if($data['name'] == null){
+        if($data['name'] == null /*&& IS_ADMIN*/){
             $dataList['pinnedConvs'] = ChatDialog::getPinned()['data'];
         }
         $dataList['status'] = \TraitsFunc::SuccessMessage();
@@ -86,58 +90,37 @@ class LiveChatControllers extends Controller {
         return \Response::json((object) $dataList);        
     }
 
-    public function pinChat(Request $request) {
+    public function deleteMessage(Request $request) {
         $input = \Request::all();
-
+        
         if($this->checkPerm()){
             return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
         }
 
-        if(!isset($input['chatId']) || empty($input['chatId']) ){
-            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        if(!isset($input['message_id']) || empty($input['message_id']) ){
+            return \TraitsFunc::ErrorMessage("Message ID Is Required");
         }
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['liveChatId'] = $input['chatId'];
-        $result = $mainWhatsLoopObj->pinChat($data);
-        $result = $result->json();
-        
-        $domain = explode('.', $request->getHost())[0];
-        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
-        $dialogObj->is_pinned = 1;
-        $dialogObj->save();    
+        $messageObj = ChatMessage::where('id',$input['message_id'])->first();
+        if(!$messageObj){
+            return \TraitsFunc::ErrorMessage("Message is Not Found");
+        }
 
-        broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
-        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
-        $dataList['status'] = $result['status'];
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['messageId'] = $input['message_id'];
+        $result = $mainWhatsLoopObj->deleteMessage($data);
+        $result = $result->json();
+        if(($result['status']['status'] == 1 && (isset($result['data']['message']) && $result['data']['message'] != "couldn`t delete message")) || $messageObj->fromMe == 0 ){
+            $messageObj->update([
+                'deleted_by' => USER_ID,
+                'deleted_at' => DATE_TIME,
+            ]);
+            $dataList['status'] = $result['status'];
+        }else{
+            $dataList['status']['message'] = $result['data']['message'];
+        }
+
+        $dataList['data'] = ChatMessage::getData($messageObj);
         return \Response::json((object) $dataList);        
-    }
-
-    public function unpinChat(Request $request) {
-        $input = \Request::all();
-
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
-
-        if(!isset($input['chatId']) || empty($input['chatId']) ){
-            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
-        }
-
-        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
-
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['liveChatId'] = $input['chatId'];
-        $result = $mainWhatsLoopObj->unpinChat($data);
-        $result = $result->json();
-        
-        $domain = explode('.', $request->getHost())[0];
-        $dialogObj->is_pinned = 0;
-        $dialogObj->save();
-
-        broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
-        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
-        $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);
     }
 
     public function messages(Request $request) {
@@ -152,9 +135,7 @@ class LiveChatControllers extends Controller {
         $user_id = USER_ID;
         if(!$is_admin){
             $dialogObj = ChatDialog::getData(ChatDialog::getOne($input['chatId']));
-            if(in_array($user_id, $dialogObj->modsArr) || IS_ADMIN){
-                ChatEmpLog::newLog($input['chatId']);
-            }
+            ChatEmpLog::newLog($input['chatId']);
         }
 
         if(isset($input['message_id']) && !empty($input['message_id'])){
@@ -173,73 +154,6 @@ class LiveChatControllers extends Controller {
         return \Response::json((object) $dataList);
     }
 
-    public function readChat(Request $request) {
-        $input = \Request::all();
-
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
-
-        if(!isset($input['chatId']) || empty($input['chatId']) ){
-            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
-        }
-        $domain = explode('.', $request->getHost())[0];
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['liveChatId'] = $input['chatId'];
-        if($domain != 't1365'){
-            $result = $mainWhatsLoopObj->readChat($data);
-            $result = $result->json();   
-        }else{
-            return \TraitsFunc::ErrorMessage("Disabled");
-        }
-
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
-        }
-        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
-        $dialogObj->is_read = 1;
-        $dialogObj->save();
-
-        ChatMessage::where('chatId',$input['chatId'])->update(['sending_status' => 3]);
-        broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
-        
-        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
-        $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);   
-    }
-
-    public function unreadChat(Request $request) {
-        $input = \Request::all();
-        if(!isset($input['chatId']) || empty($input['chatId']) ){
-            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
-        }
-
-        if($this->checkPerm()){
-            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
-        }
-
-        $mainWhatsLoopObj = new \MainWhatsLoop();
-        $data['liveChatId'] = $input['chatId'];
-        $result = $mainWhatsLoopObj->unreadChat($data);
-        $result = $result->json();
-
-        if($result['status']['status'] != 1){
-            return \TraitsFunc::ErrorMessage($result['status']['message']);
-        }
-        
-        $domain = explode('.', $request->getHost())[0];
-        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
-        $dialogObj->is_read = 0;
-        $dialogObj->save();
-
-        ChatMessage::where('chatId',$input['chatId'])->update(['sending_status' => 2]);
-        broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
-
-        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
-        $dataList['status'] = $result['status'];
-        return \Response::json((object) $dataList);     
-    }
-   
     public function sendMessage(Request $request) {
         $input = \Request::all();
 
@@ -385,8 +299,8 @@ class LiveChatControllers extends Controller {
                     return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
                 }
 
-                $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image);
-                if($image == false || $fileName == false){
+                $fileName = \ImagesHelper::uploadFileFromRequest('chats', $image,'','video');
+                if($image == false || $fileName[0] == false){
                     return \TraitsFunc::ErrorMessage("Upload Files Failed !!", 400);
                 }            
                 $bodyData = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/chats/'.$fileName;
@@ -597,11 +511,199 @@ class LiveChatControllers extends Controller {
         return \Response::json((object) $dataList);        
     }
 
+    public function quickReplies(Request $request) {
+        $input = \Request::all();
+        $dataList = Reply::dataList();
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function moderators(Request $request) {
+        $input = \Request::all();
+        $dataList = User::getModerators();
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function contact(Request $request) {
+        $input = \Request::all();
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }   
+
+        $chatObj = ChatDialog::getOne($input['chatId']);
+        if($chatObj == null){
+            return \TraitsFunc::ErrorMessage("Dialog Is Missing");
+        }
+
+        $contactObj = Contact::NotDeleted()->where('phone',str_replace('@c.us', '', $input['chatId']))->first();
+        if($contactObj == null){
+            $contactObj = new Contact;
+            $contactObj->group_id = 1;
+            $contactObj->status = 1;
+            $contactObj->phone = str_replace('@c.us', '', $input['chatId']);
+            $contactObj->save();
+        }        
+
+        $contact_details = Contact::getData($contactObj,null,null,true);
+        $dataObj = ChatDialog::getData($chatObj,false);
+        $dataObj->contact_details = $contact_details;
+        $dataList['data'] = $dataObj;
+        // $dataList['data']->moderators = !empty($dataList['data']->modsArr)  ? User::dataList(null,$dataList['data']->modsArr,'ar')['data'] : [];
+        // $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList($dataList['data']->metadata['labels'],null)['data'] : [];
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);      
+    }
+
+    public function pinChat(Request $request) {
+        $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('pin-chat')){
+            return \TraitsFunc::ErrorMessage("Please Add (pin-chat) Privilege To User's Group");
+        }
+
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+        
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['liveChatId'] = $input['chatId'];
+        $result = $mainWhatsLoopObj->pinChat($data);
+        $result = $result->json();
+        
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_pinned = 1;
+        $dialogObj->save();    
+
+        broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
+        $dataList['status'] = $result['status'];
+        return \Response::json((object) $dataList);        
+    }
+
+    public function unpinChat(Request $request) {
+        $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('unpin-chat')){
+            return \TraitsFunc::ErrorMessage("Please Add (unpin-chat) Privilege To User's Group");
+        }
+
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['liveChatId'] = $input['chatId'];
+        $result = $mainWhatsLoopObj->unpinChat($data);
+        $result = $result->json();
+        
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj->is_pinned = 0;
+        $dialogObj->save();
+
+        broadcast(new DialogPinStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
+        $dataList['status'] = $result['status'];
+        return \Response::json((object) $dataList);
+    }
+    
+    public function readChat(Request $request) {
+        $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('read-chat')){
+            return \TraitsFunc::ErrorMessage("Please Add (read-chat) Privilege To User's Group");
+        }
+
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+
+        $domain = explode('.', $request->getHost())[0];
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['liveChatId'] = $input['chatId'];
+        if($domain != 't1365'){
+            $result = $mainWhatsLoopObj->readChat($data);
+            $result = $result->json();   
+        }else{
+            return \TraitsFunc::ErrorMessage("Disabled");
+        }
+
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_read = 1;
+        $dialogObj->save();
+
+        ChatMessage::where('chatId',$input['chatId'])->update(['sending_status' => 3]);
+        broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 1 ));
+        
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
+        $dataList['status'] = $result['status'];
+        return \Response::json((object) $dataList);   
+    }
+
+    public function unreadChat(Request $request) {
+        $input = \Request::all();
+
+        if($this->checkPerm()){
+            return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('unread-chat')){
+            return \TraitsFunc::ErrorMessage("Please Add (unread-chat) Privilege To User's Group");
+        }
+
+        if(!isset($input['chatId']) || empty($input['chatId']) ){
+            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
+        }
+
+        $mainWhatsLoopObj = new \MainWhatsLoop();
+        $data['liveChatId'] = $input['chatId'];
+        $result = $mainWhatsLoopObj->unreadChat($data);
+        $result = $result->json();
+
+        if($result['status']['status'] != 1){
+            return \TraitsFunc::ErrorMessage($result['status']['message']);
+        }
+        
+        $domain = explode('.', $request->getHost())[0];
+        $dialogObj = ChatDialog::where('id',$input['chatId'])->first();
+        $dialogObj->is_read = 0;
+        $dialogObj->save();
+
+        ChatMessage::where('chatId',$input['chatId'])->update(['sending_status' => 2]);
+        broadcast(new ChatReadStatus($domain, ChatDialog::getData($dialogObj) , 0 ));
+
+        $dataList['data'] = isset($result['data']) ? $result['data'] : '';
+        $dataList['status'] = $result['status'];
+        return \Response::json((object) $dataList);     
+    }
+
     public function labelChat(Request $request) {
         $input = \Request::all();
 
         if($this->checkPerm()){
             return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('label-chat')){
+            return \TraitsFunc::ErrorMessage("Please Add (label-chat) Privilege To User's Group");
         }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
@@ -652,6 +754,10 @@ class LiveChatControllers extends Controller {
             return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
         }
 
+        if(!IS_ADMIN && !\Helper::checkRules('unlabel-chat')){
+            return \TraitsFunc::ErrorMessage("Please Add (unlabel-chat) Privilege To User's Group");
+        }
+
         if(!isset($input['chatId']) || empty($input['chatId']) ){
             return \TraitsFunc::ErrorMessage("Chat ID Is Required");
         }
@@ -687,41 +793,15 @@ class LiveChatControllers extends Controller {
         return \Response::json((object) $dataList);    
     }
 
-    public function contact(Request $request) {
-        $input = \Request::all();
-        if(!isset($input['chatId']) || empty($input['chatId']) ){
-            return \TraitsFunc::ErrorMessage("Chat ID Is Required");
-        }   
-
-        $chatObj = ChatDialog::getOne($input['chatId']);
-        if($chatObj == null){
-            return \TraitsFunc::ErrorMessage("Dialog Is Missing");
-        }
-
-        $contactObj = Contact::NotDeleted()->where('phone',str_replace('@c.us', '', $input['chatId']))->first();
-        if($contactObj == null){
-            $contactObj = new Contact;
-            $contactObj->group_id = 1;
-            $contactObj->status = 1;
-            $contactObj->phone = str_replace('@c.us', '', $input['chatId']);
-            $contactObj->save();
-        }        
-
-        $contact_details = Contact::getData($contactObj,null,null,true);
-        $dataObj = ChatDialog::getData($chatObj,false);
-        $dataObj->contact_details = $contact_details;
-        $dataList['data'] = $dataObj;
-        // $dataList['data']->moderators = !empty($dataList['data']->modsArr)  ? User::dataList(null,$dataList['data']->modsArr,'ar')['data'] : [];
-        // $dataList['data']->labels = !empty($dataList['data']->metadata['labels']) ? Category::dataList($dataList['data']->metadata['labels'],null)['data'] : [];
-        $dataList['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $dataList);      
-    }
-
     public function updateContact(Request $request) {
         $input = \Request::all();
 
         if($this->checkPerm()){
             return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('update-contact-details')){
+            return \TraitsFunc::ErrorMessage("Please Add (update-contact-details) Privilege To User's Group");
         }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
@@ -762,25 +842,17 @@ class LiveChatControllers extends Controller {
         return \Response::json((object) $dataList);      
     }
 
-    public function quickReplies(Request $request) {
-        $input = \Request::all();
-        $dataList = Reply::dataList();
-        $dataList['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $dataList);        
-    }
-
-    public function moderators(Request $request) {
-        $input = \Request::all();
-        $dataList = User::getModerators();
-        $dataList['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $dataList);        
-    }
+    
 
     public function assignMod(Request $request) {
         $input = \Request::all();
 
         if($this->checkPerm()){
             return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('assign-moderator')){
+            return \TraitsFunc::ErrorMessage("Please Add (assign-moderator) Privilege To User's Group");
         }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){
@@ -817,6 +889,10 @@ class LiveChatControllers extends Controller {
 
         if($this->checkPerm()){
             return \TraitsFunc::ErrorMessage('Please Re-activate LiveChat Addon');
+        }
+
+        if(!IS_ADMIN && !\Helper::checkRules('remove-moderator')){
+            return \TraitsFunc::ErrorMessage("Please Add (remove-moderator) Privilege To User's Group");
         }
 
         if(!isset($input['chatId']) || empty($input['chatId']) ){

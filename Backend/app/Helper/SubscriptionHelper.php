@@ -17,6 +17,17 @@ use App\Models\Template;
 use App\Models\OldMembership;
 use App\Models\NotificationTemplate;
 
+use App\Models\PaymentInfo;
+use App\Models\BotPlus;
+
+
+use Salla\ZATCA\GenerateQrCode;
+use Salla\ZATCA\Tags\InvoiceDate;
+use Salla\ZATCA\Tags\InvoiceTaxAmount;
+use Salla\ZATCA\Tags\InvoiceTotalAmount;
+use Salla\ZATCA\Tags\Seller;
+use Salla\ZATCA\Tags\TaxNumber;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 
 class SubscriptionHelper {
 
@@ -50,7 +61,7 @@ class SubscriptionHelper {
                         'duration_type' => $one[3],
                         'start_date' => $start_date,
                         'end_date' => $end_date, 
-                    ];                
+                    ];        
                 }else if($one[1] == 'extra_quota'){
                     $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
                     for ($i = 0; $i < $one[7] ; $i++) {
@@ -133,6 +144,91 @@ class SubscriptionHelper {
         }else if($data['type'] == 'Upgraded'){
             $this->upgrade($data,$tenant_id,$centralUser->global_id,$centralUser->id,$data['invoiceObj']->id,$data['transaction_id'],$data['paymentGateaway']);
         }
+        $this->sendInvoice($data['invoiceObj'],$tenant_id,$centralUser);
+    }
+
+    public function sendInvoice($invoiceObj,$tenant_id,$userObj){
+        $data['invoice'] = Invoice::getData(Invoice::find($invoiceObj->id));
+        $data['companyAddress'] = (object) [
+            'servers' => CentralVariable::getVar('servers'),
+            'address' => CentralVariable::getVar('address'),
+            'region' => CentralVariable::getVar('region'),
+            'city' => CentralVariable::getVar('city'),
+            'postal_code' => CentralVariable::getVar('postal_code'),
+            'country' => CentralVariable::getVar('country'),
+            'tax_id' => CentralVariable::getVar('tax_id'),
+        ];
+        $tax = \Helper::calcTax($data['invoice']->roTtotal);
+        tenancy()->initialize($tenant_id);
+        $paymentObj = PaymentInfo::NotDeleted()->where('user_id',$invoiceObj->client_id)->first();
+        if($paymentObj){
+            $data['paymentObj'] = PaymentInfo::getData($paymentObj);
+        }
+        tenancy()->end();
+        if(!defined('LANGUAGE_PREF')){
+            define('LANGUAGE_PREF','ar');
+        }
+        if(!defined('DIRECTION')){
+            define('DIRECTION','rtl');
+        }
+        $data['qrImage'] = GenerateQrCode::fromArray([
+            new Seller($data['companyAddress']->servers),
+            new TaxNumber($data['companyAddress']->tax_id),
+            new InvoiceDate(date('Y-m-d\TH:i:s\Z',strtotime($data['invoice']->due_date))),
+            new InvoiceTotalAmount($data['invoice']->roTtotal),
+            new InvoiceTaxAmount($tax)
+        ])->render();
+
+        $fileName = 'invoice '.($invoiceObj->id+10000).'.pdf';
+        if(!file_exists(public_path().'/uploads/invoices/'.$invoiceObj->id.'/'.$fileName)){
+            $pdf = SnappyPdf::loadView('Tenancy.Invoice.Views.V5.invoicePDF',['data'=> (object)$data])
+                ->setPaper('a4', 'portrait')
+                ->setOption('margin-bottom', '0mm')
+                ->setOption('margin-top', '0mm')
+                ->setOption('margin-right', '0mm')
+                ->setOption('margin-left', '0mm');
+            $pdf->save(public_path().'/uploads/invoices/'.$invoiceObj->id.'/'.$fileName);
+        }
+        
+        $baseURL = config('app.BASE_URL').'/public';
+        $baseURL.= '/uploads/invoices/'.$invoiceObj->id.'/'.$fileName;
+        $sendData = [
+            'phone' => str_replace('+', '', $userObj->phone),
+            'body' => $baseURL,
+            'filename' => $fileName,
+        ];
+        $centralChannelObj = CentralChannel::first();
+        $mainWhatsLoopObj = new MainWhatsLoop($centralChannelObj->id,$centralChannelObj->token);
+        $result = $mainWhatsLoopObj->sendFile($sendData);
+
+        $sendButtonsData = [
+            'chatId' => $sendData['phone'],
+            'title' => 'Dear Customer',
+            'body' => 'Body',
+            'footer' => 'Your Opinion matters!!',
+            'buttons' => 'Neutral,Satisfied,Unsatisfied',
+        ];
+
+        tenancy()->initialize($centralChannelObj->tenant_id);
+        $botObj  = BotPlus::where('message','invoiceme')->first();
+        tenancy()->end();
+
+        $buttons = '';
+        if($botObj){
+            $botObj = BotPlus::getData($botObj);
+            if(isset($botObj->buttonsData) && !empty($botObj->buttonsData)){
+                foreach($botObj->buttonsData as $key => $oneItem){
+                    $buttons.= $oneItem['text'].( $key == $botObj->buttons -1 ? '' : ',');
+                }
+            }
+
+            $sendButtonsData['title'] = $botObj->title;
+            $sendButtonsData['body'] = $botObj->body;
+            $sendButtonsData['footer'] = $botObj->footer;
+            $sendButtonsData['buttons'] = $buttons;
+        }
+
+        $result2 = $mainWhatsLoopObj->sendButtons($sendButtonsData);
     }
 
     public function setTenant($transferObj=null,$userId){
@@ -164,210 +260,6 @@ class SubscriptionHelper {
             'start_date' => $start_date,
             'userCredits' => $userCredits,
         ];
-    }
-
-    public function newClient($data,$tenant_id,$global_id,$userId,$invoice_id,$transaction_id,$paymentGateaway){
-        $items = [];
-        $addons = [];
-        $addonData = [];
-        $extraQuotaData = [];
-        $total = $data['invoiceObj']->total;
-        $invoiceData = unserialize($data['invoiceObj']->items);
-        $start_date = date('Y-m-d');
-        $centralUser = CentralUser::find($userId);
-        $membership_id = null;
-        $duration_type = 1;
-
-        foreach($invoiceData as $key => $one){
-            $end_date =  $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date)));
-            if($one['type'] == 'membership'){
-                $dataObj = Membership::getOne($one['data']['id']);
-                $membership_id = $dataObj->id;
-                $duration_type = $one['data']['duration_type'];
-            }else if($one['type'] == 'addon'){
-                $dataObj = Addons::getOne($one['data']['id']);
-                $addon[] = $one['data']['id'];
-                $addonData[] = [
-                    'tenant_id' => $tenant_id,
-                    'global_user_id' => $global_id,
-                    'user_id' => $userId,
-                    'addon_id' => $one['data']['id'],
-                    'status' => 1,
-                    'duration_type' => $one['data']['duration_type'],
-                    'start_date' => $start_date,
-                    'end_date' => $end_date, 
-                ];
-            }else if($one['type'] == 'extra_quota'){
-                $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
-                for ($i = 0; $i < $one['data']['quantity'] ; $i++) {
-                    $extraQuotaData[] = [
-                        'tenant_id' => $tenant_id,
-                        'global_user_id' => $global_id,
-                        'user_id' => $userId,
-                        'extra_quota_id' => $one['data']['id'],
-                        'duration_type' => $one['data']['duration_type'],
-                        'status' => 1,
-                        'start_date' => $start_date,
-                        'end_date' => $end_date, 
-                    ];
-                }
-            }
-
-            $price = $dataObj->monthly_price;
-            $price_after_vat = $dataObj->monthly_after_vat;
-            if($one['data']['duration_type'] == 2){
-                $price = $dataObj->annual_price;
-                $price_after_vat = $dataObj->annual_after_vat;
-            }
-            $item = $one;
-            $items[] = $item;
-        }
-
-        $tenant = Tenant::find($tenant_id);
-        tenancy()->initialize($tenant);
-        $userObj = User::first();
-        tenancy()->end($tenant);
-
-        if(!empty($addon)){
-            $oldData = unserialize($centralUser->addons) != null ? unserialize($centralUser->addons) : [];
-            $newData = array_merge($oldData,$addon);
-            $newData = array_unique($newData);
-
-            tenancy()->initialize($tenant);
-            $mainUserChannel = UserChannels::first();
-            User::where('id',$centralUser->id)->update([
-                'addons' =>  serialize($newData),
-            ]);
-            tenancy()->end($tenant);
-            $centralUser->update([
-                'addons' =>  serialize($newData),
-            ]);
-        }
-
-        $invoiceObj = Invoice::find($invoice_id);
-        $invoiceObj->main = 1;
-        $invoiceObj->status = 1;
-        $invoiceObj->paid_date = DATE_TIME;
-        $invoiceObj->items = serialize($items);
-        $invoiceObj->transaction_id = $transaction_id;
-        $invoiceObj->payment_gateaway = $paymentGateaway;  
-        $invoiceObj->payment_method = $paymentGateaway == 'Noon' ? 1 : 2;
-        $invoiceObj->save();
-
-        $this->sendNotifications($userObj,$invoiceObj,'NewClient');
-
-        foreach($addonData as $oneAddonData){
-            $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->first();
-            if($userAddonObj){
-                $userAddonObj->update($oneAddonData);
-            }else{
-                UserAddon::insert($oneAddonData);
-            }
-        }
-
-        foreach($extraQuotaData as $oneItemData){
-            $userExtraQuotaObj = UserExtraQuota::where('user_id',$oneItemData['user_id'])->where('extra_quota_id',$oneItemData['extra_quota_id'])->where('status','!=',1)->first();
-            if($userExtraQuotaObj){
-                $userExtraQuotaObj->update($oneItemData);
-            }else{
-                UserExtraQuota::insert($oneItemData);                
-            }
-        }
- 
-        $channelObj = CentralChannel::first();
-        $instanceId = '';
-        if(!$mainUserChannel){
-            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-            $updateResult = $mainWhatsLoopObj->createChannel();
-            $result = $updateResult->json();
-
-        
-            if($result['status']['status'] != 1){
-                return [0,$result['status']['message']];
-            }
-
-            $channel = [
-                'id' => $result['data']['channel']['id'],
-                'token' => $result['data']['channel']['token'],
-                'name' => 'Channel #'.$result['data']['channel']['id'],
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
-
-            $extraChannelData = $channel;
-            $extraChannelData['tenant_id'] = $tenant_id;
-            $extraChannelData['global_user_id'] = $userObj->global_id;
-            $generatedData = CentralChannel::generateNewKey($result['data']['channel']['id']); // [ generated Key , generated Token]
-            $extraChannelData['instanceId'] = $generatedData[0];
-            $instanceId = $extraChannelData['instanceId'];
-            $extraChannelData['instanceToken'] = $generatedData[1];
-
-            CentralChannel::create($extraChannelData);
-
-            tenancy()->initialize($tenant);
-            $mainUserChannel = UserChannels::create($channel);
-            tenancy()->end($tenant);
-        }else{
-            $centralChannelObj = CentralChannel::where('id',$mainUserChannel->id)->first();
-            $instanceId = $centralChannelObj->instanceId;
-             
-            tenancy()->initialize($tenant);
-            $mainUserChannel->start_date = $start_date;
-            $mainUserChannel->end_date = $end_date;
-            $mainUserChannel->save();
-            tenancy()->end($tenant);
-            
-            $centralChannelObj->start_date = $start_date;
-            $centralChannelObj->end_date = $end_date;
-            $centralChannelObj->save();
-
-            $channel = [
-                'id' => $mainUserChannel->id,
-                'token' => $mainUserChannel->token,
-                'name' => 'Channel #'.$mainUserChannel->id,
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-            ];
-        }
-        
-
-        $transferDaysData = [
-            'receiver' => $channel['id'],
-            'days' => 1, // 3
-            'source' => $channelObj->id,
-        ];
-
-        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
-        $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
-        $result = $updateResult->json();
-        
-        tenancy()->initialize($tenant);
-        $userObj->update([
-            'channels' => serialize([$channel['id']]),
-        ]);
-        if($membership_id != null){
-            $userObj->update([
-                'membership_id' => $membership_id,
-                'duration_type' => $duration_type,
-            ]);
-        }
-        Variable::whereIn('var_key',['userCredits','start_date','cartObj','endDate','inv_status','bundle'])->delete();
-        tenancy()->end($tenant);
-        
-
-        $centralUser->update([
-            'channels' => serialize([$channel['id']]),
-        ]);
-
-        if($membership_id != null){
-            $centralUser->update([
-                'membership_id' => $membership_id,
-                'duration_type' => $duration_type,
-            ]);
-        }
-       
-
-        $this->setTemplates($addon,$tenant,$instanceId);
     }
 
     public function setTemplates($addon,$tenant,$instanceId){
@@ -770,7 +662,7 @@ class SubscriptionHelper {
             'template' => 'tenant.emailUsers.default',
             'url' => 'https://'.$userObj->domain.'.wloop.net/login',
             'extras' => [
-                'invoiceObj' => Invoice::getData($invoiceObj),
+                'invoiceObj' => Invoice::getData(Invoice::find($invoiceObj->id)),
                 'company' => $userObj->company,
                 'url' => 'https://'.$userObj->domain.'.wloop.net/login',
             ],
@@ -797,7 +689,7 @@ class SubscriptionHelper {
                 'template' => 'tenant.emailUsers.default',
                 'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                 'extras' => [
-                    'invoiceObj' => Invoice::getData($invoiceObj),
+                    'invoiceObj' => Invoice::getData(Invoice::find($invoiceObj->id)),
                     'company' => $userObj->company,
                     'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                 ],
@@ -820,7 +712,7 @@ class SubscriptionHelper {
                 'template' => 'tenant.emailUsers.default',
                 'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                 'extras' => [
-                    'invoiceObj' => Invoice::getData($invoiceObj),
+                    'invoiceObj' => Invoice::getData(Invoice::find($invoiceObj->id)),
                     'company' => $userObj->company,
                     'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                 ],
@@ -843,7 +735,7 @@ class SubscriptionHelper {
                 'template' => 'tenant.emailUsers.default',
                 'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                 'extras' => [
-                    'invoiceObj' => Invoice::getData($invoiceObj),
+                    'invoiceObj' => Invoice::getData(Invoice::find($invoiceObj->id)),
                     'company' => $userObj->company,
                     'url' => 'https://'.$userObj->domain.'.wloop.net/login',
                 ],
@@ -871,6 +763,221 @@ class SubscriptionHelper {
         }
     }
 
+    public function newClient($data,$tenant_id,$global_id,$userId,$invoice_id,$transaction_id,$paymentGateaway){
+        $items = [];
+        $addons = [];
+        $addonData = [];
+        $extraQuotaData = [];
+        $total = $data['invoiceObj']->total;
+        $invoiceData = unserialize($data['invoiceObj']->items);
+        $start_date = date('Y-m-d');
+        $centralUser = CentralUser::find($userId);
+        $membership_id = null;
+        $duration_type = 1;
+        
+        foreach($invoiceData as $key => $one){
+            $end_date =  $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date)));
+            if($one['type'] == 'membership'){
+                $dataObj = Membership::getOne($one['data']['id']);
+                $membership_id = $dataObj->id;
+                $duration_type = $one['data']['duration_type'];
+            }else if($one['type'] == 'addon'){
+                $dataObj = Addons::getOne($one['data']['id']);
+                $addon[] = $one['data']['id'];
+                $addonData[] = [
+                    'tenant_id' => $tenant_id,
+                    'global_user_id' => $global_id,
+                    'user_id' => $userId,
+                    'addon_id' => $one['data']['id'],
+                    'status' => 1,
+                    'duration_type' => $one['data']['duration_type'],
+                    'start_date' => $start_date,
+                    'end_date' => $end_date, 
+                ];
+            }else if($one['type'] == 'extra_quota'){
+                $dataObj = ExtraQuota::getData(ExtraQuota::getOne($one[0]));
+                for ($i = 0; $i < $one['data']['quantity'] ; $i++) {
+                    $extraQuotaData[] = [
+                        'tenant_id' => $tenant_id,
+                        'global_user_id' => $global_id,
+                        'user_id' => $userId,
+                        'extra_quota_id' => $one['data']['id'],
+                        'duration_type' => $one['data']['duration_type'],
+                        'status' => 1,
+                        'start_date' => $start_date,
+                        'end_date' => $end_date, 
+                    ];
+                }
+            }
+
+            $price = $dataObj->monthly_price ;
+            $price_after_vat = $dataObj->monthly_after_vat;
+            if($one['data']['duration_type'] == 2){
+                $price = $dataObj->annual_price ;
+                $price_after_vat = $dataObj->annual_after_vat;
+            }
+            $item = $one;
+            $items[] = $item;
+        }
+
+        $tenant = Tenant::find($tenant_id);
+        tenancy()->initialize($tenant);
+        $userObj = User::first();
+        tenancy()->end($tenant);
+
+        if(!empty($addon)){
+            $oldData = unserialize($centralUser->addons) != null ? unserialize($centralUser->addons) : [];
+            $newData = array_merge($oldData,$addon);
+            $newData = array_unique($newData);
+
+            tenancy()->initialize($tenant);
+            $mainUserChannel = UserChannels::first();
+            User::where('id',$centralUser->id)->update([
+                'addons' =>  serialize($newData),
+            ]);
+            tenancy()->end($tenant);
+            $centralUser->update([
+                'addons' =>  serialize($newData),
+            ]);
+        }
+
+        $invoiceObj = Invoice::find($invoice_id);
+        $invoiceObj->main = 1;
+        $invoiceObj->status = 1;
+        $invoiceObj->paid_date = DATE_TIME;
+        $invoiceObj->items = serialize($items);
+        $invoiceObj->transaction_id = $transaction_id;
+        $invoiceObj->payment_gateaway = $paymentGateaway;  
+        $invoiceObj->payment_method = $paymentGateaway == 'Noon' ? 1 : 2;
+        $invoiceObj->save();
+
+        $this->sendNotifications($userObj,$invoiceObj,'NewClient');
+        tenancy()->initialize($tenant);
+        $mainUserChannel = UserChannels::first();
+        tenancy()->end($tenant);
+        foreach($addonData as $oneAddonData){
+            $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->first();
+            if($userAddonObj){
+                $userAddonObj->update($oneAddonData);
+            }else{
+                UserAddon::insert($oneAddonData);
+            }
+        }
+
+        foreach($extraQuotaData as $oneItemData){
+            $userExtraQuotaObj = UserExtraQuota::where('user_id',$oneItemData['user_id'])->where('extra_quota_id',$oneItemData['extra_quota_id'])->where('status','!=',1)->first();
+            if($userExtraQuotaObj){
+                $userExtraQuotaObj->update($oneItemData);
+            }else{
+                UserExtraQuota::insert($oneItemData);                
+            }
+        }
+ 
+        $channelObj = CentralChannel::first();
+        $instanceId = '';
+        if(!$mainUserChannel){
+            $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+
+            $lastCentralChannelObj = CentralChannel::orderBy('id','DESC')->first();
+            $lastTransferDaysData = [
+                'receiver' => $lastCentralChannelObj->id,
+                'days' => 1, // 3
+                'source' => $channelObj->id,
+            ];
+            $transResult = $mainWhatsLoopObj->transferDays($lastTransferDaysData);
+
+            $updateResult = $mainWhatsLoopObj->createChannel();
+            $result = $updateResult->json();
+
+        
+            if($result['status']['status'] != 1){
+                return [0,$result['status']['message']];
+            }
+
+            $channel = [
+                'id' => $result['data']['channel']['id'],
+                'token' => $result['data']['channel']['token'],
+                'name' => 'Channel #'.$result['data']['channel']['id'],
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ];
+
+            $extraChannelData = $channel;
+            $extraChannelData['tenant_id'] = $tenant_id;
+            $extraChannelData['global_user_id'] = $userObj->global_id;
+            $generatedData = CentralChannel::generateNewKey($result['data']['channel']['id']); // [ generated Key , generated Token]
+            $extraChannelData['instanceId'] = $generatedData[0];
+            $instanceId = $extraChannelData['instanceId'];
+            $extraChannelData['instanceToken'] = $generatedData[1];
+
+            CentralChannel::create($extraChannelData);
+
+            tenancy()->initialize($tenant);
+            $mainUserChannel = UserChannels::create($channel);
+            tenancy()->end($tenant);
+        }else{
+            $centralChannelObj = CentralChannel::where('id',$mainUserChannel->id)->first();
+            $instanceId = $centralChannelObj->instanceId;
+             
+            tenancy()->initialize($tenant);
+            $mainUserChannel->start_date = $start_date;
+            $mainUserChannel->end_date = $end_date;
+            $mainUserChannel->save();
+            tenancy()->end($tenant);
+            
+            $centralChannelObj->start_date = $start_date;
+            $centralChannelObj->end_date = $end_date;
+            $centralChannelObj->save();
+
+            $channel = [
+                'id' => $mainUserChannel->id,
+                'token' => $mainUserChannel->token,
+                'name' => 'Channel #'.$mainUserChannel->id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+            ];
+        }
+        
+
+        $transferDaysData = [
+            'receiver' => $channel['id'],
+            'days' => 1, // 3
+            'source' => $channelObj->id,
+        ];
+
+        $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+        $updateResult = $mainWhatsLoopObj->transferDays($transferDaysData);
+        $result = $updateResult->json();
+        
+        tenancy()->initialize($tenant);
+        $userObj->update([
+            'channels' => serialize([$channel['id']]),
+        ]);
+        if($membership_id != null){
+            $userObj->update([
+                'membership_id' => $membership_id,
+                'duration_type' => $duration_type,
+            ]);
+        }
+        Variable::whereIn('var_key',['userCredits','start_date','cartObj','endDate','inv_status','bundle'])->delete();
+        tenancy()->end($tenant);
+        
+
+        $centralUser->update([
+            'channels' => serialize([$channel['id']]),
+        ]);
+
+        if($membership_id != null){
+            $centralUser->update([
+                'membership_id' => $membership_id,
+                'duration_type' => $duration_type,
+            ]);
+        }
+       
+
+        $this->setTemplates($addon,$tenant,$instanceId);
+    }
+
     public function changeSubscription($data,$tenant_id,$global_id,$userId,$invoice_id,$transaction_id,$paymentGateaway){
         $items = [];
         $addons = [];
@@ -893,7 +1000,7 @@ class SubscriptionHelper {
                 $main = 1;
                 $duration_type = $one['data']['duration_type'];
                 $channelEndDate = $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date)));
-            }else if($one['type'] == 'addon'){
+            }else if($one['type'] == 'addon'){        
                 $dataObj = Addons::getOne($one['data']['id']);
                 $addon[] = $one['data']['id'];
                 $addonData[] = [
@@ -969,6 +1076,9 @@ class SubscriptionHelper {
         }
 
         $this->sendNotifications($userObj,$invoiceObj,'SubscriptionChanged');
+        tenancy()->initialize($tenant);
+        $mainUserChannel = UserChannels::first();
+        tenancy()->end($tenant);
 
         foreach($addonData as $oneAddonData){
             $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->first();
@@ -993,6 +1103,15 @@ class SubscriptionHelper {
         $instanceId = '';
         if(!$mainUserChannel){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+
+            $lastCentralChannelObj = CentralChannel::orderBy('id','DESC')->first();
+            $lastTransferDaysData = [
+                'receiver' => $lastCentralChannelObj->id,
+                'days' => 1, // 3
+                'source' => $channelObj->id,
+            ];
+            $transResult = $mainWhatsLoopObj->transferDays($lastTransferDaysData);
+
             $updateResult = $mainWhatsLoopObj->createChannel();
             $result = $updateResult->json();
 
@@ -1099,7 +1218,7 @@ class SubscriptionHelper {
         $centralUser = CentralUser::find($userId);
         $membership_id = null;
         $main = 0;
-
+        
         foreach($invoiceData as $key => $one){
             $end_date =  $one['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($start_date))) : date('Y-m-d',strtotime('+1 year',strtotime($start_date)));
             if($one['type'] == 'membership'){
@@ -1179,6 +1298,9 @@ class SubscriptionHelper {
         $invoiceObj->save();
 
         $this->sendNotifications($userObj,$invoiceObj,'Suspended');
+        tenancy()->initialize($tenant);
+        $mainUserChannel = UserChannels::first();
+        tenancy()->end($tenant);
 
         foreach($addonData as $oneAddonData){
             $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->first();
@@ -1348,6 +1470,9 @@ class SubscriptionHelper {
         }
 
         $this->sendNotifications($userObj,$invoiceObj,'SubscriptionChanged');
+        tenancy()->initialize($tenant);
+        $mainUserChannel = UserChannels::first();
+        tenancy()->end($tenant);
 
         foreach($addonData as $oneAddonData){
             $userAddonObj = UserAddon::where('user_id',$oneAddonData['user_id'])->where('addon_id',$oneAddonData['addon_id'])->first();
@@ -1374,6 +1499,15 @@ class SubscriptionHelper {
         $instanceId = '';
         if(!$mainUserChannel){
             $mainWhatsLoopObj = new \MainWhatsLoop($channelObj->id,$channelObj->token);
+
+            $lastCentralChannelObj = CentralChannel::orderBy('id','DESC')->first();
+            $lastTransferDaysData = [
+                'receiver' => $lastCentralChannelObj->id,
+                'days' => 1, // 3
+                'source' => $channelObj->id,
+            ];
+            $transResult = $mainWhatsLoopObj->transferDays($lastTransferDaysData);
+            
             $updateResult = $mainWhatsLoopObj->createChannel();
             $result = $updateResult->json();
 
@@ -1507,7 +1641,10 @@ class SubscriptionHelper {
         }
         
         $this->sendNotifications($userObj,$invoiceObj,'Upgraded');
-
+        tenancy()->initialize($tenant);
+        $mainUserChannel = UserChannels::first();
+        tenancy()->end($tenant);
+        
         $channelObj = CentralChannel::first();
  
         tenancy()->initialize($tenant);

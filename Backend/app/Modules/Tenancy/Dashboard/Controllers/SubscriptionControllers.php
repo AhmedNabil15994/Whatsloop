@@ -30,6 +30,7 @@ use App\Models\Bundle;
 use App\Models\BankTransfer;
 use App\Models\BankAccount;
 use App\Models\Coupon;
+use App\Models\OAuthData;
 use App\Jobs\SyncOldClient;
 use App\Jobs\NewClient;
 use Http;
@@ -181,6 +182,22 @@ class SubscriptionControllers extends Controller {
 
     public function packages(){   
         $input = \Request::all();
+        $mainUser = User::first();
+        $arr = [
+            TENANT_ID,
+            $mainUser->domain,
+            $mainUser->id,
+            $mainUser->phone,
+
+        ];
+        $oauthDataObj = OAuthData::where('type','salla')->where('domain','null')->where('phone',$arr[3])->first();
+        if($oauthDataObj){
+            $oauthDataObj->user_id = $arr[2];
+            $oauthDataObj->domain = $arr[1];
+            $oauthDataObj->tenant_id = $arr[0];
+            $oauthDataObj->save();
+        }
+
         if(Session::get('membership') != null){
             return redirect('/dashboard');
         }
@@ -465,10 +482,10 @@ class SubscriptionControllers extends Controller {
         if(isset($input['name']) && !empty($input['name'])){
 
             $names = explode(' ',$input['name']);
-            if(count($names) < 2){
-                Session::flash('error', trans('main.name2Validate'));
-                return redirect()->back()->withInput();
-            }
+            // if(count($names) < 2){
+            //     Session::flash('error', trans('main.name2Validate'));
+            //     return redirect()->back()->withInput();
+            // }
 
             $userObj->name = $input['name'];
             $userObj->save();
@@ -783,6 +800,7 @@ class SubscriptionControllers extends Controller {
         $data['memberships'] = Session::has('invoice_id') && Session::get('invoice_id') != 0 ? Membership::dataList(1)['data'] : [];
         $data['addons'] = [];
         $data['extraQuotas'] = [];
+        $data['userCredits'] = 0;
 
         if($input['type'] == 'membership'){
             $dataObj = Membership::getOne(Session::get('membership'));

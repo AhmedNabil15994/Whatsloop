@@ -4,6 +4,10 @@
 return [
     
     'DashboardControllers@Dashboard' => 'general',
+    'DashboardControllers@hneehm' => 'general',
+    'DashboardControllers@postHneehm' => 'general',
+    'DashboardControllers@getImageDimensions' => 'general',
+    'DashboardControllers@postImageDimensions' => 'general',
     'DashboardControllers@menu' => 'general',
     'DashboardControllers@changeLang' => 'general',
     'DashboardControllers@changeTheme' => 'general',
@@ -198,6 +202,18 @@ return [
     'TenantInvoiceControllers@checkout' => 'pay-invoice',
     'TenantInvoiceControllers@pushInvoice' => 'pay-invoice',
     'TenantInvoiceControllers@postCheckout' => 'general',
+
+    'FeedbackControllers@index' => 'list-feedback',
+    'FeedbackControllers@add' => 'add-feedback',
+    'FeedbackControllers@create' => 'add-feedback',
+    // 'TenantInvoiceControllers@view' => 'view-invoice',
+    // 'TenantInvoiceControllers@downloadPDF' => 'view-invoice',
+    // 'TenantInvoiceControllers@sort' => 'sort-invoice',
+    // 'TenantInvoiceControllers@arrange' => 'sort-invoice',
+    // 'TenantInvoiceControllers@charts' => 'charts-invoice',
+    // 'TenantInvoiceControllers@checkout' => 'pay-invoice',
+    // 'TenantInvoiceControllers@pushInvoice' => 'pay-invoice',
+    // 'TenantInvoiceControllers@postCheckout' => 'general',
 
 
     // 'SallaControllers@customers' => 'salla-customers',

@@ -146,6 +146,7 @@ return [
 	'unread-chat' => 'الغاء قراءة المحادثة',
 	'list-messages' => 'عرض الرسائل',
 	'sendMessage' => 'ارسال رسالة',
+	'deleteMessage' => 'حذف رسالة',
 	'list-labels' => 'عرض تصنيفات المحادثة',
 	'label-chat' => 'تسمية المحادثة',
 	'unlabel-chat' => 'الغاء تسمية المحداثة',

@@ -12,12 +12,16 @@ use App\Models\Variable;
 use App\Models\Template;
 use App\Models\CentralVariable;
 use App\Jobs\AbandonedCart;
+use App\Jobs\SyncAddonsData;
 use App\Models\UserAddon;
 use App\Models\OAuthData;
 use App\Models\BotPlus;
 use App\Models\Bot;
 use App\Models\Category;
 use App\Models\ModNotificationReport;
+use App\Models\UserExtraQuota;
+use App\Models\CartEvents;
+use Storage;
 use DB;
 use DataTables;
 
@@ -60,7 +64,6 @@ class SallaControllers extends Controller {
         $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
         if($oauthDataObj && $oauthDataObj->authorization != null){
             $token = $oauthDataObj->authorization;
-
             $dataArr = [
                 'baseUrl' => 'https://api.salla.dev/admin/v2',
                 'storeToken' => $token,
@@ -70,17 +73,16 @@ class SallaControllers extends Controller {
                 'service' => $service,
                 'params' => [],
             ];
-        }else{
-            $input['refresh'] = '';
         }
-
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
-        $externalHelperObj = new \ExternalServices($dataArr);
+
         if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
-            $externalHelperObj->startFuncs();
-        }
-        if($refresh == 'refresh'){
+            try {
+                dispatch(new SyncAddonsData($dataArr))->onConnection('cjobs');;
+            } catch (Exception $e) {
+                
+            }
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
@@ -122,17 +124,16 @@ class SallaControllers extends Controller {
                 'service' => $service,
                 'params' => [],
             ];
-        }else{
-            $input['refresh'] = '';
         }
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
-        $externalHelperObj = new \ExternalServices($dataArr);
-        if ((!Schema::hasTable($tableName) || $refresh == 'refresh' ) && !$this->checkPerm() ) {
-            $externalHelperObj->startFuncs();
-        }
 
-        if($refresh == 'refresh'){
+        if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
+            try {
+                dispatch(new SyncAddonsData($dataArr))->onConnection('cjobs');;
+            } catch (Exception $e) {
+                
+            }
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
@@ -188,31 +189,266 @@ class SallaControllers extends Controller {
                 'service' => $service,
                 'params' => [],
             ];
-        }else{
-            $input['refresh'] = '';
         }
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
-        $externalHelperObj = new \ExternalServices($newDataArr);
+
         if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
-            $externalHelperObj->startFuncs();
-        }
-
-        $externalHelperObj = new \ExternalServices($dataArr);
-        if (!Schema::hasTable($tableName) || $refresh == 'refresh') {
-            $externalHelperObj->startFuncs();
-        }
-
-        if($refresh == 'refresh'){
+            try {
+                dispatch(new SyncAddonsData($dataArr))->onConnection('cjobs');
+                dispatch(new SyncAddonsData($newDataArr))->onConnection('cjobs');
+            } catch (Exception $e) {
+                
+            }
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
+
 
         $ajaxCheck = $request->ajax();
         return $this->runModuleService($modelName,$tableName,$ajaxCheck);
     }
 
+    protected function validateInsertBotPlusObject($input){
+        $rules = [
+            'title' => 'required',
+            'body' => 'required',
+            'footer' => 'required',
+            'buttons' => 'required',
+        ];
+
+        $message = [
+            'title.required' => trans('main.titleValidate'),
+            'body.required' => trans('main.bodyValidate'),
+            'footer.required' => trans('main.footerValidate'),
+            'buttons.required' => trans('main.buttonsValidate'),
+        ];
+
+        $validate = \Validator::make($input, $rules, $message);
+        return $validate;
+    }
+
+    public function resendCarts(){
+        $input = \Request::all();
+        $message = '';
+
+        if(!isset($input['message_type']) || empty($input['message_type'])){
+            return  \TraitsFunc::ErrorMessage(trans('main.messageTypeValidate'));
+        }
+        if(!isset($input['time']) || empty($input['time'])){
+            return  \TraitsFunc::ErrorMessage(trans('main.timeValidate'));
+        }
+       
+        if($input['message_type'] == 1){
+            if(!isset($input['message_type']) || empty($input['message_type'])){
+                Session::flash('error', trans('main.messageValidate'));
+                return redirect()->back()->withInput();
+            }
+            $message = $input['content'];
+        }elseif($input['message_type'] == 2){
+            $message = '';
+        }elseif($input['message_type'] == 3){
+            $validate = $this->validateInsertBotPlusObject($input);
+            if($validate->fails()){
+                Session::flash('error', $validate->messages()->first());
+                return redirect()->back()->withInput();
+            }
+
+            for ($i = 0; $i < $input['buttons']; $i++) {
+                if(!isset($input['btn_text_'.($i+1)]) || empty($input['btn_text_'.($i+1)]) || $input['btn_text_'.($i+1)] == null ){
+                    Session::flash('error', trans('main.invalidText',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                if(!isset($input['btn_reply_type_'.($i+1)]) || empty($input['btn_reply_type_'.($i+1)]) || $input['btn_reply_type_'.($i+1)] == null ){
+                    Session::flash('error', trans('main.invalidType',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                $replyType = (int)$input['btn_reply_type_'.($i+1)];
+                if($replyType == 1 && ( !isset($input['btn_reply_'.($i+1)]) || empty($input['btn_reply_'.($i+1)]) )){
+                    Session::flash('error', trans('main.invalidReply',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                if($replyType == 2 && ( !isset($input['btn_msg_'.($i+1)]) || empty($input['btn_msg_'.($i+1)]) )){
+                    Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                $modelType = '';
+                if($replyType == 2 && ( !isset($input['btn_msg_type_'.($i+1)]) || empty($input['btn_msg_type_'.($i+1)]) )){
+                    Session::flash('error', trans('main.invalidMsg',['button'=>($i+1)]));
+                    return redirect()->back()->withInput();
+                }
+
+                $modelType = (int)$input['btn_msg_type_'.($i+1)];
+                $modelName = $modelType != '' ?  ($modelType == 1 ? '\App\Models\Bot' : '\App\Models\BotPlus')  : '';
+                $msg = $replyType == 1 ? $input['btn_reply_'.($i+1)] : '';
+
+                if($modelName != '' && $msg == ''){
+                    $dataObj = $modelName::find($input['btn_msg_'.($i+1)]);
+                    if($dataObj){
+                        $msg = $dataObj->id;
+                    }
+                }
+
+                $myData[] = [
+                    'id' => $i + 1,
+                    'text' => $input['btn_text_'.($i+1)],
+                    'reply_type' => $input['btn_reply_type_'.($i+1)],
+                    'msg_type' => $modelType,
+                    'model_name' => $modelName,
+                    'msg' => $msg,
+                ];
+            }
+            $message = $input['body'];
+        }
+
+        $dataArr = [
+            'type' => 2,
+            'message_type' => $input['message_type'],
+            'message' => $message,
+            'time' => $input['time'],
+            'file_name' => null,
+            'caption' => null,
+            'status' => 1,
+            'bot_plus_id' => null,
+            'created_at' => DATE_TIME,
+            'created_by' => USER_ID,
+        ];
+
+        if(!isset($input['event_id']) || empty($input['event_id'])){
+            $updates = [];
+            $dataObjID = \DB::table('abandoned_carts_events')->insertGetId($dataArr);
+            if(in_array($input['message_type'], [2])){
+                $file = Session::get('msgFile');
+                if($file){
+                    $storageFile = Storage::files($file);
+                    if(count($storageFile) > 0){
+                        $images = self::addImage($storageFile[0],$dataObjID);
+                        if ($images == false) {
+                            Session::flash('error', trans('main.uploadProb'));
+                            return redirect()->back()->withInput();
+                        }
+                        $updates['file_name'] = $images;
+                        $updates['message'] = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/SallaCarts/'.$dataObjID.'/'.$images;
+                        if(Session::has('msgFileType') && Session::get('msgFileType') != 'file'){
+                            $updates['caption'] = $input['caption'];
+                        }
+                    }
+                }
+            }
+
+            if($input['message_type'] == 3){
+                $botObj = new BotPlus;
+                $botObj->channel = Session::get('channelCode');
+                $botObj->message_type = 1;
+                $botObj->message = 'Salla AbandonedCart #'.$dataObjID;
+                $botObj->title = $input['title'];
+                $botObj->body = $input['body'];
+                $botObj->footer = $input['footer'];
+                $botObj->buttons = $input['buttons'];
+                $botObj->buttonsData = serialize($myData);
+                $botObj->sort = BotPlus::newSortIndex();
+                $botObj->status = 1;
+                $botObj->deleted_by = 1;
+                $botObj->deleted_at = DATE_TIME;
+                $botObj->save();
+
+                $updates['bot_plus_id'] = $botObj->id;
+            }
+            if(!empty($updates)){
+                \DB::table('abandoned_carts_events')->where('id',$dataObjID)->update($updates);
+            }
+            Session::flash('success', trans('main.addSuccess'));
+        }else{
+            $updates = [];
+            $dataObjID = $input['event_id'];
+            $eventObj = CartEvents::find($input['event_id']);
+            if(!$eventObj){
+                Session::flash('error', trans('main.notFound'));
+                return redirect()->back();
+            }
+
+            if(in_array($input['message_type'], [2])){
+                $file = Session::get('msgFile');
+                if($file){
+                    $storageFile = Storage::files($file);
+                    if(count($storageFile) > 0){
+                        $images = self::addImage($storageFile[0],$dataObjID);
+                        if ($images == false) {
+                            Session::flash('error', trans('main.uploadProb'));
+                            return redirect()->back()->withInput();
+                        }
+                        $updates['file_name'] = $images;
+                        $updates['message'] = config('app.BASE_URL').'/public/uploads/'.TENANT_ID.'/SallaCarts/'.$dataObjID.'/'.$images;
+                        if(Session::has('msgFileType') && Session::get('msgFileType') != 'file'){
+                            $updates['caption'] = $input['caption'];
+                        }
+                    }
+                }
+            }
+
+            if($input['message_type'] == 3){
+                if($eventObj->bot_plus_id != null){
+                    $botObj = BotPlus::find($eventObj->bot_plus_id);
+                }else{
+                    $botObj = new BotPlus;                    
+                }
+                $botObj->channel = Session::get('channelCode');
+                $botObj->message_type = 1;
+                $botObj->message = 'Salla AbandonedCart #'.$dataObjID;
+                $botObj->title = $input['title'];
+                $botObj->body = $input['body'];
+                $botObj->footer = $input['footer'];
+                $botObj->buttons = $input['buttons'];
+                $botObj->buttonsData = serialize($myData);
+                $botObj->sort = BotPlus::newSortIndex();
+                $botObj->status = 1;
+                $botObj->deleted_by = 1;
+                $botObj->deleted_at = DATE_TIME;
+                $botObj->save();
+
+                $updates['bot_plus_id'] = $botObj->id;
+                $updates['message'] = $message;
+            }
+            if(!empty($updates)){
+                \DB::table('abandoned_carts_events')->where('id',$dataObjID)->update($updates);
+            }
+            Session::flash('success', trans('main.addSuccess'));
+        }
+
+        return redirect()->back();
+    }
+
+    public function getEvent(){
+        $input = \Request::all();
+        $eventObj = CartEvents::find($input['id']);
+        if(!$eventObj){
+            return \TraitsFunc::ErrorMessage(trans('main.notFound'));
+        }
+        $dataList['data'] = CartEvents::getData($eventObj);
+        $dataList['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $dataList);        
+    }
+
+    public function updateEvent(){
+        $input = \Request::all();
+        $eventObj = CartEvents::find($input['id']);
+        if(!$eventObj){
+            return \TraitsFunc::ErrorMessage(trans('main.notFound'));
+        }
+        $eventObj->status = $input['status'];
+        $eventObj->save();
+
+        $dataList['data'] = CartEvents::getData($eventObj);
+        $dataList['status'] = \TraitsFunc::SuccessMessage(trans('main.editSuccess'));
+        return \Response::json((object) $dataList);        
+    }
+
     public function sendAbandoned(){
         $input = \Request::all();
+
         if(!isset($input['message']) || empty($input['message'])){
             return  \TraitsFunc::ErrorMessage(trans('main.messageValidate'));
         }
@@ -231,16 +467,6 @@ class SallaControllers extends Controller {
             } catch (Exception $e) {
                 
             }
-        }else{
-            $now = \Carbon\Carbon::now();
-            $sendDate = \Carbon\Carbon::parse($input['sendTime']);
-            $diff =  $sendDate->diffInSeconds($now);
-            $on = \Carbon\Carbon::now()->addSeconds($diff);   
-            try {
-                dispatch(new AbandonedCart(1,$input))->onConnection('cjobs')->delay($on);
-            } catch (Exception $e) {
-                
-            }
         }
         
         return \TraitsFunc::SuccessResponse(trans('main.inPrgo'));
@@ -256,22 +482,22 @@ class SallaControllers extends Controller {
                 'name_en' => 'abandonedCarts',
                 'description_ar' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
-    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+                    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
 
-    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+                    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
 
-    ( {ORDERURL} )
+                    ( {ORDERURL} )
 
-    مع تحيات فريق عمل واتس لوب ❤️',
-                'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
+                    مع تحيات فريق عمل واتس لوب ❤️',
+                                'description_en' => 'يااهلا بـ {CUSTOMERNAME} 😍
 
-    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
+                    سلتك المتروكة رقم ( {ORDERID} ) والاجمالي ({ORDERTOTAL}) 😎.
 
-    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
+                    اذا ما عليك امر تتوجه الي صفحة مراجعة طلبك 😊 من خلال الرابط التالي :
 
-    ( {ORDERURL} )
+                    ( {ORDERURL} )
 
-    مع تحيات فريق عمل واتس لوب ❤️',
+                    مع تحيات فريق عمل واتس لوب ❤️',
                 'status' => 1,
             ]);
         } 
@@ -311,17 +537,17 @@ class SallaControllers extends Controller {
                 'service' => $service,
                 'params' => [],
             ];
-        }else{
-            $input['refresh'] = '';
         }
 
 
         $refresh = isset($input['refresh']) && !empty($input['refresh']) ? $input['refresh'] : '';
-        $externalHelperObj = new \ExternalServices($dataArr);
+
         if ((!Schema::hasTable($tableName) || $refresh == 'refresh') && !$this->checkPerm()) {
-            $externalHelperObj->startFuncs();
-        }
-        if($refresh == 'refresh'){
+            try {
+                dispatch(new SyncAddonsData($dataArr))->onConnection('cjobs');;
+            } catch (Exception $e) {
+                
+            }
             return redirect()->to('/services/'.$service.'/'.$modelName);
         }
 
@@ -517,23 +743,58 @@ class SallaControllers extends Controller {
         }elseif($model == 'abandonedCarts'){
             // Begin Search
 
-            // if(isset($input['keyword']) && !empty($input['keyword'])){
-            //     $source->where('first_name','LIKE','%'.$input['keyword'].'%')->orWhere('last_name','LIKE','%'.$input['keyword'].'%')->orWhere('email','LIKE','%'.$input['keyword'].'%')->orWhere('mobile','LIKE','%'.$input['keyword'].'%')->orWhere('country','LIKE','%'.$input['keyword'].'%')->orWhere('city','LIKE','%'.$input['keyword'].'%');
-            // }
+            if(isset($input['date']) && !empty($input['date'])){
+                $source->whereBetween('created_at',[date('Y-m-d',strtotime($input['date'])).' 00:00:00' , date('Y-m-d',strtotime($input['date'])).' 23:59:59']);
+            }
+
+            if(isset($input['phone']) && !empty($input['phone'])){
+                $source->where('customer','LIKE','%'.$input['phone'].'%');
+            }
+
+            if(isset($input['client']) && !empty($input['client'])){
+                $source->where('customer','LIKE','%"id";i:'.$input['client'].'%');
+            }
+
+            if(isset($input['status']) && !empty($input['status'])){
+                if($input['status'] == 1){
+                    $source->where('total','LIKE','%'.'sent_count'.'%');
+                }elseif($input['status'] == 2){
+                    $source->where('total','NOT LIKE','%'.'sent_count'.'%');
+                }
+            }
+
+            if(isset($input['duration']) && !empty($input['duration'])){
+                if($input['duration'] == 1){
+                    $source->whereBetween('created_at',[date('Y-m-d',strtotime('-1 day',strtotime('today'))).' 00:00:00' ,date('Y-m-d') .' 23:59:59']);
+                }elseif($input['duration'] == 2){
+                    $source->whereBetween('created_at',[date('Y-m-d',strtotime('-1 week',strtotime('today'))).' 00:00:00' ,date('Y-m-d') .' 23:59:59']);
+                }elseif($input['duration'] == 3){
+                    $source->whereBetween('created_at',[date('Y-m-d',strtotime('-1 month',strtotime('today'))).' 00:00:00' ,date('Y-m-d') .' 23:59:59']);
+                }elseif($input['duration'] == 4){
+                    $source->whereBetween('created_at',[date('Y-m-d',strtotime('-1 year',strtotime('today'))).' 00:00:00' ,date('Y-m-d') .' 23:59:59']);
+                }
+            }
+
+            if(isset($input['price']) && !empty($input['price'])){
+                $source->where('total','LIKE','%'.$input['price'].'%');
+            }
 
             $clients = [];
+            $ids = [];
             if(!empty($source)){
                 foreach($source->orderBy('created_at','DESC')->get() as $oneItem){
                     $customer = unserialize($oneItem->customer);
                     $price = unserialize($oneItem->total);
 
                     $clients[] = [
+                        'id' => $customer['id'],
                         'name' => $customer['name'],
                         'mobile' => $customer['mobile'],
                         'order_id' => $oneItem->id,
                         'total' => $price['amount'] . ' '.$price['currency'],
                         'url' => $oneItem->checkout_url,
                     ];
+                    $ids[] = $oneItem->id;
                 }
             }
 
@@ -549,17 +810,36 @@ class SallaControllers extends Controller {
 
             $data['searchData'] = [];
             $mainData['customers'] = $clients;
+            $mainData['ids'] = $ids;
             $mainData['template'] = Template::where('name_en','abandonedCarts')->first();
+
+            $mainData['schedulemsg'] = Variable::where('var_key','LIKE','SCHEDULEMSG_SALLA_%')->first();
+            $mainData['schedulemsg_data'] = ($mainData['schedulemsg'] != null ? explode('_', str_replace('SCHEDULEMSG_SALLA_','',$mainData['schedulemsg']->var_key)) : []);
+
+
+            $checkAvailBot = UserAddon::checkUserAvailability(USER_ID,1);
+            $checkAvailBotPlus = UserAddon::checkUserAvailability(USER_ID,10);
+            $mainData['bots'] = $checkAvailBot ? Bot::dataList(1)['data'] : [];
+            $mainData['botPlus'] = $checkAvailBotPlus ? BotPlus::dataList(1)['data'] : [];
+            $mainData['checkAvailBotPlus'] = $checkAvailBotPlus != null ? 1 : 0;        
+            $mainData['checkAvailBot'] = $checkAvailBot != null ? 1 : 0;
+
+            $mainData['events'] = CartEvents::dataList(2)['data'];
         }
 
         $mainData['designElems'] = $data;
         $mainData['data'] = $formattedData;
         $mainData['dis'] = $this->checkPerm();
         $mainData['type'] = $model;
-
         if(!empty($formattedData)){
             $mainData['pagination'] = \Helper::GeneratePagination($modelData);
         }
+
+        if($ajaxCheck && $data['mainData']['url'] == 'abandonedCarts'){
+            $returnHTML = view('Tenancy.ExternalServices.Views.V5.cartsAjax')->with('data', (object) $mainData)->render();
+            return response()->json( array('success' => true, 'html'=>$returnHTML) );
+        }
+
         // dd($mainData);
         if($ajaxCheck){
             $returnHTML = view('Tenancy.ExternalServices.Views.V5.ajaxData')->with('data', (object) $mainData)->render();
@@ -1119,5 +1399,47 @@ class SallaControllers extends Controller {
         $id = (int) $id;
         $dataObj = ModTemplate::getOne($id);
         return \Helper::globalDelete($dataObj);
+    }
+
+    public function uploadImage($type,Request $request){
+        $rand = rand() . date("YmdhisA");
+
+        if ($request->hasFile('file')) {
+            $files = $request->file('file');
+
+            $file_size = $files->getSize();
+            $file_size = $file_size/(1024 * 1024);
+            $file_size = number_format($file_size,2);
+            $uploadedSize = \Helper::getFolderSize(public_path().'/uploads/'.TENANT_ID.'/');
+            $totalStorage = Session::get('storageSize');
+            $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,3);
+            if($totalStorage + $extraQuotas < (doubleval($uploadedSize) + $file_size) / 1024){
+                return \TraitsFunc::ErrorMessage(trans('main.storageQuotaError'));
+            }
+
+            
+            $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
+            $fileSize = $files->getSize();
+            if($fileSize >= 15000000){
+                return \TraitsFunc::ErrorMessage(trans('main.file100kb'));
+            }
+            
+            if(!in_array($type, ['file','photo']) ){
+                return \TraitsFunc::ErrorMessage(trans('main.selectFile'));
+            }
+
+            Storage::put($rand,$files);
+            Session::put('msgFile',$rand);
+            Session::put('msgFileType',$type);
+            return \TraitsFunc::SuccessResponse('');
+        }
+    }
+
+    public function addImage($images,$nextID=false){
+        $fileName = \ImagesHelper::UploadFile('SallaCarts', $images, $nextID);
+        if($fileName == false){
+            return false;
+        }
+        return $fileName;        
     }
 }

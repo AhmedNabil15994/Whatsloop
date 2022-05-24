@@ -8,6 +8,7 @@ class OrderDetails extends Model{
     protected $primaryKey = 'id';
     public $timestamps = false;
     public $incrementing = false;
+    protected $fillable = ['addon_customer_id'];    
 
     static function getOne($id){
         return self::where('order_id', $id)->first();

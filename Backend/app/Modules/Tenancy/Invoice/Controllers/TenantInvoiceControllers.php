@@ -137,7 +137,7 @@ class TenantInvoiceControllers extends Controller {
         ];
         return $data;
     }
-
+    
     public function downloadPDF($id){
         $id = (int) $id;
 
@@ -171,7 +171,7 @@ class TenantInvoiceControllers extends Controller {
         ])->render();
 
         $pdf = PDF::loadView('Tenancy.Invoice.Views.V5.invoicePDF',['data'=> (object)$data])
-                ->setPaper('a4', 'landscape')
+                ->setPaper('a4', 'portrait')
                 ->setOption('margin-bottom', '0mm')
                 ->setOption('margin-top', '0mm')
                 ->setOption('margin-right', '0mm')
@@ -291,6 +291,7 @@ class TenantInvoiceControllers extends Controller {
         } 
         
         $myData   = unserialize($invoiceObj->items);
+       
         $invoiceObj = Invoice::getData($invoiceObj);
         $discount = $invoiceObj->discount;
         $testData = [];
@@ -350,14 +351,13 @@ class TenantInvoiceControllers extends Controller {
             'tax_id' => CentralVariable::getVar('tax_id'),
         ];
 
-
         $data['data'] = $testData;
-        $tax = \Helper::calcTax($total - $discount);
+        $tax = $invoiceObj->tax;
         $data['totals'] = [
-            $total-$tax-$discount,
-            $discount,
-            $tax,
-            $total - $discount,
+            $invoiceObj->grandTotal,
+            $invoiceObj->discount,
+            $invoiceObj->tax,
+            $invoiceObj->roTtotal,
         ];
 
         $data['qrImage'] = GenerateQrCode::fromArray([
@@ -369,22 +369,16 @@ class TenantInvoiceControllers extends Controller {
             // TODO :: Support others tags
         ])->render();
 
-        if($userObj->is_old && $main){
-            $oldMembershipObj = OldMembership::where('user_id',$userObj->id)->first();
-            if($oldMembershipObj){
-                $oldPrice = OldMembership::getOldPrice($oldMembershipObj->membership);
-                $discount = $total - $oldPrice;
-                $tax = \Helper::calcTax($oldPrice);
 
-                $data['totals'] = [
-                    $total-$tax-$discount,
-                    $discount,
-                    $tax,
-                    $oldPrice,
-                ];
-            }
+        if($invoiceObj->discount_value){
+            $data['totals'] = [
+                $invoiceObj->grandTotal,
+                $invoiceObj->discount,
+                $invoiceObj->tax,
+                $invoiceObj->roTtotal,
+            ];
         }
-        
+        // dd($data['totals']);
         $data['countries'] = \DB::connection('main')->table('country')->get();
         $data['regions'] = [];
         $data['payment'] = PaymentInfo::where('user_id',USER_ID)->first();

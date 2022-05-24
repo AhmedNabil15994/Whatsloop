@@ -27,6 +27,8 @@ class Invoices extends Migration
             $table->integer('sort');
             $table->integer('main')->default(0);
             $table->integer('status');
+            $table->integer('whmcs_order_id')->nullable();
+            $table->integer('whmcs_invoice_id')->nullable();
             $table->integer('discount_type')->nullable();
             $table->string('discount_value')->nullable();
             $table->integer('created_by')->nullable();

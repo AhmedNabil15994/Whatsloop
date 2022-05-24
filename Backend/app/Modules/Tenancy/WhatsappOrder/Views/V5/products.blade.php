@@ -11,6 +11,10 @@
     .selectStyle{
         width: 50%;
     }
+    .select2-container--default.select2-container--focus .select2-selection--multiple,
+    .select2-container--default .select2-selection--multiple{
+        height: 50px !important;
+    }
 </style>
 @endsection
 
@@ -57,8 +61,9 @@
                     <a href="#" class="titleOrder">{{ $product->name }}</a>
                     <span class="price">{{ $product->price . ' ' . $product->currency }}</span>
                 </div>
+                <p>{{ trans('main.quantity') }} : {{ $product->quantity }} </p>
                 <div class="clearfix">
-                    <a href="#" class="titleOrder">{{ trans('main.category') }}</a>
+                    {{-- <a href="#" class="titleOrder">{{ trans('main.category') }}</a>
                     <div class="selectStyle float-right">
                         <select name="category_id" data-toggle="select2" data-area="{{ $product->id }}" {{ \Helper::checkRules('whatsapp-assignCategory') ? '' : 'disabled' }}>
                             <option value="">{{ trans('main.choose') }}</option>
@@ -67,9 +72,11 @@
                             <option value="3" {{ $product->category_id == 3 ? 'selected' : '' }}>{{ trans('main.prod_cat3') }}</option>
                         </select>
                     </div>
-                    <div class="clearfix"></div>
+                    <div class="clearfix"></div> --}}
                 </div>
-                <a href="#" class="btnOrder">{{ trans('main.quantity') }} : {{ $product->quantity }} </a>
+                @if($product->addon_product_id == null && \Helper::checkRules('whatsapp-assignSallaProduct') && !$data->disAssign )
+                <a href="#" class="btnOrder"  data-area="{{ $product->id }}" data-toggle="modal" data-target="#modal-salla-products">{{ trans('main.assignSallaProduct') }}</a>
+                @endif
             </div>
         </div>
     </div>
@@ -77,4 +84,5 @@
 </div>
 
 @include('tenant.Partials.pagination')
+@include('tenant.Partials.SallaProducts')
 @endsection

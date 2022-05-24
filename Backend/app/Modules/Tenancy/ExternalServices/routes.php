@@ -21,7 +21,11 @@ Route::group(['prefix' => '/services/salla'] , function (){
 	Route::get('/products',[$controller,'products']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/abandonedCarts',[$controller,'abandonedCarts']);
+    Route::get('/abandonedCarts/getEvent', [$controller,'getEvent']);
+    Route::post('/abandonedCarts/updateEvent', [$controller,'updateEvent']);
 	Route::post('/abandonedCarts/sendAbandoned',[$controller,'sendAbandoned']);
+	Route::post('/abandonedCarts/resendCarts',[$controller,'resendCarts']);
+
 	Route::get('/reports', [$controller,'reports']);
 	Route::get('/templates', [$controller,'templates']);
 	Route::get('/templates/add', [$controller,'templatesAdd']);
@@ -29,6 +33,12 @@ Route::group(['prefix' => '/services/salla'] , function (){
 	Route::get('/templates/edit/{id}', [$controller,'templatesEdit']);
 	Route::post('/templates/update/{id}', [$controller,'templatesUpdate']);
     Route::get('/templates/delete/{id}', [$controller,'templatesDelete']);
+
+    /*----------------------------------------------------------
+    Images
+    ----------------------------------------------------------*/
+
+    Route::post('/abandonedCarts/uploadImage/{type}', [$controller,'uploadImage']);
 });
 
 Route::group(['prefix' => '/services/zid'] , function (){
@@ -39,7 +49,10 @@ Route::group(['prefix' => '/services/zid'] , function (){
 	Route::get('/products',[$controller,'products']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/abandonedCarts',[$controller,'abandonedCarts']);
+    Route::get('/abandonedCarts/getEvent', [$controller,'getEvent']);
+    Route::post('/abandonedCarts/updateEvent', [$controller,'updateEvent']);
 	Route::post('/abandonedCarts/sendAbandoned',[$controller,'sendAbandoned']);
+	Route::post('/abandonedCarts/resendCarts',[$controller,'resendCarts']);
 	Route::get('/reports', [$controller,'reports']);
 	Route::get('/templates', [$controller,'templates']);
 	Route::get('/templates/add', [$controller,'templatesAdd']);
@@ -47,4 +60,10 @@ Route::group(['prefix' => '/services/zid'] , function (){
 	Route::get('/templates/edit/{id}', [$controller,'templatesEdit']);
 	Route::post('/templates/update/{id}', [$controller,'templatesUpdate']);
     Route::get('/templates/delete/{id}', [$controller,'templatesDelete']);
+
+    /*----------------------------------------------------------
+    Images
+    ----------------------------------------------------------*/
+
+    Route::post('/abandonedCarts/uploadImage/{type}', [$controller,'uploadImage']);
 });

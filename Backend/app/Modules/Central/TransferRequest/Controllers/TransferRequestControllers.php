@@ -153,6 +153,15 @@ class TransferRequestControllers extends Controller {
             tenancy()->end($tenant);
 
             $invoiceObj = Invoice::getOne($transferObj->invoice_id);
+            if(!$invoiceObj){
+                $invoiceObj = Invoice::NotDeleted()->where('client_id',$transferObj->user_id)->where('id','>',$transferObj->invoice_id)->where('status','!=',1)->where('total',$transferObj->total)->orderBy('id','DESC')->first();
+                if($invoiceObj){
+                    $transferObj->invoice_id = $invoiceObj->id;
+                    $transferObj->save();
+                }else{
+                    return Redirect('404');
+                }
+            }
            
             $data = [
                 'cartObj' => $cartObj, 

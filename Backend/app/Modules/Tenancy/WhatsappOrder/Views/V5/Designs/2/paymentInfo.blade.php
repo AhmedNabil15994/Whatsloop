@@ -91,13 +91,21 @@ $counter = 0;
     		<span  class="angle fa fa-angle-left"  data-toggle="modal" data-target="#selectCity"></span>
     	</div>
     	
-    	<label class="titleForm">الحي</label>
-    	<input type="text" class="inputStyle" name="region" placeholder="اكتب اسم الحي" />
-    	<label class="titleForm">الشارع</label>
-    	<input type="text" class="inputStyle" name="address" placeholder="اكتب اسم الشارع" />
+    	<label class="titleForm">العنوان</label>
+    	<input type="text" class="inputStyle" name="address" placeholder="اكتب العنوان" />
+    	<label class="titleForm">رقم الشارع</label>
+    	<input type="text" class="inputStyle" name="street_number" placeholder="رقم الشارع" />
+        <label class="titleForm">بلوك رقم</label>
+        <input type="text" class="inputStyle" name="block" placeholder="بلوك رقم" />
+        <label class="titleForm">الرمز البريدي</label>
+        <input type="text" class="inputStyle" name="postal_code" placeholder="الرمز البريدي" />
+        <input type="hidden" name="lat" value="24.774265">
+        <input type="hidden" name="lng" value="46.738586">
+        <input type="hidden" name="country_id">
+        <input type="hidden" name="city_id">
     	
     	
-    	<label class="titleForm">خيارات الشحن</label>
+    	{{-- <label class="titleForm">خيارات الشحن</label>
     	<div class="inputStyle selectForm3">
     		<input type="hidden" name="shipping_method" value="2">
     		<input type="text" class="inputStyle" placeholder="حدد خيار الشحن المناسب" />
@@ -118,7 +126,7 @@ $counter = 0;
                     </label>
        			</li>
     		</ul>
-    	</div>
+    	</div> --}}
     	
     	<button class="btnStyle">التالي</button>
     </div>
@@ -139,7 +147,7 @@ $counter = 0;
                			<li data-area="{{ $country->id }}">
                             <label class="checkStyle">
                                 <i></i>
-                                <span class="text">{{ $country->{'Name_'.LANGUAGE_PREF} }}</span>
+                                <span class="text">{{ $country->name }}</span>
                             </label>
                			</li>
                			@endforeach
@@ -213,4 +221,3 @@ $counter = 0;
     </div>
 </div>
 @endsection
-

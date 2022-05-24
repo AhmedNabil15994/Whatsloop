@@ -192,7 +192,7 @@ class User extends Authenticatable implements Syncable
     }
     
     static function selectImage($source){
-        if($source->image != null){
+        if(isset($source->image) && $source->image != null){
             return self::getPhotoPath($source->id, $source->image);
         }else{
             return asset('images/def_user.svg');
@@ -226,7 +226,7 @@ class User extends Authenticatable implements Syncable
         $data->membership_id = $source->membership_id;
         $data->membership = $source->Membership != null ? $langPref == null ? $source->Membership->{'title_'.LANGUAGE_PREF} : $source->Membership->{'title_'.$langPref} : '';
         $data->addons = $source->addons;
-        $data->paymentInfo = $source->PaymentInfo != null ? $source->PaymentInfo : '';
+        $data->paymentInfo = $source->group_id != 1 ? PaymentInfo::where('user_id',User::first()->id)->get() : ($source->PaymentInfo != null ? $source->PaymentInfo : '');
         $data->extra_rules = $source->extra_rules != null ? unserialize($source->extra_rules) : [];
         $data->channels = $source->channels != null ? unserialize($source->channels) : [];
         $data->channelCodes = !empty($data->channels) ? implode(',', unserialize($source->channels)) : '';

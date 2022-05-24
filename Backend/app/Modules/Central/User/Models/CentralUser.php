@@ -203,6 +203,11 @@ class CentralUser extends Model implements SyncMaster
         $data->channelCodes = !empty($data->channels) ?  implode(',', unserialize($source->channels)) : '';
         $data->channelIDS = !empty($data->channels) ? unserialize($source->channels) : [];
         $data->created_at = \Helper::formatDateForDisplay($source->created_at,true);
+
+        if($source->group_id == 0){
+            $data->leftDays = isset($data->channels[0]) ? CentralChannel::getData($data->channels[0])->leftDays : 0;
+            $data->balance = $source->balance != null ? $source->balance : 0;
+        }
         return $data;
     }
     

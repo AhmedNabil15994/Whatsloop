@@ -10,11 +10,13 @@ use App\Events\IncomingMessage;
 use App\Models\UserExtraQuota;
 use App\Models\UserAddon;
 use App\Models\UserChannels;
+use App\Models\CentralChannel;
 use App\Models\Variable;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Template;
 use App\Models\CentralVariable;
+use App\Models\OrderDetails;
 use App\Models\Category;
 use App\Models\ContactLabel;
 use App\Models\BotPlus;
@@ -79,6 +81,80 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 	    		if($message['fromMe'] == false && !str_contains($message['chatId'], '@g.us') ){	
 	    			$this->handleNotification($message,$lastM);
+
+	    			if(str_contains($senderMessage, 'هنيهم ')){
+	    				$client_name = explode('هنيهم ', $senderMessage);
+	    				$client_name = $client_name[1];
+
+	    				$extra_msg = Variable::getVar('EXTRA_MSG');
+	    				$color = Variable::getVar('COLOR');
+	    				$color = $color != null ? $color : '#000'; 
+
+	    				$size = Variable::getVar('SIZE');
+	    				$size = $size != null ? $size : '30'; 
+	    				$font_family = 'STC-Regular';
+
+	    				$templateId = Variable::getVar('SELECTED_TEMPLATE');
+	    				if($templateId == null){
+	    					$varObj = Variable::where('var_key','LIKE','TEMPLATE%')->orderBy('id','DESC')->get();
+	    					$varObj = !empty($varObj) && isset($varObj[0]) ? $varObj[0] : null;
+	    					if($varObj){
+		    					$templateId = str_replace('TEMPLATE','',$varObj->var_key);	
+	    					}
+	    				}else{
+	    					$varObj = Variable::where('var_key','TEMPLATE'.$templateId)->first();
+	    				}
+	    				
+
+	    				if($templateId == null){
+							$templateId = 12;
+							$dimens = [
+								300,
+								900
+							];
+	    				}else{
+	    				    $dimens = explode(',',$varObj->var_value);
+	    				}
+
+	    				$url = 'https://final.wloop.net/public/tenancy/assets/V5/bnrs/'.$templateId.'.png';
+	    				$urlData = [
+	    					'text' => $client_name,
+	    					'font_color' => $color,
+	    					'font_size' => $size,
+	    					'font_family' => $font_family,
+	    					'margin_top' => $templateId % 2 == 0 ? (($dimens[1] / 10) - 10) : (($dimens[1] / 20) + 2),
+	    					'margin_left' => $dimens[0],
+	    					'template' => $url,
+	    				];
+
+	    				if($templateId != null){
+	    					$curl = curl_init();
+							curl_setopt_array($curl, array(
+							  CURLOPT_URL => 'https://hneehm.com/api/',
+							  CURLOPT_RETURNTRANSFER => true,
+							  CURLOPT_ENCODING => '',
+							  CURLOPT_MAXREDIRS => 10,
+							  CURLOPT_TIMEOUT => 0,
+							  CURLOPT_FOLLOWLOCATION => true,
+							  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+							  CURLOPT_CUSTOMREQUEST => 'POST',
+							  CURLOPT_POSTFIELDS => $urlData,
+							));
+							$response = curl_exec($curl);
+							curl_close($curl);
+
+							$mainWhatsLoopObj = new \MainWhatsLoop();
+							$sendData['chatId'] = $sender;
+							$sendData['filename'] = 'hneehm'.rand(1,100000).'.png';
+							$sendData['body'] = 'data:image/png;base64,'.base64_encode($response);
+							if($extra_msg){
+								$sendData['caption'] = $extra_msg;
+							}
+							$result = $mainWhatsLoopObj->sendFile($sendData);
+	    				}
+	    				return '';
+	    			}
+
 	    			if($message['type'] == 'buttons_response'){
 	    				$this->handleButtonsResponse($message,$sender,$userObj,$tenantObj);
 	    				if(!in_array(4,$disabled) || !in_array(5,$disabled)){
@@ -113,17 +189,19 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 		    			// Find Out Bot Object Based on incoming message
 		    			$botObj = Bot::findBotMessage($langPref,$senderMessage);
-		    			if(count($botObj) == 0){
-		    				$botObj = Bot::findBotMessage(!$langPref,$senderMessage);
-		    				if(count($botObj) > 0){
-		    					foreach ($botObj as $key => $oneBot) {
-			    					$this->handleBasicBot($oneBot,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+		    			if($botObj){
+		    				if(count($botObj) == 0){
+			    				$botObj = Bot::findBotMessage(!$langPref,$senderMessage);
+			    				if(count($botObj) > 0){
+			    					foreach ($botObj as $key => $oneBot) {
+				    					$this->handleBasicBot($oneBot,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
+			    					}
+			    				}
+			    			}else if(count($botObj) > 0 && $message['type'] != 'buttons_response'){
+			    				foreach ($botObj as $key => $oneBots) {
+			    					$this->handleBasicBot($oneBots,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
 		    					}
-		    				}
-		    			}else if(count($botObj) > 0 && $message['type'] != 'buttons_response'){
-		    				foreach ($botObj as $key => $oneBots) {
-		    					$this->handleBasicBot($oneBots,$userObj->domain,$sender,$tenantObj->tenant_id,$message);
-	    					}
+			    			}
 		    			}
 		    		
 		    			// Find BotPlus Object Based on incoming message
@@ -133,7 +211,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		    				$this->handleBotPlus($message,$botPlusObj,$userObj->domain,$sender);
 		    			}
 		    			
-		    			if( ((!$botObj) || count($botObj) == 0) && !$botObjs){
+		    			if( ((!$botObj) || count($botObj) == 0) && !$botPlusObjs && $message['type'] != 'order'){
 		    				$varObj = Variable::getVar('UNKNOWN_BOT_REPLY');
 		    				if($varObj){
 		    					$myMessage = $varObj;
@@ -445,6 +523,7 @@ class MessagesWebhook extends ProcessWebhookJob{
     		$sendData['buttons'] = $buttons;
     		$sendData['chatId'] = str_replace('@c.us','',$sender);
     		$result = $mainWhatsLoopObj->sendButtons($sendData);
+    		Logger($result->json());
     		$sendData['chatId'] = $sender;
 
     		if($botObj->category_id != null){
@@ -533,14 +612,15 @@ class MessagesWebhook extends ProcessWebhookJob{
 
 				$orderDetails = $message['metadata'];
 				$orderDetails['sellerJid'] = str_replace('@s.whatsapp.net','',$orderDetails['sellerJid']);
-				unset($orderDetails['currency']);
-				unset($orderDetails['orderTitle']);
-				unset($orderDetails['totalAmount']);
-                // Fetch Orders Data
-	    		$mainWhatsLoopObj = new \MainWhatsLoop();
+				$orderCallData = [
+					'sellerJid' => $orderDetails['sellerJid'],
+					'orderId' => $orderDetails['orderId'],
+					'orderToken' => $orderDetails['orderToken'],
+				];
+				$channelObj = CentralChannel::first();
+	    		$mainWhatsLoopObj = new \MainWhatsLoop($channelObj->instanceId,$channelObj->token);
                 $ordersCall = $mainWhatsLoopObj->getOrder($orderDetails);
                 $ordersCall = $ordersCall->json();
-
                 if($ordersCall && $ordersCall['status'] && $ordersCall['status']['status'] == 1 && isset($ordersCall['data']['orders']) && !empty($ordersCall['data']['orders'])  ){
 
                		$count = 0;
@@ -578,16 +658,16 @@ class MessagesWebhook extends ProcessWebhookJob{
         $messageObj = ChatMessage::newMessage($message);
         $dialog = ChatDialog::getOne($message['chatId']);
         if(!$dialog){
-            $dialogObj = new ChatDialog;
-            $dialogObj->id = $message['chatId'];
-            $dialogObj->name = $message['chatId'];
-            $dialogObj->image = '';
-            $dialogObj->metadata = '';
-            $dialogObj->is_pinned = 0;
-            $dialogObj->is_read = 0;
-            $dialogObj->modsArr = '';
-            $dialogObj->last_time = $message['time'];
-            $dialogObj->save();
+            $dialog = new ChatDialog;
+            $dialog->id = $message['chatId'];
+            $dialog->name = $message['chatId'];
+            $dialog->image = '';
+            $dialog->metadata = '';
+            $dialog->is_pinned = 0;
+            $dialog->is_read = 0;
+            $dialog->modsArr = '';
+            $dialog->last_time = $message['time'];
+            $dialog->save();
         }else{
         	$dialog->last_time = $message['time'];
             $dialog->save();
@@ -596,6 +676,7 @@ class MessagesWebhook extends ProcessWebhookJob{
 		if($message['fromMe'] == 0){
 	    	broadcast(new IncomingMessage($domain , $dialogObj ));
 	    	if($hasOrders){
+	    		$this->performAddonIntegration($message,$domain,$lastOrder,$tenantId);
 				$this->sendLink($message,$domain,$lastOrder);
 			}
 		}else{
@@ -620,54 +701,6 @@ class MessagesWebhook extends ProcessWebhookJob{
 		}elseif($message['type'] == 'product'){
 			return 'Product';
 		}
-	}
-
-	public function fireWebhook($data,$url=null){
-		if($url){
-			WebhookCall::create()
-				   ->url($url)
-				   ->payload($data)
-				   ->doNotSign()
-				   ->dispatch();
-		}else{
-			$webhook = Variable::getVar('WEBHOOK_URL');
-			if($webhook){
-				WebhookCall::create()
-				   ->url($webhook)
-				   ->payload(['data' => $data])
-				   ->doNotSign()
-				   ->dispatch();
-			}
-		}
-	}
-
-	public function sendLink($message,$domain,$oldOrderObj){
-		$orderObj = Order::getData($oldOrderObj);
-        $sendData['chatId'] = $orderObj->client_id;
-        $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/view';
-        $url = str_replace('localhost',$domain.'.wloop.net',$url);
-        foreach($orderObj->products as $product){
-            $productObj = Product::where('product_id',$product['id'])->first();
-            if(!$productObj || $productObj->category_id == null){
-                return 0;     
-            }
-        }
-    
-        $templateObj = Template::NotDeleted()->where('name_ar','whatsAppOrders')->first();
-        if($templateObj && $orderObj->client){
-            $content = $templateObj->description_ar;
-            $content = str_replace('{CUSTOMERNAME}', str_replace('@c.us','',str_replace('+','',$orderObj->client->name)), $content);
-            $content = str_replace('{ORDERID}', $orderObj->order_id, $content);
-            $content = str_replace('{ORDERURL}', $url, $content);
-
-            $sendData['body'] = $content;
-            $mainWhatsLoopObj = new \MainWhatsLoop();
-            $result = $mainWhatsLoopObj->sendMessage($sendData);
-            $result = $result->json();
-            $this->handleRequest($message,$domain,$result,$sendData,UserChannels::first()->name,'text','chat','SentMessage',$orderObj);
-            $oldOrderObj->channel = $templateObj->channel;
-            $oldOrderObj->save();
-        }   
 	}
 
 	public function handleRequest($message,$domain,$result,$sendData,$status,$message_type,$whats_message_type,$channel,$botObj=null){
@@ -711,13 +744,171 @@ class MessagesWebhook extends ProcessWebhookJob{
         }
 	}
 
+	public function fireWebhook($data,$url=null){
+		if($url){
+			WebhookCall::create()
+				   ->url($url)
+				   ->payload($data)
+				   ->doNotSign()
+				   ->dispatch();
+		}else{
+			$webhook = Variable::getVar('WEBHOOK_URL');
+			if($webhook){
+				WebhookCall::create()
+				   ->url($webhook)
+				   ->payload(['data' => $data])
+				   ->doNotSign()
+				   ->dispatch();
+			}
+		}
+	}
+
 	public function failed(Throwable $exception)
     {
         $count = \DB::connection('main')->table('failed_jobs')->count();
-        if($count > 10){
-        	\DB::connection('main')->table('failed_jobs')->truncate();
-        }
+        
         // system('/usr/local/bin/php /home/wloop/public_html/artisan queue:restart');
         // system('/home/wloop/public_html/vendor/supervisorctl restart whatsloop:*');
     }
+
+    public function performAddonIntegration($message,$domain,$order,$tenantId){
+		// Product Details
+		$this->integerateProducts($message,$domain,$order,$tenantId);
+
+		// Customer Details
+		$this->integerateCustomers($message,$domain,$order,$tenantId);
+	}
+
+	public function integerateProducts($message,$domain,$order,$tenantId){
+		$prodsArr = [];
+		foreach(unserialize($order['products']) as $oneProduct){
+			$prodArr = [
+				'id' => $oneProduct['id'],
+				'name' => $oneProduct['name'],
+				'price' => $oneProduct['price'],
+				'product_type' => 'digital',
+			];
+
+			$productObj = Product::where('product_id',$oneProduct['id'])->first();
+			if(!$productObj){
+				unset($prodArr['id']);
+				$prodArr['product_id'] = $oneProduct['id'];
+				$productType = $prodArr['product_type'];
+				unset($prodArr['product_type']);
+				Product::insert($prodArr);
+				$prodArr['product_type'] = $productType;
+				$productObj = Product::where('product_id',$oneProduct['id'])->first();
+			}
+
+			// if($productObj->addon_product_id == null){
+			// 	$baseUrl = 'https://api.salla.dev/admin/v2/products';
+		 //        $token = Variable::getVar('SallaStoreToken'); 
+		 //        $userObj = User::first();
+		 //        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+		 //        if($oauthDataObj && $oauthDataObj->authorization != null){
+		 //            $token = $oauthDataObj->authorization;
+		 //        }
+
+		 //        unset($prodArr['id']);
+		 //        $data = Http::withToken($token)->post($baseUrl,$prodArr);
+		 //        $result = $data->json();
+
+		 //        if(isset($result['success']) && $result['success'] == true){
+		 //        	$productId = $result['data']['id'];
+		 //        	$productObj->addon_product_id = $productId;
+		 //        	$productObj->save();
+
+		 //        	$imagesUrl = $baseUrl.'/'.$productId.'/images';
+		 //        	foreach($oneProduct['images'] as $key => $oneImage){
+			// 			$fileName = 'productImage'.($key+1).$productId.'.png';
+			// 			$destination = public_path().'/uploads/'.$tenantId.'/chats/';
+			// 			$destinationPath = public_path().'/uploads/'.$tenantId.'/chats/' . $fileName;
+			// 			if (!file_exists($destination)) {
+			// 	            @mkdir($destination, 0777, true);
+			// 	        }
+			// 			$succ = @file_put_contents($destinationPath, @file_get_contents($oneImage));
+			// 			$url = config('app.BASE_URL').'/public/uploads/'.$tenantId.'/chats/' . $fileName;
+
+		 //        		$imageData = Http::withToken($token)->post($imagesUrl,[
+			//         		'original' => $url,
+			//         		'thumbnail' => $url, 
+			//         	]);
+		 //        		$result = $imageData->json();
+		 //        	}
+		        	
+		 //        }
+			// }
+		}
+	}
+
+	public function integerateCustomers($message,$domain,$order,$tenantId){
+		$name = explode(' ', $message['senderName']);
+		$mobile = '+'.str_replace('@c.us','',$message['author']);
+		$phoneNumber = preg_replace("/^\+(?:998|996|995|994|993|992|977|976|975|974|973|972|971|970|968|967|966|965|964|963|962|961|960|886|880|856|855|853|852|850|692|691|690|689|688|687|686|685|683|682|681|680|679|678|677|676|675|674|673|672|670|599|598|597|595|593|592|591|590|509|508|507|506|505|504|503|502|501|500|423|421|420|389|387|386|385|383|382|381|380|379|378|377|376|375|374|373|372|371|370|359|358|357|356|355|354|353|352|351|350|299|298|297|291|290|269|268|267|266|265|264|263|262|261|260|258|257|256|255|254|253|252|251|250|249|248|246|245|244|243|242|241|240|239|238|237|236|235|234|233|232|231|230|229|228|227|226|225|224|223|222|221|220|218|216|213|212|211|98|95|94|93|92|91|90|86|84|82|81|66|65|64|63|62|61|60|58|57|56|55|54|53|52|51|49|48|47|46|45|44\D?1624|44\D?1534|44\D?1481|44|43|41|40|39|36|34|33|32|31|30|27|20|7|1\D?939|1\D?876|1\D?869|1\D?868|1\D?849|1\D?829|1\D?809|1\D?787|1\D?784|1\D?767|1\D?758|1\D?721|1\D?684|1\D?671|1\D?670|1\D?664|1\D?649|1\D?473|1\D?441|1\D?345|1\D?340|1\D?284|1\D?268|1\D?264|1\D?246|1\D?242|1)\D?/", '',$mobile);
+
+		$customerArr = [
+			'first_name' => $name[0],
+			'last_name' => isset($name[1]) && $name[1] != null && $name[1] != '' ? $name[1] : $name[0],
+			'mobile' => $phoneNumber,
+			'mobile_code_country' => str_replace($phoneNumber,'',$mobile),
+		];
+
+		$orderObj = Order::where('order_id',$order->order_id)->first();
+		if($orderObj){
+			$orderDetailsObj = OrderDetails::where('order_id',$orderObj->id)->first();
+			if(!$orderDetailsObj){
+				$orderDetailsObj = new OrderDetails;
+				$orderDetailsObj->order_id = $orderObj->id;
+				$orderDetailsObj->name = $message['senderName'];
+				$orderDetailsObj->phone = str_replace('+', '', $mobile);
+				$orderDetailsObj->save();
+			}
+
+			if($orderDetailsObj->addon_customer_id == null){
+				$baseUrl = 'https://api.salla.dev/admin/v2/customers';
+		        $token = Variable::getVar('SallaStoreToken'); 
+		        $userObj = User::first();
+		        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+		        if($oauthDataObj && $oauthDataObj->authorization != null){
+		            $token = $oauthDataObj->authorization;
+		        }
+
+		        $data = Http::withToken($token)->post($baseUrl,$customerArr);
+		        $result = $data->json();
+		        if(isset($result['success']) && $result['success'] == true){
+		        	OrderDetails::where('order_id',$orderObj->id)->update(['addon_customer_id'=>$result['data']['id']]);
+		        }
+			}			
+		}
+	}
+	
+
+	public function sendLink($message,$domain,$oldOrderObj){
+		$orderObj = Order::getData($oldOrderObj);
+        $sendData['chatId'] = $orderObj->client_id;
+        $url = \URL::to('/').'/orders/'.$orderObj->order_id.'/view';
+        $url = str_replace('localhost',$domain.'.wloop.net',$url);
+        foreach($orderObj->products as $product){
+            $productObj = Product::where('product_id',$product['id'])->first();
+            if(!$productObj){
+                return 0;     
+            }
+        }
+        $templateObj = Template::NotDeleted()->where('name_ar','whatsAppOrders')->first();
+        if($templateObj && $orderObj->client){
+            $content = $templateObj->description_ar;
+            $content = str_replace('{CUSTOMERNAME}', str_replace('@c.us','',str_replace('+','',$orderObj->client->name)), $content);
+            $content = str_replace('{ORDERID}', $orderObj->order_id, $content);
+            $content = str_replace('{ORDERURL}', $url, $content);
+
+            $sendData['body'] = $content;
+            $mainWhatsLoopObj = new \MainWhatsLoop();
+            $result = $mainWhatsLoopObj->sendMessage($sendData);
+            $result = $result->json();
+            $this->handleRequest($message,$domain,$result,$sendData,UserChannels::first()->name,'text','chat','SentMessage',$orderObj);
+            $oldOrderObj->channel = $templateObj->channel;
+            $oldOrderObj->save();
+        }   
+	}
+
 }

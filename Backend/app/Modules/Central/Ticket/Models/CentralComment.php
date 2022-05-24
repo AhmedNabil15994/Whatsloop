@@ -60,24 +60,23 @@ class CentralComment extends Model{
         return $list;
     }
 
-    static function getCreator($created_by,$instructor_id){
-        $result = '';
-        if($created_by == $instructor_id){
-            $result = '<span class="label bg-green online">Owner</span>';
-        }
-        return $result;
-    }
-
     static function getData($source) {
         $data = new  \stdClass();
+        if($source->admin){
+            $creator = CentralUser::getData($source->Creator);
+        }else{
+            $creator = CentralUser::getData(CentralUser::where('global_id',$source->Ticket->global_id)->first());
+        }
         $data->id = $source->id;
         $data->ticket_id = $source->ticket_id;
         $data->comment = $source->comment; 
+        $data->admin = $source->admin; 
+        $data->creator_name = $source->creator_name; 
         $data->status = $source->status;
         $data->reply_on = $source->reply_on;
         $data->replies = $source->reply_on == 0 ? self::dataList($source->ticket_id,$source->id) : [];
-        $data->image = CentralUser::getData($source->Creator)->photo;
-        $data->creator = $source->Creator->name;
+        $data->image = $creator->photo;
+        $data->creator = $creator->name;
         $data->created_at = \Carbon\Carbon::createFromTimeStamp(strtotime($source->created_at))->diffForHumans();
         return $data;
     }

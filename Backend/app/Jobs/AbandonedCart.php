@@ -69,7 +69,7 @@ class AbandonedCart implements ShouldQueue
     public function reformMessage($text,$customerData){
         $text = str_replace("{CUSTOMERNAME}",$customerData['name'],$text);
         $text = str_replace("{ORDERID}",$customerData['order_id'],$text);
-        $text = str_replace("{ORDERTOTAL}",$customerData['total'],$text);
+        $text = str_replace("{ORDERTOTAL}",@$customerData['total'],$text);
         $text = str_replace("{ORDERURL}",$customerData['url'],$text);
         return $text;
     }

@@ -128,7 +128,7 @@ class MainWhatsLoop {
     }
 
     // ['messageId' =>  messageId]
-    public function deleteMessage(){
+    public function deleteMessage($data){
         $mainURL = $this->baseUrl.'messages/deleteMessage';
         return Http::withHeaders([
             'CHANNELID' => $this->instanceId,

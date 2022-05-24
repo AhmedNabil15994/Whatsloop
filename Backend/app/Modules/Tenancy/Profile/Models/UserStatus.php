@@ -56,7 +56,7 @@ class  UserStatus extends Model{
         $dataObj->id = $source->id;
         $dataObj->status = $source->status;
         $dataObj->statusText = self::getStatus($source->status);
-        $dataObj->created_at = \Helper::formatDate($source->created_at);
+        $dataObj->created_at = $source->created_at;
         return $dataObj;
     }
 

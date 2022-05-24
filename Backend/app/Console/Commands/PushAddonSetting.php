@@ -10,6 +10,7 @@ use App\Models\Domain;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Variable;
+use App\Models\OAuthData;
 use App\Models\CentralVariable;
 
 class PushAddonSetting extends Command
@@ -101,14 +102,15 @@ class PushAddonSetting extends Command
     
                 }elseif($userAddon->addon_id == 5){
                     // Salla Webhooks
-                    $webhookUrl = str_replace('://', '://'.$domain.'.', config('app.BASE_URL')).'/whatsloop/webhooks/salla-webhook';
+                    $webhookUrl = 'https://'.$domain.'.wloop.com'.'/whatsloop/webhooks/salla-webhook';
                     $actions = ['order.created','order.updated','product.created','product.updated','customer.created','customer.updated'];
     
                     tenancy()->initialize($tenant);
                     $url = CentralVariable::getVar('SallaURL').'/webhooks/subscribe';
                     $managerToken = Variable::getVar('SallaStoreToken');
                     tenancy()->end($tenant);
-    
+                    $oauthDataObj = OAuthData::where('type','salla')->where('user_id',$userAddon->user_id)->first();
+                
                     foreach($actions as $key => $action){
                         $urlData = [
                             'name' => ucwords(str_replace('.',' ',$action)).' Notify',
@@ -125,11 +127,17 @@ class PushAddonSetting extends Command
                                 ]
                             ],
                         ];
+                        if($oauthDataObj){
+                            $managerToken = $oauthDataObj->access_token;
+                            $urlData['headers'] = [
+
+                            ];
+                        }
     
                         $payload = json_encode($urlData);
     
                         if($managerToken){
-    
+
                             $ch = curl_init($url);
     
                             curl_setopt($ch, CURLOPT_POSTFIELDS,     $payload ); 

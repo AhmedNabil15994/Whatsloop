@@ -121,6 +121,7 @@
                                             </div>
                                             <div class='col-md-4 repy'>
                                                 <textarea class="{{ $oneItem['msg_type'] == 0 ? '' : 'hidden'  }}" name='btn_reply_{{ $oneItem['id'] }}' placeholder='{{ trans('main.messageContent') }}' maxlength="140">{{ $oneItem['msg_type'] == 0 ? $oneItem['msg'] : ''  }}</textarea>
+                                                
                                                 <select data-toggle="{{ $oneItem['msg_type'] > 0 ? 'select2' : ''  }}" class='dets {{ $oneItem['msg_type'] > 0 ? '' : 'hidden'  }}' name='btn_msg_{{ $oneItem['id'] }}'>
                                                     <option value='' selected>{{ trans('main.choose') }}</optin>
                                                     @foreach($data->bots as $bot)

@@ -401,7 +401,7 @@ return [
 	'syncAll' => 'Sync All Messages',
 	'syncDialogs' => 'Sync All Clients',
 	'syncOrdersProducts' => 'Sync Whatsapp Orders & Products',
-	'restoreAccountSettings' => 'Restore Account Settings',
+	'restoreAccountSettings' => 'Delete All Data',
 	'reestablish' => 'Re-establish Connection',
 	'closeConn' => 'Close Connection',
 	'readAll' => 'Read All Messages',
@@ -520,7 +520,7 @@ return [
 	'empQuotaError' => 'Employees Number Quota Exceeded!!!',
 	'storageQuotaError' => 'Storage Size Quota Exceeded!!!',
 	'msgPerDay' => 'Per Day',
-	'file100kb' => 'File Size must be less than 100 kilobytes',
+	'file100kb' => 'File Size must be less than 15 megabytes',
 	'selected' => 'Selected',
 	'end_at' => 'End At',
 
@@ -803,7 +803,9 @@ return [
 	'apiMods' => 'API Modules',
 	'whatsAppCoupon' => 'WhatsApp Orders Coupons ',
     'resend' => 'Resend (All)',
+    'resend2' => 'Resend (Selected)',
 	'resendUnsent' => 'Resend (Un-Sent)',
+	'resendTitle' => 'Resend',
     
     'channelSettings_disableGroupsArchive' => 'Disable Groups Archive',
 	'channelSettings_disableDialogsArchive' => 'Disable Dialogs Archive',
@@ -844,5 +846,35 @@ return [
     'shipmentPolicy' => 'Shipping Policy',
     'last_comment_date' => 'Date of Last Comment',
     'groupMsgNotify' => 'Group Messages have been upgraded to be able to use Bot Plus in messages.',
-    
+
+    'assignSallaProduct' => 'Assing to Salla Product',
+    'sallaNotify' => 'Congratulations, your store :store_url has been successfully connected to WhatsLoop',
+
+    'balance' => 'Client Balance',
+    'scheduledMsgs' => 'Scheduled Messages',
+    'daily' => 'Daily',
+    'duration' => 'Duration',
+    'sending_time' => 'Time to leave The Cart / hour',
+
+    'durationValidate' => 'Duration Field is required',
+    'timeValidate' => 'Time Field is required',
+    'week' => 'Week',
+    'scheduledMsgsP' => 'A scheduled reminder will be sent after the customer leaves the cart within the specified period',
+    'scheduledMsgsP2' => 'Note: Only scheduled messages will be sent to new carts',
+    'events' => 'Abandoned Carts Reminders',
+    'photos' => 'Photo',
+    'file' => 'File',
+    'reminder_in' => 'Reminder In',
+    'hour' => 'Hour',
+    'searchAbandoned' => 'Send a Custom Message',
+    'resendModalP' => 'This message will be sent to selected Clients: ',
+    'clientNo' => 'Number of clients: ',
+
+    'feedbackRatings' => 'Feedback & Ratings',
+    'feedback' => 'Feedback',
+    'ratings' => 'Ratings',
+    'zidCustomers' => 'Zid Customers',
+    'sallaCustomers' => 'Salla Customers',
+    'others' => 'Others',
+
 ];

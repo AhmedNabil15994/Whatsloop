@@ -128,7 +128,7 @@
                                     @if($data->data->photo != '')
                                     <div class="dz-preview dz-image-preview" id="my-preview">  
                                         <div class="dz-image">
-                                            <img alt="image" src="{{ $data->data->photo }}">
+                                            <img alt="image" src="">
                                         </div>  
                                         <div class="dz-details">
                                             <div class="dz-size">

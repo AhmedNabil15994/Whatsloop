@@ -139,7 +139,7 @@ class ChatDialog extends Model{
                 $dataObj->unreadCount = $source->Messages()->where('fromMe',0)->where('sending_status','!=',3)->count();
                 $last = isset($source->LastMessage) && !empty($source->LastMessage) ? $source->LastMessage : ''; 
                 if($last != ''){
-                    $lastMessage = ChatMessage::getData($last,null,null,'notNull');   
+                    $lastMessage = ChatMessage::getData($last,null,null,$last->message_type == 'order' ? null : 'notNull');   
                     $dataObj->lastMessage = $lastMessage;
                     $dataObj->last_time =  self::reformDate($source->LastMessage->time);
                 }

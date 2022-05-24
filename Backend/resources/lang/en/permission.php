@@ -145,6 +145,7 @@ return [
 	'unread-chat' => 'Unread Dialog',
 	'list-messages' => 'List Messages',
 	'sendMessage' => 'Send Message',
+	'deleteMessage' => 'Delete Message',
 	'list-labels' => 'List Dialog Labels',
 	'label-chat' => 'Label Dialog',
 	'unlabel-chat' => 'Unlabel Dialog',

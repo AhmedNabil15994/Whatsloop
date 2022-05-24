@@ -66,6 +66,19 @@ Route::group(['prefix' => '/whatsloop'] , function (){
 		Route::webhooks('/messages-webhook','default');
 		Route::webhooks('/zid-webhook','Zid');
 		Route::webhooks('/salla-webhook','Salla');
+		Route::webhooks('/salla-webhook2','Salla2');
+		Route::webhooks('/official-webhook','Official');
+	});
+
+	Route::get('/webhooks/official-webhook',function(){
+	    $input = \Request::all();
+        $challenge = $input['hub_challenge'];
+        $verify_token = $input['hub_verify_token'];
+        
+        // Set this Verify Token Value on your Facebook App 
+        if ($verify_token == 'OfficialSaysHello') {
+            return $challenge;
+        }    
 	});
 
 	Route::group(['prefix' => '/queues'] ,function() use ($controller){

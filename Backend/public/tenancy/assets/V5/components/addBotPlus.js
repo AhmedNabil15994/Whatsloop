@@ -82,6 +82,7 @@ $(function(){
 			$(this).parents('.mains').find('.repy').children('select').removeClass('hidden');
 			$(this).parents('.mains').find('.repy').children('select').select2();
 		}
+		$(this).parent('.col-md-4').siblings('.col-md-4.repy').find($('input[type="hidden"]')).val(itemValue-1);
 	});
 
 	$(document).on('change','.mains select.dets',function(){

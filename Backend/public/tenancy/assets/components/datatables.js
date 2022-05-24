@@ -56,6 +56,7 @@ $(function(){
 		var exportText = 'Export Contacts';
 		var actionsVar = 'Actions';
 		var detailsText = 'Details';
+		var invLoginText = 'Invisible Login';
 	}else{
 		var showCols = " عرض الأعمدة <i class='fa fas fa-angle-down'></i>";
 		var direction = 'rtl';
@@ -79,6 +80,7 @@ $(function(){
 		var exportText = 'استيراد جهات الارسال';
 		var actionsVar = 'الاجراءات';
 		var detailsText = 'التفاصيل';
+		var invLoginText = 'الدخول المخفي';
 	}
 
 	$.each(tableData,function(index,item){
@@ -186,6 +188,10 @@ $(function(){
 						showButton = '<a href="/'+designElems.mainData.url+'/view/'+full.id+'" class="action-icon btn btn-block btn-outline-info"> <i class="si si-eye"></i> '+viewText+'</a>';
 					}
 
+					if(designElems.mainData.url == 'clients' && $('input[name="data-tab"]').val() == 1){
+					 	copyButton = '<a href="/'+designElems.mainData.url+'/invLogin/'+full.id+'" class="action-icon btn btn-block btn-outline-info" target="_blank"> <i class="fas fa-sign-in-alt"></i> '+invLoginText+'</a>';
+					}
+
 					if(designElems.mainData.url == 'tickets' && $('input[name="tenant"]').val()){
                     	editButton = '';
                     	deleteButton = '';
@@ -193,7 +199,7 @@ $(function(){
 
                     if(designElems.mainData.url == 'salla'){
 						showButton = '';
-						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+full.oauth_id+'" class="action-icon btn btn-block btn-outline-success"> <i class="si si-note"></i> '+editText+'</a>';
+						editButton = '<a href="/'+designElems.mainData.url+'/edit/'+full.oauth_id+'" class="action-icon btn btn-block btn-outline-success" target="_blank"> <i class="si si-note"></i> '+editText+'</a>';
 						deleteButton = '';
 					}
 

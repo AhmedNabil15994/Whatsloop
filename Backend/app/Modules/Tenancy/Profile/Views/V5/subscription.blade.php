@@ -69,12 +69,12 @@
             <a href="#" class="MeasuresText screen color1">{{ trans('main.screenshot') }}</a>
             <a href="{{ URL::to('/profile/subscription/sync') }}" class="MeasuresText color2">{{ trans('main.sync') }}</a>
             <a href="{{ URL::to('/profile/subscription/syncAll') }}" class="MeasuresText color3">{{ trans('main.syncAll') }}</a>
-            <a href="{{ URL::to('/profile/subscription/restoreAccountSettings') }}" class="MeasuresText color4">{{ trans('main.restoreAccountSettings') }}</a>
             <a href="{{ URL::to('/profile/subscription/reconnect') }}" class="MeasuresText color5">{{ trans('main.reestablish') }}</a>
             <a href="{{ URL::to('/profile/subscription/closeConn') }}" class="MeasuresText color6">{{ trans('main.closeConn') }}</a>
             <a href="{{ URL::to('/profile/subscription/read/1') }}" class="MeasuresText color7">{{ trans('main.readAll') }}</a>
             <a href="{{ URL::to('/profile/subscription/read/0') }}" class="MeasuresText color8">{{ trans('main.unreadAll') }}</a>
             <a href="{{ URL::to('/profile/subscription/syncDialogs') }}" class="MeasuresText color0">{{ trans('main.syncDialogs') }}</a>
+            <a href="{{ URL::to('/profile/subscription/restoreAccountSettings') }}" class="restoreAccountSettings MeasuresText color4">{{ trans('main.restoreAccountSettings') }}</a>
             <a href="{{ URL::to('/profile/subscription/syncLabels') }}" class="MeasuresText color1">{{ trans('main.syncLabels') }}</a>
             @if(\Helper::checkRules('whatsapp-orders,whatsapp-products'))
             <a href="{{ URL::to('/profile/subscription/syncOrdersProducts') }}" class="MeasuresText color2">{{ trans('main.syncOrdersProducts') }}</a>
@@ -164,7 +164,7 @@
                     {{ trans('main.phone_status') }}: <span class="textColor MeasuresText color9">{{ $data->status != null ? $data->status->statusText : '' }}</span>
                 </div>
                 <div class="title">
-                    {{ trans('main.msgSync') }}: <span class="textColor MeasuresText color9">{{ $data->allMessages > 0 ? trans('main.synced') : trans('main.notSynced') }}</span>
+                    {{ trans('main.msgSync') }}: <span class="textColor MeasuresText color9">{{ $data->allDialogs > 0 ? trans('main.synced') : trans('main.notSynced') }}</span>
                 </div>
                 <div class="title">
                     {{ trans('main.contSync') }}: <span class="textColor MeasuresText color9">{{ $data->contactsCount > 0 ? trans('main.synced') : trans('main.notSynced') }}</span>
@@ -321,33 +321,32 @@
     <div class="row">
         <div class="col-md-6">
             <div class="itemStats color1">
-                <h2 class="title">{{ trans('main.messages') }}</h2>
-                <span class="numb">{{ $data->allMessages }}</span>
+                <h2 class="title">{{ trans('main.dialogs') }}</h2>
+                <span class="numb">{{ $data->allDialogs }}</span>
                 <i class="icon flaticon-email-1"></i>
             </div>
         </div>
         <div class="col-md-6">
             <div class="itemStats color2">
-                <h2 class="title">{{ trans('main.sentMessages') }}</h2>
-                <span class="numb">{{ $data->sentMessages }}</span>
+                <h2 class="title">{{ trans('main.contacts') }}</h2>
+                <span class="numb">{{ $data->contactsCount }}</span>
                 <i class="icon flaticon-users"></i>
             </div>
         </div>
         <div class="col-md-6">
             <div class="itemStats color3">
-                <h2 class="title">{{ trans('main.incomeMessages') }}</h2>
-                <span class="numb">{{ $data->incomingMessages }}</span>
+                <h2 class="title">{{ trans('main.sentMessages') }}</h2>
+                <span class="numb">{{ $data->sentMessages }}</span>
                 <i class="icon flaticon-paper-plane"></i>
             </div>
         </div>
         <div class="col-md-6">
             <div class="itemStats color4">
-                <h2 class="title">{{ trans('main.contacts') }}</h2>
-                <span class="numb">{{ $data->contactsCount }}</span>
+                <h2 class="title">{{ trans('main.incomeMessages') }}</h2>
+                <span class="numb">{{ $data->incomingMessages }}</span>
                 <i class="icon flaticon-reply"></i>
             </div>
         </div>
-        
     </div>
 </div>
 @section('modals')

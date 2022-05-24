@@ -145,7 +145,7 @@ class TicketControllers extends Controller {
         $id = (int) $id;
         Session::forget('attachs');
         $dataObj = Ticket::NotDeleted()->find($id);
-        if($dataObj == null || $dataObj->Client->global_id != GLOBAL_ID ) {
+        if($dataObj == null || User::first()->global_id != $dataObj->global_id ) {
             return Redirect('404');
         }
 
@@ -198,6 +198,7 @@ class TicketControllers extends Controller {
 
         $dataObj->subject = $input['subject'];
         $dataObj->user_id = USER_ID;
+        $dataObj->global_id = User::find(ROOT_ID)->global_id;
         $dataObj->department_id = $input['department_id'];
         $dataObj->description = $input['description'];
         if(isset($input['assignment']) && !empty($input['assignment'])){
@@ -249,9 +250,11 @@ class TicketControllers extends Controller {
             Session::flash('error', $validate->messages()->first());
             return redirect()->back()->withInput();
         }
+
         $dataObj = new Ticket;
         $dataObj->subject = $input['subject'];
         $dataObj->user_id = USER_ID;
+        $dataObj->global_id = User::find(ROOT_ID)->global_id;
         $dataObj->priority_id = isset($input['priority_id']) && !empty($input['priority_id']) ? $input['priority_id'] : 1;
         $dataObj->department_id = $input['department_id'];
         $dataObj->description = $input['description'];
@@ -480,10 +483,11 @@ class TicketControllers extends Controller {
 
         $commentObj = new Comment;
         $commentObj->comment = $input['comment'];
+        $commentObj->creator_name = FULL_NAME;
         $commentObj->reply_on = 0;
         $commentObj->ticket_id = $id;
         $commentObj->status = 1;
-        $commentObj->created_by = CentralUser::NotDeleted()->where('phone',User::first()->phone)->first()->id;
+        $commentObj->created_by = USER_ID;
         $commentObj->created_at = date('Y-m-d H:i:s');
         $commentObj->save();
 

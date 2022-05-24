@@ -3,6 +3,7 @@
 use App\Models\UserAddon;
 use App\Models\CentralChannel;
 use App\Models\Invoice;
+use App\Models\AddonReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -112,93 +113,29 @@ class ReportsControllers extends Controller {
 
 
     public function zid(Request $request) {
-        $data = [];
-        $userAddons = UserAddon::with('Client')->where('addon_id',4)->where('setting_pushed','>=',0)->orderBy('start_date','DESC')->get();
-
-        $i = 0;
-        foreach($userAddons as $mainKey => $userData){
-            try {
-                tenancy()->initialize($userData->tenant_id);
-                $webHooks = \DB::table('webhook_calls')->where('name','Zid')->select(\DB::raw('* ,count(id) as forThisMonth'))->groupBy(\DB::raw('MONTH(created_at)'))->get();
-                tenancy()->end();
-                } catch (Exception $e) {
-                    
-                }
-            foreach ($webHooks as $key => $value) {
-                $i++;
-                $startDate = date('Y-m-01',strtotime($value->created_at));
-                $endDate = date('Y-m-t',strtotime($value->created_at));
-
-                $invoiceObj = Invoice::NotDeleted()->where('client_id',$userData->user_id)->whereBetween('due_date',[$startDate,$endDate])->where('status',1)->where('items','LIKE','%'. 's:8:"title_ar";s:4:"زد";s:8:"title_en";s:3:"Zid"' .'%')->first();
-                if($invoiceObj){
-                    $invoiceObj = Invoice::getData($invoiceObj);
-                }
-
-                $dataObj = new \stdClass();
-                $dataObj->id = $i;
-                $dataObj->tenant_id = $userData->tenant_id;
-                $dataObj->instanceId = CentralChannel::where('tenant_id',$userData->tenant_id)->first()->instanceId;
-                $dataObj->user_id = $userData->user_id;
-                $dataObj->name = $userData->Client->name;
-                $dataObj->count = $value->forThisMonth;
-                $dataObj->paid_date = $invoiceObj != null ? $invoiceObj->paid_date : '';
-                $dataObj->total = $invoiceObj != null ? $invoiceObj->total : '';
-                $dataObj->invoice_id = $invoiceObj != null ? $invoiceObj->id + 10000 : '';
-                $dataObj->created_at = $startDate . ' - ' . $endDate;
-                $data[] = $dataObj;
-            }
-        }
-
         if($request->ajax()){
-            return Datatables::of($data)->make(true);
+            $data = AddonReport::dataList('Zid');
+            return Datatables::of($data['data'])->make(true);
         }
         $data['designElems'] = $this->getData('zid');
         return view('Central.User.Views.index')->with('data', (object) $data);
     }
 
     public function salla(Request $request) {
-        $data = [];
-        $userAddons = UserAddon::with('Client')->where('addon_id',5)->where('setting_pushed','>=',0)->orderBy('start_date','DESC')->get();
-
-        $i = 0;
-        foreach($userAddons as $mainKey => $userData){
-            try {
-                tenancy()->initialize($userData->tenant_id);
-                $webHooks = \DB::table('webhook_calls')->where('name','Salla')->select(\DB::raw('* ,count(id) as forThisMonth'))->groupBy(\DB::raw('MONTH(created_at)'))->get();
-                tenancy()->end();
-                } catch (Exception $e) {
-                    
-                }
-            foreach ($webHooks as $key => $value) {
-                $i++;
-                $startDate = date('Y-m-01',strtotime($value->created_at));
-                $endDate = date('Y-m-t',strtotime($value->created_at));
-
-                $invoiceObj = Invoice::NotDeleted()->where('client_id',$userData->user_id)->whereBetween('due_date',[$startDate,$endDate])->where('status',1)->where('items','LIKE','%'. 's:8:"title_ar";s:6:"سلة";s:8:"title_en";s:5:"Salla"')->first();
-                if($invoiceObj){
-                    $invoiceObj = Invoice::getData($invoiceObj);
-                }
-
-                $dataObj = new \stdClass();
-                $dataObj->id = $i;
-                $dataObj->tenant_id = $userData->tenant_id;
-                $dataObj->instanceId = CentralChannel::where('tenant_id',$userData->tenant_id)->first()->instanceId;
-                $dataObj->user_id = $userData->user_id;
-                $dataObj->name = $userData->Client->name;
-                $dataObj->count = $value->forThisMonth;
-                $dataObj->paid_date = $invoiceObj != null ? $invoiceObj->paid_date : '';
-                $dataObj->total = $invoiceObj != null ? $invoiceObj->total : '';
-                $dataObj->invoice_id = $invoiceObj != null ? $invoiceObj->id + 10000 : '';
-                $dataObj->created_at = $startDate . ' - ' . $endDate;
-                $data[] = $dataObj;
-            }
-        }
-
         if($request->ajax()){
-            return Datatables::of($data)->make(true);
+            $data = AddonReport::dataList('Salla');
+            return Datatables::of($data['data'])->make(true);
         }
         $data['designElems'] = $this->getData('salla');
         return view('Central.User.Views.index')->with('data', (object) $data);
+    }
+
+    public function updateData($type){
+        if(in_array($type, [1,2])){
+            shell_exec("/usr/local/bin/php /home/wloop/public_html/artisan push:addonSetting ".$type);
+        }
+        \Session::flash('success', trans('main.inPrgo'));
+        return redirect()->back();
     }
 
     public function charts() {

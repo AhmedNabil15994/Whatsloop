@@ -51,8 +51,12 @@
                         <div class="commentHead">
                             <div class="creator">
                                 <i class="icon flaticon-user-3"></i>
-                                <span class="name">{{ $comment->creator }}</span>
-                                <span class="definition">{{ $data->data->user_id != $comment->created_by ? trans('main.employee') : trans('main.owner') }}</span>
+                                <span class="name">{{ $comment->creator_name }}</span>
+                                @if(!$comment->admin)
+                                <span class="definition">{{ $data->data->user_id != $comment->created_by ? '' : trans('main.owner') }}</span>
+                                @else
+                                <span class="definition">{{ trans('main.support') }}</span>
+                                @endif
                             </div>
                             <span class="time">{{ $comment->created_at }}</span>
                         </div>

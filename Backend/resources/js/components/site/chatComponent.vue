@@ -96,12 +96,16 @@
                                             <div class="user-chat-content">
                                                 <div class="ctext-wrap">
                                                     <div class="ctext-wrap-content" :class="{ msgRemoved: !message.message && !message.fileSize,'testMsg' : message.testMsg = true,quoted:message.quotedMsgObj }">
+
+                                                        <div v-if="!message.deleted_by || message.deleted_by === null">
+
                                                         <!-- fromMe withImage -->
                                                         <div class="options" v-if="message.id && message.whatsAppMessageType !== 'call_log'"  :class="'options'+index">
                                                             <i @click="openOptions(index)" class="fa fa-angle-down openOptions"></i>
                                                             <ul class="listOptions" :class="'listOptions'+index">
                                                                 <li @click="reply(message)">رد</li>
                                                                 <li v-if="parseInt(message.file_size) <= 0" @click="resend(message.id)">أعادة ارسال</li>
+                                                                <li @click="deleteMessage(message.id)">حذف الرسالة</li>
                                                             </ul>
                                                         </div>
                                                         <!-- withImage:message.quotedMsgBody !== '' -->
@@ -361,7 +365,7 @@
                                                                 
                                                         </span>
 
-                                                        <span v-else-if="message.whatsAppMessageType === 'ptt' || message.whatsAppMessageType === 'ppt'">
+                                                        <span v-else-if="message.whatsAppMessageType === 'ptt' || message.whatsAppMessageType === 'ppt' || message.whatsAppMessageType === 'audio' || message.whatsAppMessageType === 'sound'">
                                                             <audioplayer :timesec="message.timeSec ? message.timeSec : false" :url="message.body" 
                                                             v-on:pauseall="funcPause('audio-player'+ message.time )"
                                                             :playerid="'audio-player'+message.time" ref="component" ></audioplayer>                                                                 
@@ -376,12 +380,6 @@
                                                             </template>
                                                             
                                                         </span>
-                         
-                                                        <p v-else>
-                                                         <i class="fa fa-ban"></i> 
-                                                        رسالة محذوفة أو غير مدعومة
-                                                        </p>
-                                                       
                                                         <p class="chat-time clearfix mb-0">
                                                             <span class="seen">
                                                                 <svg
@@ -439,6 +437,12 @@
 
                                                         
                                                         </p>
+                                                        </div>
+                                                        <p v-else>
+                                                         <i class="fa fa-ban"></i> 
+                                                        رسالة محذوفة أو غير مدعومة
+                                                        </p>
+                                                        
                                                     </div>
                                                 </div>
                                                 
@@ -621,6 +625,7 @@
                             class="post"
                             ref="textContent"
                             :dir="dir"
+                            @click="focusInput()"
                             id="inputId"
                             @keydown="sendMsg"
                             tabindex="-1"
@@ -634,7 +639,7 @@
                     </button>
 
                   
-                    <vue-record-audio :closerec="closeRec" :mode="recordMode.video" @stream="onStreamRecord"  @result="onResultRecord" :class="messageSend === '' && checkFile === false ? 'block' : ''"/>
+                    <vue-record-audio :closerec="closeRec" :mode="recordMode === true ? 'hold' : 'press'" @stream="onStreamRecord"  @result="onResultRecord" :class="messageSend === '' && checkFile === false ? 'block' : ''"/>
                    
                     <div class="counterRec" v-if="messageSend === '' && checkFile === false" :class="messageSend === '' ? 'block' : ''">
                         <label id="minutes"><span v-if="this.countRec.seconds < 10">0</span>{{this.countRec.seconds}}</label>
@@ -692,10 +697,7 @@ export default {
             distance: 500,
             imageViewerFlag: false,
             image:[],
-            recordMode: {
-                audio: 'hold',
-                video: 'press'
-            },
+            recordMode: false,
             closeRec:false,
             cancleRec:false,
             countRec:{
@@ -732,7 +734,7 @@ export default {
            deep: true,
            handler() {
                if(this.chatIdC !== 0) {
-                this.load = 0;
+                this.load = 1;
                 this.getChatContent();
                 this.focusInput();
                 this.$store.dispatch("contactAction", {contact:this.contact});
@@ -789,7 +791,12 @@ export default {
 
     },
     mounted() {
-
+        var xMedia = window.matchMedia("(max-width: 991px)")
+        if (xMedia.matches) { // If media query matches
+            this.recordMode = true;
+        } else {
+            this.recordMode = false;
+        }
        //  var hideMe = document.getElementsByClassName('options');
             document.onclick = function(e){
                 var hasClass = Array.from(e.target.classList).indexOf('openOptions') > -1;
@@ -1215,6 +1222,8 @@ export default {
                                     element.metadata = res.data.data.metadata;
                                     element.whatsAppMessageType = res.data.data.whatsAppMessageType;
                                 }
+                            }else{
+                                this.$emit("checkSubscription",err.response.res.data.status.message);
                             }
                             });
                         
@@ -1265,7 +1274,7 @@ export default {
 
                     this.$http
                     .post(this.urlApi+`sendMessage`, data).then((res) => {
-                        if(res.data.status.message !== 'Chat ID Is Invalid') {
+                        if(res.data.status.status !== 0) {
                             this.chat.forEach((element) => {
                                 if (element.frontId) {
                                     
@@ -1285,7 +1294,9 @@ export default {
                                         element.whatsAppMessageType = res.data.data.whatsAppMessageType;
                                     }
                                 }
-                        });
+                            });
+                       }else{
+                            this.$emit("checkSubscription",res.data.status.message);
                        }
                         
                     }).catch((err) => {
@@ -1368,6 +1379,8 @@ export default {
                             element.status = res.data.data.status;
                             element.metadata = res.data.data.metadata;
                         }
+                    }else{
+                        this.$emit("checkSubscription",err.response.res.data.status.message);
                     }
                     });
                 
@@ -1523,7 +1536,25 @@ export default {
                 .then((res) => {
                 });
             }
-            
+        },
+        deleteMessage(id) {
+            if(id){
+                this.$http.post(this.urlApi+`messages/deleteMessage?message_id=${id}`)
+                .then((res) => {
+                    if(res.data.data.deleted_by != null) {
+                        for(var msg in this.chat) {
+                           if(this.chat[msg].id === id) 
+                           {
+                               this.chat[msg].deleted_by = 'me';
+                               break;
+                           }
+                        }
+                        this.$emit('childToParent', id);
+                    }else{
+                        this.$emit("checkSubscription",res.data.status.message);
+                    }
+                });
+            }
         }
     
     
@@ -2784,5 +2815,12 @@ transition:all 0.3s;
     fill:rgba(0, 0, 0, 0.45)
 }
 
+@media(max-width:991px){
+    .counterRec.block,
+    .vue-audio-recorder.active ~ .closeRecord
+    {
+        display:none;
+    }
 
+}
 </style>

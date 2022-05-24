@@ -242,10 +242,10 @@ class GroupMsgsControllers extends Controller {
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
-        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $messagesCount = ChatMessage::where('fromMe',1)->whereNotIn('status',[null,'APP'])->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
         $dailyCount = Session::get('dailyMessageCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount + $extraQuotas <= $messagesCount){
+        if($dailyCount + $extraQuotas < $messagesCount){
             Session::flash('error', trans('main.messageQuotaError'));
             return redirect()->back()->withInput();
         }
@@ -361,7 +361,7 @@ class GroupMsgsControllers extends Controller {
             $groupObj = new GroupNumber;
             $groupObj->channel = Session::get('channelCode');
             $groupObj->name_ar = $input['name_ar'];
-            $groupObj->name_en = $input['name_en'];
+            $groupObj->name_en = isset($input['name_en']) && !empty($input['name_en']) ? $input['name_en'] : $input['name_ar'];
             $groupObj->description_ar = '';
             $groupObj->description_en = '';
             $groupObj->sort = GroupNumber::newSortIndex();
@@ -433,10 +433,10 @@ class GroupMsgsControllers extends Controller {
 
         $startDay = strtotime(date('Y-m-d 00:00:00'));
         $endDay = strtotime(date('Y-m-d 23:59:59'));
-        $messagesCount = ChatMessage::where('fromMe',1)->where('status','!=',null)->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
+        $messagesCount = ChatMessage::where('fromMe',1)->whereNotIn('status',[null,'APP'])->where('time','>=',$startDay)->where('time','<=',$endDay)->count();
         $dailyCount = Session::get('dailyMessageCount');
         $extraQuotas = UserExtraQuota::getOneForUserByType(GLOBAL_ID,1);
-        if($dailyCount + $extraQuotas <= $messagesCount + $contactsCount ){
+        if($dailyCount + $extraQuotas < $messagesCount + $contactsCount ){
             Session::flash('error', trans('main.messageQuotaError'));
             return redirect()->back()->withInput();
         }
@@ -616,7 +616,7 @@ class GroupMsgsControllers extends Controller {
                 }
             });
         }else{
-            $contacts = Contact::NotDeleted()->whereHas('Reports',function($whereHasQuery) use ($id){
+            $contacts = Contact::NotDeleted()->where('group_id',$groupMsgObj->group_id)->whereHas('Reports',function($whereHasQuery) use ($id){
                 $whereHasQuery->where('group_message_id',$id)->where('status',0);
             })->chunk($chunks,function($data) use ($dataObj){
                 try {
@@ -738,11 +738,11 @@ class GroupMsgsControllers extends Controller {
             
             $type = \ImagesHelper::checkFileExtension($files->getClientOriginalName());
             $fileSize = $files->getSize();
-            if($fileSize >= 100000){
+            if($fileSize >= 15000000){
                 return \TraitsFunc::ErrorMessage(trans('main.file100kb'));
             }
             
-            if( $typeID == 2 && !in_array($type, ['file','photo']) ){
+            if( $typeID == 2 && !in_array($type, ['file','photo','video']) ){
                 return \TraitsFunc::ErrorMessage(trans('main.selectFile'));
             }
 

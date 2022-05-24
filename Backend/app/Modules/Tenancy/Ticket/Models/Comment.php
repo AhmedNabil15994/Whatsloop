@@ -16,7 +16,7 @@ class Comment extends Model{
     }
 
     public function Creator(){
-        return $this->belongsTo('App\Models\CentralUser','created_by','id');
+        return $this->belongsTo('App\Models\User','created_by','id');
     }
 
     public function Ticket(){
@@ -65,25 +65,20 @@ class Comment extends Model{
         return $list;
     }
 
-    static function getCreator($created_by,$instructor_id){
-        $result = '';
-        if($created_by == $instructor_id){
-            $result = '<span class="label bg-green online">Owner</span>';
-        }
-        return $result;
-    }
-
     static function getData($source) {
+        $creator = User::where('id',$source->Ticket->created_by)->first();
         $data = new  \stdClass();
         $data->id = $source->id;
+        $data->admin = $source->admin;
         $data->ticket_id = $source->ticket_id;
         $data->comment = $source->comment; 
+        $data->creator_name = $source->creator_name; 
         $data->status = $source->status;
         $data->reply_on = $source->reply_on;
         $data->created_by = $source->created_by;
         $data->replies = $source->reply_on == 0 ? self::dataList($source->ticket_id,$source->id) : [];
-        $data->image = User::selectImage($source->Creator);
-        $data->creator = $source->Creator->name;
+        $data->image = User::selectImage($creator);
+        $data->creator = $creator->name;
         $data->file_name = $source->file_name;
         $data->file = $source->file_name != null ? self::getPhotoPath($source->id, $source->file_name) : "";
         $data->file_size = $data->file != '' ? \ImagesHelper::getPhotoSize($data->file) : '';

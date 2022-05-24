@@ -92,6 +92,12 @@
                                         <input type="text" class="form-control" value="{{ $data->data->domain }}" name="domain" placeholder="{{ trans('main.domain') }}">
                                     </div>
                                 </div> <!-- end col -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="balance">{{ trans('main.balance') }}</label>
+                                        <input type="text" class="form-control" value="{{ $data->data->balance }}" name="balance" placeholder="{{ trans('main.balance') }}">
+                                    </div>
+                                </div>
                             </div> <!-- end row -->
                             <div class="text-right">
                                 <button class="btn btn-success AddBTN SaveBTNs">{{ trans('main.save') }}</button>

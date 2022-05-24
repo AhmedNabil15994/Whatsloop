@@ -12,6 +12,7 @@ Route::group(['prefix' => '/whatsappOrders'] , function (){
 
 	Route::get('/products',[$controller,'products']);
 	Route::post('/products/assignCategory',[$controller,'assignCategory']);
+	Route::post('/products/assignSallaProduct',[$controller,'assignSallaProduct']);
 	Route::get('/orders',[$controller,'orders']);
 	Route::get('/orders/{id}/sendLink',[$controller,'sendLink']);
 

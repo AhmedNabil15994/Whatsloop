@@ -21,7 +21,7 @@ class ModNotificationReport extends Model{
     static function dataList($mod_id=null) {
         $input = \Request::all();
 
-        $source = self::NotDeleted()->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->where('statusText','!=','new')->where(function ($query) use ($input) {
                     if (isset($input['order_id']) && $input['order_id'] != null) {
                         $query->where('order_id',$input['order_id']);
                     }

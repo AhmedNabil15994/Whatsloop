@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\UserChannels;
 use App\Jobs\SyncProducts;
 use Nicolaslopezj\Searchable\SearchableTrait;
 
@@ -11,27 +12,18 @@ class ChatMessage extends Model{
 
     protected $table = 'messages';
     protected $primaryKey = 'id';
-    protected $fillable = ['id','body','fromMe','isForwarded','author','time','chatId','messageNumber','type','message_type','status','senderName','chatName','caption','sending_status'];    
+    protected $fillable = ['id','body','fromMe','isForwarded','author','time','chatId','messageNumber','type','message_type','status','senderName','chatName','caption','sending_status','deleted_by','deleted_at'];    
     public $timestamps = false;
     public $incrementing = false;
 
     protected $searchable = [
         'columns' => [
-            'id' => 255,
             'body' => 255,
-            'fromMe' => 11,
-            'isForwarded' => 11,
             'author' => 255,
-            'time' => 255,
             'chatId' => 255,
-            'messageNumber' => 11,
-            'type' => 11,
-            'message_type' => 255,
-            'status' => 11,
             'senderName' => 255,
             'chatName' => 255,
             'caption' => 255,
-            'sending_status' => 11,
         ],
     ];
 
@@ -45,7 +37,7 @@ class ChatMessage extends Model{
 
     static function dataList($chatId=null,$limit=null,$disDetails=null,$start=null) {
         $input = \Request::all();
-        $source = self::NotDeleted();
+        $source = self::where('id','!=',null);
         if(isset($input['message']) && !empty($input['message'])){
             $source->where('body','LIKE','%'.$input['message'].'%')->orWhere('caption','LIKE','%'.$input['message'].'%');
         }
@@ -78,6 +70,7 @@ class ChatMessage extends Model{
         $list = [];
 
         $mainUser = User::first();
+        $channel = UserChannels::first();
         $domain = $mainUser->domain;
         $disabled = UserAddon::getDeactivated($mainUser->id);
         $dis = 0;
@@ -87,7 +80,7 @@ class ChatMessage extends Model{
 
         foreach($sourceArr as $key => $value) {
             $list[$key] = new \stdClass();
-            $list[$key] = self::getData($value,$dis,$domain,$disDetails);
+            $list[$key] = self::getData($value,$dis,$domain,$disDetails,$channel);
         }
         $data['data'] = $list;
         if($limit != null){
@@ -159,18 +152,22 @@ class ChatMessage extends Model{
         return $dataObj;
     }
 
-    static function getData($source,$dis=1,$domain=null,$disDetails=null){
+    static function getData($source,$dis=1,$domain=null,$disDetails=null,$channel=null){
         $dataObj = new \stdClass();
-        
+        if($channel == null){
+            $channel = UserChannels::first();
+        }
         if($source){
             $quotedMsgObj = null;
             $dates = self::reformDate($source->time);
             $source = (object) $source;
             $dataObj->id = $source->id;
+            $dataObj->deleted_by = $source->deleted_by;
+            $dataObj->deleted_at = $source->deleted_at;
             $dataObj->module_id = $source->module_id;
             $dataObj->module_status = $source->module_status;
             $dataObj->module_order_id = $source->module_order_id;
-            $dataObj->body = isset($source->body) ? $source->body : '';
+            $dataObj->body = isset($source->body) ? ( $source->deleted_by != null ? 'رسالة محذوفة أو غير مدعومة' : $source->body) : '';
             $dataObj->fromMe = isset($source->fromMe) ? $source->fromMe : '';
             $dataObj->isForwarded = isset($source->isForwarded) ? $source->isForwarded : '';
             $dataObj->author = isset($source->author) ? $source->author : '';
@@ -199,6 +196,10 @@ class ChatMessage extends Model{
             if(in_array($dataObj->whatsAppMessageType , ['document','video','ptt','image']) && $disDetails == null){
                 $dataObj->file_size = self::getPhotoSize($dataObj->body);
                 $dataObj->file_name = $dataObj->whatsAppMessageType != 'image' ? ($source->caption != null ? $source->caption : self::getFileName($dataObj->body) ) : self::getFileName($dataObj->body);
+                if( doubleval($dataObj->file_size) == 0){
+                    $dataObj->body = config('app.BASE_URL').'/engine/public/uploads/messages/'.$channel->id.'/'.$source->id.'/chatFile.'.self::getExtension(self::getFileName($dataObj->body));
+                    $dataObj->file_size = self::getPhotoSize($dataObj->body);
+                }
             }
             if(isset($dataObj->whatsAppMessageType) && $dataObj->whatsAppMessageType == 'vcard' && $disDetails == null){
                 if(strpos($dataObj->body, 'FN:') !== false){
@@ -241,6 +242,9 @@ class ChatMessage extends Model{
 
             }
             $dataObj->messageContent = $source->body != null && (strpos(' https',ltrim($source->body)) !== false || strpos(' http',ltrim($source->body)) !== false ) ? 'ðŸ“·' : $source->body;
+            if(in_array($dataObj->whatsAppMessageType , ['ptt'])  && $disDetails == true){
+                $dataObj->messageContent = trans('main.sound');
+            }
             $dataObj->icon = $source->fromMe ? ' <i class="type flaticon-share"></i>' : ' <i class="type color1 flaticon-share"></i>';
             $dataObj->date_time = $dataObj->created_at_day . ' ' . $dataObj->created_at_time;
             $dataObj->chatId3 = str_replace('+','',$dataObj->chatId2);
@@ -308,6 +312,10 @@ class ChatMessage extends Model{
 
     static function getFileName($body){
         $names = explode('/',$body);
+        return array_reverse($names)[0];
+    }
+    static function getExtension($body){
+        $names = explode('.',$body);
         return array_reverse($names)[0];
     }
 }

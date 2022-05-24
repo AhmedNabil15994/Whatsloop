@@ -66,6 +66,7 @@ class Order extends Model{
             $dataObj->status = $source->status;
             $dataObj->message_id = $source->message_id;
             $dataObj->products = $source->products != null ? unserialize($source->products) : [];
+            $dataObj->options = $source->options != null ? unserialize($source->options) : [];
             $dataObj->client_id = $source->client_id;
             $dataObj->coupon = $source->coupon;
             $dataObj->payment_type = $source->payment_type;

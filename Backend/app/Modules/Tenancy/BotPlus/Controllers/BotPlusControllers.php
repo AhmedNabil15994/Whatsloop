@@ -157,7 +157,7 @@ class BotPlusControllers extends Controller {
     public function edit($id) {
         $id = (int) $id;
         $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
-        $dataObj = BotPlus::NotDeleted()->find($id);
+        $dataObj = BotPlus::find($id);
         if($dataObj == null || !$checkAvail) {
             return Redirect('404');
         }
@@ -186,7 +186,7 @@ class BotPlusControllers extends Controller {
     public function copy($id) {
         $id = (int) $id;
 
-        $dataObj = BotPlus::NotDeleted()->find($id);
+        $dataObj = BotPlus::find($id);
         $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
         if($dataObj == null || !$checkAvail) {
             return Redirect('404');
@@ -200,7 +200,7 @@ class BotPlusControllers extends Controller {
     public function changeStatus($id) {
         $id = (int) $id;
 
-        $dataObj = BotPlus::NotDeleted()->find($id);
+        $dataObj = BotPlus::find($id);
         $checkAvail = UserAddon::checkUserAvailability(USER_ID,$this->addonId);
         if($dataObj == null || !$checkAvail) {
             return Redirect('404');
@@ -218,7 +218,7 @@ class BotPlusControllers extends Controller {
         $id = (int) $id;
 
         $input = \Request::all();
-        $botObj = BotPlus::NotDeleted()->find($id);
+        $botObj = BotPlus::find($id);
         if($botObj == null) {
             return Redirect('404');
         }
@@ -278,7 +278,6 @@ class BotPlusControllers extends Controller {
                 'msg' => $msg,
             ];
         }
-
         $botObj->message_type = $input['message_type'];
         $botObj->message = $input['message'];
         $botObj->title = $input['title'];

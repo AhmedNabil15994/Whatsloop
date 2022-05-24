@@ -122,6 +122,8 @@ class RouteServiceProvider extends ServiceProvider
                     require app_path('Modules/Central/NotificationTemplate/routes.php');
                     require app_path('Modules/Central/Reports/routes.php');
                     require app_path('Modules/Central/Salla/routes.php');
+                    require app_path('Modules/Central/StatusCategory/routes.php');
+                    require app_path('Modules/Central/Status/routes.php');
             });
         }
     }

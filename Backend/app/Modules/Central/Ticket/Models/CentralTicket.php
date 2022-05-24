@@ -15,7 +15,7 @@ class CentralTicket extends Model{
     }
 
     public function Client(){
-        return $this->belongsTo('App\Models\CentralUser','user_id');
+        return $this->belongsTo('App\Models\CentralUser','global_id','global_id');
     }
 
     public function Department(){
@@ -96,11 +96,12 @@ class CentralTicket extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $client = $source->Client ? CentralUser::getData($source->Client) : null;
+        $client = $source->Client ? CentralUser::getData(CentralUser::where('global_id',$source->global_id)->first()) : null;
         $data->id = $source->id;
+        $data->global_id = $source->global_id;
         $data->subject = $source->subject;
         $data->description = $source->description;
-        $data->user_id = $source->user_id;
+        $data->user_id = $client->id;
         $data->client = $source->Client != null ? $client->name : '';
         $data->client_image = $source->Client != null ? $client->photo : '';
         $data->department_id = $source->department_id;
@@ -114,8 +115,8 @@ class CentralTicket extends Model{
         $data->status = $source->status;
         $data->sort = $source->sort;
         $data->created_at = \Helper::formatDate($source->created_at);
-        $data->last_comment = $source->LastComment != null && $source->LastComment->Creator != null ? $source->LastComment->Creator->name : $data->client;
-        $data->last_comment_date = $source->LastComment != null ? $source->LastComment->created_at : $data->created_at;    
+        $data->last_comment = $source->LastComment != null && $source->LastComment->creator_name != null ? $source->LastComment->creator_name : '';
+        $data->last_comment_date = $source->LastComment != null ? $source->LastComment->created_at : '';    
         return $data;
     }
    

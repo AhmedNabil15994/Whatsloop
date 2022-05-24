@@ -14,6 +14,7 @@ Route::group(['prefix' => '/livechat'] , function () use ($controller) {
 
     Route::get('/messages', [$controller,'messages']);
     Route::get('/messages/repeatHoook', [$controller,'repeatHoook']);
+    Route::post('/messages/deleteMessage', [$controller,'deleteMessage']);
     Route::post('/sendMessage', [$controller,'sendMessage']);
     
     Route::get('/labels', [$controller,'labels']);
@@ -41,6 +42,7 @@ Route::group(['prefix' => '/livechatApi'] , function () use ($controller) {
     
     Route::get('/messages', [$controller,'messages']);
     Route::post('/sendMessage', [$controller,'sendMessage']);
+    Route::post('/messages/deleteMessage', [$controller,'deleteMessage']);
 
     Route::get('/labels', [$controller,'labels']);
     Route::post('/labelChat', [$controller,'labelChat']);

@@ -121,32 +121,40 @@
                                         <td>{{ $item['data']['quantity'] }}</td>
                                         {{-- <td>{{ $data->data->due_date }}</td> --}}
                                         {{-- <td>{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->data->due_date)- 86400))  : date('Y-m-d',strtotime('+1 year',strtotime($data->data->due_date)- 86400)) }}</td> --}}
-                                        <td class="text-center">{{ $item['data']['quantity'] * $item['data']['price_after_vat'] }} {{ trans('main.sar') }}</td>
+                                        <td class="text-center">
+                                            @php 
+                                            $total = $item['data']['quantity'] * $item['data']['price_after_vat'];
+                                            $tax=  \Helper::calcTax($total);
+                                            @endphp
+                                            {{ $total - $tax }} 
+                                            {{ trans('main.sar') }}
+                                        </td>
                                     </tr>
                                     @endforeach
                                     @php
-                                        if($data->data->discount_value != null && $data->data->discount_type != null){
-                                            $oldDiscount = $data->data->discount;
-                                            $tax = $data->data->tax;
-                                            $grandTotal =  $data->data->grandTotal;
-                                            $total = $tax + $grandTotal;
-                                        }else{
-                                            $data->data->discount = $hasAddons == 1 ? $data->data->discount : 0;
-                                            $oldDiscount = $mainPrices - $data->data->total + $data->data->discount;
-                                            $tax = Helper::calcTax($isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount);
-                                            $grandTotal = $isOld ? $mainPrices - $oldDiscount - $tax : $mainPrices - $oldDiscount - $tax;
-                                            $total = $isOld ? $mainPrices - $oldDiscount : $mainPrices - $oldDiscount;
-                                        }
+                                        $oldDiscount = $data->data->discount;
+                                        $tax = $data->data->tax;
+                                        $grandTotal =  $data->data->grandTotal;
+                                        $total = $tax + $grandTotal;
                                         
                                     @endphp
                                     <tr>
                                         <td colspan="5"></td>
                                         <td class="text-left">
+                                            @if($data->data->oldDiscount != 0)
                                             <p class="mb-2">
                                                 <span class="tx-bold">{{ trans('main.discount') }} :</span>
-                                                <span class="float-right">{{ $oldDiscount }} {{ trans('main.sar') }}</span>
+                                                <span class="float-right">{{ $data->data->oldDiscount }} {{ trans('main.sar') }}</span>
                                                 <div class="clearfix"></div>
                                             </p>
+                                            @endif
+                                            @if($data->data->discount_value != null && $data->data->discount_type != null && $oldDiscount - $data->data->oldDiscount != 0)
+                                            <p class="mb-2">
+                                                <span class="tx-bold">{{ trans('main.coupons') }} ({{$data->data->discount_type == 1 ? $data->data->discount_value : $data->data->discount_value.'%' }}) :</span>
+                                                <span class="float-right">{{ $oldDiscount - $data->data->oldDiscount }} {{ trans('main.sar') }}</span>
+                                                <div class="clearfix"></div>
+                                            </p>
+                                            @endif
                                             <p>
                                                 <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
                                                 <span>{{ $grandTotal }} {{ trans('main.sar') }}</span>

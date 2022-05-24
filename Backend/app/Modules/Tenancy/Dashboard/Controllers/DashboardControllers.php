@@ -32,10 +32,83 @@ use App\Models\ChatMessage;
 use App\Models\Bundle;
 use App\Models\ChatEmpLog;
 use App\Models\ChatDialog;
+use App\Models\OAuthData;
 
 class DashboardControllers extends Controller {
 
     use \TraitsFunc;
+
+    public function hneehm(){
+        $data['color'] = Variable::getVar('COLOR');
+        $data['size'] = Variable::getVar('SIZE');
+        $data['height_space'] = Variable::getVar('HEIGHT_SPACE');
+        $data['extra_msg'] = Variable::getVar('EXTRA_MSG');
+        $data['design'] = Variable::getVar('SELECTED_TEMPLATE');
+        return view('Tenancy.Dashboard.Views.V5.hneehm')->with('data',(object) $data);
+    }
+
+    public function getImageDimensions(){
+        $input = \Request::all();
+        $data = [];
+        if(isset($input['image']) && !empty($input['image'])){
+            $data = getimagesize($input['image']);
+        }
+        return $data;
+    }
+
+    public function postImageDimensions(){
+        $input = \Request::all();
+        $varObj = Variable::where('var_key','TEMPLATE'.$input['imgId'])->first();
+        if(!$varObj){
+            $varObj = new Variable;
+        }
+        $varObj->var_key = 'TEMPLATE'.$input['imgId'];
+        $varObj->var_value = $input['width'].','.$input['height'];
+        $varObj->save();
+        return 1;
+    }
+
+    public function postHneehm(){
+        $input = \Request::all();
+        if(!isset($input['design']) || empty($input['design'])){
+            \Session::flash('error','You must select at least one design');
+            return redirect()->back()->withInput();
+        }
+        $varObj = Variable::where('var_key','SELECTED_TEMPLATE')->first();
+        if(!$varObj){
+            $varObj = new Variable;
+        }
+        $varObj->var_key = 'SELECTED_TEMPLATE';
+        $varObj->var_value = $input['design'];
+        $varObj->save();
+
+        $varObj = Variable::where('var_key','COLOR')->first();
+        if(!$varObj){
+            $varObj = new Variable;
+        }
+        $varObj->var_key = 'COLOR';
+        $varObj->var_value = $input['color'];
+        $varObj->save();
+
+        $varObj = Variable::where('var_key','SIZE')->first();
+        if(!$varObj){
+            $varObj = new Variable;
+        }
+        $varObj->var_key = 'SIZE';
+        $varObj->var_value = $input['size'];
+        $varObj->save();
+
+        $varObj = Variable::where('var_key','EXTRA_MSG')->first();
+        if(!$varObj){
+            $varObj = new Variable;
+        }
+        $varObj->var_key = 'EXTRA_MSG';
+        $varObj->var_value = $input['extra_msg'];
+        $varObj->save();
+
+        Session::flash('success',trans('main.editSuccess'));
+        return redirect()->back();
+    }
 
     public function menu(){
         $data = []; 
@@ -44,7 +117,22 @@ class DashboardControllers extends Controller {
     }
 
     public function Dashboard(){   
+        $mainUser = User::first();
+        $arr = [
+            TENANT_ID,
+            $mainUser->domain,
+            $mainUser->id,
+            $mainUser->phone,
 
+        ];
+        $oauthDataObj = OAuthData::where('type','salla')->where('domain','null')->where('phone',$arr[3])->first();
+        if($oauthDataObj){
+            $oauthDataObj->user_id = $arr[2];
+            $oauthDataObj->domain = $arr[1];
+            $oauthDataObj->tenant_id = $arr[0];
+            $oauthDataObj->save();
+        }
+        
         // $base_url = 'https://accounts.salla.sa/oauth2/token';
 
         // $ch = curl_init();

@@ -92,6 +92,48 @@ $(function(){
 	    }
  	});
 
+ 	$('#SubmitBTNss.AddBTNss').on('click',function(e){
+	    e.preventDefault();
+	    e.stopPropagation();
+
+	    $('input[name="status"]').val(1);
+	    if(teles){
+	        var phone =  tr.getNumber();
+	        if (!tr.isValidNumber() && !$('.teles').parents('.row').hasClass('hidden') &&(
+	                ($('input[name="vType"]').length && $('input[name="vType"]').val() == 2) || !$('input[name="vType"]').length)){
+	            if(lang == 'en'){
+	                errorNotification("This Phone Number Isn't Valid!");
+	            }else{
+	                errorNotification("هذا رقم الجوال غير موجود");
+	            }
+	        }else{
+	            $('input.teles').val(phone);
+	            if($(this).data('clicked') == 1){
+		            $(this).parents('form').submit();    	
+				}else{
+		            $('.alert-modal').modal('show');
+	            	$(this).data('clicked',1);
+				}
+	        }
+	    }else{
+	    	if($(this).data('clicked') == 1){
+	            $(this).parents('form').submit();    	
+			}else{
+	            $('.alert-modal').modal('show');
+	            $(this).data('clicked',1);
+			}
+	    }
+	    
+	});
+
+ 	$(document).on('click','.alert-modal .btn-info',function(e){
+ 		e.preventDefault();
+ 		$('.alert-modal').modal('hide');
+ 		setTimeout(function(){
+	 		$('#tipsModal').modal('show');
+ 		},500);
+ 	});
+ 	
 	$(".AddBTN").click(function(e){
 		e.preventDefault();
 		e.stopPropagation();

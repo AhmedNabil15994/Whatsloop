@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\CentralChannel;
+use App\Models\UserAddon;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,6 +25,11 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\PushChannelSetting::class,
         \App\Console\Commands\PushAddonSetting::class,
         \App\Console\Commands\TransferDays::class,
+        \App\Console\Commands\SetAddonReports::class,
+        \App\Console\Commands\SyncWhmcs::class,
+        \App\Console\Commands\SendScheduleCarts::class,
+        \App\Console\Commands\SyncZidAbandonedCarts::class,
+
     ];
 
     /**
@@ -38,14 +44,21 @@ class Kernel extends ConsoleKernel
         $channels = CentralChannel::dataList()['data'];
         foreach($channels as $channel){
             if($channel->leftDays > 0 && $channel->tenant_id != null){
+                if(UserAddon::where('addon_id',4)->where('tenant_id',$channel->tenant_id)->where('status',1)->first()){
+                    $schedule->command('tenants:run sync:zid --tenants='.$channel->tenant_id)->cron('*/30 * * * *')->withoutOverlapping();
+                }
                 $schedule->command('tenants:run groupMsg:send --tenants='.$channel->tenant_id)->everyMinute();
                 $schedule->command('tenants:run instance:status --tenants='.$channel->tenant_id)->everyMinute();
                 $schedule->command('tenants:run sync:labels --tenants='.$channel->tenant_id)->everyMinute();
+                $schedule->command('tenants:run send:scheduleCarts --tenants='.$channel->tenant_id)->hourly();
                 $schedule->command('tenants:run sync:messages --tenants='.$channel->tenant_id)->withoutOverlapping()->everyMinute();
                 $schedule->command('tenants:run sync:dialogs --tenants='.$channel->tenant_id)->withoutOverlapping()->everyMinute();
                 $schedule->command('tenants:run check:contacts --tenants='.$channel->tenant_id)->everyMinute()->withoutOverlapping();
             }
         }
+
+        // $schedule->command('set:addonReports',[1])->everyMinute();
+        // $schedule->command('set:addonReports',[2])->everyMinute();
         // $schedule->command('set:invoices')->cron('0 9,12 * * *');
         // $schedule->command('push:channelSetting')->everyMinute();
         // $schedule->command('push:addonSetting')->daily();

@@ -14,6 +14,13 @@
 			<a href="{{ URL::to('/dashboard') }}" class="{{ Active(URL::to('/dashboard')) }}"><i class="flaticon-home"></i> {{ trans('main.dashboard') }}</a>
 		</li>
 
+		<li class="slide">
+            <a class="side-menu__item {{ Active(URL::to('/hneehm')) }}" href="{{ URL::to('/hneehm') }}">
+                <i class="flaticon-layer"></i>
+                <span class="side-menu__label">هنيهم</span>
+            </a>
+        </li>
+
 		@if(\Helper::checkRules('list-livechat'))
 		<li titlehover="link2" id="foo">
 			<a href="{{ URL::to('/livechat') }}" class="{{ Active(URL::to('/livechat')) }}"><i class="flaticon-statistics"></i> {{ trans('main.livechat') }}</a>
@@ -211,6 +218,20 @@
 				@endif
 				@if(\Helper::checkRules('list-users'))
 				<li><a href="{{ URL::to('/users') }}" class="{{ Active(URL::to('/users*')) }}">{{ trans('main.users') }}</a></li>
+				@endif
+			</ul>
+		</li>
+		@endif
+
+		@if(\Helper::checkRules('list-feedback,list-ratings'))
+        <li titlehover="link18">
+			<a href="#" class="subToggle {{ Active(URL::to('/feedback*')) }}"><i class="flaticon-statistics"></i> {{ trans('main.feedbackRatings') }} <i class="arrowLeft flaticon-left-arrow"></i></a>
+			<ul class="subMenu">
+				@if(\Helper::checkRules('list-feedback'))
+				<li><a href="{{ URL::to('/feedback') }}" class="{{ Active(URL::to('/feedback*')) }}">{{ trans('main.feedback') }}</a></li>
+				@endif
+				@if(\Helper::checkRules('list-ratings'))
+				<li><a href="{{ URL::to('/feedback/ratings') }}" class="{{ Active(URL::to('/feedback/ratings*')) }}">{{ trans('main.ratings') }}</a></li>
 				@endif
 			</ul>
 		</li>

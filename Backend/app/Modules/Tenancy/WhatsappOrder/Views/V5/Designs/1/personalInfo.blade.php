@@ -36,11 +36,11 @@
 <form class="formInfo" method="POST" action="{{ URL::current() }}">
 	@csrf
 	<label class="titleForm">الاسم</label>
-	<input type="text" class="inputStyle" name="name" placeholder="اضف اسمك ثنائي" />
+	<input type="text" class="inputStyle" name="name" value="{{$data->order->Details != null ? $data->order->Details->name : ''}}" placeholder="اضف اسمك ثنائي" />
 	<label class="titleForm">البريد الالكتروني</label>
-	<input type="email" class="inputStyle" name="email" placeholder="اضف البريد الالكتروني" />
+	<input type="email" class="inputStyle" name="email" value="{{$data->order->Details != null ? $data->order->Details->email : ''}}" placeholder="اضف البريد الالكتروني" />
 	<label class="titleForm">رقم الجوال</label>
-	<input type="number" class="inputStyle" name="phone" placeholder="رقم جوالك على الواتس اب" />
+	<input type="number" class="inputStyle" name="phone" value="{{$data->order->Details != null ? $data->order->Details->phone : ''}}" {{ $data->order->Details != null ? $data->order->Details->phone : 'disabled' }} placeholder="رقم جوالك على الواتس اب" />
 	<button class="btnStyle">التالي</button>
 </form>
     

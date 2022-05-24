@@ -99,9 +99,9 @@ $counter = 0;
                			<li data-area="{{ $country->id }}">
                             <label class="checkStyle">
                                 <i></i>
-                                <span class="text">{{ $country->{'Name_'.LANGUAGE_PREF} }}</span>
+                                <span class="text">{{ $country->name }}</span>
                             </label>
-               			</li>
+                        </li>
                			@endforeach
                		</ul>
                		<span class="save" data-dismiss="modal">حفظ</span>

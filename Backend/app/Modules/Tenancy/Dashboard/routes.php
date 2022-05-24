@@ -7,6 +7,12 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardControllers::class,'Dashboard'])->name('userDash');
     Route::get('/menu', [App\Http\Controllers\DashboardControllers::class,'menu']);
 
+    Route::get('/hneehm', [App\Http\Controllers\DashboardControllers::class,'hneehm']);
+    Route::post('/hneehm', [App\Http\Controllers\DashboardControllers::class,'postHneehm']);
+    
+    Route::get('/hneehm/getImageDimensions', [App\Http\Controllers\DashboardControllers::class,'getImageDimensions']);
+    Route::post('/hneehm/postImageDimensions', [App\Http\Controllers\DashboardControllers::class,'postImageDimensions']);
+
     Route::post('/changeChannel', [App\Http\Controllers\DashboardControllers::class,'changeChannel']);
     
     Route::post('/changeTheme', [App\Http\Controllers\DashboardControllers::class,'changeTheme']);

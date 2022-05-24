@@ -71,7 +71,6 @@
     <script src="{{ asset('V5/components/orders.js') }}"></script>
     @yield('scripts')
     @include('tenant.Partials.notf_messages')
-    
 </body>
 
 </html>

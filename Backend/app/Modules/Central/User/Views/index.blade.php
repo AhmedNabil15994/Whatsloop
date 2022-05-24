@@ -12,6 +12,25 @@
 @section('content')
 <!-- Start Content-->
 <div class="container-fluid">
+    @if($data->designElems['mainData']['url'] == 'reports/zid' || $data->designElems['mainData']['url'] == 'reports/salla')
+    @php
+    $type = $data->designElems['mainData']['url'] == 'reports/zid' ? 1 : 2;
+    @endphp
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="header-title">{{ trans('main.actions') }}</h2>
+                </div>
+                <div class="card-body text-center acts">
+                    <div class="desc">
+                        <a href="{{URL::to('/reports/updateData/'.$type)}}" class="btn btn-md screen color1">{{ trans('main.refresh') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- end page title --> 
     @if(!isset($data->dis) || $data->dis != true)

@@ -170,7 +170,7 @@ class ApiModsControllers extends Controller {
         // Fetch records
         // $draw = ($start / 10) + 1 ; 
         if($start >= 10){
-            $records = ChatMessage::orderBy('time','DESC')
+            $records = ChatMessage::NotDeleted()->search($searchValue)->orderBy('time','DESC')
                ->skip($start)
                ->take($rowperpage);
             $data = ChatMessage::generateObj($records,null,true);

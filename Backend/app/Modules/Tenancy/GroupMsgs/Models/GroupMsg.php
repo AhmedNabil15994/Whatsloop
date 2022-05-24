@@ -128,9 +128,9 @@ class GroupMsg extends Model{
     static function getCounts($source){
         $startTime = date('Y-m-d H:i',strtotime($source->publish_at));
         $endTime = date('Y-m-d H:i',strtotime('+60 minutes',strtotime($startTime)));
-        $sent = ContactReport::where('group_message_id',$source->id)->where('message_id','!=','')->whereBetween('created_at', [$startTime, $endTime])->count();
-        $viewed = ContactReport::where('group_message_id',$source->id)->where('status',3)->whereBetween('created_at', [$startTime, $endTime])->count();
-        $notSent = $source->contacts_count - $sent - ContactReport::where('group_message_id',$source->id)->where('message_id',null)->whereBetween('created_at', [$startTime, $endTime])->count();
+        $sent = ContactReport::where('group_message_id',$source->id)->where('message_id','!=','')->count();
+        $viewed = ContactReport::where('group_message_id',$source->id)->where('status',3)->count();
+        $notSent = $source->contacts_count - $sent - ContactReport::where('group_message_id',$source->id)->where('message_id',null)->count();
 
         return [$sent,$notSent,$viewed];
     }
@@ -156,7 +156,7 @@ class GroupMsg extends Model{
         }elseif($source->message_type == 5){
             $text = $source->whatsapp_no;
         }elseif($source->message_type == 6){
-            $text = $source->BotPlus->body;
+            $text = $source->BotPlus!= null ? $source->BotPlus->body : '';
         }
         return $text;
     }

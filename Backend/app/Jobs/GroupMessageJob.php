@@ -68,12 +68,12 @@ class GroupMessageJob implements ShouldQueue
             }else{
                 $unsent+=1;
             }
-            sleep(1);
+            sleep(3);
         }
 
         
 
-        $messageObj->update([
+        return $messageObj->update([
             'sent_count' => $sent,
             'unsent_count' => $unsent,
         ]);
@@ -117,6 +117,22 @@ class GroupMessageJob implements ShouldQueue
             $sendData['body'] = $messageObj['https_url'];
             $sendData['title'] = $messageObj['url_title'];
             $sendData['description'] = $this->reformMessage($messageObj['url_desc'],$contact->name,str_replace('+', '', $contact->phone));
+            $messageObj['url_image'] = str_replace('http://final.whatsloop.localhost','https://e1b1-154-182-149-47.ngrok.io',$messageObj['url_image']);
+            $imageData = file_get_contents($messageObj['url_image']);
+            $type = pathinfo(
+                parse_url($messageObj['url_image'], PHP_URL_PATH), 
+                PATHINFO_EXTENSION
+            );
+            if(strlen(base64_encode($imageData)) > 20000){
+                $dets = substr('data:image/' . $type . ';base64,' .base64_encode($imageData),0,20000);
+            }else{
+                $dets = 'data:image/' . $type . ';base64,' .base64_encode($imageData);
+            }
+            if(is_array($dets)){
+                $sendData['previewBase64'] =  $dets[0];
+            }else{
+                $sendData['previewBase64'] = $dets;
+            }
             if(!$msg->where('body',$sendData['body'])->first()){
                 $result = $mainWhatsLoopObj->sendLink($sendData);
             }

@@ -16,7 +16,7 @@ class Ticket extends Model{
     }
 
     public function Client(){
-        return $this->belongsTo('App\Models\CentralUser','user_id');
+        return $this->belongsTo('App\Models\User','user_id');
     }
 
     public function Department(){
@@ -34,9 +34,7 @@ class Ticket extends Model{
         $IS_ADMIN = IS_ADMIN;
         $USER_ID = USER_ID;
         $GLOBAL_ID = GLOBAL_ID;
-        $source = self::NotDeleted()->whereHas('Client',function($whereQuery) use ($GLOBAL_ID){
-            $whereQuery->where('global_id',$GLOBAL_ID);
-        })->where(function ($query) use ($input) {
+        $source = self::NotDeleted()->where('global_id',User::find(ROOT_ID)->global_id)->where(function ($query) use ($input) {
                     if (isset($input['subject']) && !empty($input['subject'])) {
                         $query->where('subject', 'LIKE', '%' . $input['subject'] . '%');
                     } 
@@ -77,8 +75,9 @@ class Ticket extends Model{
 
     static function getData($source) {
         $data = new  \stdClass();
-        $client = CentralUser::getData($source->Client);
+        $client = User::getData(User::find($source->user_id));
         $data->id = $source->id;
+        $data->global_id = $source->global_id;
         $data->subject = $source->subject;
         $data->description = $source->description;
         $data->user_id = $source->user_id;

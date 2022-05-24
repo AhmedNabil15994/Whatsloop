@@ -267,6 +267,7 @@ class CentralTicketControllers extends Controller {
 
         $dataObj->subject = $input['subject'];
         $dataObj->user_id = $input['user_id'];
+        $dataObj->global_id = CentralUser::find($input['user_id'])->global_id;
         $dataObj->priority_id = $input['priority_id'];
         $dataObj->department_id = $input['department_id'];
         $dataObj->description = $input['description'];
@@ -323,6 +324,7 @@ class CentralTicketControllers extends Controller {
         $dataObj = new CentralTicket;
         $dataObj->subject = $input['subject'];
         $dataObj->user_id = $input['user_id'];
+        $dataObj->global_id = CentralUser::find($input['user_id'])->global_id;
         $dataObj->priority_id = isset($input['priority_id']) && !empty($input['priority_id']) ? $input['priority_id'] : 1;
         $dataObj->department_id = $input['department_id'];
         $dataObj->description = $input['description'];
@@ -548,6 +550,7 @@ class CentralTicketControllers extends Controller {
 
         $commentObj = new CentralComment;
         $commentObj->comment = $input['comment'];
+        $commentObj->creator_name = FULL_NAME;
         $commentObj->reply_on = $input['reply'];
         $commentObj->ticket_id = $id;
         $commentObj->status = 1;

@@ -119,43 +119,50 @@ class ClientControllers extends Controller {
             'name' => [
                 'label' => trans('main.name'),
                 'type' => '',
-                'className' => 'edits',
+                'className' => '',
                 'data-col' => 'name',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'email' => [
                 'label' => trans('main.email'),
                 'type' => '',
-                'className' => 'edits',
+                'className' => '',
                 'data-col' => 'email',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'phone' => [
                 'label' => trans('main.phone'),
                 'type' => '',
-                'className' => 'edits',
+                'className' => '',
                 'data-col' => 'phone',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'domain' => [
                 'label' => trans('main.domain'),
                 'type' => '',
-                'className' => 'edits',
+                'className' => '',
                 'data-col' => 'domain',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
             'channelCodes' => [
                 'label' => trans('main.channel'),
                 'type' => '',
-                'className' => 'edits selects',
+                'className' => ' ',
                 'data-col' => 'channels',
-                'anchor-class' => 'editable',
+                'anchor-class' => '',
             ],
-            'channelCodes' => [
-                'label' => trans('main.channel'),
+            'leftDays' => [
+                'label' => trans('main.leftDays'),
                 'type' => '',
-                'className' => 'edits selects',
-                'data-col' => 'channels',
+                'className' => '',
+                'data-col' => 'leftDays',
+                'anchor-class' => '',
+            ],
+            'balance' => [
+                'label' => trans('main.balance'),
+                'type' => 'text',
+                'className' => 'edits',
+                'data-col' => 'balance',
                 'anchor-class' => 'editable',
             ],
             'actions' => [
@@ -329,7 +336,6 @@ class ClientControllers extends Controller {
         Session::flash('success',trans('main.logoutDone'));
         return redirect()->back();
     }
-
     public function sync($id){
         $id = (int) $id;
 
@@ -354,7 +360,7 @@ class ClientControllers extends Controller {
         }
         $updateResult = $mainWhatsLoopObj->messages($data);
         $result = $updateResult->json();
-
+    
         if($result != null && $result['status']['status'] != 1){
             Session::flash('error',$result['status']['message']);
             return redirect()->back();
@@ -996,6 +1002,7 @@ class ClientControllers extends Controller {
         CentralUser::where('id',$id)->update([
             'name' => $input['name'],
             'phone' => $input['phone'],
+            'balance' => doubleval($input['balance']),
             'email' => $input['email'],
             'duration_type' => $input['duration_type'],
             'notifications' => isset($input['notifications']) && !empty($input['notifications']) && $input['notifications'] == 'on' ? 1 : 0,

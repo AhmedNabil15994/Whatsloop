@@ -90,6 +90,8 @@
                                 ['color' => '#449DE6','image' => 'text-message.png'],
                                 ['color' => '#FEE45A','image' => 'portfolio.png'],
                                 ['color' => '#AEEEFF','image' => 'server.png'],
+                                ['color' => '#AEEEFF','image' => 'server.png'],
+                                ['color' => '#AEEEFF','image' => 'server.png'],
                             ];
                             if($oneItem[1] == 'membership'){
                                 $itemImage = asset('V5/images/sell.png');

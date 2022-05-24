@@ -44,6 +44,7 @@ class Product extends Model{
             $source = (object) $source;
             $dataObj->id = $source->id;
             $dataObj->product_id = $source->product_id;
+            $dataObj->addon_product_id = $source->addon_product_id;
             $dataObj->name = $source->name;
             $dataObj->currency = $source->currency;
             $dataObj->category_id = $source->category_id;

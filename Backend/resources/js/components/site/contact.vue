@@ -254,26 +254,27 @@ export default {
           data.append(name, value);
 
 
-          this.$http.post(this.urlApi+`updateContact`,data).then(() => {
-              if(name == 'name') {
-                this.contact.chatName = value;
+          this.$http.post(this.urlApi+`updateContact`,data).then((requestData) => {
+              if(requestData.data.status.status != 0){
+                if(name == 'name') {
+                  this.contact.chatName = value;
+                }
+                if(name == 'notes') {
+                  this.contact.contact_details.notes = value;
+                }
+                if(name == 'email') {
+                  this.contact.contact_details.email = value;
+                }
+                if(name == 'country') {
+                  this.contact.contact_details.country = value;
+                }
+                if(name == 'city') {
+                  this.contact.contact_details.city = value;
+                }
+                if(name == 'lang') {
+                  this.contact.contact_details.lang = value;
+                }
               }
-              if(name == 'notes') {
-                this.contact.contact_details.notes = value;
-              }
-              if(name == 'email') {
-                this.contact.contact_details.email = value;
-              }
-              if(name == 'country') {
-                this.contact.contact_details.country = value;
-              }
-              if(name == 'city') {
-                this.contact.contact_details.city = value;
-              }
-              if(name == 'lang') {
-                this.contact.contact_details.lang = value;
-              }
-
           });
 
 
@@ -316,7 +317,7 @@ export default {
           var data = new FormData();
           data.append('chatId',this.contact.id);
           data.append('labelId', labelId);
-          this.$http.post(this.urlApi+`unlabelChat`,data).then(() => {
+          this.$http.post(this.urlApi+`unlabelChat`,data).then((requestData) => {
           });
             
       },
@@ -324,7 +325,7 @@ export default {
           var data = new FormData();
           data.append('chatId',this.contact.id);
           data.append('labelId', id);
-          this.$http.post(this.urlApi+`labelChat`,data).then(() => {
+          this.$http.post(this.urlApi+`labelChat`,data).then((requestData) => {
           });
             
       },
@@ -338,8 +339,10 @@ export default {
           var data = new FormData();
           data.append('chatId',this.contact.id);
           data.append('modId', id);
-          this.$http.post(this.urlApi+`removeMod`,data).then(() => {
-            this.$emit("changeModeratorsC",this.supervisorValue);
+          this.$http.post(this.urlApi+`removeMod`,data).then((requestData) => {
+            if(requestData.data.status.status == 1){
+              this.$emit("changeModeratorsC",this.supervisorValue);
+            }
           });
 
           
@@ -349,8 +352,11 @@ export default {
           var data = new FormData();
           data.append('chatId',this.contact.id);
           data.append('modId', id);
-          this.$http.post(this.urlApi+`assignMod`,data).then(() => {
-            this.$emit("changeModeratorsC",this.supervisorValue);
+          this.$http.post(this.urlApi+`assignMod`,data).then((requestData) => {
+            console.log(requestData.data.status.status )
+            if(requestData.data.status.status == 1){
+              this.$emit("changeModeratorsC",this.supervisorValue);
+            }
           });
 
            

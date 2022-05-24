@@ -6,6 +6,9 @@ class OneSignalHelper {
     public static function sendnotification($data){
         $appId = 'c3f0f166-2cc7-4f29-bd07-a735b4559481';//CentralVariable::getVar('ONESIGNALAPPID');
         $appKey = 'ODU0MDQ5NjEtYTZlOS00MThlLTk5YWEtN2Q5NWQ2MjQ3Zjk0';//CentralVariable::getVar('ONESIGNALAPPKEY');
+        
+        // $appId = 'df87a757-56ff-4fbe-8872-0a79bec2a8f2';
+        // $appKey = 'NGNhYTI2OTAtM2Q2MS00NjA2LWIxMTEtZjFhZTQ1MzFlZmVl';
 
         $content = array(
             "en" => $data['message'],

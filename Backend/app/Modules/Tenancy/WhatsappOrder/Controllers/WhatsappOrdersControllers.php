@@ -16,8 +16,10 @@ use App\Models\Product;
 use App\Models\WhatsAppCoupon;
 use App\Models\Variable;
 use App\Models\Template;
+use App\Models\OAuthData;
 use App\Events\SentMessage;
 use DataTables;
+use Http;
 
 class WhatsappOrdersControllers extends Controller {
 
@@ -106,6 +108,7 @@ class WhatsappOrdersControllers extends Controller {
                 $result = $mainWhatsLoopObj->getProducts($urlData);
                 $result = $result->json();
                 if(isset($result['data']) && isset($result['data']['products'])){
+                    Product::truncate();
                     $products = $result['data']['products'];
                     foreach($products as $oneProduct){
                         $productObj = Product::getOne($oneProduct['id']);
@@ -123,9 +126,18 @@ class WhatsappOrdersControllers extends Controller {
                 }
             }
         }
+
+        $disabled = UserAddon::getDeactivated(User::first()->id);
+        $dis = 0;
+        if(in_array(5,$disabled)){
+            $dis = 1;
+        }
+        $mainData['disAssign'] = $dis;
         $mainData = Product::dataList();
         $mainData['designElems'] = $data;
         $mainData['dis'] = $this->checkPerm();
+        $mainData['salla_products'] = \DB::table('salla_products')->get();
+        // dd($mainData['salla_products']);
         return view('Tenancy.WhatsappOrder.Views.V5.products')->with('data', (object) $mainData);
     }
 
@@ -133,6 +145,14 @@ class WhatsappOrdersControllers extends Controller {
         $input = \Request::all();
         $productObj = Product::find($input['product_id']);
         $productObj->category_id = $input['category_id'];
+        $productObj->save();
+        return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
+    }
+
+    public function assignSallaProduct(){
+        $input = \Request::all();
+        $productObj = Product::find($input['product_id']);
+        $productObj->addon_product_id = $input['salla_product_id'];
         $productObj->save();
         return \TraitsFunc::SuccessResponse(trans('main.editSuccess'));
     }
@@ -428,7 +448,35 @@ class WhatsappOrdersControllers extends Controller {
             return redirect(404);
         }
 
-        $data = Order::getData($orderObj);
+        $products = unserialize($orderObj->products);
+        $productsArr = [];
+        $baseUrl = 'https://api.salla.dev/admin/v2/products/';
+        $token = Variable::getVar('SallaStoreToken'); 
+        $userObj = User::first();
+        $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+        if($oauthDataObj && $oauthDataObj->authorization != null){
+            $token = $oauthDataObj->authorization;
+        }
+
+        foreach ($products as $key => $product) {
+            $productObj = Product::where('product_id',$product['id'])->first();
+            if(!$productObj || $productObj->addon_product_id == null){
+                return redirect(404);
+            }
+            $item=[
+                'id' => $product['id'],
+                'name' => $product['name'],
+                'product_id' => $productObj->addon_product_id,
+            ];
+
+            $responseData = Http::withToken($token)->get($baseUrl.$productObj->addon_product_id);
+            $result = $responseData->json();
+            $item['options'] = $result['data']['options'];
+            $productsArr[$product['id']] = $item;
+        }
+
+        $data['data'] = Order::getData($orderObj);
+        $data['productDetails'] = $productsArr;
         $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
         return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.orderProducts')->with('data', (object) $data);
     }
@@ -462,6 +510,13 @@ class WhatsappOrdersControllers extends Controller {
         return $total; 
     }
 
+    public function getCities(){
+        $input = \Request::all();
+        $statusObj['regions'] =  \DB::connection('main')->table('salla_cities')->where('country_id',$input['id'])->get();
+        $statusObj['status'] = \TraitsFunc::SuccessMessage();
+        return \Response::json((object) $statusObj);
+    }
+
     public function postNewOrder($id){
         $input = \Request::all();
         $id = (string) $id; 
@@ -480,6 +535,7 @@ class WhatsappOrdersControllers extends Controller {
         }
 
         $orderObj->coupon = $input['coupon'];
+        $orderObj->options = isset($input['options']) && !empty($input['options']) ? serialize($input['options']) : null ;
         $orderObj->total_after_discount = $input['total_after_discount'];
         $orderObj->save();
 
@@ -493,7 +549,7 @@ class WhatsappOrdersControllers extends Controller {
         if(!$orderObj || $orderObj->status != 1){
             return redirect(404);
         }
-        
+
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
         $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
@@ -532,11 +588,52 @@ class WhatsappOrdersControllers extends Controller {
         $orderDetailsObj->order_id = $orderObj->id;
         $orderDetailsObj->name = $input['name'];
         $orderDetailsObj->email = $input['email'];
-        $orderDetailsObj->phone = $input['phone'];
+        // $orderDetailsObj->phone = $input['phone'];
         $orderDetailsObj->save();
+
+        $this->updateCustomer($input,$orderObj->id);
 
         Session::flash('success','تم تحديث البيانات الشخصية بنجاح');
         return redirect()->to('/orders/'.$id.'/paymentInfo');
+    }
+
+    public function updateCustomer($input,$orderId){
+        $name = explode(' ', $input['name']);
+        $mobile = '+'.str_replace('@c.us','',$input['phone']);
+        $phoneNumber = preg_replace("/^\+(?:998|996|995|994|993|992|977|976|975|974|973|972|971|970|968|967|966|965|964|963|962|961|960|886|880|856|855|853|852|850|692|691|690|689|688|687|686|685|683|682|681|680|679|678|677|676|675|674|673|672|670|599|598|597|595|593|592|591|590|509|508|507|506|505|504|503|502|501|500|423|421|420|389|387|386|385|383|382|381|380|379|378|377|376|375|374|373|372|371|370|359|358|357|356|355|354|353|352|351|350|299|298|297|291|290|269|268|267|266|265|264|263|262|261|260|258|257|256|255|254|253|252|251|250|249|248|246|245|244|243|242|241|240|239|238|237|236|235|234|233|232|231|230|229|228|227|226|225|224|223|222|221|220|218|216|213|212|211|98|95|94|93|92|91|90|86|84|82|81|66|65|64|63|62|61|60|58|57|56|55|54|53|52|51|49|48|47|46|45|44\D?1624|44\D?1534|44\D?1481|44|43|41|40|39|36|34|33|32|31|30|27|20|7|1\D?939|1\D?876|1\D?869|1\D?868|1\D?849|1\D?829|1\D?809|1\D?787|1\D?784|1\D?767|1\D?758|1\D?721|1\D?684|1\D?671|1\D?670|1\D?664|1\D?649|1\D?473|1\D?441|1\D?345|1\D?340|1\D?284|1\D?268|1\D?264|1\D?246|1\D?242|1)\D?/", '',$mobile);
+
+        $customerArr = [
+            'first_name' => $name[0],
+            'last_name' => isset($name[1]) && $name[1] != null && $name[1] != '' ? $name[1] : $name[0],
+            'mobile' => $phoneNumber,
+            'mobile_code_country' => str_replace($phoneNumber,'',$mobile),
+            'email' => $input['email'],
+        ];
+
+        $orderObj = Order::where('id',$orderId)->first();
+        if($orderObj){
+            $orderDetailsObj = OrderDetails::where('order_id',$orderObj->id)->first();
+            if(!$orderDetailsObj){
+                $orderDetailsObj = new OrderDetails;
+            }
+            $orderDetailsObj->order_id = $orderObj->id;
+            $orderDetailsObj->name = $input['name'];
+            $orderDetailsObj->phone = str_replace('+', '', $mobile);
+            $orderDetailsObj->save();
+
+            if($orderDetailsObj->addon_customer_id != null){
+                $baseUrl = 'https://api.salla.dev/admin/v2/customers/'.$orderDetailsObj->addon_customer_id;
+                $token = Variable::getVar('SallaStoreToken'); 
+                $userObj = User::first();
+                $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+                if($oauthDataObj && $oauthDataObj->authorization != null){
+                    $token = $oauthDataObj->authorization;
+                }
+
+                $data = Http::withToken($token)->put($baseUrl,$customerArr);
+                $result = $data->json();
+            }           
+        }
     }
 
     public function paymentInfo($id){
@@ -549,16 +646,9 @@ class WhatsappOrdersControllers extends Controller {
         
         $data['order'] = Order::getData($orderObj);
         $data['user'] = User::getData(User::first());
-        $data['countries'] = \DB::connection('main')->table('country')->get();
+        $data['countries'] = \DB::connection('main')->table('salla_countries')->get();
         $designIndex = Variable::getVar('DESIGN') != null ? Variable::getVar('DESIGN') : 1;
         return view('Tenancy.WhatsappOrder.Views.V5.Designs.'.$designIndex.'.paymentInfo')->with('data', (object) $data);
-    }
-
-    public function getCities(){
-        $input = \Request::all();
-        $statusObj['regions'] = \DB::connection('main')->table('cities')->where('Country_id',$input['id'])->get();
-        $statusObj['status'] = \TraitsFunc::SuccessMessage();
-        return \Response::json((object) $statusObj);
     }
 
     public function postPaymentInfo($id){
@@ -580,18 +670,33 @@ class WhatsappOrdersControllers extends Controller {
             return redirect()->back()->withInput();
         }
 
-        if(!isset($input['region']) || empty($input['region'])){
-            Session::flash('error','يرجي ادخال الحي');
-            return redirect()->back()->withInput();
-        }
-
         if(!isset($input['address']) || empty($input['address'])){
-            Session::flash('error','يرجي ادخال اسم الشارع');
+            Session::flash('error','يرجي ادخال العنوان');
             return redirect()->back()->withInput();
         }
 
-        if(!isset($input['shipping_method']) || empty($input['shipping_method'])){
-            Session::flash('error','يرجي تحديد خيارات الشحن');
+        if(!isset($input['street_number']) || empty($input['street_number'])){
+            Session::flash('error','يرجي ادخال رقم الشارع');
+            return redirect()->back()->withInput();
+        }
+
+        if(!isset($input['block']) || empty($input['block'])){
+            Session::flash('error','يرجي ادخال رقم البلوك');
+            return redirect()->back()->withInput();
+        }
+
+        if(!isset($input['postal_code']) || empty($input['postal_code'])){
+            Session::flash('error','يرجي ادخال الرمز البريدي');
+            return redirect()->back()->withInput();
+        }
+
+        if(!isset($input['lat']) || empty($input['lat'])){
+            Session::flash('error','يرجي ادخال احداثيات الموقع');
+            return redirect()->back()->withInput();
+        }
+        
+        if(!isset($input['lng']) || empty($input['lng'])){
+            Session::flash('error','يرجي ادخال احداثيات الموقع');
             return redirect()->back()->withInput();
         }
 
@@ -602,18 +707,151 @@ class WhatsappOrdersControllers extends Controller {
 
         $orderDetailsObj->order_id = $orderObj->id;
         $orderDetailsObj->country = $input['country'];
+        $orderDetailsObj->country_id = $input['country_id'];
         $orderDetailsObj->city = $input['city'];
-        $orderDetailsObj->region = $input['region'];
+        $orderDetailsObj->city_id = $input['city_id'];
+        $orderDetailsObj->street_number = $input['street_number'];
         $orderDetailsObj->address = $input['address'];
-        $orderDetailsObj->shipping_method = $input['shipping_method'];
+        $orderDetailsObj->block = $input['block'];
+        $orderDetailsObj->postal_code = $input['postal_code'];
+        $orderDetailsObj->lat = $input['lat'];
+        $orderDetailsObj->lng = $input['lng'];
         $orderDetailsObj->save();
 
         Session::flash('success','تم تحديث معلومات الشحن بنجاح');
-        if($designIndex == 1){
-            return redirect()->to('/orders/'.$id.'/completeOrder');
-        }elseif($designIndex == 2 || $designIndex == 3){
-            return redirect()->to('/orders/'.$id.'/setPaymentType');
+        return $this->createOrder($orderDetailsObj,$orderObj);
+        // if($designIndex == 1){
+        //     return redirect()->to('/orders/'.$id.'/completeOrder');
+        // }elseif($designIndex == 2 || $designIndex == 3){
+        //     return redirect()->to('/orders/'.$id.'/setPaymentType');
+        // }
+    }
+
+    public function createOrder($orderDetailsObj,$orderObj){
+        // dd('be ready');
+        $mobile = '+'.$orderDetailsObj->phone;
+        $phoneNumber = preg_replace("/^\+(?:998|996|995|994|993|992|977|976|975|974|973|972|971|970|968|967|966|965|964|963|962|961|960|886|880|856|855|853|852|850|692|691|690|689|688|687|686|685|683|682|681|680|679|678|677|676|675|674|673|672|670|599|598|597|595|593|592|591|590|509|508|507|506|505|504|503|502|501|500|423|421|420|389|387|386|385|383|382|381|380|379|378|377|376|375|374|373|372|371|370|359|358|357|356|355|354|353|352|351|350|299|298|297|291|290|269|268|267|266|265|264|263|262|261|260|258|257|256|255|254|253|252|251|250|249|248|246|245|244|243|242|241|240|239|238|237|236|235|234|233|232|231|230|229|228|227|226|225|224|223|222|221|220|218|216|213|212|211|98|95|94|93|92|91|90|86|84|82|81|66|65|64|63|62|61|60|58|57|56|55|54|53|52|51|49|48|47|46|45|44\D?1624|44\D?1534|44\D?1481|44|43|41|40|39|36|34|33|32|31|30|27|20|7|1\D?939|1\D?876|1\D?869|1\D?868|1\D?849|1\D?829|1\D?809|1\D?787|1\D?784|1\D?767|1\D?758|1\D?721|1\D?684|1\D?671|1\D?670|1\D?664|1\D?649|1\D?473|1\D?441|1\D?345|1\D?340|1\D?284|1\D?268|1\D?264|1\D?246|1\D?242|1)\D?/", '',$mobile);
+
+        $mobileCode = str_replace($phoneNumber,'',$mobile);
+        $country = \DB::connection('main')->table('salla_countries')->where('mobile_code',$mobileCode)->first();
+        $productsArr = [];
+        $products = unserialize($orderObj->products);
+        $options = $orderObj->options != [] ? unserialize($orderObj->options) : [];
+
+        foreach($products as $product){
+            $product_id = Product::where('product_id',$product['id'])->first()->addon_product_id;
+            $obj = new \stdClass();
+            $obj->id = $product_id;
+            $obj->quantity = $product['quantity'];
+            // $obj->name = $product['name'];
+            // $obj->price = $product['price'];
+            if($options != [] && isset($options[$product['id']])){
+                $productOptions = $options[$product['id']];
+                $arr = [];
+                foreach ($productOptions as $oneKey => $productOption) {
+                    if(str_contains($productOption, '[') && str_contains($productOption, ']')){
+                        // $arr[] = json_decode($productOption);
+                    }else{
+                        if(is_numeric($productOption)){
+                            // $arr[$oneKey] = (int)$productOption;
+                            $arr[] = [
+                                'id' => (int) $oneKey,
+                                "name"=> "اللون",
+                                "type"=> "radio",
+                                "required"=> true,
+                                "values"=> [
+                                    [
+                                        "id" => (int) $productOption,
+                                        "name"=> "ابيض",
+                                        "option_id"=> (int) $oneKey,
+                                    ],
+                                ],
+                                // 'name' => 'ابيض',
+                                // 'value' => [
+                                //     'type' => 'radio',
+                                //     'vlaue' => (int) $productOption,
+                                // ],
+                                // 'required' => 1,
+                                // 'type' => 'radio',
+                                'product_id' => $product_id,
+                            ];
+                        }else{
+                            // $arr[] = $productOption;
+                        }
+                    }
+                }
+                // dd($arr);
+                // 1033164210 , 1499337660  ,  2124503054  ,  441746952  ,  1715353233  ,  166645831
+                $obj->options =  $arr;
+                // $obj->options = [
+                //     [
+                //         'id' => 1341238682,
+                //         'value' => 1033164210
+                //     ] , 1499337660  ,  2124503054  ,  441746952  ,  1715353233  ,  166645831
+                //     // [
+                //     //     "id" => 1110785137,
+                //     //     "product_option_id" => 1341238682,
+                //     //     "name" => "اللون",
+                //     //     "type" => "radio",
+                //     //     "value" => [
+                //     //       "id" => 1033164210,
+                //     //       "name" => "ابيض",
+                //     //       "price" => [
+                //     //         "amount" => 0,
+                //     //         "currency" => "SAR",
+                //     //       ],
+                //     //     ],
+                //     // ],
+                // ];
+            }
+            $productsArr[] = $obj;
+
         }
+        // dd($productsArr);
+        $orderData = [
+            'customer_id' => $orderDetailsObj->addon_customer_id,
+            'receiver' => [
+                'name' => $orderDetailsObj->name,
+                'country_code' => $country != null ? $country->code : 'SA',
+                'phone' => $phoneNumber,
+                'country_prefix' => $mobileCode,
+                'email' => $orderDetailsObj->email,
+                'notify' => 1,
+            ],
+            'shipping_address' => [
+                'country_id' => $orderDetailsObj->country_id,
+                'city_id' => $orderDetailsObj->city_id,
+                'block' => $orderDetailsObj->block,
+                'street_number' => $orderDetailsObj->street_number,
+                'address' => $orderDetailsObj->address,
+                'postal_code' => $orderDetailsObj->postal_code,
+                'geocode' => $orderDetailsObj->lat.','.$orderDetailsObj->lng,
+            ],
+            'payment' => [
+                'status' => 'waiting',
+                'method' => 'bank',
+                'accepted_methods' => ['bank','credit_card','mada','apple_pay','paypal'],
+            ],
+            'products' => $productsArr,
+        ];
+        // dd($orderData);
+
+        if($orderDetailsObj->addon_customer_id != null){
+            $baseUrl = 'https://api.salla.dev/admin/v2/orders';
+            $token = Variable::getVar('SallaStoreToken'); 
+            $userObj = User::first();
+            $oauthDataObj = OAuthData::where('user_id',$userObj->id)->where('type','salla')->first();
+            if($oauthDataObj && $oauthDataObj->authorization != null){
+                $token = $oauthDataObj->authorization;
+            }
+
+            $data = Http::withToken($token)->post($baseUrl,$orderData);
+            $result = $data->json();
+            dd($result);
+            if(isset($result['success']) && $result['success'] == true && isset($result['data']) && isset($result['data']['urls'])){
+                return redirect($result['data']['urls']['customer']);     
+            }
+        }    
     }
 
     public function setPaymentType($id){

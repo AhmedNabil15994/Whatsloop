@@ -16,11 +16,13 @@ class Comments extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
             $table->text('comment');
+            $table->string('name');
             $table->integer('ticket_id');
             $table->integer('reply_on');
             $table->string('file_name')->nullable();
             $table->integer('status');
             $table->integer('sort');
+            $table->integer('admin');
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

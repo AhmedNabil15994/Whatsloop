@@ -168,7 +168,7 @@ class InvoiceControllers extends Controller {
             // TODO :: Support others tags
         ])->render();
         $pdf = PDF::loadView('Central.Invoice.Views.invoicePDF',['data'=> (object)$data])
-                ->setPaper('a4', 'landscape')
+                ->setPaper('a4', 'portrait')
                 ->setOption('margin-bottom', '0mm')
                 ->setOption('margin-top', '0mm')
                 ->setOption('margin-right', '0mm')

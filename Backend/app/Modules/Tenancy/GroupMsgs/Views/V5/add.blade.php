@@ -351,7 +351,7 @@
                             <div class="col-xs-12 text-right">
                                 <div class="nextPrev clearfix ">
                                     <a href="{{ URL::to('/'.$data->designElems['mainData']['url']) }}" type="reset" class="btn btnNext Reset">{{ trans('main.back') }}</a>
-                                    <button name="Submit" type="submit" class="btnNext AddBTN" id="SubmitBTN">{{ trans('main.add') }}</button>
+                                    <button name="Submit" type="submit" class="btnNext AddBTNss" id="SubmitBTNss">{{ trans('main.add') }}</button>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
@@ -436,6 +436,12 @@
     </div>
     <!-- end row-->
 </div> <!-- container -->
+@endsection
+
+@section('modals')
+@include('tenant.Partials.tipsModal')
+@include('tenant.Partials.alertModal')
+
 @endsection
 
 @section('topScripts')

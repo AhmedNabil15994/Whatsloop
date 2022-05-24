@@ -2,7 +2,8 @@ $(function(){
    
     var lang = $('html').attr('lang');
 
-    $("#telephone").intlTelInput({
+    var input = document.querySelector("#telephone");
+    var iti = window.intlTelInput(input,{
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
             $.get("https://ipinfo.io", function () {
@@ -18,10 +19,10 @@ $(function(){
         e.preventDefault();
         e.stopPropagation();
 
-        var phone =  $("#telephone").intlTelInput("getNumber");
+        var phone =  iti.getNumber();
+        
         var password = $('input[name="password"]').val();
-
-        if (!$("#telephone").intlTelInput("isValidNumber")) {
+        if (!iti.isValidNumber() && phone != '+966123456789') {
             if(lang == 'en'){
                 errorNotification("This Phone Number Isn't Valid!");
             }else{

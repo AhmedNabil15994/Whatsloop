@@ -14,6 +14,7 @@ class ImagesHelper {
         }
         $path = str_replace(URL::to('/'), '', $url);
         $path = public_path().$path;
+
         if(!is_file($path)){
             return '';
         }
@@ -32,7 +33,7 @@ class ImagesHelper {
     static function checkExtensionType($extension,$type=null){
         $images = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'];
         $files = ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','x-rar','pdf','plain'];
-        $videos = ['3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv','x-m4v'];
+        $videos = ['3gp','quicktime','mov','octet-stream','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv','x-m4v'];
         $sounds = ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd','ogg','oga','ppt','ptt'];
 
         if(in_array($extension, $images)){
@@ -114,6 +115,16 @@ class ImagesHelper {
                 $checkFile = $checkFile . '/bots/' . $id . '/' . $filename;
                 return is_file($checkFile) ? URL::to($fullPath) : $default;
                 break;
+            case "SallaCarts":
+                $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/SallaCarts/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/SallaCarts/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
+            case "ZidCarts":
+                $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/ZidCarts/' . $id . '/' . $filename;
+                $checkFile = $checkFile . '/ZidCarts/' . $id . '/' . $filename;
+                return is_file($checkFile) ? URL::to($fullPath) : $default;
+                break;
             case "groupMessages":
                 $fullPath = $path.'/uploads'.($tenant != '' ? '/'.$tenant : '') . '/groupMessages/' . $id . '/' . $filename;
                 $checkFile = $checkFile . '/groupMessages/' . $id . '/' . $filename;
@@ -178,7 +189,7 @@ class ImagesHelper {
             $fileObj = Storage::url($fieldInput);
         }
 
-        if (Storage::size($fieldInput) >= 10000000) {
+        if (Storage::size($fieldInput) >= 15000000) {
             return false;
         }
         $oldExtension = explode('.', explode('/', $fieldInput)[1])[1];
@@ -236,7 +247,13 @@ class ImagesHelper {
             $directory = $path . 'groupMessages/' . $id;
         }
 
+        if ($strAction == 'SallaCarts') {
+            $directory = $path . 'SallaCarts/' . $id;
+        }
 
+        if ($strAction == 'ZidCarts') {
+            $directory = $path . 'ZidCarts/' . $id;
+        }
 
         if ($strAction == 'faqs') {
             $directory = $path . 'faqs/' . $id;
@@ -309,7 +326,7 @@ class ImagesHelper {
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
-        $appliedExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml','3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv','x-m4v','svg'];
+        $appliedExtensions = ['jpg','quicktime', 'octet-stream','jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml','3gp','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mov','mpeg','mp4','ogv','webm','qt','movie','viv','wav','avi','mkv','x-m4v','svg'];
 
         if (!in_array($extension, $appliedExtensions)) {
             return false;
@@ -407,6 +424,16 @@ class ImagesHelper {
         return false;
     }
 
+    static function getAllowed($type){
+        $data = [
+            'photo' => ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'pnm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd','svg+xml'],
+            'file' => ['vnd.openxmlformats-officedocument.spreadsheetml.sheet','bin','xlsx','csv','plain','txt','docx','ppt','word','vnd.openxmlformats-officedocument.wordprocessingml.document','zip','rar','x-rar','pdf','plain'],
+            'video' => ['3gp','quicktime','mov','octet-stream','3g2','avi','uvh','uvm','uvu','uvp','uvs','uaa','fvt','f4v','flv','fli','h261','h263','h264','jpgv','m4v','asf','pyv','wm','wmx','wmv','wvx','mj2','mxu','mpeg','mp4','ogv','webm','qt','movie','viv','avi','mkv','x-m4v'],
+            'sound' => ['wav','mp3','m3u','aac','vorbis','flac','alac','aiff','dsd','ogg','oga','ppt','ptt'],
+        ];
+        return $data[$type];
+    }
+
     static function uploadFileFromRequest($strAction, $fieldInput,$id='', $fileType = '') {
 
         if ($fieldInput == '') {
@@ -423,7 +450,7 @@ class ImagesHelper {
             $fileObj = Request::file($fieldInput);
         }
 
-        if ($fileObj->getSize() >= 10000000) {
+        if ($fileObj->getSize() >= 50000000) {
             return false;
         }
 
@@ -432,9 +459,10 @@ class ImagesHelper {
         unset($extensionExplode[0]);
         $extensionExplode = array_values($extensionExplode);
         $extension = $extensionExplode[0];
+
         $fileData = self::checkExtensionType($extension,'getData');
-        $fileType = $fileData[0];
-        $appliedExtensions = $fileData[1];
+        $fileType = $fileType != '' ? $fileType : $fileData[0];
+        $appliedExtensions = $fileType != '' ? self::getAllowed($fileType) : $fileData[1];
 
         if (!in_array($extension, $appliedExtensions)) {
             return false;

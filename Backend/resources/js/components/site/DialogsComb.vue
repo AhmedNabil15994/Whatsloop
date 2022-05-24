@@ -19,7 +19,9 @@
                         </h5>
                     </h5>
                     <div :dir="isUnicode(chat.lastMessage.body) ? 'rtl' : 'ltr'" class="chat-user-message text-truncate mb-0" :class="{'msgRemoved' : !chat.lastMessage.body,'text-bold' : chat.lastMessage.unRead}">
-                            
+                        <div v-if="!chat.lastMessage.deleted_by || chat.lastMessage.deleted_by === null">
+
+
                             <span v-if="chat.lastMessage.whatsAppMessageType === 'chat' || chat.lastMessage.whatsAppMessageType === 'link' || chat.lastMessage.type === 'chat' || chat.lastMessage.type === 'link' || chat.lastMessage.whatsAppMessageType === 'buttons_response' || chat.lastMessage.type === 'buttons_response'">
                             
                                 <template v-if="chat.lastMessage.body.includes('*') || chat.lastMessage.body.includes('https://whatsloop.net/resources/Gallery/') && !chat.lastMessage.body.includes('iframe')">
@@ -92,6 +94,13 @@
 
                             <span v-else><i class="fa fa-ban" style="margin-top:5px;float:right;margin-left5px"></i>
                             رسالة محذوفه أو غير مدعومة</span>
+
+                        </div>
+                        <span v-else><i class="fa fa-ban" style="margin-top:5px;float:right;margin-left5px"></i> 
+                            رسالة محذوفه أو غير مدعومة</span>
+
+
+
                     </div>
                     <p class="chatStatus clearfix mb-0" style="margin-left:3px;float:right;margin-top:-4px">
                         <span class="seen" v-if="chat.lastMessage.fromMe === 1" >

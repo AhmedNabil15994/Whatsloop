@@ -162,7 +162,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <h5 class="m-0"><a href="contacts-profile.html" class="text-reset">{{ $comment->creator }}</a></h5>
+                                <h5 class="m-0"><a href="contacts-profile.html" class="text-reset">{!! $comment->creator . ($comment->creator != $comment->creator_name  ? '<br><small>'.$comment->creator_name.'</small>' : '') !!}</a></h5>
                                 <p class="text-muted"><small>{{ $comment->created_at }}</small></p>
                                 <div class="font-16 font-italic text-dark">
                                     {!! $comment->comment !!}

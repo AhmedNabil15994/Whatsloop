@@ -12,6 +12,9 @@ use App\Models\UserData;
 use App\Models\ClientsRequests;
 use App\Models\NotificationTemplate;
 use App\Models\OAuthData;
+use App\Models\StatusCategory;
+use App\Models\Changelog;
+use App\Models\CentralCategory;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
@@ -26,10 +29,19 @@ use App\Jobs\SyncHugeOld;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Handler\MyTokenGenerator;
 
+use Illuminate\Database\Schema\Blueprint;
+    use Illuminate\Support\Facades\Schema;
 class CentralAuthControllers extends Controller {
 
     use \TraitsFunc;
     
+    public function status(){
+        $data = StatusCategory::dataList();  
+        $data['changeLogs'] = Changelog::dataList(1)['data'];
+        $data['categories'] = CentralCategory::dataList(1)['data'];
+        return view('Central.Auth.Views.V5.status')->with('data',(object) $data);
+    }
+
     public function translate(){
         $input = \Request::all();
         $tr = new GoogleTranslate('en','ar',[],new MyTokenGenerator);
@@ -90,8 +102,133 @@ class CentralAuthControllers extends Controller {
         }
         return redirect('/login');
     }
+
+    public function appLogins(){
+        $input =\Request::all();
+        if(isset($input['user_id']) && !empty($input['user_id']) ){
+            Session::put('one_signal',$input['user_id']);
+        }
+    }
     
     public function login() {
+
+
+        $tenants = \DB::connection('main')->table('tenants')->get();
+        foreach ($tenants as $key => $value) {
+            tenancy()->initialize($value->id);
+            Schema::create('abandoned_carts_events', function (Blueprint $table) {
+                $table->id();
+                $table->integer('type');
+                $table->integer('message_type');
+                $table->text('message')->nullable();
+                $table->integer('time')->nullable();
+                $table->string('file_name')->nullable();
+                $table->text('caption')->nullable();
+                $table->integer('bot_plus_id')->nullable();
+                $table->integer('status')->nullable();
+                $table->integer('created_by')->nullable();
+                $table->dateTime('created_at')->nullable();
+                $table->integer('updated_by')->nullable();
+                $table->dateTime('updated_at')->nullable();
+                $table->integer('deleted_by')->nullable();
+                $table->dateTime('deleted_at')->nullable();
+            });
+
+            //     if (Schema::hasColumn('products', 'addon_product_id')){
+            //         Schema::table('products', function (Blueprint $table)
+            //         {
+            //             $table->dropColumn('addon_product_id');
+            //         });
+            //     }
+            //     Schema::table('products', function (Blueprint $table) {
+            //         $table->string('addon_product_id')->nullable()->after('category_id'); // use this for field after specific column.
+            //     });
+
+            // if (Schema::hasColumn('order_details', 'street_number')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('street_number');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('street_number')->nullable()->after('addon_customer_id'); // use this for field after specific column.
+            // });
+
+            // if (Schema::hasColumn('order_details', 'block')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('block');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('block')->nullable()->after('street_number'); // use this for field after specific column.
+            // });
+
+            // if (Schema::hasColumn('order_details', 'postal_code')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('postal_code');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('postal_code')->nullable()->after('block'); // use this for field after specific column.
+            // });
+
+            // if (Schema::hasColumn('order_details', 'lat')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('lat');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('lat')->nullable()->after('postal_code'); // use this for field after specific column.
+            // });
+
+            // if (Schema::hasColumn('order_details', 'lng')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('lng');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('lng')->nullable()->after('lat'); // use this for field after specific column.
+            // });
+            
+            // if (Schema::hasColumn('order_details', 'country_id')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('country_id');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('country_id')->nullable()->after('lng'); // use this for field after specific column.
+            // });
+
+            // if (Schema::hasColumn('order_details', 'city_id')){
+            //     Schema::table('order_details', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('city_id');
+            //     });
+            // }
+            // Schema::table('order_details', function (Blueprint $table) {
+            //     $table->string('city_id')->nullable()->after('country_id'); // use this for field after specific column.
+            // });
+            
+            // if (Schema::hasColumn('orders', 'options')){
+            //     Schema::table('orders', function (Blueprint $table)
+            //     {
+            //         $table->dropColumn('options');
+            //     });
+            // }
+            // Schema::table('orders', function (Blueprint $table) {
+            //     $table->text('options')->nullable()->after('products'); // use this for field after specific column.
+            // });
+
+            tenancy()->end();
+        }
+
+
+
         if(Session::has('user_id') && !Session::has('t_reset')){
             return redirect('/dashboard');
         } 
@@ -172,6 +309,8 @@ class CentralAuthControllers extends Controller {
         }
 
         $userObj = CentralUser::checkUserBy('phone',$input['phone']);
+        $oneSignal = Session::has('one_signal') && Session::get('one_signal') != null ? Session::get('one_signal') : null; 
+        
         if ($userObj == null) {
             $userObj = UserData::where('phone',$input['phone'])->first();
             if($userObj){
@@ -181,8 +320,7 @@ class CentralAuthControllers extends Controller {
                     $statusObj['status'] = \TraitsFunc::LoginResponse(trans('auth.invalidPassword'));
                     return \Response::json((object) $statusObj);
                 }
-
-                $oneSignal = Session::has('one_signal') && Session::get('one_signal') != null ? Session::get('one_signal') : null; 
+                
                 $domainObj = Domain::where('domain',$userObj->domain)->first();
                 $tenant = Tenant::find($domainObj->tenant_id);
                 $ids = [];
@@ -216,7 +354,7 @@ class CentralAuthControllers extends Controller {
             }
             return \TraitsFunc::ErrorMessage(trans('auth.invalidUser'));
         }
-
+        
         $checkPassword = Hash::check($input['password'], $userObj->password);
         if ($checkPassword == null) {
             $statusObj['data'] = \URL::to('/getResetPassword?type=old');
@@ -228,7 +366,17 @@ class CentralAuthControllers extends Controller {
             $userObj = CentralUser::getData($userObj);
             $domainObj = Domain::where('domain',$userObj->domain)->first();
             $tenant = Tenant::find($domainObj->tenant_id);
+            tenancy()->initialize($tenant->id);
+            //{"860f8c1f-9d5b-46d3-b9b5-c3e84b1b338c":"860f8c1f-9d5b-46d3-b9b5-c3e84b1b338c"}
+            if($oneSignal != null){
+                $varObj = new Variable;
+                $varObj->var_key = 'ONESIGNALPLAYERID_'.str_replace('+','',$userObj->phone);
+                $varObj->var_value = '{"'.$oneSignal.'":"'.$oneSignal.'"}';
+                $varObj->save();
+            }
+            tenancy()->end();
             $token = tenancy()->impersonate($tenant,$userObj->id,'/dashboard');
+            
             Session::put('check_user_id',$userObj->id);
             Session::put('t_user_id',$userObj->id);
             Session::put('t_phone',$userObj->phone);

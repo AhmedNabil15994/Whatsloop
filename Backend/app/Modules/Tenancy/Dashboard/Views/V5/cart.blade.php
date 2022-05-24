@@ -58,6 +58,7 @@
                                     ];
                                     @endphp
                                     @foreach($data->addons as $key => $addon)
+                                    @if($key != 9)
                                     <div class="col-sm-6 col-md-4 col-lg-3 col-xl-3 item-parent">
                                         <div class="adding-card">
                                             <div class="card-img" style="background-color: {{ $addonsArr[$addon->id - 1]['color'] }};">
@@ -83,6 +84,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                     @endforeach
                                 </div>
                             </div>
@@ -151,7 +153,7 @@
                         @endif
 
                         @if(!empty($data->extraQuotas))
-                        <div class="box-style d-hidden">
+                        <div class="box-style">
                             <div class="box-header">
                                 <h5>{{ trans('main.extraQuotas') }}</h5>
                             </div>
@@ -161,6 +163,8 @@
                                     $extraQuotasArr = [
                                         ['color' => '#449DE6','image' => 'text-message.png'],
                                         ['color' => '#FEE45A','image' => 'portfolio.png'],
+                                        ['color' => '#AEEEFF','image' => 'server.png'],
+                                        ['color' => '#AEEEFF','image' => 'server.png'],
                                         ['color' => '#AEEEFF','image' => 'server.png'],
                                     ];
                                     @endphp

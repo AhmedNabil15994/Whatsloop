@@ -957,9 +957,10 @@ class ProfileControllers extends Controller {
             $data['queuedMessages'] = $queueResult['data']['first100'];
         }
 
-        $data['allMessages'] = ChatMessage::count();
+        $data['allDialogs'] = ChatDialog::whereHas('LastMessage')->count();
         $data['sentMessages'] = ChatMessage::where('fromMe',1)->count();
-        $data['incomingMessages'] = $data['allMessages'] - $data['sentMessages'];
+        $data['incomingMessages'] = ChatMessage::count() - $data['sentMessages'];
+        $data['contactsCount'] = Contact::NotDeleted()->whereHas('NotDeletedGroup')->count();
         $data['channel'] = $channelObj ? CentralChannel::getData(CentralChannel::getOne(Session::get('channel'))) : null;
         $data['contactsCount'] = Contact::NotDeleted()->count();
 
@@ -1236,6 +1237,9 @@ class ProfileControllers extends Controller {
             ContactLabel::where('id','!=',null)->delete();
             ContactReport::where('id','!=',null)->delete();
             UserStatus::where('id','!=',null)->delete();
+            Product::truncate();
+            Order::truncate();
+
         // }
      
         Session::flash('success',trans('main.logoutDone'));

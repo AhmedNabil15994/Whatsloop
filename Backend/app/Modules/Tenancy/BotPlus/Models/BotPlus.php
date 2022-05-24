@@ -28,11 +28,20 @@ class BotPlus extends Model{
     }
 
     static function findBotMessage($langPref,$senderMessage){
-        $botObj = self::NotDeleted()->where('status',1)->where('message_type',1)->search($senderMessage)->first();
+        $botObj = self::NotDeleted()->where('status',1)->where('message_type',1)->where('message',$senderMessage)->first();
         if(!$botObj){
-            $botObj = self::NotDeleted()->where('status',1)->where('message_type',2)->search($senderMessage, null, true)->first();
+            $botObj = self::NotDeleted()->where('status',1)->where('message_type',2)->search($senderMessage, null, true,true)->first();
         }
-        return $botObj;
+        // Check If Message Is Emoji
+        preg_match_all('([*#0-9](?>\\xEF\\xB8\\x8F)?\\xE2\\x83\\xA3|\\xC2[\\xA9\\xAE]|\\xE2..(\\xF0\\x9F\\x8F[\\xBB-\\xBF])?(?>\\xEF\\xB8\\x8F)?|\\xE3(?>\\x80[\\xB0\\xBD]|\\x8A[\\x97\\x99])(?>\\xEF\\xB8\\x8F)?|\\xF0\\x9F(?>[\\x80-\\x86].(?>\\xEF\\xB8\\x8F)?|\\x87.\\xF0\\x9F\\x87.|..(\\xF0\\x9F\\x8F[\\xBB-\\xBF])?|(((?<zwj>\\xE2\\x80\\x8D)\\xE2\\x9D\\xA4\\xEF\\xB8\\x8F\k<zwj>\\xF0\\x9F..(\k<zwj>\\xF0\\x9F\\x91.)?|(\\xE2\\x80\\x8D\\xF0\\x9F\\x91.){2,3}))?))', $senderMessage, $emojis);
+        $messageLength = strlen($senderMessage);
+        if(isset($emojis[0]) && !empty($emojis[0]) && in_array($messageLength, [4,8])){
+            if($botObj && in_array(strlen($botObj->message), [4,8]) && json_encode($senderMessage) == json_encode($botObj->message)){
+                return $botObj;
+            }
+        }else{
+            return $botObj;
+        }
     }
 
     static function getMsg($senderMessage){

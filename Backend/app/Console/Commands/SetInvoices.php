@@ -256,7 +256,6 @@ class SetInvoices extends Command
                     $checkInv = Invoice::where('client_id',$invoiceKey)->where('status','!=',1)->where('due_date','>=',date('Y-m-01',strtotime($invoiceDate)))->where('main',$oneItem['data']['main'])->where('due_date','<=',date('Y-m-t',strtotime($invoiceDate)))->first();
                     if($checkInv){
                         $checkInv->delete();
-                        $dontSend = 1;
                     }
                     $invoiceObj = Invoice::NotDeleted()->where('client_id',$invoiceKey)->where('due_date',$invoiceDate)->where('main',$oneItem['data']['main'])->where('items',serialize($oneItem['data']['items']))->first();
                     
@@ -280,6 +279,8 @@ class SetInvoices extends Command
                         $invoiceObj->items = serialize($oneItem['data']['items']);
                         $invoiceObj->main = $oneItem['data']['main'];
                         $invoiceObj->status = $status;
+                        $invoiceObj->discount_type = null;
+                        $invoiceObj->discount_value = null;
                         $invoiceObj->sort = Invoice::newSortIndex();
                         $invoiceObj->created_at = date('Y-m-d H:i:s');
                         $invoiceObj->created_by = 1;
@@ -288,7 +289,6 @@ class SetInvoices extends Command
                         $invoiceObj->status = $status;
                         $invoiceObj->main = $oneItem['data']['main'];
                         $invoiceObj->save();
-                        $dontSend = 1;
                     }
 
                     // if($oneItem['data']['main'] == 1){
@@ -334,9 +334,7 @@ class SetInvoices extends Command
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'newInvoice');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        if(!$dontSend){
-                            \MailHelper::prepareEmail($phoneData,1);
-                        }
+                        \MailHelper::prepareEmail($phoneData,1);
                     }else if($oneItem['data']['leftDays'] == 3 && (int) date('H') == 12){
                         // First Reminder
                         $notificationTemplateObj = NotificationTemplate::getOne(2,'firstReminder');
@@ -359,9 +357,7 @@ class SetInvoices extends Command
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'firstReminder');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        if(!$dontSend){
-                            \MailHelper::prepareEmail($phoneData,1);
-                        }
+                        \MailHelper::prepareEmail($phoneData,1);
                     }else if($oneItem['data']['leftDays'] == 1 && (int) date('H') == 12){
                         // Second Reminder // تذكير بسداد الفاتورة
                         $notificationTemplateObj = NotificationTemplate::getOne(2,'secondReminder');
@@ -384,9 +380,7 @@ class SetInvoices extends Command
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'secondReminder');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        if(!$dontSend){
-                            \MailHelper::prepareEmail($phoneData,1);
-                        }
+                        \MailHelper::prepareEmail($phoneData,1);
                     }else if($oneItem['data']['leftDays'] == 0 && (int) date('H') == 12){
                         // Suspend 
                         if($invoiceObj->status == 2  && (int) date('H') == 9 ){
@@ -462,9 +456,7 @@ class SetInvoices extends Command
                             $notificationTemplateObj = NotificationTemplate::getOne(1,'accountSuspended');
                             $phoneData = $allData;
                             $phoneData['phone'] = $userObj->phone;
-                            if(!$dontSend){
-                                \MailHelper::prepareEmail($phoneData,1);
-                            }
+                            \MailHelper::prepareEmail($phoneData,1);
                         }   
                     }else if($oneItem['data']['leftDays'] == -1 && (int) date('H') == 12){
                         // Whatsloop Customer Service
@@ -487,9 +479,7 @@ class SetInvoices extends Command
                         $notificationTemplateObj = NotificationTemplate::getOne(1,'leadContact');
                         $phoneData = $allData;
                         $phoneData['phone'] = $userObj->phone;
-                        if(!$dontSend){
-                            \MailHelper::prepareEmail($phoneData,1,'service');
-                        }
+                        \MailHelper::prepareEmail($phoneData,1,'service');
                     }
                     
                 }

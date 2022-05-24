@@ -358,7 +358,7 @@ class Contact extends Model{
                 return $data;
             }
 
-            $reportObj = $source->LastReport()->where('group_message_id',$groupMsgObj->id)->first();
+            $reportObj = $source->Reports()->where('group_message_id',$groupMsgObj->id)->where('group_id',$groupMsgObj->group_id)->orderBy('id','DESC')->first();
             if($reportObj == null){
                 $status= ['info',trans('main.inPrgo'),date('Y-m-d H:i:s')];
             }else{

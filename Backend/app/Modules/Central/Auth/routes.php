@@ -6,6 +6,7 @@ User Auth
 
 Route::group(['prefix' => '/'] , function () {
     $authController = App\Http\Controllers\CentralAuthControllers::class;
+    $authController2 = App\Http\Controllers\ExtraControllers::class;
 
 
     // Route::get('/register',function(){
@@ -31,6 +32,7 @@ Route::group(['prefix' => '/'] , function () {
     Route::get('/syncData', [$authController,'syncData']);
 
     Route::get('/appLogin', [$authController,'appLogin']);
+    Route::post('/appLogins', [$authController,'appLogins']);
     Route::post('/login', [$authController,'doLogin']);
     Route::post('/checkByCode', [$authController,'checkByCode']);
     Route::get('/logout', [$authController,'logout']);
@@ -50,5 +52,11 @@ Route::group(['prefix' => '/'] , function () {
 
     Route::post('/changeLang', [$authController,'changeLang']);
 
+    Route::get('/status', [$authController,'statues'])->name('status');
+
     // Route::get('impersonate/{token}',[App\Http\Controllers\ImpersonatesController::class, 'index'])->name('impersonate');
+    // 
+    Route::get('/welcome/salla/{token}', [$authController2,'checkClientAvailability'])->name('checkClientAvailability');
+    Route::post('/welcome/salla/{token}', [$authController2,'postCheckClientAvailability'])->name('postCheckClientAvailability');
+    Route::post('/welcome/salla/{token}/checkClientAvailabilityCode', [$authController2,'checkClientAvailabilityCode'])->name('checkClientAvailabilityCode');
 });

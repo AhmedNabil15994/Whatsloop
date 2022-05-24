@@ -277,6 +277,26 @@
             </li> 
             @endif
 
+            @if(\Helper::checkRules('list-status-categories,list-statuses'))
+               <li class="slide">
+                <a class="side-menu__item" data-toggle="slide" href="#">
+                    <div class="side-angle1"></div>
+                    <div class="side-angle2"></div>
+                    <div class="side-arrow"></div>
+                    <img src="{{ asset('tenancy/assets/images/team.svg') }}" alt="">
+                    <span class="side-menu__label">{{ trans('main.statuses') }}</span><i class="angle fe fe-chevron-{{ DIRECTION == 'ltr' ? 'right' : 'left' }}"></i>
+                </a>
+                <ul class="slide-menu">
+                    @if(\Helper::checkRules('list-statuses'))
+                    <li><a class="slide-item" href="{{ URL::to('/statuses') }}">{{ trans('main.statuses') }}</a></li>
+                    @endif
+                    @if(\Helper::checkRules('list-status-categories'))
+                    <li><a class="slide-item" href="{{ URL::to('/statuscategories') }}">{{ trans('main.categories') }}</a></li>
+                    @endif
+                </ul>
+            </li>
+            @endif
+
             @if(\Helper::checkRules('list-changeLogs,list-categories'))
                <li class="slide">
                 <a class="side-menu__item" data-toggle="slide" href="#">

@@ -15,6 +15,7 @@ class Tickets extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
+            $table->string('global_id');
             $table->integer('user_id');
             $table->string('subject');
             $table->text('description');

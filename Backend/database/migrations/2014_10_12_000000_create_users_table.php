@@ -41,6 +41,8 @@ class CreateUsersTable extends Migration
             $table->text('addons')->nullable();
             $table->integer('is_old')->nullable();
             $table->integer('is_synced')->nullable();
+            $table->integer('whmcs_id')->nullable();
+            $table->string('balance')->nullable();
             $table->integer('status')->nullable();
             $table->integer('sort')->nullable();
             $table->integer('created_by')->nullable();

@@ -116,19 +116,23 @@ class QrImage extends Component
                             $labelObj->name_ar = $label['name'];
                             $labelObj->name_en = $label['name'];
                         }
-                        $labelObj->color_id = Category::getColorData($label['hexColor'])[0];
+                        if(isset($label['hexColor']) && !is_array($label['hexColor'])){
+                            $labelObj->color_id = Category::getColorData($label['hexColor'])[0];
+                        }
                         $labelObj->status = 1;
                         $labelObj->save();
                     }
                 }
-
+                $meResult['data'] = [];
                 if(User::first()->setting_pushed == 1){
                     $meResult = $mainWhatsLoopObj->me();
                     $meResult = $meResult->json();
-                    $author = $meResult['data']['id'];
-                    $lastMessageObj = ChatMessage::where('fromMe',1)->orderBy('time','DESC')->first();
-                    if($lastMessageObj != null && $lastMessageObj->time != null && $lastMessageObj->author == $author){
-                        $sendData['min_time'] = $lastMessageObj->time - 7200;
+                    if(isset($meResult['data'])){
+                        $author = $meResult['data']['id'];
+                        $lastMessageObj = ChatMessage::where('fromMe',1)->orderBy('time','DESC')->first();
+                        if($lastMessageObj != null && $lastMessageObj->time != null && $lastMessageObj->author == $author){
+                            $sendData['min_time'] = $lastMessageObj->time - 7200;
+                        }
                     }
                 }
                 $updateResult = $mainWhatsLoopObj->messages($sendData);

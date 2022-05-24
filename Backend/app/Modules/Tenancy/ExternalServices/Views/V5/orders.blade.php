@@ -8,6 +8,14 @@
     .icon{
         float: unset;
     }
+    .abCart{
+        min-height: 291px;
+    }
+    .abCart .details{
+        position: absolute;
+        bottom: 0;
+        width: calc(100% - 30px);
+    }
 </style>
 @endsection
 

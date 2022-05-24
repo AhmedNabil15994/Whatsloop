@@ -267,9 +267,6 @@ class ZidWebhook extends ProcessWebhookJob{
     
     public function failed(Throwable $exception){
         $count = \DB::connection('main')->table('failed_jobs')->count();
-        if($count > 10){
-        	\DB::connection('main')->table('failed_jobs')->truncate();
-        }
         system('/usr/local/bin/php /home/wloop/public_html/artisan queue:restart');
         // system('/home/wloop/public_html/vendor/supervisorctl restart whatsloop:*');
     }

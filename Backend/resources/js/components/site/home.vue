@@ -74,7 +74,8 @@
         <chat-component
             v-on:openCht="openCht()" 
             v-on:opencontct="opencontct()"
-            v-on:checkSubscription="checkSubscription()"
+            v-on:checkSubscription="checkSubscription"
+            v-on:childToParent="removeMsgParent"
             :contact="getContact" 
             v-if="getContact !== [] && chatId !== 0"
             :openChat="openChat" 
@@ -203,6 +204,17 @@ export default {
         }
     },
     methods: {
+        removeMsgParent(id) { 
+            for(var msg in this.chats.Dialogs) {
+                if(this.chats.Dialogs[msg].lastMessage.id === id) 
+                {
+                    this.chats.Dialogs[msg].lastMessage.deleted_by = 'me';
+                    this.chats.Dialogs[msg].lastMessage.whatsAppMessageType = 'deleted';
+                    this.chats.Dialogs[msg].lastMessage.message_type = 'deleted';
+                    break;
+                }
+            }
+        },
         checkSubscription(err) {
             this.errorMsg = err;
             this.subscription = false;

@@ -7,8 +7,40 @@
 @endsection
 
 @section('content')
-
-    @if(\Helper::checkRules('updateSalla') && (Request::has('type') && Request::get('type') == 'salla') )
+    @php
+    $store_url = '';
+    @endphp
+    @if((Request::has('type') && Request::get('type') == 'salla'))
+    @php
+    $store_url = '';
+    $oauthDataObj = \App\Models\OAuthData::where('user_id',ROOT_ID)->where('type','salla')->first();
+    $token = isset($oauthDataObj) && $oauthDataObj->access_token != null ? $oauthDataObj->access_token : \App\Models\Variable::getVar('SallaStoreToken');
+    $initRequest = \Http::withToken($token)->get('https://accounts.salla.sa/oauth2/user/info');
+    $result = $initRequest->json();
+    if($result['success'] == true && isset($result['data']['store'])){
+        $store_url = $result['data']['store']['domain'];
+    }
+    @endphp 
+    
+    @endif
+    @if($store_url != '')
+    <div class="row">
+        <div class="col-xs-12 service first" {{ Request::has('type') && Request::get('type') == 'salla' ? 'style=display:block' : '' }}>
+            <div class="form">
+                <div class="card-body">
+                    <div class="formPayment">
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <i class="fa fa-check-circle" style="display: block;width: auto;margin: auto;font-size: 64px;color: #00BFB5;"></i>
+                            <h2 class="title" style="border: 0;width: 310px;margin:auto;line-height: 1.5;">{{ trans('main.sallaNotify',['store_url'=> $store_url]) }}</h2>
+                            <a href="#" class="btnAdd" style="visibility: hidden;"></a>
+                        </div> 
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @elseif(\Helper::checkRules('updateSalla') && (Request::has('type') && Request::get('type') == 'salla') )
     <div class="row">
         <div class="col-xs-12 service first" {{ Request::has('type') && Request::get('type') == 'salla' ? 'style=display:block' : '' }}>
             <div class="form">
@@ -18,7 +50,7 @@
                         <div class="form-group mains">
                             <label class="col-3 titleLabel">{{ trans('main.store_token') }} :</label>
                             <div class="col-9">
-                                <input name="store_token" value="{{ \App\Models\Variable::getVar('SallaStoreToken') }}" placeholder="{{ trans('main.store_token') }}">
+                                <input name="store_token" value="{{ $token }}" placeholder="{{ trans('main.store_token') }}">
                             </div>
                         </div> 
                         <hr class="mt-5">

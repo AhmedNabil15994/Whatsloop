@@ -226,7 +226,7 @@
                                                             <label class="titleLabel">{{ trans('main.country') }} :</label>
                                                         </div>
                                                         <div class="col-md-9">
-                                                            <input value="{{ $data->paymentInfo ? $data->paymentInfo->country : '' }}" name="country" placeholder="{{ trans('main.country') }}">
+                                                            <input value="{{ $data->paymentInfo && isset(data->paymentInfo->country) ? $data->paymentInfo->country : '' }}" name="country" placeholder="{{ trans('main.country') }}">
                                                         </div>
                                                     </div> 
                                                     <div class="row">

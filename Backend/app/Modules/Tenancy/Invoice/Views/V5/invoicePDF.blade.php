@@ -9,21 +9,21 @@
 		<title>واتس لووب | Whats Loop | @yield('title')</title>
 		<meta name="description" content="#" />
 		<meta name="csrf-token" content="{{ csrf_token() }}">
-		<link rel="stylesheet" href="{{ asset('V5/css/font.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/flaticon.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/animate.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/bootstrap.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/font-awesome.min.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/buttons.css') }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/font.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/flaticon.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/animate.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/bootstrap.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/font-awesome.min.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/buttons.css' }}" />
 		@if(DIRECTION == 'rtl')
-		<link rel="stylesheet" href="{{ asset('V5/css/bootstrap-rtl.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/style.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/responisve.css') }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/bootstrap-rtl.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/style.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/responisve.css' }}" />
 		@else
-		<link rel="stylesheet" href="{{ asset('V5/css/ltr.css') }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/ltr.css' }}" />
 		@endif
-		<link rel="stylesheet" href="{{ asset('V5/css/dark.css') }}" />
-		<link rel="stylesheet" href="{{ asset('V5/css/touches.css') }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/dark.css' }}" />
+		<link rel="stylesheet" href="{{ config('app.BASE_URL').'/tenancy/assets/V5/css/touches.css' }}" />
 		<style type="text/css">
 			td a {
 			    color: inherit;
@@ -85,9 +85,18 @@
 			}
 			.helpPage .helpHead
 			{
-				display:block;
-				margin-top:-20px
-				
+				display:inline-block;
+				width: 50%;
+				margin-top: 10px;
+				float: left;
+				text-align: left;
+			}
+			.helpPage .helpLogo
+			{
+				display:inline-block;
+				width: 50%;
+				margin-top: 20px;
+				text-align: right;
 			}
 
 			.helpPage .helpHead .titleHelp
@@ -118,6 +127,7 @@
 				overflow: hidden;
 				position:relative;
 				height:100px;
+				float: left;
 				margin-right:20px;
 				margin-bottom:20px;
 			}
@@ -129,7 +139,7 @@
 				left:-9px;
 				top:8px;
 				height:100%;
-				background:url("../images/Subtraction 3.png") no-repeat;
+				background:url("{{config('app.BASE_URL').'/tenancy/assets/V5/images/Subtraction 3.png'}}") no-repeat;
 				width:18px;
 			}
 
@@ -275,7 +285,10 @@
 								</div>
 							</div>
 						</div>
-
+						<div class="helpLogo">
+							<img src="{{ config('app.BASE_URL').'/tenancy/assets/V5/images/logo.png' }}" alt="">
+						</div>
+						<div class="clearfix"></div>
 						<div class="detailsHelp">
 							<div class="overflowTable">
 								<table class="tableDetails">
@@ -345,10 +358,15 @@
 							            <tbody>
 											@php 
 												$mainPrices = 0; 
+												$hasAddons = 0;
+												$isOld = App\Models\CentralUser::find($data->invoice->client_id)->is_old;
 											@endphp
 					                        @foreach($data->invoice->items as $key => $item)
 					                        @php 
-						                        $mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
+					                        if($item['type'] == 'addon'){
+				                        		$hasAddons = 1;
+				                        	}
+										    $mainPrices+=$item['data']['price'] * $item['data']['quantity']; 
 					                        @endphp
 					                        <tr class="mainRow">
 					                            <td>{{ $key+1 }}</td>
@@ -369,73 +387,107 @@
 					                            	{{ $item['data']['duration_type'] == 1 ? date('Y-m-d',strtotime('+1 month',strtotime($data->invoice->due_date)- 86400))  : date('Y-m-d',strtotime('+1 year',strtotime($data->invoice->due_date )- 86400)) }}
 					                            	@endif
 					                            </td> --}}
-					                            <td class="text-center">{{ number_format((float) $item['data']['quantity'] * $item['data']['price_after_vat'], 2, '.', '') }} {{ trans('main.sar') }}</td>
+					                            <td class="text-center">
+		                                            @php 
+		                                            $total = $item['data']['quantity'] * $item['data']['price_after_vat'];
+		                                            $tax=  \Helper::calcTax($total);
+		                                            @endphp
+		                                            {{ $total - $tax }} 
+		                                            {{ trans('main.sar') }}
+		                                        </td>
 					                        </tr>
 					                        @endforeach
 					                        @php
-					                        	if($data->invoice->zidOrSalla){
-													$oldDiscount = $data->invoice->discount;
-													$tax = Helper::calcTax($data->invoice->roTtotal);
-							                        $grandTotal =  $data->invoice->roTtotal - $tax;
-							                        $total = $data->invoice->roTtotal;
-					                        	}else{
-					                        		$oldDiscount = $mainPrices - $data->invoice->total + $data->invoice->discount;
-							                        $tax = Helper::calcTax($data->invoice->total);
-							                        $grandTotal =  $data->invoice->total - $tax;
-							                        $total = $data->invoice->total;
-					                        	}
-
-					                        	if($data->invoice->discount_value != null && $data->invoice->discount_type != null){
-					                        		$oldDiscount = $data->invoice->discount;
-				    								$tax = $data->invoice->tax;
-				    		                        $grandTotal =  $data->invoice->grandTotal;
-				    		                        $total = $tax + $grandTotal;
-					                        	}
+						                        $oldDiscount = $data->invoice->discount;
+												$tax = $data->invoice->tax;
+						                        $grandTotal =  $data->invoice->grandTotal;
+						                        $total = $tax + $grandTotal;
 					                        @endphp
-					                        <input type="hidden" name="invoice_id" value="{{ $data->invoice->id }}">
 					                        <tr>
 					                            <td colspan="5"></td>
 					                            <td class="text-left">
-					                            	<p class="mb-2">
+					                            	@if($data->invoice->oldDiscount != 0)
+					                                <p class="mb-2">
 					                                    <span class="tx-bold">{{ trans('main.discount') }} :</span>
-					                                    <span class="float-right">{{ number_format((float)$oldDiscount, 2, '.', '') }} {{ trans('main.sar') }}</span>
+					                                    <span class="float-right">{{ $data->invoice->oldDiscount }} {{ trans('main.sar') }}</span>
 					                                    <div class="clearfix"></div>
 					                                </p>
+					                                @endif
+					                                @if($data->invoice->discount_value != null && $data->invoice->discount_type != null && $oldDiscount - $data->invoice->oldDiscount != 0)
+					                                <p class="mb-2">
+					                                    <span class="tx-bold">{{ trans('main.coupons') }} ({{$data->invoice->discount_type == 1 ? $data->invoice->discount_value : $data->invoice->discount_value.'%' }}) :</span>
+					                                    <span class="float-right">{{ $oldDiscount - $data->invoice->oldDiscount }} {{ trans('main.sar') }}</span>
+					                                    <div class="clearfix"></div>
+					                                </p>
+					                                @endif
 					                                <p class="mb-2">
 					                                    <span class="tx-bold">{{ trans('main.grandTotal') }} :</span>
-					                                    <span class="float-right">{{ number_format((float)$grandTotal, 2, '.', '') }} {{ trans('main.sar') }}</span>
+					                                    <span class="float-right">{{ $grandTotal }} {{ trans('main.sar') }}</span>
 					                                    <div class="clearfix"></div>
 					                                </p>
 					                                <p class="mb-2">
 					                                    <span class="tx-bold">{{ trans('main.estimatedTax') }} :</span>
-					                                    <span class="float-right">{{ number_format((float)$tax, 2, '.', '') }} {{ trans('main.sar') }}</span>
+					                                    <span class="float-right">{{ $tax }} {{ trans('main.sar') }}</span>
 					                                    <div class="clearfix"></div>
 					                                </p>
 					                                <p class="mb-2">
 					                                    <span class="tx-bold">{{ trans('main.total') }} :</span>
-					                                    <span class="float-right">{{ number_format((float)$total, 2, '.', '') }}  {{ trans('main.sar') }}</span>
+					                                    <span class="float-right">{{ $total }}  {{ trans('main.sar') }}</span>
 					                                    <div class="clearfix"></div>
 					                                </p>
 					                            </td>
 					                        </tr>
+					                        <input type="hidden" name="invoice_id" value="{{ $data->invoice->id }}">
 							            </tbody>
 							        </table>
-								</div>	  	 			
+								</div>	  
+								@if($data->invoice->transaction_id)
+								<div class="overflowTable">
+						            <table class="tableBills">
+							            <thead>
+						                    <tr>
+						                        <th>#</th>
+						                        <th>{{ trans('main.transaction_date') }}</th>
+						                        <th>{{ trans('main.paymentGateaway') }}</th>
+						                        <th>{{ trans('main.transaction_id') }}</th>
+						                        <th>{{ trans('main.transaction_price') }}</th>
+						                    </tr>
+						                </thead>
+						                <tbody>
+						                    @php $mainPrices = 0; @endphp
+						                    @foreach($data->invoice->items as $key => $item)
+						                    @php $mainPrices+=$item['data']['price'] * $item['data']['quantity'] @endphp
+						                    @endforeach
+						                    <tr class="mainRow">
+						                        <td>{{ $key+1 }}</td>
+						                        <td>
+						                            <p class="m-0 d-inline-block align-middle font-16">
+						                                <a href="#" class="text-reset font-family-secondary">{{ $data->invoice->paid_date }}</a><br>
+						                            </p>
+						                        </td>
+						                        <td>{{ $data->invoice->payment_gateaway }}</td>
+						                        <td>{{ $data->invoice->transaction_id }}</td>
+						                        <td>{{ $total }} {{ trans('main.sar') }}</td>
+						                    </tr>
+						                </tbody>
+							        </table>
+								</div>
+								@endif	 			
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<script src="{{ asset('V5/js/jquery-1.11.2.min.js') }}"></script>
-		<script src="{{ asset('V5/js/jquery-ui.js') }}"></script>
-		<script src="{{ asset('V5/js/bootstrap.min.js') }}"></script>
-		<script src="{{ asset('V5/js/wow.min.js') }}"></script>
-		<script src="{{ asset('V5/plugins/moment/moment.js') }}"></script>
-		<script src="{{ asset('V5/components/multi-lang.js') }}"></script>
-		<script src="{{ asset('V5/js/utils.js') }}" type="text/javascript"></script>
-		<script src="{{ asset('V5/js/custom.js') }}"></script>
-		<script src="{{ asset('V5/components/globals.js') }}"></script>		
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/js/jquery-1.11.2.min.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/js/jquery-ui.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/js/bootstrap.min.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/js/wow.min.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/plugins/moment/moment.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/components/multi-lang.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/js/utils.js' }}" type="text/javascript"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/js/custom.js' }}"></script>
+		<script src="{{ config('app.BASE_URL').'/tenancy/assets/V5/components/globals.js' }}"></script>		
 	</body>
 	<!--end::Body-->
 </html>

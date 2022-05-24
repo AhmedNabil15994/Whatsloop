@@ -15,14 +15,24 @@ $(function(){
 	                $('#selectCity .selectList').empty();
 	                var elemString = '';
 	                $.each(data.regions,function(index,item){
-	                    elemString+= '<li data-area="'+index+'"><label class="checkStyle"><i></i><span class="text">'+item.name+'</span></label></li>'
+	                    elemString+= '<li data-area="'+item.id+'"><label class="checkStyle"><i></i><span class="text">'+item.name+'</span></label></li>'
 	                });
 	                $('#selectCity .selectList').append(elemString);
+	                if($('input[name="country_id"][type="hidden"]').length){
+	                    $('input[name="country_id"][type="hidden"]').val(id);
+	                }
 	            }else{
 	                errorNotification(data.status.message);
 	            }
 	        },
 	    });
+	});
+
+	$('#selectCity .save').on('click',function(e){
+	    var id = $('#selectCity .selectList li.active').data('area');
+		if($('input[name="city_id"][type="hidden"]').length){
+            $('input[name="city_id"][type="hidden"]').val(id);
+        }
 	});
 
 	$(document).on('click','#selectPayment .selectForm li',function(){

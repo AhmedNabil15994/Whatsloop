@@ -21,10 +21,31 @@
         <link rel="stylesheet" href="{{ asset('tenancy/assets/V5/css/responisve.css') }}" />
         <link rel="stylesheet" href="{{ asset('tenancy/assets/V5/css/dark.css') }}" />
         <link href="{{ asset('tenancy/assets/V5/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
-        <!--[if lt IE 9]>
-            <script src="js/html5shiv.min.js"></script>
-            <script src="js/respond.min.js"></script>
-        <![endif]-->   
+        <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+        <script>
+            var OneSignal = window.OneSignal || [];
+            OneSignal.push(function() {
+                OneSignal.init({
+                    appId: "df87a757-56ff-4fbe-8872-0a79bec2a8f2",
+                    autoRegister: false,
+                    notifyButton: {
+                        enable: true,
+                    },
+                });
+                OneSignal.registerForPushNotifications();
+            });
+            OneSignal.push(function() {
+                OneSignal.getUserId(function(userId) {
+                    if(userId){
+                        console.log(userId);
+                       $.post("/appLogins", {
+                            'user_id': userId,
+                            '_token': "{{ csrf_token() }}",
+                        });
+                    }
+                });
+            });
+        </script>
     </head>
     <body class="{{Request::segment(1) == 'appLoginDark' ? 'dark-mode' : ''}}">
     
@@ -162,7 +183,7 @@
         <script src="{{ asset('tenancy/assets/V5/js/utils.js') }}" type="text/javascript"></script>
         <script src="{{ asset('tenancy/assets/V5/js/custom.js') }}"></script>
         <script src="{{ asset('tenancy/assets/V5/components/login.js') }}" type="text/javascript"></script>
-        
+       
         @include('tenant.Partials.notf_messages')
     </body>
 

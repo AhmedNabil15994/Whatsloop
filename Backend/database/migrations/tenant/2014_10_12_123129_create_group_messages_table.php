@@ -31,6 +31,7 @@ class CreateGroupMessagesTable extends Migration
             $table->string('url_desc')->nullable();
             $table->string('url_image')->nullable();
             $table->string('whatsapp_no')->nullable();
+            $table->integer('bot_plus_id')->nullable();
             $table->integer('status')->nullable();
             $table->integer('sort')->nullable();
             $table->integer('created_by')->nullable();

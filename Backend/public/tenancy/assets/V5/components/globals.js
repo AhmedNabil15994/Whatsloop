@@ -736,3 +736,35 @@ $(document).on('click','#unknownBot .addBotReply',function(e){
     });
 });
 
+$(document).on('click','a[data-target="#modal-salla-products"]',function(e){
+    $('#modal-salla-products .assignProduct').data('area',$(this).data('area'));
+});
+
+$(document).on('click','#modal-salla-products .assignProduct',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var salla_product_id = $('#modal-salla-products select').val();
+    var product_id = $('#modal-salla-products .assignProduct').data('area');
+    if(salla_product_id >= 1){
+        $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
+        $.ajax({
+            type: 'POST',
+            url: '/whatsappOrders/products/assignSallaProduct',
+            data:{
+                '_token': $('meta[name="csrf-token"]').attr('content'),
+                'salla_product_id': salla_product_id,
+                'product_id': product_id,
+            },
+            success:function(data){
+                if(data.status.status == 1){
+                    successNotification(data.status.message);
+                    $('#modal-salla-products select option[value="0"]').prop('selected',true);
+                    $('#modal-salla-products .assignProduct').data('area','');
+                    $('#modal-salla-products').modal('toggle');
+                }else{
+                    errorNotification(data.status.message);
+                }
+            },
+        });
+    }
+});

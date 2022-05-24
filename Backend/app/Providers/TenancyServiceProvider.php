@@ -195,6 +195,7 @@ class TenancyServiceProvider extends ServiceProvider
             require app_path('Modules/Tenancy/Invoice/routes.php');
             require app_path('Modules/Tenancy/WhatsappOrder/routes.php');
             require app_path('Modules/Tenancy/BotPlus/routes.php');
+            require app_path('Modules/Tenancy/Feedback/routes.php');
         });
     }
 

@@ -186,6 +186,7 @@ class Category extends Model{
     }
 
     static function getColorData($hexColor){
+        $hexColor = strtolower($hexColor);
         if($hexColor == '#ff9dff' || $hexColor == 1){
             return [1,'#ff9dff','LavenderRose'];
         }elseif($hexColor == '#d3a91d' || $hexColor == 2){
